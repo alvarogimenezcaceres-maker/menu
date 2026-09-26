@@ -1,0 +1,682 @@
+{
+  "$source": "gringodatos/: posts e historias de Instagram @gringobarpy (pizzas 14/04/2023, Gringo Eventos 28/04/2024, Menú Drinks 20/08/2025) + foto burguerdelacasa.jpg. Lo marcado con \"review\" hay que confirmarlo con el restaurante.",
+  "tenant": {
+    "name": "Gringo Bar",
+    "slug": "gringo-bar"
+  },
+  "restaurant": {
+    "name": "Gringo Bar",
+    "slug": "gringo-bar",
+    "description": "Gringo Bar: food, rock and beer. Hamburguesas, pizzas de masa madre, lomitos, sandwiches, tragos y cervezas. Delivery, pick up y local climatizado.",
+    "tagline": "Food, rock and beer. Hamburguesas, pizzas de masa madre y tragos.",
+    "currency": "PYG",
+    "default_locale": "es",
+    "logo": "logo-blanco",
+    "hero": "burguer-de-la-casa",
+    "tables": 10,
+    "cuisine": [
+      "Hamburguesas",
+      "Pizza",
+      "Lomitos",
+      "Sandwiches",
+      "Cócteles",
+      "Cerveza"
+    ],
+    "theme": {
+      "primary": "#E2A63B",
+      "primaryLight": "#FABC5C",
+      "background": "#1C1C1C",
+      "accentWine": "#995331"
+    },
+    "contact": {
+      "instagram": "gringobarpy",
+      "whatsapp": "0976 145 539",
+      "area": "República de Luque"
+    },
+    "$review": "Cantidad de mesas (10) es un valor por defecto: confirmar antes de imprimir los QR."
+  },
+  "categories": [
+    {
+      "slug": "hamburguesas",
+      "name": "Hamburguesas",
+      "dishes": [
+        {
+          "slug": "burguer-de-la-casa",
+          "name": "Burguer de la casa",
+          "description": "Doble medallón de carne a la plancha con doble cheddar fundido, papas pay crocantes, un crocante empanado, ketchup y salsa de la casa, en pan brioche tostado.",
+          "price": 45000,
+          "ingredients": [
+            "pan brioche",
+            "2 medallones de carne",
+            "doble cheddar",
+            "papas pay",
+            "crocante empanado",
+            "ketchup",
+            "salsa de la casa"
+          ],
+          "tags": [
+            "destacado",
+            "de la casa"
+          ],
+          "photo": "burguer-de-la-casa",
+          "model": "burguer-de-la-casa-demo.glb",
+          "modelNote": "Modelo 3D de demostración; la foto sí es de Gringo Bar",
+          "review": "PRECIO ESTIMADO (no figura en el material): confirmar. Ingredientes deducidos de la foto: confirmar qué es el empanado (¿pollo? ¿queso?) y la salsa."
+        },
+        {
+          "slug": "hamburguesa-clasica",
+          "name": "Hamburguesa clásica",
+          "description": "Medallón de carne, cheddar, lechuga, tomate y cebolla en pan brioche.",
+          "price": null,
+          "status": "draft",
+          "review": "Contenido generado: Gringo Bar ofrece esta categoría (story «Gringo Eventos»), pero no tenemos la carta. Completar nombre, descripción y precio; queda oculto hasta tener precio."
+        }
+      ]
+    },
+    {
+      "slug": "pizzas",
+      "name": "Pizzas",
+      "description": "Pizzas de masa madre.",
+      "dishes": [
+        {
+          "slug": "pizza-queso",
+          "name": "Queso",
+          "description": "Queso mozzarella, salsa de tomate y aceitunas.",
+          "price": 30000,
+          "ingredients": [
+            "mozzarella",
+            "salsa de tomate",
+            "aceitunas"
+          ],
+          "review": "Precio del post de Instagram del 14/04/2023: confirmar vigencia."
+        },
+        {
+          "slug": "pizza-napolitana",
+          "name": "Napolitana",
+          "description": "Queso mozzarella con salsa de tomate, albahaca, rodajas de tomate, alioli y aceitunas.",
+          "price": 35000,
+          "ingredients": [
+            "mozzarella",
+            "salsa de tomate",
+            "albahaca",
+            "tomate",
+            "alioli",
+            "aceitunas"
+          ],
+          "review": "Precio del post de Instagram del 14/04/2023: confirmar vigencia."
+        },
+        {
+          "slug": "pizza-pepperoni",
+          "name": "Pepperoni",
+          "description": "Queso mozzarella con salsa de tomate, pepperoni artesanal y aceitunas.",
+          "price": 40000,
+          "ingredients": [
+            "mozzarella",
+            "salsa de tomate",
+            "pepperoni artesanal",
+            "aceitunas"
+          ],
+          "review": "Precio del post de Instagram del 14/04/2023: confirmar vigencia."
+        },
+        {
+          "slug": "pizza-palmito",
+          "name": "Palmito",
+          "description": "Queso mozzarella con salsa de tomate, palmito en cubos y aceitunas.",
+          "price": 35000,
+          "ingredients": [
+            "mozzarella",
+            "salsa de tomate",
+            "palmito",
+            "aceitunas"
+          ],
+          "review": "Precio del post de Instagram del 14/04/2023: confirmar vigencia."
+        },
+        {
+          "slug": "pizza-pollo-con-catupiry",
+          "name": "Pollo con catupiry",
+          "description": "Queso mozzarella con salsa de tomate y pollo grillado con catupiry.",
+          "price": 40000,
+          "ingredients": [
+            "mozzarella",
+            "salsa de tomate",
+            "pollo grillado",
+            "catupiry"
+          ],
+          "review": "Precio del post de Instagram del 14/04/2023: confirmar vigencia."
+        },
+        {
+          "slug": "pizza-panceta-y-cebolla",
+          "name": "Panceta y cebolla",
+          "description": "Salsa de tomate, mozzarella, cebolla salteada, panceta y aceitunas.",
+          "price": 40000,
+          "ingredients": [
+            "salsa de tomate",
+            "mozzarella",
+            "cebolla salteada",
+            "panceta",
+            "aceitunas"
+          ],
+          "review": "Precio del post de Instagram del 14/04/2023: confirmar vigencia."
+        },
+        {
+          "slug": "pizza-4-quesos",
+          "name": "4 quesos",
+          "description": "Salsa de tomate, mozzarella, cheddar, catupiry, roquefort y aceitunas.",
+          "price": 40000,
+          "ingredients": [
+            "salsa de tomate",
+            "mozzarella",
+            "cheddar",
+            "catupiry",
+            "roquefort",
+            "aceitunas"
+          ],
+          "review": "Precio del post de Instagram del 14/04/2023: confirmar vigencia."
+        },
+        {
+          "slug": "pizza-jamon-y-morrones",
+          "name": "Jamón y morrones",
+          "description": "Salsa de tomate, mozzarella, jamón picado, morrones y aceitunas.",
+          "price": 40000,
+          "ingredients": [
+            "salsa de tomate",
+            "mozzarella",
+            "jamón",
+            "morrones",
+            "aceitunas"
+          ],
+          "review": "Precio del post de Instagram del 14/04/2023: confirmar vigencia."
+        },
+        {
+          "slug": "pizza-especial-de-la-casa",
+          "name": "Especial de la casa",
+          "description": "Doble queso mozzarella con salsa de tomate, pesto rojo de tomates secos y aceitunas.",
+          "price": 45000,
+          "ingredients": [
+            "doble mozzarella",
+            "salsa de tomate",
+            "pesto rojo de tomates secos",
+            "aceitunas"
+          ],
+          "review": "Precio del post de Instagram del 14/04/2023: confirmar vigencia.",
+          "tags": [
+            "de la casa"
+          ]
+        },
+        {
+          "slug": "pizza-gringo",
+          "name": "Pizza Gringo",
+          "description": "La pizza que lleva el nombre de la casa: masa madre, salsa de tomate, mozzarella, salchicha ahumada picante, jalapeños en rodajas y aceitunas.",
+          "price": 50000,
+          "ingredients": [
+            "masa madre",
+            "salsa de tomate",
+            "mozzarella",
+            "salchicha ahumada picante",
+            "jalapeños",
+            "aceitunas"
+          ],
+          "tags": [
+            "destacado",
+            "picante"
+          ],
+          "photo": "pizza-gringo-demo",
+          "model": "pizza-gringo-demo.glb",
+          "modelNote": "Imagen y modelo 3D de demostración generados por computadora; no es la foto real del plato",
+          "review": "Precio del post de Instagram del 14/04/2023: confirmar vigencia. Foto y modelo 3D son de DEMOSTRACIÓN (render): reemplazar por foto/escaneo real."
+        }
+      ]
+    },
+    {
+      "slug": "lomitos",
+      "name": "Lomitos",
+      "dishes": [
+        {
+          "slug": "lomito-gringo",
+          "name": "Lomito Gringo",
+          "description": "Lomito de carne, jamón, queso, huevo, lechuga y tomate en pan árabe.",
+          "price": null,
+          "status": "draft",
+          "review": "Contenido generado: Gringo Bar ofrece esta categoría (story «Gringo Eventos»), pero no tenemos la carta. Completar nombre, descripción y precio; queda oculto hasta tener precio."
+        }
+      ]
+    },
+    {
+      "slug": "sandwiches",
+      "name": "Sandwiches",
+      "dishes": [
+        {
+          "slug": "sandwich-de-milanesa",
+          "name": "Sándwich de milanesa",
+          "description": "Milanesa de carne, lechuga, tomate y mayonesa.",
+          "price": null,
+          "status": "draft",
+          "review": "Contenido generado: Gringo Bar ofrece esta categoría (story «Gringo Eventos»), pero no tenemos la carta. Completar nombre, descripción y precio; queda oculto hasta tener precio."
+        }
+      ]
+    },
+    {
+      "slug": "tragos",
+      "name": "Tragos",
+      "description": "Se sirven en vaso de 500–600 ml o de 700 ml.",
+      "dishes": [
+        {
+          "slug": "duende-verde",
+          "name": "Duende verde",
+          "price": 30000,
+          "review": "Precio de la story «Gringo menú» del 20/08/2025."
+        },
+        {
+          "slug": "daikiri",
+          "name": "Daikiri",
+          "price": 30000,
+          "options": [
+            {
+              "group": "Sabor",
+              "multiple": false,
+              "choices": [
+                "Frutilla",
+                "Piña",
+                "Durazno"
+              ]
+            }
+          ],
+          "review": "Precio de la story «Gringo menú» del 20/08/2025."
+        },
+        {
+          "slug": "caipirina",
+          "name": "Caipiriña",
+          "description": "Vaso de 500 ml. En vaso de 700 ml: 30.000 Gs.",
+          "price": 20000,
+          "review": "Precio de la story «Gringo menú» del 20/08/2025."
+        },
+        {
+          "slug": "sangria",
+          "name": "Sangría",
+          "description": "Vaso de 500 ml. En vaso de 700 ml: 30.000 Gs.",
+          "price": 20000,
+          "review": "Precio de la story «Gringo menú» del 20/08/2025."
+        },
+        {
+          "slug": "caipiroska",
+          "name": "Caipiroska",
+          "description": "Vaso de 500 ml. En vaso de 700 ml: 30.000 Gs.",
+          "price": 20000,
+          "review": "Precio de la story «Gringo menú» del 20/08/2025."
+        },
+        {
+          "slug": "caipiruva",
+          "name": "Caipiruva",
+          "description": "Vaso de 500 ml. En vaso de 700 ml: 30.000 Gs.",
+          "price": 20000,
+          "review": "Precio de la story «Gringo menú» del 20/08/2025."
+        },
+        {
+          "slug": "capicoco",
+          "name": "Capicoco",
+          "description": "Vaso de 500 ml. En vaso de 700 ml: 30.000 Gs.",
+          "price": 20000,
+          "review": "Precio de la story «Gringo menú» del 20/08/2025."
+        },
+        {
+          "slug": "capimburucuya",
+          "name": "Capimburucuya",
+          "description": "Vaso de 500 ml. En vaso de 700 ml: 30.000 Gs.",
+          "price": 20000,
+          "review": "Precio de la story «Gringo menú» del 20/08/2025."
+        },
+        {
+          "slug": "cuba-libre",
+          "name": "Cuba libre",
+          "description": "Vaso de 500 ml. En vaso de 700 ml: 30.000 Gs.",
+          "price": 20000,
+          "review": "Precio de la story «Gringo menú» del 20/08/2025."
+        },
+        {
+          "slug": "destornillador",
+          "name": "Destornillador",
+          "description": "Vaso de 500 ml. En vaso de 700 ml: 30.000 Gs.",
+          "price": 20000,
+          "review": "Precio de la story «Gringo menú» del 20/08/2025."
+        },
+        {
+          "slug": "mojito",
+          "name": "Mojito",
+          "description": "Vaso de 500 ml. En vaso de 700 ml: 30.000 Gs.",
+          "price": 20000,
+          "review": "Precio de la story «Gringo menú» del 20/08/2025."
+        },
+        {
+          "slug": "fernet",
+          "name": "Fernet",
+          "description": "Vaso de 500 ml. En vaso de 700 ml: 30.000 Gs.",
+          "price": 20000,
+          "review": "Precio de la story «Gringo menú» del 20/08/2025."
+        },
+        {
+          "slug": "ferroviario",
+          "name": "Ferroviario",
+          "description": "Vaso de 500 ml. En vaso de 700 ml: 30.000 Gs.",
+          "price": 20000,
+          "review": "Precio de la story «Gringo menú» del 20/08/2025."
+        },
+        {
+          "slug": "gintonic",
+          "name": "Gintonic",
+          "description": "Vaso de 500 ml. En vaso de 700 ml: 30.000 Gs.",
+          "price": 20000,
+          "review": "Precio de la story «Gringo menú» del 20/08/2025."
+        },
+        {
+          "slug": "pina-colada",
+          "name": "Piña colada",
+          "description": "Vaso de 500 ml. En vaso de 700 ml: 30.000 Gs.",
+          "price": 20000,
+          "review": "Precio de la story «Gringo menú» del 20/08/2025."
+        },
+        {
+          "slug": "pantera-rosa",
+          "name": "Pantera rosa",
+          "description": "Vaso de 500 ml. En vaso de 700 ml: 30.000 Gs.",
+          "price": 20000,
+          "review": "Precio de la story «Gringo menú» del 20/08/2025."
+        },
+        {
+          "slug": "orgasmo-de-pitufo",
+          "name": "Orgasmo de pitufo",
+          "description": "Vaso de 500 ml. En vaso de 700 ml: 30.000 Gs.",
+          "price": 20000,
+          "review": "Precio de la story «Gringo menú» del 20/08/2025."
+        },
+        {
+          "slug": "tequila-sunrise",
+          "name": "Tequila sunrise",
+          "description": "Vaso de 500 ml. En vaso de 700 ml: 30.000 Gs.",
+          "price": 20000,
+          "review": "Precio de la story «Gringo menú» del 20/08/2025."
+        },
+        {
+          "slug": "sex-on-the-beach",
+          "name": "Sex on the beach",
+          "description": "Vaso de 500 ml. En vaso de 700 ml: 30.000 Gs.",
+          "price": 20000,
+          "review": "Precio de la story «Gringo menú» del 20/08/2025."
+        },
+        {
+          "slug": "vermu-tonic-cola",
+          "name": "Vermú tonic / cola",
+          "description": "Vaso de 500 ml. En vaso de 700 ml: 30.000 Gs.",
+          "price": 20000,
+          "review": "Precio de la story «Gringo menú» del 20/08/2025."
+        },
+        {
+          "slug": "tinto-de-verano",
+          "name": "Tinto de verano",
+          "description": "Vaso de 500 ml. En vaso de 700 ml: 30.000 Gs.",
+          "price": 20000,
+          "review": "Precio de la story «Gringo menú» del 20/08/2025."
+        },
+        {
+          "slug": "whiscola",
+          "name": "Whiscola",
+          "description": "Vaso de 600 ml. En vaso de 700 ml: 40.000 Gs.",
+          "price": 30000,
+          "review": "Precio de la story «Gringo menú» del 20/08/2025."
+        },
+        {
+          "slug": "whistonic",
+          "name": "Whistonic",
+          "description": "Vaso de 600 ml. En vaso de 700 ml: 40.000 Gs.",
+          "price": 30000,
+          "review": "Precio de la story «Gringo menú» del 20/08/2025."
+        },
+        {
+          "slug": "whisky-sour",
+          "name": "Whisky sour",
+          "description": "Vaso de 600 ml. En vaso de 700 ml: 40.000 Gs.",
+          "price": 30000,
+          "review": "Precio de la story «Gringo menú» del 20/08/2025."
+        },
+        {
+          "slug": "aperol",
+          "name": "Aperol",
+          "description": "Vaso de 600 ml. En vaso de 700 ml: 40.000 Gs.",
+          "price": 30000,
+          "review": "Precio de la story «Gringo menú» del 20/08/2025."
+        },
+        {
+          "slug": "negroni",
+          "name": "Negroni",
+          "description": "Vaso de 600 ml. En vaso de 700 ml: 40.000 Gs.",
+          "price": 30000,
+          "review": "Precio de la story «Gringo menú» del 20/08/2025."
+        },
+        {
+          "slug": "pinktonic",
+          "name": "Pinktonic",
+          "description": "Vaso de 600 ml. En vaso de 700 ml: 40.000 Gs.",
+          "price": 30000,
+          "review": "Precio de la story «Gringo menú» del 20/08/2025."
+        },
+        {
+          "slug": "freshtonic",
+          "name": "Freshtonic",
+          "description": "Vaso de 600 ml. En vaso de 700 ml: 40.000 Gs.",
+          "price": 30000,
+          "review": "Precio de la story «Gringo menú» del 20/08/2025."
+        },
+        {
+          "slug": "jaggercola",
+          "name": "Jaggercola",
+          "description": "Vaso de 600 ml. En vaso de 700 ml: 40.000 Gs.",
+          "price": 30000,
+          "review": "Precio de la story «Gringo menú» del 20/08/2025."
+        },
+        {
+          "slug": "sexred",
+          "name": "Sexred",
+          "description": "Vaso de 600 ml. En vaso de 700 ml: 40.000 Gs.",
+          "price": 30000,
+          "review": "Precio de la story «Gringo menú» del 20/08/2025."
+        },
+        {
+          "slug": "fernet-jaggercola",
+          "name": "Fernet Jaggercola",
+          "description": "Vaso de 600 ml. En vaso de 700 ml: 50.000 Gs.",
+          "price": 40000,
+          "review": "Precio de la story «Gringo menú» del 20/08/2025."
+        }
+      ]
+    },
+    {
+      "slug": "shots",
+      "name": "Shots",
+      "dishes": [
+        {
+          "slug": "shot-whisky",
+          "name": "Whisky",
+          "price": 30000,
+          "review": "Precio de la story «Gringo menú» del 20/08/2025."
+        },
+        {
+          "slug": "shot-jagger",
+          "name": "Jagger",
+          "price": 30000,
+          "review": "Precio de la story «Gringo menú» del 20/08/2025."
+        },
+        {
+          "slug": "shot-tequila",
+          "name": "Tequila",
+          "price": 20000,
+          "review": "Precio de la story «Gringo menú» del 20/08/2025."
+        },
+        {
+          "slug": "shot-vodka",
+          "name": "Vodka",
+          "price": 20000,
+          "review": "Precio de la story «Gringo menú» del 20/08/2025."
+        },
+        {
+          "slug": "shot-ron",
+          "name": "Ron",
+          "price": 20000,
+          "review": "Precio de la story «Gringo menú» del 20/08/2025."
+        }
+      ]
+    },
+    {
+      "slug": "cervezas",
+      "name": "Cervezas",
+      "dishes": [
+        {
+          "slug": "chop-munich-330-ml",
+          "name": "Chop Munich 330 ml",
+          "price": 10000,
+          "review": "Precio de la story «Gringo menú» del 20/08/2025."
+        },
+        {
+          "slug": "chop-munich-500-ml",
+          "name": "Chop Munich 500 ml",
+          "price": 15000,
+          "review": "Precio de la story «Gringo menú» del 20/08/2025."
+        },
+        {
+          "slug": "munich-600-ml",
+          "name": "Munich 600 ml",
+          "price": 15000,
+          "review": "Precio de la story «Gringo menú» del 20/08/2025."
+        },
+        {
+          "slug": "pilsen-750-ml",
+          "name": "Pilsen 750 ml",
+          "price": 15000,
+          "review": "Precio de la story «Gringo menú» del 20/08/2025."
+        },
+        {
+          "slug": "heineken-750-ml",
+          "name": "Heineken 750 ml",
+          "price": 25000,
+          "review": "Precio de la story «Gringo menú» del 20/08/2025."
+        },
+        {
+          "slug": "corona-750-ml",
+          "name": "Corona 750 ml",
+          "price": 25000,
+          "review": "Precio de la story «Gringo menú» del 20/08/2025."
+        }
+      ]
+    },
+    {
+      "slug": "jugos-naturales",
+      "name": "Jugos naturales",
+      "description": "Precio por vaso. En jarra: 60.000 Gs.",
+      "dishes": [
+        {
+          "slug": "jugo-durazno",
+          "name": "Durazno",
+          "price": 20000,
+          "tags": [
+            "sin alcohol"
+          ],
+          "review": "Precio de la story «Gringo menú» del 20/08/2025."
+        },
+        {
+          "slug": "jugo-naranja",
+          "name": "Naranja",
+          "price": 20000,
+          "tags": [
+            "sin alcohol"
+          ],
+          "review": "Precio de la story «Gringo menú» del 20/08/2025."
+        },
+        {
+          "slug": "jugo-pina",
+          "name": "Piña",
+          "price": 20000,
+          "tags": [
+            "sin alcohol"
+          ],
+          "review": "Precio de la story «Gringo menú» del 20/08/2025."
+        },
+        {
+          "slug": "jugo-limonada",
+          "name": "Limonada",
+          "price": 20000,
+          "tags": [
+            "sin alcohol"
+          ],
+          "review": "Precio de la story «Gringo menú» del 20/08/2025."
+        },
+        {
+          "slug": "jugo-tutifruti",
+          "name": "Tutifruti",
+          "price": 30000,
+          "tags": [
+            "sin alcohol"
+          ],
+          "review": "Precio de la story «Gringo menú» del 20/08/2025."
+        }
+      ]
+    },
+    {
+      "slug": "sin-alcohol",
+      "name": "Sin alcohol",
+      "dishes": [
+        {
+          "slug": "agua",
+          "name": "Agua",
+          "price": 5000,
+          "tags": [
+            "sin alcohol"
+          ],
+          "review": "Precio de la story «Gringo menú» del 20/08/2025."
+        },
+        {
+          "slug": "agua-con-gas",
+          "name": "Agua con gas",
+          "price": 5000,
+          "tags": [
+            "sin alcohol"
+          ],
+          "review": "Precio de la story «Gringo menú» del 20/08/2025."
+        },
+        {
+          "slug": "coca-cola-250-ml",
+          "name": "Coca-Cola 250 ml",
+          "price": 5000,
+          "tags": [
+            "sin alcohol"
+          ],
+          "review": "Precio de la story «Gringo menú» del 20/08/2025."
+        },
+        {
+          "slug": "coca-cola-500-ml",
+          "name": "Coca-Cola 500 ml",
+          "price": 10000,
+          "tags": [
+            "sin alcohol"
+          ],
+          "review": "Precio de la story «Gringo menú» del 20/08/2025."
+        },
+        {
+          "slug": "coca-cola-1-l",
+          "name": "Coca-Cola 1 L",
+          "price": 12000,
+          "tags": [
+            "sin alcohol"
+          ],
+          "review": "Precio de la story «Gringo menú» del 20/08/2025."
+        },
+        {
+          "slug": "coca-cola-1-5-l",
+          "name": "Coca-Cola 1,5 L",
+          "price": 18000,
+          "tags": [
+            "sin alcohol"
+          ],
+          "review": "Precio de la story «Gringo menú» del 20/08/2025."
+        }
+      ]
+    }
+  ]
+}

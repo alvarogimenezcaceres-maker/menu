@@ -64,6 +64,7 @@ El panel (Payload CMS) corre en tu notebook y publica en GitHub Pages con un bot
 - **Usuarios y claves:** `.local/credenciales.txt` (no se sube al repo).
   - `admin@menu3d.local`: ve todos los restaurantes y puede crear nuevos.
   - `filigrana@menu3d.local`: el personal de Filigrana; solo ve su restaurante.
+  - `gringo-bar@menu3d.local`: el personal de Gringo Bar; solo ve su restaurante.
 - **Flujo:** editar platos o precios → *Guardar* → Restaurantes → Filigrana → **Publicar ahora**. En 1–2 minutos se ve en el QR.
 - **Datos:** base PostgreSQL propia en `.local/pgdata` (puerto 55433); fotos y modelos en `apps/web/media/`.
 - **Cargar otro restaurante** desde un `seed/<slug>/menu.json`: `cd apps/web && npm run seed -- <slug>`.

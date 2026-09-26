@@ -9,3 +9,6 @@ negocio/
 
 # Local dev database and secrets
 .local/
+
+# Raw source material from restaurants (screenshots, photos; data already extracted to seed/<slug>/)
+gringodatos/
