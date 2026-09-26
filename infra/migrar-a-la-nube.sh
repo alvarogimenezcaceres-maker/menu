@@ -12,15 +12,12 @@ LOCAL_URL=$(grep '^DATABASE_URL=' apps/web/.env | cut -d= -f2-)
 DUMP=".local/mudanza-neon.backup"
 
 SECRETS=".local/nube.env"
-if [ -f "$SECRETS" ] && grep -q '^NEON_URL=.' "$SECRETS"; then
-  # read, don't source: the URL has & and ? in it; Notepad adds \r
-  NEON_URL=$(grep -m1 '^NEON_URL=' "$SECRETS" | cut -d= -f2- | tr -d '\r')
-  UT_TOKEN=$(grep -m1 '^UPLOADTHING_TOKEN=' "$SECRETS" | cut -d= -f2- | tr -d '\r')
-  echo "→ Usando las claves de $SECRETS"
-else
-  read -rsp "Pegá la conexión de Neon (postgresql://...) y Enter: " NEON_URL; echo
-  read -rsp "Pegá el token de UploadThing y Enter: " UT_TOKEN; echo
-fi
+# each value comes from .local/nube.env when it is filled in there (Notepad), otherwise it is asked for
+fromfile() { [ -f "$SECRETS" ] && grep -m1 "^$1=" "$SECRETS" | cut -d= -f2- | tr -d '' || true; }
+NEON_URL=$(fromfile NEON_URL)
+UT_TOKEN=$(fromfile UPLOADTHING_TOKEN)
+[ -n "$NEON_URL" ] && echo "→ Conexión de Neon: tomada de $SECRETS" || { read -rsp "Pegá la conexión de Neon (postgresql://...) y Enter: " NEON_URL; echo; }
+[ -n "$UT_TOKEN" ] && echo "→ Token de UploadThing: tomado de $SECRETS" || { read -rsp "Pegá el token de UploadThing y Enter: " UT_TOKEN; echo; }
 
 # accept what the dashboards' copy buttons give: psql '...', UPLOADTHING_TOKEN='...', quotes
 NEON_URL=$(printf '%s' "$NEON_URL" | sed -E "s/^[[:space:]]*psql[[:space:]]+//; s/^[\"']//; s/[\"'][[:space:]]*$//")
@@ -30,25 +27,34 @@ case "$NEON_URL" in *\?*) ;; *) NEON_URL="${NEON_URL/&/?}" ;; esac
 UT_TOKEN=$(printf '%s' "$UT_TOKEN" | sed -E "s/^[[:space:]]*(UPLOADTHING_TOKEN=)+//; s/^[\"']//; s/[\"'][[:space:]]*$//")
 case "$NEON_URL" in postgres://*|postgresql://*) ;; *) echo "Eso no parece una conexión de Neon: tiene que empezar con postgresql:// y llegó \"${NEON_URL:0:12}…\" (${#NEON_URL} caracteres)."; exit 1 ;; esac
 [ -n "$UT_TOKEN" ] || { echo "Falta el token de UploadThing."; exit 1; }
-
-echo "→ Revisando que la base de Neon esté vacía…"
-tables=$("$PG/psql" "$NEON_URL" -Atc "select count(*) from information_schema.tables where table_schema = 'public'")
-if [ "$tables" != "0" ]; then
-  echo "La base de Neon ya tiene $tables tablas. Frené para no pisar nada."
+# the v7 token is base64 JSON with apiKey/appId/regions; the sk_live_ key alone is not enough
+case "$UT_TOKEN" in sk_live_*) echo "Ese es la Secret Key (sk_live_…). Hace falta el token de la pestaña «SDK v7+» (empieza con eyJ)."; exit 1 ;; esac
+if ! { printf '%s' "$UT_TOKEN" | base64 -d 2>/dev/null || true; } | grep -q '"apiKey"'; then
+  echo "El token de UploadThing no es válido: llegó \"${UT_TOKEN:0:6}…\" (${#UT_TOKEN} caracteres). Tiene que empezar con eyJ."
   exit 1
 fi
 
-echo "→ Copiando la base local a Neon…"
-"$PG/pg_dump" "$LOCAL_URL" --format=custom --no-owner --no-acl --file="$DUMP"
-"$PG/pg_restore" --no-owner --no-acl --exit-on-error --dbname="$NEON_URL" "$DUMP"
-rm -f "$DUMP"
+echo "→ Revisando la base de Neon…"
+tables=$("$PG/psql" "$NEON_URL" -Atc "select count(*) from information_schema.tables where table_schema = 'public'")
+copied=$("$PG/psql" "$NEON_URL" -Atc "select count(*) from payload_migrations where name = '20260926_165334_initial'" 2>/dev/null || echo 0)
+if [ "$copied" = "1" ]; then
+  echo "  La base ya se había copiado en una corrida anterior: sigo con los archivos."
+elif [ "$tables" != "0" ]; then
+  echo "La base de Neon ya tiene $tables tablas. Frené para no pisar nada."
+  exit 1
+else
+  echo "→ Copiando la base local a Neon…"
+  "$PG/pg_dump" "$LOCAL_URL" --format=custom --no-owner --no-acl --file="$DUMP"
+  "$PG/pg_restore" --no-owner --no-acl --exit-on-error --dbname="$NEON_URL" "$DUMP"
+  rm -f "$DUMP"
 
-# the local DB was built in dev mode; mark the baseline migration as applied so production
-# only runs the ones after it (UploadThing columns)
-"$PG/psql" "$NEON_URL" -v ON_ERROR_STOP=1 -qc "
-  delete from payload_migrations where name = 'dev';
-  insert into payload_migrations (name, batch, updated_at, created_at)
-  values ('20260926_165334_initial', 1, now(), now());"
+  # the local DB was built in dev mode; mark the baseline migration as applied so production
+  # only runs the ones after it (UploadThing columns)
+  "$PG/psql" "$NEON_URL" -v ON_ERROR_STOP=1 -qc "
+    delete from payload_migrations where name = 'dev';
+    insert into payload_migrations (name, batch, updated_at, created_at)
+    values ('20260926_165334_initial', 1, now(), now());"
+fi
 
 echo "→ Subiendo fotos y modelos 3D a UploadThing…"
 cd apps/web
