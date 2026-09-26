@@ -1,7 +1,8 @@
 import type { Endpoint, PayloadRequest } from 'payload'
 
-import type { Dish, Scan, ScanPhoto } from '../payload-types'
+import type { Dish, Media, Scan, ScanPhoto } from '../payload-types'
 import { commitJobFile } from './job-file'
+import { deleteMediaIfUnused } from './media-cleanup'
 import { verifyWorkerSignature } from './signature'
 
 export const MIN_PHOTOS = 30
@@ -116,10 +117,14 @@ type FinishBody = {
 
 const isGlb = (b: Buffer) => b.length > 12 && b.toString('ascii', 0, 4) === 'glTF'
 const isPng = (b: Buffer) => b.length > 8 && b.readUInt32BE(0) === 0x89504e47
+// posters this endpoint names `${slug}-3d-${scanId}.png` (Payload may append -1, -2… on clashes)
+const isScanPoster = (m: Dish['photo']) =>
+  typeof m === 'object' && !!m && /-3d-\d+(-\d+)?\.png$/.test((m as Media).filename ?? '')
 
 /**
- * Worker step 2: attaches the GLB as the dish model (and the poster as its photo when it has none),
- * then deletes the scan photos from storage. A failure inside the panel answers 500 without touching
+ * Worker step 2: attaches the GLB as the dish model (and the poster as its photo when it has none or
+ * only an earlier scan's poster), deletes the replaced files nothing else uses, then deletes the scan
+ * photos from storage. A failure inside the panel answers 500 without touching
  * the scan, so the worker retries and, if it still fails, reports the job as failed.
  */
 export const workerFinishEndpoint: Endpoint = {
@@ -140,7 +145,7 @@ export const workerFinishEndpoint: Endpoint = {
       const poster = Buffer.from(body.poster ?? '', 'base64')
       if (!isGlb(glb)) return Response.json({ message: 'model is not a GLB' }, { status: 400 })
       try {
-        const dish = (await req.payload.findByID({ collection: 'dishes', id: idOf(scan.dish)!, depth: 0, overrideAccess: true })) as Dish
+        const dish = (await req.payload.findByID({ collection: 'dishes', id: idOf(scan.dish)!, depth: 1, overrideAccess: true })) as Dish
         const tenant = idOf(scan.tenant)
         const model = await req.payload.create({
           collection: 'media',
@@ -149,8 +154,9 @@ export const workerFinishEndpoint: Endpoint = {
           overrideAccess: true,
           depth: 0,
         })
+        // a photo someone uploaded stays; a poster from an earlier scan is replaced by the new one
         let photo: number | undefined
-        if (!dish.photo && isPng(poster)) {
+        if ((!dish.photo || isScanPoster(dish.photo)) && isPng(poster)) {
           const doc = await req.payload.create({
             collection: 'media',
             data: { alt: dish.name, tenant },
@@ -167,6 +173,9 @@ export const workerFinishEndpoint: Endpoint = {
           overrideAccess: true,
           depth: 0,
         })
+        // the replaced model (and poster) would otherwise stay in UploadThing's 2 GB for good
+        await deleteMediaIfUnused(req.payload, idOf(dish.model))
+        if (photo) await deleteMediaIfUnused(req.payload, idOf(dish.photo))
       } catch (e) {
         req.payload.logger.error({ err: e }, 'scan finish: attaching the model failed')
         return Response.json({ message: 'could not attach the model' }, { status: 500 })
