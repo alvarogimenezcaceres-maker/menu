@@ -8,7 +8,7 @@ Sources (gringodatos/, not in the repo):
 
 Outputs (idempotent, deterministic UUIDs):
   images/logo-blanco.png          circular badge, white on transparent (from the Eventos story)
-  images/burguer-de-la-casa.png   house burger, cropped and feathered to transparent
+  images/burguer-de-la-casa.png   house burger, cropped and feathered to transparent (dish photo)
   images/pizza-gringo-demo.png    trimmed (rendered by make_models.py; placeholder)
   seed.sql                        INSERTs for db/schema.sql (tenant, restaurant, categories, dishes, media)
 
@@ -132,7 +132,7 @@ def build_sql(m: dict, meta: dict) -> str:
     out.append(
         "INSERT INTO restaurants (id, tenant_id, name, slug, description, logo_id, cover_id, currency, default_locale, theme, status) VALUES "
         f"({q(r_id)}, {q(t_id)}, {q(r['name'])}, {q(r['slug'])}, {q(r['description'])}, {q(media_id[r['logo']])}, "
-        f"{q(media_id[r['hero']])}, {q(r['currency'])}, {q(r['default_locale'])}, {qj(r['theme'])}, 'draft') ON CONFLICT (id) DO NOTHING;"
+        f"{q(media_id.get(r.get('hero')))}, {q(r['currency'])}, {q(r['default_locale'])}, {qj(r['theme'])}, 'draft') ON CONFLICT (id) DO NOTHING;"
     )
     for ci, c in enumerate(m["categories"]):
         c_id = uid("category", r["slug"], c["slug"])

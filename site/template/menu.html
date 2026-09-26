@@ -11,7 +11,7 @@
 <meta property="og:title" content="{{NAME}} · Menú">
 <meta property="og:description" content="{{DESCRIPTION}}">
 <meta property="og:url" content="{{URL}}">
-<meta property="og:image" content="{{URL}}img/{{HERO}}.webp">
+<meta property="og:image" content="{{URL}}img/{{OG_IMAGE}}.webp">
 <link rel="icon" href="img/{{LOGO}}-360.webp">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -163,6 +163,12 @@
   .hero { isolation: isolate; border: 1px solid rgba(255,185,67,.16); box-shadow: 0 30px 60px -34px rgba(237,157,21,.35), inset 0 1px 0 rgba(255,255,255,.05); }
   .hero::after { content: ""; position: absolute; right: 2%; bottom: 4%; width: 50%; height: 20%; z-index: -1; background: radial-gradient(closest-side, rgba(237,157,21,.5), transparent); filter: blur(12px); }
   .motion .hero .dish { animation: float 6s ease-in-out infinite; }
+  /* sin plato de portada: el logo al centro */
+  .hero:not(:has(.dish)) { grid-template-columns: minmax(0, 1fr); min-height: 0; }
+  .hero:not(:has(.dish)) .brand { justify-items: center; text-align: center; }
+  .hero:not(:has(.dish)) .logo { width: 190px; }
+  .hero:not(:has(.dish)) p { max-width: 30ch; }
+  .hero:not(:has(.dish))::after { right: 25%; bottom: auto; top: 30%; height: 40%; opacity: .5; }
   @keyframes float { 50% { transform: translateY(-9px) rotate(-1.5deg); } }
 
   .toolbar {
@@ -265,6 +271,20 @@
   .sel-total { display: flex; justify-content: space-between; align-items: baseline; margin-top: 16px; font: 700 20px/1 var(--display); }
   .sel-total .price { font-size: 22px; }
   .sel-hint { margin: 14px 0 0; padding: 12px 14px; border-radius: 12px; background: var(--raised); color: #d6cfc4; font-size: 14.5px; }
+  .order { display: grid; gap: 10px; margin-top: 16px; }
+  .order .ar-btn { margin-top: 0; text-decoration: none; }
+  .order .sel-btn { margin-top: 0; text-decoration: none; }
+  .order svg { width: 20px; height: 20px; flex: none; }
+  .waiter { position: fixed; inset: 0; z-index: 40; overflow-y: auto; background: var(--ink); padding: calc(24px + env(safe-area-inset-top, 0px)) 22px calc(28px + env(safe-area-inset-bottom, 0px)); display: grid; align-content: start; gap: 6px; }
+  .waiter[hidden] { display: none; }
+  .waiter .who { font: 600 14px/1 var(--display); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  .waiter .mesa { font: 700 44px/1.05 var(--display); color: var(--amber); margin: 4px 0 10px; }
+  .waiter ul { list-style: none; margin: 0; padding: 0; }
+  .waiter li { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 14px; align-items: baseline; padding: 14px 0; border-bottom: 1px solid var(--line); font: 600 24px/1.2 var(--display); }
+  .waiter li b { color: var(--amber); font-variant-numeric: tabular-nums; min-width: 2.2ch; }
+  .waiter .tot { display: flex; justify-content: space-between; align-items: baseline; margin-top: 16px; font: 700 26px/1 var(--display); }
+  .waiter .done { margin-top: 26px; }
+  .waiter .tot .price { font-size: 30px; }
   .sel-clear { margin-top: 12px; min-height: 44px; background: none; border: 0; color: var(--muted); text-decoration: underline; cursor: pointer; font-size: 14px; }
 </style>
 </head>
@@ -280,7 +300,7 @@
         <span id="tableLabel"></span>
       </span>
     </div>
-    <img class="dish" src="img/{{HERO}}-720.webp" alt="" fetchpriority="high">
+    {{HERO_IMG}}
   </header>
 
   <div class="toolbar" id="toolbar">
@@ -326,6 +346,7 @@
   <h2 id="selTitle" class="sheet-title">Mi selección</h2>
   <div id="selBody"></div>
 </div>
+<div class="waiter" id="waiter" role="dialog" aria-modal="true" aria-labelledby="waiterTitle" hidden></div>
 <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" hidden>
   <div class="grip" aria-hidden="true"></div>
   <button class="close" id="closeSheet" type="button" aria-label="Cerrar">×</button>
@@ -339,6 +360,8 @@
 
 <script>
 const DATA = {{DATA}};
+const RESTAURANT = {{NAME_JSON}};
+const WHATSAPP = "{{WHATSAPP}}"; // solo dígitos, con código de país; vacío = sin botón
 
 const $ = (s, el = document) => el.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -413,7 +436,7 @@ addEventListener("scroll", () => {
     setCurrent(cur || DATA.categories[0].slug);
     const max = document.documentElement.scrollHeight - innerHeight;
     $("#toolbar").style.setProperty("--p", max > 0 ? Math.min(1, scrollY / max).toFixed(3) : 0);
-    if (!REDUCED) heroDish.style.translate = "0 " + Math.min(scrollY, 320) * 0.14 + "px";
+    if (!REDUCED && heroDish) heroDish.style.translate = "0 " + Math.min(scrollY, 320) * 0.14 + "px";
   });
 }, { passive: true });
 setCurrent(DATA.categories[0].slug);
@@ -583,7 +606,7 @@ swipeToClose(sheet, closeDish);
 menuEl.addEventListener("click", e => { const b = e.target.closest("[data-dish]"); if (b) openDish(b.dataset.dish); });
 scrim.addEventListener("click", () => (selSheet.hidden ? closeDish() : closeSel()));
 $("#closeSheet").addEventListener("click", closeDish);
-addEventListener("keydown", e => { if (e.key !== "Escape") return; if (!sheet.hidden) closeDish(); else if (!selSheet.hidden) closeSel(); });
+addEventListener("keydown", e => { if (e.key !== "Escape") return; if (!waiterEl.hidden) closeWaiter(); else if (!sheet.hidden) closeDish(); else if (!selSheet.hidden) closeSel(); });
 
 /* ---------- Mi selección (se guarda en este celular) ---------- */
 const selbar = $("#selbar"), selSheet = $("#selSheet"), live = $("#live");
@@ -645,11 +668,40 @@ function renderSelPanel() {
         </div>
       </li>`; }).join("")}</ul>
     <div class="sel-total"><span>Total</span>${fmt(selTotal())}</div>
-    <p class="sel-hint">Mostrale esta lista al mozo para hacer tu pedido. Queda guardada en este celular.</p>
+    <div class="order">${orderButtons()}</div>
+    <p class="sel-hint">${table ? "Estás en el local: mostrale el pedido al mozo." : WHATSAPP ? "Mandá el pedido por WhatsApp al local, o mostráselo al mozo si estás ahí." : "Mostrale el pedido al mozo."} La lista queda guardada en este celular.</p>
     <button class="sel-clear" type="button" id="selClear">Vaciar la selección</button>`
     : `<p class="sel-hint">Todavía no agregaste platos. Tocá el corazón de cualquier plato para sumarlo acá.</p>`;
 }
+/* ---------- Pedido: por WhatsApp al local o en pantalla para el mozo ---------- */
+const WA_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20.5 11.6a8.5 8.5 0 0 1-12.6 7.5L3.5 20.5l1.4-4.2a8.5 8.5 0 1 1 15.6-4.7Z"/><path d="M9 8.5c0 3.5 2.9 6.5 6.5 6.5l1-1.6-2-1-1 .8a4.5 4.5 0 0 1-2.4-2.4l.8-1-1-2L9.3 8Z" fill="currentColor" stroke="none"/></svg>';
+const WAITER_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="5" y="2.5" width="14" height="19" rx="3"/><path d="M9 7h6M9 11h6M9 15h3"/></svg>';
+function orderText() {
+  const lines = Object.entries(sel).map(([k, n]) => `• ${n} × ${bySlug[k].name} — ${plain(bySlug[k].price * n)}`);
+  return [`¡Hola ${RESTAURANT}! Quiero hacer este pedido:`, "", ...lines, "", `*Total: ${plain(selTotal())}*`,
+    ...(table ? [`Mesa ${table}`] : ["", "Nombre: ", "¿Delivery o pick up?: ", "Dirección (si es delivery): "])].join("\n");
+}
+function orderButtons() {
+  const wa = WHATSAPP ? `<a class="${table ? "sel-btn" : "ar-btn"}" id="waBtn" href="https://wa.me/${WHATSAPP}?text=${encodeURIComponent(orderText())}" target="_blank" rel="noopener">${WA_ICON}Enviar pedido por WhatsApp</a>` : "";
+  const waiter = `<button class="${table || !WHATSAPP ? "ar-btn" : "sel-btn"}" type="button" id="waiterBtn">${WAITER_ICON}Mostrar al mozo</button>`;
+  return table ? waiter + wa : wa + waiter;
+}
+const waiterEl = $("#waiter");
+function openWaiter() {
+  waiterEl.innerHTML = `
+    <span class="who">${esc(RESTAURANT)} · Pedido</span>
+    <h2 class="mesa" id="waiterTitle">${table ? "Mesa " + esc(table) : "Mi pedido"}</h2>
+    <ul>${Object.entries(sel).map(([k, n]) => `<li><b>${n}×</b><span>${esc(bySlug[k].name)}</span></li>`).join("")}</ul>
+    <div class="tot"><span>Total</span>${fmt(selTotal())}</div>
+    <button class="ar-btn done" type="button" id="waiterDone">Listo</button>`;
+  waiterEl.hidden = false;
+  $("#waiterDone").focus({ preventScroll: true });
+}
+function closeWaiter() { waiterEl.hidden = true; $("#waiterBtn")?.focus({ preventScroll: true }); }
+waiterEl.addEventListener("click", e => { if (e.target.id === "waiterDone") closeWaiter(); });
+
 $("#selBody").addEventListener("click", e => {
+  if (e.target.closest("#waiterBtn")) { openWaiter(); return; }
   const q = e.target.closest("[data-q]"), o = e.target.closest("[data-open]");
   if (q) setQty(q.dataset.q, (sel[q.dataset.q] || 0) + Number(q.dataset.d));
   else if (o) { hideSel(true); openDish(o.dataset.open); }

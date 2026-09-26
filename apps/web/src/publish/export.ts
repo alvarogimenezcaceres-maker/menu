@@ -59,6 +59,7 @@ export async function exportRestaurant(payload: Payload, restaurantId: number | 
       logo: image(r.logo),
       hero: image(r.hero),
       tables: r.tables ?? 0,
+      whatsapp: r.whatsapp || undefined,
       cuisine: r.cuisine ?? [],
       theme: {
         primary: r.theme?.primary,

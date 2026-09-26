@@ -147,6 +147,10 @@ export interface Restaurant {
   tables?: number | null;
   currency?: ('PYG' | 'USD') | null;
   /**
+   * Ej.: 0976 145 539. Si está vacío, el menú no muestra el botón «Enviar pedido por WhatsApp».
+   */
+  whatsapp?: string | null;
+  /**
    * Ej.: Pizza, Parrilla. Ayuda en Google.
    */
   cuisine?: string[] | null;
@@ -409,6 +413,7 @@ export interface RestaurantsSelect<T extends boolean = true> {
   hero?: T;
   tables?: T;
   currency?: T;
+  whatsapp?: T;
   cuisine?: T;
   theme?:
     | T

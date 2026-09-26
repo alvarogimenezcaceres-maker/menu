@@ -42,6 +42,7 @@ Sin dominio propio, el menú queda en `https://<tu-usuario>.github.io/menu/filig
 - **Ocultar un plato:** agregar `"status": "draft"`. Un plato sin precio (`"price": null`) nunca se publica.
 - **Agregar foto:** subir el PNG a `seed/filigrana/images/` y poner `"photo": "<nombre-sin-extensión>"` en el plato.
 - **Agregar modelo 3D:** subir el `.glb` a `seed/filigrana/models/` y poner `"model": "<archivo>.glb"` en el plato.
+- **Pedidos por WhatsApp:** poner `"whatsapp": "0976 145 539"` en `restaurant` (o el campo *WhatsApp para pedidos* del panel). En «Mi selección» aparece «Enviar pedido por WhatsApp»; «Mostrar al mozo» está siempre. Si el QR es de una mesa, el pedido lleva el número de mesa.
 
 ## Probar en tu computadora
 

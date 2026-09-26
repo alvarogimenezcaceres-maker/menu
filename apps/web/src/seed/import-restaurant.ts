@@ -36,6 +36,7 @@ type SeedMenu = {
     logo?: string
     hero?: string
     tables?: number
+    whatsapp?: string
     cuisine?: string[]
     theme?: Record<string, string>
   }
@@ -75,6 +76,7 @@ async function main() {
       description: r.description,
       currency: (r.currency as 'PYG' | 'USD') ?? 'PYG',
       tables: r.tables ?? 10,
+      whatsapp: r.whatsapp,
       cuisine: r.cuisine ?? [],
       theme: {
         primary: r.theme?.primary,

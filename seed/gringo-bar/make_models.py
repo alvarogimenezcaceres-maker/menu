@@ -1,12 +1,13 @@
-"""Demo 3D models for Gringo Bar (procedural, real size in meters) + poster renders.
+"""3D models for Gringo Bar (real size in meters) + poster render.
 
-These are NOT scans of the real dishes: they are placeholders so the 3D/AR flow
-works until the restaurant's dishes go through workers/3d/pipeline.py.
+Neither is a photogrammetry scan: the burger is shaped and textured from the single
+real photo, the pizza is procedural. They keep the 3D/AR flow working until the dishes
+go through workers/3d/pipeline.py.
 
   blender -b -P seed/gringo-bar/make_models.py        (from repo root, Blender 4.5)
 
 Outputs:
-  models/burguer-de-la-casa-demo.glb   double smash burger: brioche, 2 patties, cheddar, milanesa, papas pay
+  models/burguer-de-la-casa-3d.glb     house burger from gringodatos/burguerdelacasa.jpg (silhouette + photo texture)
   models/pizza-gringo-demo.glb         pizza 30 cm: mozzarella, smoked sausage, jalapeños, olives
   images/pizza-gringo-demo.png         transparent poster of the pizza (placeholder dish photo)
 """
@@ -18,6 +19,7 @@ import bpy
 import bmesh
 
 HERE = pathlib.Path(__file__).resolve().parent
+ROOT = HERE.parent.parent
 random.seed(7)
 
 
@@ -84,80 +86,118 @@ def dome(name, r, h, z, m, flat_bottom=True):
     return o
 
 
-def drippy_slice(name, size, z, m, drip=0.02):
-    """Cheddar slice: thin square rotated 45° with corners drooping."""
-    bpy.ops.mesh.primitive_grid_add(x_subdivisions=24, y_subdivisions=24, size=size, location=(0, 0, z))
-    o = bpy.context.object
-    o.name = name
-    o.rotation_euler.z = math.radians(random.uniform(10, 40))
-    half = size / 2
-    for v in o.data.vertices:
-        d = max(abs(v.co.x), abs(v.co.y)) / half
-        r = math.hypot(v.co.x, v.co.y)
-        if r > half * 0.78:
-            v.co.z -= drip * ((r - half * 0.78) / (half * 0.6)) ** 1.5
-    sol = o.modifiers.new("solid", "SOLIDIFY")
-    sol.thickness = 0.0025
-    assign(o, m)
-    shade(o)
-    return o
-
-
-def export(path, objs):
+def export(path, objs, image_format="AUTO"):
     bpy.ops.object.select_all(action="DESELECT")
     for o in objs:
         o.select_set(True)
     bpy.ops.export_scene.gltf(filepath=str(path), export_format="GLB", use_selection=True,
-                              export_apply=True, export_yup=True, export_draco_mesh_compression_enable=False)
+                              export_apply=True, export_yup=True, export_image_format=image_format, export_draco_mesh_compression_enable=False)
     print("✓", path.name, f"{path.stat().st_size / 1024:.0f} KB")
 
 
 def burger():
-    reset()
-    bun = mat("pan brioche", srgb("#C9731C"), 0.45)
-    crumb = mat("miga", srgb("#EFD39A"), 0.8)
-    beef = mat("carne", srgb("#4A2A1A"), 0.85)
-    cheddar = mat("cheddar", srgb("#FFA000"), 0.35)
-    breaded = mat("milanesa", srgb("#C8742A"), 0.9)
-    ketchup = mat("ketchup", srgb("#A3120E"), 0.25)
-    straw = mat("papas pay", srgb("#E8C46A"), 0.7)
-    paper = mat("papel", srgb("#EDEDED"), 0.9)
+    """Burger modeled from the real photo (gringodatos/burguerdelacasa.jpg).
 
-    R = 0.06  # 12 cm bun
-    objs = [cyl("papel", R * 1.25, 0.002, 0, paper, verts=8)]
-    objs.append(cyl("pan base", R, 0.022, 0.002, bun, bevel=0.006))
-    objs.append(cyl("miga base", R * 0.96, 0.002, 0.024, crumb))
-    z = 0.026
-    for i in range(2):
-        objs.append(cyl(f"medallon {i + 1}", R * 1.02, 0.016, z, beef, jitter=0.05, bevel=0.004))
-        z += 0.016
-        objs.append(drippy_slice(f"cheddar {i + 1}", R * 1.75, z + 0.001, cheddar))
-        z += 0.004
-    # papas pay: thin sticks scattered on top of the cheese
-    for i in range(70):
-        a = random.uniform(0, 2 * math.pi)
-        r = random.uniform(0, R * 0.9)
-        bpy.ops.mesh.primitive_cube_add(size=1, location=(r * math.cos(a), r * math.sin(a), z + random.uniform(0.001, 0.006)))
-        s = bpy.context.object
-        s.scale = (0.022, 0.0016, 0.0016)
-        s.rotation_euler = (random.uniform(-.3, .3), random.uniform(-.3, .3), random.uniform(0, math.pi))
-        assign(s, straw)
-        objs.append(s)
-    z += 0.006
-    objs.append(cyl("milanesa", R * 0.8, 0.011, z, breaded, jitter=0.12, bevel=0.003))
-    z += 0.011
-    objs.append(cyl("ketchup", R * 0.72, 0.002, z, ketchup, jitter=0.15))
-    z += 0.002
-    objs.append(cyl("miga tapa", R * 0.96, 0.002, z, crumb))
-    objs.append(dome("pan tapa", R, 0.045, z + 0.002, bun))
-    bpy.ops.object.select_all(action="DESELECT")
-    for o in objs:
-        o.select_set(True)
-    bpy.context.view_layer.objects.active = objs[0]
-    bpy.ops.object.convert(target="MESH")
-    bpy.ops.object.join()
-    bpy.context.object.name = "burguer-de-la-casa"
-    export(HERE / "models" / "burguer-de-la-casa-demo.glb", [bpy.context.object])
+    The right edge of the burger in the photo gives the silhouette (the left one is
+    hidden by the hand); revolving it around a slightly leaning axis gives the shape,
+    and the photo is projected from the front as the texture. From the front it looks
+    exactly like the photo; the back repeats the front.
+    """
+    import numpy as np
+
+    reset()
+    photo = bpy.data.images.load(str(ROOT / "gringodatos" / "burguerdelacasa.jpg"))
+    W, H = photo.size
+    px = np.array(photo.pixels[:], dtype=np.float32).reshape(H, W, 4)[::-1, :, :3]  # top-down rows
+    mx, mn = px.max(axis=2), px.min(axis=2)
+    burger_px = (mx > 0.2) & ((mx - mn) / np.maximum(mx, 1e-6) > 0.3)  # bright + saturated: not background, not paper
+
+    Y0, Y1, STEP = 380, 1122, 3
+
+    def edge(y, x, step):
+        miss, last = 0, x
+        while 0 < x < W - 1 and miss <= 10:
+            if burger_px[y, x]:
+                last, miss = x, 0
+            else:
+                miss += 1
+            x += step
+        return last
+
+    def smooth(v, n):
+        return np.convolve(np.pad(v, n // 2, mode="edge"), np.ones(n) / n, mode="valid")[: len(v)]
+
+    # between these rows the hand hides the left edge: the axis is interpolated there
+    HAND = (790, 1060)
+    rows = np.arange(Y0, Y1 + 1, STEP)
+    right = np.array([edge(y, 560, 1) for y in rows], dtype=float)
+    left = np.array([edge(y, 560, -1) for y in rows], dtype=float)
+    ok = (rows < HAND[0]) | (rows > HAND[1])
+    centers = smooth(np.interp(rows, rows[ok], ((left + right) / 2)[ok]), 15)
+    radii = right - centers
+    radii = smooth(np.array([np.median(radii[max(0, i - 3):i + 4]) for i in range(len(radii))]), 7)  # drop speckles
+    radii *= 0.97  # stay inside the edge so the texture never picks up background
+
+    def axis(y):
+        return float(np.interp(y, rows, centers))
+
+    SCALE = 0.06 / radii.max()  # 12 cm wide at the widest point
+    SEG = 72
+    bm = bmesh.new()
+    uv = bm.loops.layers.uv.new("UVMap")
+    ring_verts = []
+    for y, r in zip(rows, radii):
+        c = axis(y)
+        z = (Y1 - y) * SCALE
+        ring = []
+        for k in range(SEG):
+            t = 2 * math.pi * k / SEG
+            # texture wraps linearly with the angle (front half = whole photo width), so turning
+            # the model shows different parts of the photo instead of a smeared centre column
+            u = 1 - 2 * math.acos(math.cos(t)) / math.pi
+            ring.append((bm.verts.new(((c - 560) * SCALE + r * SCALE * math.cos(t), r * SCALE * math.sin(t), z)), c + r * u, y))
+        ring_verts.append(ring)
+    top = (bm.verts.new(((axis(Y0) - 560) * SCALE, 0, (Y1 - Y0 + 9) * SCALE)), axis(Y0), Y0 + 4)
+    bottom = (bm.verts.new(((axis(Y1) - 560) * SCALE, 0, 0)), axis(Y1), Y1)
+
+    # top of the bun per photo column: rows above it are background, never sample them
+    top_edge = np.full(W, Y0, dtype=float)
+    for x in range(W):
+        hit = np.nonzero(burger_px[340:700, x])[0]
+        if hit.size:
+            top_edge[x] = 340 + hit[0]
+
+    def face(vs):
+        f = bm.faces.new([v[0] for v in vs])
+        for loop, v in zip(f.loops, vs):
+            x = min(max(v[1], 0), W - 1)
+            loop[uv].uv = (x / W, 1 - max(v[2], top_edge[int(x)] + 8) / H)
+
+    for a, b in zip(ring_verts, ring_verts[1:]):
+        for k in range(SEG):
+            face([a[k], a[(k + 1) % SEG], b[(k + 1) % SEG], b[k]])
+    for k in range(SEG):
+        face([top, ring_verts[0][(k + 1) % SEG], ring_verts[0][k]])
+        face([bottom, ring_verts[-1][k], ring_verts[-1][(k + 1) % SEG]])
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces[:])
+    me = bpy.data.meshes.new("burguer-de-la-casa")
+    bm.to_mesh(me)
+    bm.free()
+    obj = bpy.data.objects.new("burguer-de-la-casa", me)
+    bpy.context.scene.collection.objects.link(obj)
+    shade(obj)
+
+    m = bpy.data.materials.new("foto")
+    m.use_nodes = True
+    nt = m.node_tree
+    tex = nt.nodes.new("ShaderNodeTexImage")
+    tex.image = photo
+    bsdf = nt.nodes["Principled BSDF"]
+    nt.links.new(tex.outputs["Color"], bsdf.inputs["Base Color"])
+    bsdf.inputs["Roughness"].default_value = 0.55
+    assign(obj, m)
+    bpy.context.view_layer.objects.active = obj
+    export(HERE / "models" / "burguer-de-la-casa-3d.glb", [obj], image_format="JPEG")
 
 
 def pizza():

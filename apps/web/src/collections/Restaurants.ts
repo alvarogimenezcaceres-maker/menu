@@ -61,6 +61,12 @@ export const Restaurants: CollectionConfig = {
         },
       ],
     },
+    {
+      name: 'whatsapp',
+      type: 'text',
+      label: 'WhatsApp para pedidos',
+      admin: { description: 'Ej.: 0976 145 539. Si está vacío, el menú no muestra el botón «Enviar pedido por WhatsApp».' },
+    },
     { name: 'cuisine', type: 'text', hasMany: true, label: 'Tipo de cocina', admin: { description: 'Ej.: Pizza, Parrilla. Ayuda en Google.' } },
     {
       name: 'theme',

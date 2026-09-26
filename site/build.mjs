@@ -21,6 +21,12 @@ const fill = (tpl, vars) => tpl.replace(/\{\{(\w+)\}\}/g, (_, k) => {
 const attr = s => String(s).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
 const jsonForScript = v => JSON.stringify(v).replace(/</g, "\\u003c");
 
+// "+595 976 145 539" or "0976 145 539" → "595976145539" (wa.me format); a local 0 prefix assumes Paraguay
+const whatsappDigits = v => {
+  const d = String(v || "").replace(/\D/g, "");
+  return d.startsWith("0") ? "595" + d.slice(1) : d;
+};
+
 function publicMenu(m) {
   const categories = m.categories.map(c => ({
     slug: c.slug, name: c.name, description: c.description, cover: c.cover,
@@ -35,7 +41,7 @@ function publicMenu(m) {
 function jsonLd(m, url) {
   const r = m.restaurant;
   return jsonForScript({
-    "@context": "https://schema.org", "@type": "Restaurant", name: r.name, url, image: `${url}img/${r.hero}.webp`,
+    "@context": "https://schema.org", "@type": "Restaurant", name: r.name, url, image: `${url}img/${r.hero || r.logo}.webp`,
     servesCuisine: r.cuisine, currenciesAccepted: r.currency,
     hasMenu: {
       "@type": "Menu", hasMenuSection: publicMenu(m).categories.map(c => ({
@@ -74,7 +80,7 @@ async function buildRestaurant(slug, templates) {
   const out = path.join(DIST, slug);
   const menu = publicMenu(m);
 
-  const used = new Set([r.logo, r.hero]);
+  const used = new Set([r.logo, r.hero].filter(Boolean));
   menu.categories.forEach(c => { if (c.cover) used.add(c.cover); c.dishes.forEach(d => d.photo && used.add(d.photo)); });
   await buildImages(seedDir, path.join(out, "img"), [...used].filter(Boolean));
 
@@ -86,8 +92,10 @@ async function buildRestaurant(slug, templates) {
 
   const theme = { BG: t.background || "#181818", PRIMARY: t.primary || "#ED9D15", PRIMARY_LIGHT: t.primaryLight || "#FFB943", WINE: t.accentWine || "#8F1B51" };
   await writeFile(path.join(out, "index.html"), fill(templates.menu, {
-    ...theme, NAME: attr(r.name), DESCRIPTION: attr(r.description), TAGLINE: attr(r.tagline || ""),
-    URL: url, LOGO: r.logo, HERO: r.hero, JSONLD: jsonLd(m, url), DATA: jsonForScript(menu),
+    ...theme, NAME: attr(r.name), NAME_JSON: jsonForScript(r.name), DESCRIPTION: attr(r.description), TAGLINE: attr(r.tagline || ""),
+    URL: url, LOGO: r.logo, OG_IMAGE: r.hero || r.logo, JSONLD: jsonLd(m, url), DATA: jsonForScript(menu),
+    HERO_IMG: r.hero ? `<img class="dish" src="img/${r.hero}-720.webp" alt="" fetchpriority="high">` : "",
+    WHATSAPP: whatsappDigits(r.whatsapp),
   }));
 
   // QR codes: general + one per table (?table=N)

@@ -12,8 +12,8 @@
     "currency": "PYG",
     "default_locale": "es",
     "logo": "logo-blanco",
-    "hero": "burguer-de-la-casa",
     "tables": 10,
+    "whatsapp": "0976 145 539",
     "cuisine": [
       "Hamburguesas",
       "Pizza",
@@ -28,12 +28,9 @@
       "background": "#1C1C1C",
       "accentWine": "#995331"
     },
-    "contact": {
-      "instagram": "gringobarpy",
-      "whatsapp": "0976 145 539",
-      "area": "República de Luque"
-    },
-    "$review": "Cantidad de mesas (10) es un valor por defecto: confirmar antes de imprimir los QR."
+    "$review": "Cantidad de mesas (10) es un valor por defecto: confirmar antes de imprimir los QR.",
+    "instagram": "gringobarpy",
+    "area": "República de Luque"
   },
   "categories": [
     {
@@ -59,8 +56,8 @@
             "de la casa"
           ],
           "photo": "burguer-de-la-casa",
-          "model": "burguer-de-la-casa-demo.glb",
-          "modelNote": "Modelo 3D de demostración; la foto sí es de Gringo Bar",
+          "model": "burguer-de-la-casa-3d.glb",
+          "modelNote": "Modelo 3D armado a partir de la foto real del plato",
           "review": "PRECIO ESTIMADO (no figura en el material): confirmar. Ingredientes deducidos de la foto: confirmar qué es el empanado (¿pollo? ¿queso?) y la salsa."
         },
         {
