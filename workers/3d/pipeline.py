@@ -4,7 +4,7 @@ python workers/3d/pipeline.py <work_dir> --diameter-cm 22.5 [--tris 40000] [--qu
 
 <work_dir>/images/*.jpg must exist. Each stage is skipped when its output already exists,
 so a failed run resumes where it stopped. Tool locations come from env vars or defaults:
-  COLMAP_EXE, OPENMVS_DIR, BLENDER_EXE
+  COLMAP_EXE, OPENMVS_DIR, BLENDER_EXE  (Windows defaults: .local/tools; elsewhere: PATH)
 """
 import json
 import os
@@ -16,9 +16,11 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent.parent
-COLMAP = os.environ.get("COLMAP_EXE", str(ROOT / ".local/tools/colmap/bin/colmap.exe"))
-OPENMVS = Path(os.environ.get("OPENMVS_DIR", str(ROOT / ".local/tools/openmvs/vc17/x64/Release")))
-BLENDER = os.environ.get("BLENDER_EXE", r"C:\Program Files\Blender Foundation\Blender 4.5\blender.exe")
+WINDOWS = os.name == "nt"
+EXE = ".exe" if WINDOWS else ""
+COLMAP = os.environ.get("COLMAP_EXE", str(ROOT / ".local/tools/colmap/bin/colmap.exe") if WINDOWS else "colmap")
+OPENMVS = Path(os.environ.get("OPENMVS_DIR", str(ROOT / ".local/tools/openmvs/vc17/x64/Release") if WINDOWS else "/usr/local/bin/OpenMVS"))
+BLENDER = os.environ.get("BLENDER_EXE", r"C:\Program Files\Blender Foundation\Blender 4.5\blender.exe" if WINDOWS else "blender")
 
 
 def arg(name, default):
@@ -50,7 +52,7 @@ def stage(name, output, cmd, cwd=None):
     report_path.write_text(json.dumps(report, indent=2))
     if rc != 0 or not out.exists():
         # OpenMVS writes to its own <Tool>-<date>.log files, not to stdout
-        own = sorted(work.glob(f"{cmd[0].split(chr(92))[-1].replace('.exe', '')}-*.log"), key=os.path.getmtime)
+        own = sorted(work.glob(f"{Path(cmd[0]).stem}-*.log"), key=os.path.getmtime)
         src = own[-1] if own else log
         tail = [l for l in src.read_text(encoding="utf-8", errors="replace").splitlines() if "error" in l.lower()][-10:] or             src.read_text(encoding="utf-8", errors="replace").splitlines()[-15:]
         log = src
@@ -59,7 +61,7 @@ def stage(name, output, cmd, cwd=None):
 
 
 def mvs(tool, *args):
-    return [str(OPENMVS / f"{tool}.exe"), "-w", str(work), "--max-threads", "0", "-v", "2", *args]
+    return [str(OPENMVS / f"{tool}{EXE}"), "-w", str(work), "--max-threads", "0", "-v", "2", *args]
 
 
 def blender(script, *args):
@@ -109,6 +111,13 @@ def capture_geometry():
     return ["--target", fmt(P), "--up", fmt(up), "--reach", f"{reach:.6f}"]
 
 
+def colmap_gpu_section():
+    """COLMAP 3.x names the CPU/GPU switches SiftExtraction/SiftMatching, 4.x FeatureExtraction/FeatureMatching."""
+    help_text = subprocess.run([COLMAP, "feature_extractor", "-h"], capture_output=True, text=True, errors="replace").stdout
+    return ("FeatureExtraction", "FeatureMatching") if "FeatureExtraction.use_gpu" in help_text else ("SiftExtraction", "SiftMatching")
+
+
+EXTRACT, MATCH = colmap_gpu_section()
 t_all = time.time()
 n_img = len(list((work / "images").glob("*.jpg")))
 print(f"Fotos: {n_img} · calidad: {quality} · diámetro real: {diameter} cm")
@@ -116,9 +125,9 @@ print(f"Fotos: {n_img} · calidad: {quality} · diámetro real: {diameter} cm")
 # 1. Structure-from-Motion (COLMAP, CPU)
 stage("1a-caracteristicas", "database.db", [COLMAP, "feature_extractor", "--database_path", "database.db",
       "--image_path", "images", "--ImageReader.single_camera", "1", "--ImageReader.camera_model", "OPENCV",
-      "--FeatureExtraction.use_gpu", "0"])
+      f"--{EXTRACT}.use_gpu", "0"])
 stage("1b-emparejado", "logs/match.done", [sys.executable, "-c",
-      f"import subprocess,sys,pathlib;r=subprocess.run([r'{COLMAP}','exhaustive_matcher','--database_path','database.db','--FeatureMatching.use_gpu','0']).returncode;"
+      f"import subprocess,sys,pathlib;r=subprocess.run([r'{COLMAP}','exhaustive_matcher','--database_path','database.db','--{MATCH}.use_gpu','0']).returncode;"
       "pathlib.Path('logs/match.done').write_text('ok') if r==0 else None;sys.exit(r)"])
 (work / "sparse").mkdir(exist_ok=True)
 stage("1c-mapeo", "sparse/0/cameras.bin", [COLMAP, "mapper", "--database_path", "database.db",

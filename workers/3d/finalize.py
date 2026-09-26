@@ -56,12 +56,16 @@ except Exception as e:  # USDZ is optional: model-viewer can build it on iOS at 
 
 # poster: 3/4 view, transparent background
 scene = bpy.context.scene
-for engine in ("BLENDER_EEVEE_NEXT", "BLENDER_EEVEE", "CYCLES"):
+# POSTER_ENGINE=CYCLES on machines without a GPU/OpenGL (CI runners): EEVEE needs one
+for engine in filter(None, (os.environ.get("POSTER_ENGINE"), "BLENDER_EEVEE_NEXT", "BLENDER_EEVEE", "CYCLES")):
     try:
         scene.render.engine = engine
         break
     except TypeError:
         continue
+if scene.render.engine == "CYCLES":
+    scene.cycles.samples = 64
+    scene.cycles.use_denoising = False
 scene.render.film_transparent = True
 scene.render.resolution_x = scene.render.resolution_y = 1024
 scene.render.image_settings.file_format = "PNG"

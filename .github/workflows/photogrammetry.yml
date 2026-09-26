@@ -1,0 +1,110 @@
+name: Fotogrametría (fotos → 3D)
+
+# Runs workers/3d/pipeline.py (COLMAP → OpenMVS → Blender → glTF-Transform) on a free public-repo runner.
+# Manual test: workflow_dispatch downloads images.zip from a release tag (synthetic CC0 photos).
+on:
+  workflow_dispatch:
+    inputs:
+      test_photos_tag:
+        description: "Release tag holding images.zip (manual test)"
+        default: test-data-torta
+      diameter_cm:
+        description: "Real dish diameter in cm"
+        default: "22.5"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: photogrammetry
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      OPENMVS_VERSION: v2.4.0
+      BLENDER_SERIES: "4.5"
+      BLENDER_VERSION: 4.5.14
+      TOOLS: /home/runner/tools
+      QT_QPA_PLATFORM: offscreen   # COLMAP's Ubuntu build links Qt; there is no display
+      POSTER_ENGINE: CYCLES        # EEVEE needs a GPU/OpenGL context
+      WORK: /home/runner/work3d
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: workers/3d
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: workers/3d/package-lock.json
+
+      # COLMAP from Ubuntu's archive (3.9.1, CPU build): the project ships no Linux binaries and
+      # building 4.x from source costs ~25 min per cache miss. pipeline.py picks the 3.x flag names.
+      - name: Install COLMAP and Blender runtime libraries
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq --no-install-recommends colmap \
+            libegl1 libgl1 libxi6 libxkbcommon0 libxxf86vm1 libxfixes3 libxrender1 libsm6 libice6 unzip
+          colmap -h | head -3
+
+      - name: Cache OpenMVS and Blender
+        id: tools
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.TOOLS }}
+          key: tools-${{ runner.os }}-openmvs-${{ env.OPENMVS_VERSION }}-blender-${{ env.BLENDER_VERSION }}
+
+      - name: Download OpenMVS and Blender
+        if: steps.tools.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p "$TOOLS/openmvs"
+          curl -fsSL -o /tmp/openmvs.zip \
+            "https://github.com/cdcseacave/openMVS/releases/download/$OPENMVS_VERSION/OpenMVS_Ubuntu_x64.zip"
+          unzip -q /tmp/openmvs.zip -d "$TOOLS/openmvs"
+          curl -fsSL "https://download.blender.org/release/Blender$BLENDER_SERIES/blender-$BLENDER_VERSION-linux-x64.tar.xz" \
+            | tar -xJ -C "$TOOLS"
+          mv "$TOOLS/blender-$BLENDER_VERSION-linux-x64" "$TOOLS/blender"
+
+      - name: Locate tools
+        run: |
+          mvs_bin=$(dirname "$(find "$TOOLS/openmvs" -type f -name InterfaceCOLMAP | head -1)")
+          chmod +x "$mvs_bin"/* || true
+          echo "OPENMVS_DIR=$mvs_bin" >> "$GITHUB_ENV"
+          echo "BLENDER_EXE=$TOOLS/blender/blender" >> "$GITHUB_ENV"
+          echo "OpenMVS: $mvs_bin"; ls "$mvs_bin"
+          echo "Missing OpenMVS libraries:"; ldd "$mvs_bin/DensifyPointCloud" | grep "not found" || echo "  none"
+          "$TOOLS/blender/blender" -b --factory-startup --version | head -1
+
+      - name: Install glTF-Transform and glTF-Validator
+        run: npm ci --prefix workers/3d --no-audit --no-fund
+
+      - name: Get test photos
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.test_photos_tag }}
+        run: |
+          mkdir -p "$WORK/images"
+          gh release download "$TAG" -R "$GITHUB_REPOSITORY" -p images.zip -D /tmp
+          unzip -q -j /tmp/images.zip -d "$WORK/images"
+          echo "Photos: $(ls "$WORK/images" | wc -l)"
+
+      - name: Run pipeline
+        run: python3 workers/3d/pipeline.py "$WORK" --diameter-cm "${{ inputs.diameter_cm }}"
+
+      - name: Upload result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: modelo
+          retention-days: 7
+          path: |
+            ${{ env.WORK }}/out/model-web.glb
+            ${{ env.WORK }}/out/poster.png
+            ${{ env.WORK }}/out/validation.json
+            ${{ env.WORK }}/report.json
+            ${{ env.WORK }}/logs/
+            ${{ env.WORK }}/*.log
