@@ -140,8 +140,9 @@ La fotogrametría corre gratis en GitHub Actions (el repo es público) con `.git
 1. Abrí el plato → **«Generar 3D desde fotos»**. Se crea un **Escaneo 3D**.
 2. Completá el **diámetro real** en cm y subí **40 a 80 fotos JPG** (mínimo 30, máximo 120). Seguí la guía de captura: `docs/04-photogrammetry-pipeline.md` §13.5.
 3. **Guardar** → **Generar 3D**. El estado pasa a *En cola* → *Procesando* → *Listo* (o *Falló*), con un link al proceso en GitHub.
-   - Tarda unos **17 minutos**; se puede cerrar la página.
-4. Al terminar, el modelo queda en el campo **Modelo 3D** del plato. El póster se usa como foto solo si el plato no tenía.
+   - Tarda unos **15 minutos**; se puede cerrar la página.
+4. Al terminar, el modelo queda en el campo **Modelo 3D** del plato. El póster se usa como foto si el plato no tenía, o si la que tenía era el póster de un escaneo anterior. Una foto subida a mano nunca se reemplaza.
+   - El modelo anterior (y el póster anterior, si se reemplazó) se borra de UploadThing, salvo que otro plato, sección o restaurante lo use. El menú ya publicado no se rompe: tiene su propia copia hasta el próximo «Publicar ahora».
 5. Restaurante → **Publicar ahora**.
 
 **Qué pasa por detrás:**
@@ -150,6 +151,13 @@ La fotogrametría corre gratis en GitHub Actions (el repo es público) con `.git
 - El workflow le pide al panel las direcciones de las fotos y le devuelve el GLB y el póster. Las dos llamadas van firmadas con HMAC-SHA256 (`WORKER_SECRET`) y vencen a los 5 minutos.
 - Al terminar, bien o mal, **las fotos se borran de UploadThing** para no pasar de los 2 GB gratis. Si falló, hay que subir fotos nuevas.
 - El personal de un restaurante solo puede escanear platos de su restaurante.
+
+**Tamaño y capacidad (medido el 26/09/2026 con la torta de prueba):**
+
+- Cada modelo queda en **≈1,4 MB** (antes 4,5 MB): 40.000 triángulos con normales suaves y textura JPEG de 2048 px, sin compresión de malla. El validador de Khronos da 0 errores.
+- No se usa Draco, meshopt ni WebP: Scene Viewer (el AR de Android) no los tiene en su lista de extensiones soportadas. Así, el GLB no exige ninguna extensión.
+- Por plato escaneado se guardan ≈2 MB en UploadThing: el GLB más el póster PNG (≈0,6 MB).
+- **Capacidad del plan gratis (2 GB):** dejando ≈300 MB libres para las fotos de un escaneo en curso, entran unos **140 restaurantes con 6 platos en 3D** (antes unos 55). No incluye las fotos normales de los platos.
 
 **Secretos (una sola vez):**
 
