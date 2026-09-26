@@ -1,0 +1,8 @@
+node_modules/
+dist/
+
+# Source PDFs from restaurants (large; data already extracted to seed/<slug>/)
+*.pdf
+
+# Business notes (pricing, clients) — never in the public repo
+negocio/

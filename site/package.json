@@ -1,0 +1,16 @@
+{
+  "name": "menu3d-site",
+  "private": true,
+  "type": "module",
+  "description": "Static build of restaurant menus for GitHub Pages (pilot)",
+  "scripts": {
+    "build": "node build.mjs",
+    "serve": "npx --yes http-server ../dist -p 8080 -c-1"
+  },
+  "dependencies": {
+    "@google/model-viewer": "4.3.1",
+    "qrcode": "1.5.4",
+    "sharp": "0.35.4"
+  },
+  "engines": { "node": ">=20" }
+}

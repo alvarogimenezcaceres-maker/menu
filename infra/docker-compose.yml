@@ -1,0 +1,126 @@
+# 3D Restaurant Menu — reference compose (Deliverable #11)
+# Profiles:  core (default) | gpu | ops
+#   docker compose --profile core up -d
+#   docker compose --profile gpu up -d worker-3d        (on the GPU host)
+name: menu3d
+
+x-env: &env
+  DATABASE_URI: postgres://app:${POSTGRES_PASSWORD}@postgres:5432/menu3d
+  S3_ENDPOINT: http://seaweedfs:8333
+  S3_REGION: us-east-1
+  S3_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID}
+  S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY}
+  S3_FORCE_PATH_STYLE: "true"
+  PUBLIC_MEDIA_BASE_URL: https://${ROOT_DOMAIN}/media
+  WORKER_SECRET: ${WORKER_SECRET}
+
+services:
+  caddy:
+    image: caddy:2
+    profiles: [core]
+    restart: unless-stopped
+    ports: ["80:80", "443:443", "443:443/udp"]
+    environment:
+      ROOT_DOMAIN: ${ROOT_DOMAIN}
+      ACME_EMAIL: ${ACME_EMAIL}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on: [web, seaweedfs]
+
+  web:
+    image: ghcr.io/${GH_OWNER}/menu3d-web:${TAG:-latest}
+    profiles: [core]
+    restart: unless-stopped
+    environment:
+      <<: *env
+      PAYLOAD_SECRET: ${PAYLOAD_SECRET}
+      NEXT_PUBLIC_ROOT_DOMAIN: ${ROOT_DOMAIN}
+      NODE_ENV: production
+    depends_on:
+      postgres: { condition: service_healthy }
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/health"]
+      interval: 15s
+      retries: 5
+    deploy:
+      replicas: 1          # stateless — scale freely
+
+  postgres:
+    image: postgres:17
+    profiles: [core]
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: menu3d
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app -d menu3d"]
+      interval: 5s
+      retries: 10
+    # not published to host; GPU host reaches it over WireGuard/Tailscale
+
+  seaweedfs:
+    image: chrislusf/seaweedfs:latest   # pin a digest in prod
+    profiles: [core]
+    restart: unless-stopped
+    command: server -dir=/data -s3 -s3.config=/etc/seaweedfs/s3.json -volume.max=0
+    volumes:
+      - swdata:/data
+      - ./seaweedfs-s3.json:/etc/seaweedfs/s3.json:ro
+
+  worker-3d:
+    image: ghcr.io/${GH_OWNER}/menu3d-worker:${TAG:-latest}
+    profiles: [gpu]
+    restart: unless-stopped
+    environment:
+      <<: *env
+      WEB_INTERNAL_URL: http://web:3000
+      JOB_TIMEOUT_MIN: "60"
+    volumes: [worker_tmp:/work]
+    deploy:
+      resources:
+        reservations:
+          devices: [{ driver: nvidia, count: 1, capabilities: [gpu] }]
+
+  worker-ai:
+    image: ghcr.io/${GH_OWNER}/menu3d-trellis:${TAG:-latest}
+    profiles: [gpu]
+    restart: unless-stopped
+    environment: *env
+    deploy:
+      resources:
+        reservations:
+          devices: [{ driver: nvidia, count: 1, capabilities: [gpu] }]
+
+  umami:
+    image: ghcr.io/umami-software/umami:postgresql-latest
+    profiles: [ops]
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://app:${POSTGRES_PASSWORD}@postgres:5432/umami
+      APP_SECRET: ${UMAMI_SECRET}
+    depends_on: [postgres]
+
+  backup:
+    image: prodrigestivill/postgres-backup-local:17
+    profiles: [ops]
+    restart: unless-stopped
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_DB: menu3d,umami
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      SCHEDULE: "@daily"
+      BACKUP_KEEP_DAYS: 7
+      BACKUP_KEEP_WEEKS: 4
+    volumes: [./backups:/backups]   # rclone/restic this dir off-site
+
+volumes:
+  caddy_data: {}
+  caddy_config: {}
+  pgdata: {}
+  swdata: {}
+  worker_tmp: {}

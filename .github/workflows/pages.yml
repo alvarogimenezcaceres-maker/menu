@@ -1,0 +1,53 @@
+name: Publicar menús
+
+on:
+  push:
+    branches: [main]
+    paths: ["seed/**", "site/**", ".github/workflows/pages.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+      - run: npm ci
+        working-directory: site
+      - id: pages
+        uses: actions/configure-pages@v5
+      - name: Generar sitio estático
+        run: node build.mjs
+        working-directory: site
+        env:
+          # Repo variables (Settings → Secrets and variables → Actions → Variables):
+          #   SITE_URL       https://menu.tudominio.com/   (the QR codes point here — set it before printing)
+          #   CUSTOM_DOMAIN  menu.tudominio.com
+          SITE_URL: ${{ vars.SITE_URL || steps.pages.outputs.base_url }}
+          CUSTOM_DOMAIN: ${{ vars.CUSTOM_DOMAIN }}
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,18 @@
+{
+  "identities": [
+    {
+      "name": "web",
+      "credentials": [{ "accessKey": "menu3d", "secretKey": "change-me" }],
+      "actions": ["Admin", "Read", "Write", "List", "Tagging"]
+    },
+    {
+      "name": "worker",
+      "credentials": [{ "accessKey": "menu3d-worker", "secretKey": "change-me-too" }],
+      "actions": ["Read:capture-private", "List:capture-private", "Write:capture-private", "Write:models-public", "Read:models-public"]
+    },
+    {
+      "name": "anonymous",
+      "actions": ["Read:media-public", "Read:models-public"]
+    }
+  ]
+}
