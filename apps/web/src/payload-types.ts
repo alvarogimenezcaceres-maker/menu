@@ -71,6 +71,8 @@ export interface Config {
     categories: Category;
     dishes: Dish;
     media: Media;
+    scans: Scan;
+    'scan-photos': ScanPhoto;
     users: User;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
@@ -83,6 +85,8 @@ export interface Config {
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     dishes: DishesSelect<false> | DishesSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    scans: ScansSelect<false> | ScansSelect<true>;
+    'scan-photos': ScanPhotosSelect<false> | ScanPhotosSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -281,6 +285,56 @@ export interface Dish {
   createdAt: string;
 }
 /**
+ * Fotos de un plato → modelo 3D. Se empieza desde el plato: «Generar 3D desde fotos».
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "scans".
+ */
+export interface Scan {
+  id: number;
+  tenant?: (number | null) | Restaurant;
+  title?: string | null;
+  dish?: (number | null) | Dish;
+  /**
+   * Medilo con una regla. En realidad aumentada el plato aparece con este tamaño.
+   */
+  diameterCm?: number | null;
+  /**
+   * Plato sobre una mesa con textura (mantel, madera), buena luz y sin moverlo. Tres vueltas: baja, a media altura y desde arriba. Que cada foto se superponga con la anterior. Se borran al terminar.
+   */
+  photos?: (number | ScanPhoto)[] | null;
+  /**
+   * Vacío = todavía no se generó.
+   */
+  status?: ('queued' | 'processing' | 'done' | 'failed') | null;
+  runUrl?: string | null;
+  result?: string | null;
+  error?: string | null;
+  requestedAt?: string | null;
+  finishedAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "scan-photos".
+ */
+export interface ScanPhoto {
+  id: number;
+  tenant?: (number | null) | Restaurant;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
@@ -353,6 +407,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'media';
         value: number | Media;
+      } | null)
+    | ({
+        relationTo: 'scans';
+        value: number | Scan;
+      } | null)
+    | ({
+        relationTo: 'scan-photos';
+        value: number | ScanPhoto;
       } | null)
     | ({
         relationTo: 'users';
@@ -504,6 +566,43 @@ export interface MediaSelect<T extends boolean = true> {
               filename?: T;
             };
       };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "scans_select".
+ */
+export interface ScansSelect<T extends boolean = true> {
+  tenant?: T;
+  title?: T;
+  dish?: T;
+  diameterCm?: T;
+  photos?: T;
+  status?: T;
+  runUrl?: T;
+  result?: T;
+  error?: T;
+  requestedAt?: T;
+  finishedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "scan-photos_select".
+ */
+export interface ScanPhotosSelect<T extends boolean = true> {
+  tenant?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

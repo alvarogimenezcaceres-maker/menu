@@ -87,6 +87,11 @@ export const Dishes: CollectionConfig = {
         },
       ],
     },
+    {
+      type: 'ui',
+      name: 'scan3d',
+      admin: { components: { Field: '/components/DishScanBox#DishScanBox' } },
+    },
     { name: 'modelNote', type: 'text', label: 'Nota del modelo 3D', admin: { description: 'Ej.: "Modelo de demostración".' } },
     slugField(),
     {

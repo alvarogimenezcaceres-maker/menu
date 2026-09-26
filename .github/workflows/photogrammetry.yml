@@ -1,36 +1,82 @@
 name: Fotogrametría (fotos → 3D)
 
 # Runs workers/3d/pipeline.py (COLMAP → OpenMVS → Blender → glTF-Transform) on a free public-repo runner.
-# Manual test: workflow_dispatch downloads images.zip from a release tag (synthetic CC0 photos).
+#
+# From the panel: «Generar 3D» commits jobs/3d/<scanId>.json (ids only). This workflow asks the panel for
+# the photo URLs with a signed request (workers/3d/job.mjs), builds the model and sends the GLB and poster
+# back; the panel attaches them to the dish and deletes the photos. Repo secrets: PANEL_URL, WORKER_SECRET.
+# The repo is public: never print photo URLs or secrets.
+#
+# Manual test: run it by hand with an empty scan id; it downloads images.zip (synthetic CC0 photos)
+# from a release tag and keeps the result as a workflow artifact.
 on:
+  push:
+    branches: [main]
+    paths: ["jobs/3d/*.json"]
   workflow_dispatch:
     inputs:
+      scan:
+        description: "Scan id to process again (empty = synthetic test photos)"
+        default: ""
       test_photos_tag:
-        description: "Release tag holding images.zip (manual test)"
+        description: "Test only: release tag holding images.zip"
         default: test-data-torta
       diameter_cm:
-        description: "Real dish diameter in cm"
+        description: "Test only: real dish diameter in cm"
         default: "22.5"
 
 permissions:
   contents: read
 
-concurrency:
-  group: photogrammetry
-  cancel-in-progress: false
-
 jobs:
-  build:
+  plan:
     runs-on: ubuntu-24.04
-    timeout-minutes: 90
+    outputs:
+      scans: ${{ steps.scans.outputs.scans }}
+    steps:
+      - name: Find the jobs to run
+        id: scans
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SCAN: ${{ inputs.scan }}
+          BEFORE: ${{ github.event.before }}
+        run: |
+          if [ "$GITHUB_EVENT_NAME" = workflow_dispatch ]; then
+            if [ -n "$SCAN" ]; then ids="$SCAN"; else ids=test; fi
+          else
+            # job files added or changed by this push (a deletion is not a job)
+            ids=$(gh api "repos/$GITHUB_REPOSITORY/compare/$BEFORE...$GITHUB_SHA" \
+              --jq '.files[] | select(.status != "removed") | .filename' \
+              | sed -n 's#^jobs/3d/\([0-9]\+\)\.json$#\1#p')
+          fi
+          json=$(printf '%s\n' $ids | jq -R . | jq -sc 'map(select(length > 0))')
+          echo "scans=$json" >> "$GITHUB_OUTPUT"
+          echo "Jobs: $json"
+
+  build:
+    needs: plan
+    if: needs.plan.outputs.scans != '[]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        scan: ${{ fromJson(needs.plan.outputs.scans) }}
+    concurrency:
+      group: photogrammetry-${{ matrix.scan }}
+      cancel-in-progress: false
     env:
       OPENMVS_VERSION: v2.4.0
       BLENDER_SERIES: "4.5"
       BLENDER_VERSION: 4.5.14
       TOOLS: /home/runner/tools
+      WORK: /home/runner/work3d
       QT_QPA_PLATFORM: offscreen   # COLMAP's Ubuntu build links Qt; there is no display
       POSTER_ENGINE: CYCLES        # EEVEE needs a GPU/OpenGL context
-      WORK: /home/runner/work3d
+      SCAN: ${{ matrix.scan }}
+      PANEL_URL: ${{ secrets.PANEL_URL }}
+      WORKER_SECRET: ${{ secrets.WORKER_SECRET }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -41,6 +87,11 @@ jobs:
           node-version: 22
           cache: npm
           cache-dependency-path: workers/3d/package-lock.json
+
+      - name: Check secrets
+        if: matrix.scan != 'test'
+        run: |
+          [ -n "$PANEL_URL" ] && [ -n "$WORKER_SECRET" ] || { echo "::error::Missing repo secrets PANEL_URL / WORKER_SECRET"; exit 1; }
 
       # COLMAP from Ubuntu's archive (3.9.1, CPU build): the project ships no Linux binaries and
       # building 4.x from source costs ~25 min per cache miss. pipeline.py picks the 3.x flag names.
@@ -83,23 +134,43 @@ jobs:
         run: npm ci --prefix workers/3d --no-audit --no-fund
 
       - name: Get test photos
+        if: matrix.scan == 'test'
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ inputs.test_photos_tag }}
+          DIAMETER: ${{ inputs.diameter_cm }}
         run: |
           mkdir -p "$WORK/images"
           gh release download "$TAG" -R "$GITHUB_REPOSITORY" -p images.zip -D /tmp
           unzip -q -j /tmp/images.zip -d "$WORK/images"
+          echo "{\"diameterCm\": $DIAMETER}" > "$WORK/job.json"
           echo "Photos: $(ls "$WORK/images" | wc -l)"
 
-      - name: Run pipeline
-        run: python3 workers/3d/pipeline.py "$WORK" --diameter-cm "${{ inputs.diameter_cm }}"
+      - name: Get photos from the panel
+        if: matrix.scan != 'test'
+        run: node workers/3d/job.mjs start "$SCAN" "$WORK"
 
-      - name: Upload result
-        if: always()
+      - name: Run pipeline
+        run: |
+          set -o pipefail
+          diameter=$(jq -r .diameterCm "$WORK/job.json")
+          python3 workers/3d/pipeline.py "$WORK" --diameter-cm "$diameter" 2>&1 | tee "$WORK/pipeline.log"
+
+      - name: Send the model to the panel
+        if: matrix.scan != 'test'
+        run: node workers/3d/job.mjs finish "$SCAN" "$WORK"
+
+      - name: Tell the panel the job failed
+        if: (failure() || cancelled()) && matrix.scan != 'test'
+        run: |
+          reason=$(grep -h '^✗' "$WORK/pipeline.log" 2>/dev/null | head -1 | sed 's/ Últimas líneas.*//' | cut -c1-200)
+          node workers/3d/job.mjs fail "$SCAN" "$WORK" "${reason:-No se pudo generar el modelo.} Detalle en el proceso de GitHub."
+
+      - name: Keep the test result
+        if: always() && matrix.scan == 'test'
         uses: actions/upload-artifact@v4
         with:
-          name: modelo
+          name: modelo-prueba
           retention-days: 7
           path: |
             ${{ env.WORK }}/out/model-web.glb
@@ -108,3 +179,15 @@ jobs:
             ${{ env.WORK }}/report.json
             ${{ env.WORK }}/logs/
             ${{ env.WORK }}/*.log
+
+      # logs only (no photos, no model): enough to see which stage failed
+      - name: Keep the logs of a failed job
+        if: failure() && matrix.scan != 'test'
+        uses: actions/upload-artifact@v4
+        with:
+          name: logs-${{ matrix.scan }}
+          retention-days: 3
+          path: |
+            ${{ env.WORK }}/report.json
+            ${{ env.WORK }}/logs/
+            ${{ env.WORK }}/pipeline.log

@@ -10,7 +10,7 @@ type TreeEntry = { path: string; mode: string; type: string; sha: string | null 
 const blobSha = (bytes: Buffer) =>
   createHash('sha1').update(`blob ${bytes.length}\0`).update(bytes).digest('hex')
 
-async function gh<T>(method: string, route: string, body?: unknown): Promise<T> {
+export async function gh<T>(method: string, route: string, body?: unknown): Promise<T> {
   const res = await fetch(`https://api.github.com/repos/${process.env.GITHUB_REPO}${route}`, {
     method,
     headers: {

@@ -13,6 +13,8 @@ import { Categories } from './collections/Categories'
 import { Dishes } from './collections/Dishes'
 import { Media } from './collections/Media'
 import { Restaurants } from './collections/Restaurants'
+import { ScanPhotos } from './collections/ScanPhotos'
+import { Scans } from './collections/Scans'
 import { Users } from './collections/Users'
 import { migrations } from './migrations'
 import type { Config } from './payload-types'
@@ -32,7 +34,7 @@ export default buildConfig({
     supportedLanguages: { es },
     fallbackLanguage: 'es',
   },
-  collections: [Restaurants, Categories, Dishes, Media, Users],
+  collections: [Restaurants, Categories, Dishes, Media, Scans, ScanPhotos, Users],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
@@ -53,7 +55,7 @@ export default buildConfig({
           uploadthingStorage({
             // Photos and models are public: hand out direct utfs.io URLs instead of proxying through
             // the panel (the proxy asks UploadThing for signed URLs, which fails for public-read files).
-            collections: { media: { disablePayloadAccessControl: true } },
+            collections: { media: { disablePayloadAccessControl: true }, 'scan-photos': { disablePayloadAccessControl: true } },
             options: { token: process.env.UPLOADTHING_TOKEN, acl: 'public-read' },
           }),
         ]
@@ -64,6 +66,8 @@ export default buildConfig({
         categories: {},
         dishes: {},
         media: {},
+        scans: {},
+        'scan-photos': {},
       },
       tenantField: { name: 'tenant', label: 'Restaurante' },
       tenantsArrayField: { includeDefaultField: true },
