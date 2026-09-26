@@ -652,7 +652,10 @@
         {
           "slug": "torta-tres-leches",
           "name": "Torta 3 leches",
-          "price": 39000
+          "price": 39000,
+          "photo": "torta-fotogrametria-demo",
+          "model": "torta-fotogrametria-demo.glb",
+          "modelNote": "Demostración de fotogrametría: torta de ejemplo escaneada, no es la de Filigrana"
         },
         {
           "slug": "torta-tres-leches-con-helado",
