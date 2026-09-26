@@ -51,7 +51,9 @@ export default buildConfig({
     ...(process.env.UPLOADTHING_TOKEN
       ? [
           uploadthingStorage({
-            collections: { media: true },
+            // Photos and models are public: hand out direct utfs.io URLs instead of proxying through
+            // the panel (the proxy asks UploadThing for signed URLs, which fails for public-read files).
+            collections: { media: { disablePayloadAccessControl: true } },
             options: { token: process.env.UPLOADTHING_TOKEN, acl: 'public-read' },
           }),
         ]
