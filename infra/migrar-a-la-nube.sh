@@ -14,6 +14,11 @@ DUMP=".local/mudanza-neon.backup"
 read -rsp "Pegá la conexión de Neon (postgresql://...) y Enter: " NEON_URL; echo
 read -rsp "Pegá el token de UploadThing y Enter: " UT_TOKEN; echo
 
+# accept what the dashboards' copy buttons give: psql '...', UPLOADTHING_TOKEN='...', quotes
+NEON_URL=$(printf '%s' "$NEON_URL" | sed -E "s/^[[:space:]]*psql[[:space:]]+//; s/^[\"']//; s/[\"'][[:space:]]*$//")
+UT_TOKEN=$(printf '%s' "$UT_TOKEN" | sed -E "s/^[[:space:]]*UPLOADTHING_TOKEN=//; s/^[\"']//; s/[\"'][[:space:]]*$//")
+case "$NEON_URL" in postgres://*|postgresql://*) ;; *) echo "Eso no parece una conexión de Neon (tiene que empezar con postgresql://)."; exit 1 ;; esac
+
 echo "→ Revisando que la base de Neon esté vacía…"
 tables=$("$PG/psql" "$NEON_URL" -Atc "select count(*) from information_schema.tables where table_schema = 'public'")
 if [ "$tables" != "0" ]; then
