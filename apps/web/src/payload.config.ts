@@ -1,6 +1,7 @@
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { multiTenantPlugin } from '@payloadcms/plugin-multi-tenant'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
+import { uploadthingStorage } from '@payloadcms/storage-uploadthing'
 import { es } from '@payloadcms/translations/languages/es'
 import path from 'path'
 import { buildConfig } from 'payload'
@@ -13,6 +14,7 @@ import { Dishes } from './collections/Dishes'
 import { Media } from './collections/Media'
 import { Restaurants } from './collections/Restaurants'
 import { Users } from './collections/Users'
+import { migrations } from './migrations'
 import type { Config } from './payload-types'
 
 const filename = fileURLToPath(import.meta.url)
@@ -40,9 +42,20 @@ export default buildConfig({
     pool: {
       connectionString: process.env.DATABASE_URL || '',
     },
+    // production (Render) applies pending schema migrations on start; local dev keeps pushing the schema
+    prodMigrations: migrations,
   }),
   sharp,
   plugins: [
+    // In the cloud, photos and 3D models live in UploadThing; without a token they stay in apps/web/media
+    ...(process.env.UPLOADTHING_TOKEN
+      ? [
+          uploadthingStorage({
+            collections: { media: true },
+            options: { token: process.env.UPLOADTHING_TOKEN, acl: 'public-read' },
+          }),
+        ]
+      : []),
     multiTenantPlugin<Config>({
       tenantsSlug: 'restaurants',
       collections: {

@@ -1,7 +1,8 @@
 import type { Endpoint } from 'payload'
 
 import { exportRestaurant } from './export'
-import { commitAndPush, deployToCloudflare } from './git'
+import { commitAndPush } from './git'
+import { commitViaGitHub } from './github'
 
 let busy = false
 
@@ -23,8 +24,10 @@ export const publishEndpoint: Endpoint = {
     try {
       const out = await exportRestaurant(req.payload, id)
       const who = (req.user as { name?: string; email?: string }).name || (req.user as { email?: string }).email
-      const result = await commitAndPush(out.relDir, `Menú ${out.name}: publicado desde el panel (${who})`)
-      if (result.changed) deployToCloudflare()
+      const message = `Menú ${out.name}: publicado desde el panel (${who})`
+      // in the cloud there is no git checkout: commit through the GitHub API instead
+      const publish = process.env.GITHUB_TOKEN ? commitViaGitHub : commitAndPush
+      const result = await publish(out.relDir, out.files, message)
       await req.payload.update({ collection: 'restaurants', id, data: { lastPublishedAt: new Date().toISOString() }, overrideAccess: true })
 
       const base = process.env.MENU_BASE_URL ? process.env.MENU_BASE_URL.replace(/\/?$/, '/') : ''

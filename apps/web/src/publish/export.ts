@@ -1,4 +1,4 @@
-import { copyFile, mkdir, readdir, rm, writeFile } from 'fs/promises'
+import { readFile } from 'fs/promises'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import type { Payload } from 'payload'
@@ -13,9 +13,24 @@ const MEDIA_DIR = path.resolve(dirname, '../../media')
 type Rel<T> = number | T | null | undefined
 const asDoc = <T>(v: Rel<T>): T | null => (v && typeof v === 'object' ? v : null)
 
+/** Folders inside seed/<slug>/ that the export owns: files there that are no longer used get removed. */
+export const OWNED_DIRS = ['images', 'models']
+
+/** Reads a media file from apps/web/media, or downloads it from cloud storage (UploadThing). */
+async function mediaBytes(doc: Media): Promise<Buffer> {
+  try {
+    return await readFile(path.join(MEDIA_DIR, doc.filename!))
+  } catch {
+    if (!doc.url?.startsWith('http')) throw new Error(`No se encontró el archivo ${doc.filename}`)
+    const res = await fetch(doc.url)
+    if (!res.ok) throw new Error(`No se pudo descargar ${doc.filename} (${res.status})`)
+    return Buffer.from(await res.arrayBuffer())
+  }
+}
+
 /**
- * Writes seed/<slug>/menu.json plus images/ and models/ in the format site/build.mjs reads.
- * Returns the repo-relative folder that changed.
+ * Builds seed/<slug>/menu.json plus images/ and models/ in the format site/build.mjs reads.
+ * Returns the files keyed by path relative to seed/<slug>/; a publisher writes them to git.
  */
 export async function exportRestaurant(payload: Payload, restaurantId: number | string) {
   const r = (await payload.findByID({ collection: 'restaurants', id: restaurantId, depth: 1, overrideAccess: true })) as Restaurant
@@ -23,26 +38,20 @@ export async function exportRestaurant(payload: Payload, restaurantId: number | 
   const categories = (await payload.find({ collection: 'categories', where, sort: '_order', limit: 500, depth: 1, overrideAccess: true })).docs as Category[]
   const dishes = (await payload.find({ collection: 'dishes', where, sort: '_order', limit: 2000, depth: 1, overrideAccess: true })).docs as Dish[]
 
-  const outDir = path.join(REPO_ROOT, 'seed', r.slug)
-  const imgDir = path.join(outDir, 'images')
-  const modelDir = path.join(outDir, 'models')
-  await mkdir(imgDir, { recursive: true })
-  await mkdir(modelDir, { recursive: true })
-
-  const images = new Map<string, string>() // export name -> source file
-  const models = new Map<string, string>()
+  const images = new Map<string, Media>() // export file name -> media doc
+  const models = new Map<string, Media>()
   const image = (m: Rel<Media>): string | undefined => {
     const doc = asDoc(m)
     if (!doc?.filename) return undefined
     const ext = path.extname(doc.filename).toLowerCase()
     const name = slugify(path.basename(doc.filename, ext)) || `media-${doc.id}`
-    images.set(`${name}${ext}`, path.join(MEDIA_DIR, doc.filename))
+    images.set(`${name}${ext}`, doc)
     return name
   }
   const model = (m: Rel<Media>): string | undefined => {
     const doc = asDoc(m)
     if (!doc?.filename) return undefined
-    models.set(doc.filename, path.join(MEDIA_DIR, doc.filename))
+    models.set(doc.filename, doc)
     return doc.filename
   }
 
@@ -94,13 +103,11 @@ export async function exportRestaurant(payload: Payload, restaurantId: number | 
     })),
   }
 
-  // copy files; drop the ones no longer used so the repo stays small
-  for (const [dir, files] of [[imgDir, images], [modelDir, models]] as const) {
-    for (const f of await readdir(dir)) if (!files.has(f)) await rm(path.join(dir, f))
-    for (const [name, src] of files) await copyFile(src, path.join(dir, name))
+  const files = new Map<string, Buffer>([['menu.json', Buffer.from(JSON.stringify(menu, null, 2) + '\n', 'utf8')]])
+  for (const [dir, docs] of [['images', images], ['models', models]] as const) {
+    for (const [name, doc] of docs) files.set(`${dir}/${name}`, await mediaBytes(doc))
   }
-  await writeFile(path.join(outDir, 'menu.json'), JSON.stringify(menu, null, 2) + '\n', 'utf8')
 
   const published = menu.categories.reduce((n, c) => n + c.dishes.filter((d) => d.price != null && !d.status).length, 0)
-  return { slug: r.slug, name: r.name, relDir: path.posix.join('seed', r.slug), published, images: images.size, models: models.size }
+  return { slug: r.slug, name: r.name, relDir: path.posix.join('seed', r.slug), published, files }
 }

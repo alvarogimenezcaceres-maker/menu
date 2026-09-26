@@ -21,6 +21,7 @@
     "@payloadcms/next": "3.90.2",
     "@payloadcms/plugin-multi-tenant": "^3.90.2",
     "@payloadcms/richtext-lexical": "3.90.2",
+    "@payloadcms/storage-uploadthing": "3.90.2",
     "@payloadcms/ui": "3.90.2",
     "cross-env": "^7.0.3",
     "dotenv": "16.4.7",

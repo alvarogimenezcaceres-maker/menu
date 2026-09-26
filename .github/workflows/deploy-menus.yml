@@ -1,0 +1,45 @@
+name: Publicar menús en Cloudflare
+
+# Every push that touches a menu (the panel's «Publicar ahora» commits to seed/<slug>/) rebuilds
+# the static menus and deploys them to Cloudflare Workers. Needs the repo secrets
+# CLOUDFLARE_API_TOKEN (template "Edit Cloudflare Workers"); CLOUDFLARE_ACCOUNT_ID only if the
+# token can see more than one account.
+on:
+  push:
+    branches: [main]
+    paths: ["seed/**", "site/**", "wrangler.jsonc", ".github/workflows/deploy-menus.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-menus
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    steps:
+      - name: Falta el token de Cloudflare
+        if: env.CLOUDFLARE_API_TOKEN == ''
+        run: echo "::warning::Cargá el secreto CLOUDFLARE_API_TOKEN en el repositorio para publicar en Cloudflare."
+      - uses: actions/checkout@v4
+        if: env.CLOUDFLARE_API_TOKEN != ''
+      - uses: actions/setup-node@v4
+        if: env.CLOUDFLARE_API_TOKEN != ''
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+      - name: Instalar dependencias del sitio
+        if: env.CLOUDFLARE_API_TOKEN != ''
+        run: npm ci
+        working-directory: site
+      - name: Armar y publicar
+        if: env.CLOUDFLARE_API_TOKEN != ''
+        run: node site/deploy-cloudflare.mjs
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

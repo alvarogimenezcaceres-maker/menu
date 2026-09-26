@@ -21,7 +21,7 @@ export function PublishButton() {
       setResult(data)
       setState(res.ok ? 'done' : 'error')
     } catch {
-      setResult({ message: 'No se pudo conectar con el panel. ¿Sigue encendida la notebook?' })
+      setResult({ message: 'No se pudo conectar con el panel. Revisá tu conexión a internet y volvé a intentar.' })
       setState('error')
     }
   }
