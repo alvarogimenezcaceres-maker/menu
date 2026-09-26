@@ -95,6 +95,9 @@
   .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 7px; }
   .tag { font-size: 11px; letter-spacing: .04em; color: var(--amber-soft); border: 1px solid rgba(255,185,67,.35); border-radius: 999px; padding: 2px 8px; }
   .tag.t3d { background: var(--amber); border-color: var(--amber); color: #1a1206; font-weight: 600; }
+  .tag.sold { background: #3a3530; border-color: #3a3530; color: var(--text); font-weight: 600; }
+  .dish-row.is-sold .name, .dish-row.is-sold .price { opacity: .5; text-decoration: line-through; text-decoration-thickness: 1px; }
+  .dish-row.is-sold .thumb img { filter: grayscale(1) drop-shadow(0 6px 10px rgba(0,0,0,.55)); opacity: .6; }
   .thumb { width: 84px; height: 84px; display: grid; place-items: center; border-radius: 50%; background: radial-gradient(circle, var(--glow) 0%, transparent 70%); }
   .thumb img { max-width: 92px; max-height: 84px; object-fit: contain; filter: drop-shadow(0 6px 10px rgba(0,0,0,.55)); }
   .wine .dish-row .name { font: 600 17px/1.25 var(--serif); }
@@ -185,7 +188,7 @@ const DATA = {{DATA}};
 
 const $ = (s, el = document) => el.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-const norm = s => String(s ?? "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+const norm = s => String(s ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 const fmt = n => `<span class="price"><small>₲</small>${n.toLocaleString("es-PY")}</span>`;
 const TAG_LABEL = { "para compartir": "Para compartir", destacado: "Destacado", picante: "Picante", "sin gluten": "Sin gluten", "sin alcohol": "0,0 %", "de la casa": "De la casa", extra: "Agregado" };
 const DRINKS = ["vinos", "cervezas", "sin-alcohol", "cocteles"];
@@ -199,8 +202,8 @@ if (table) { $("#tableLabel").textContent = "Mesa " + table; $("#tableChip").hid
 function tagsHtml(c, d) {
   const t = d.tags || [];
   const labels = c.slug === "vinos" ? t.map(esc) : t.filter(x => TAG_LABEL[x]).map(x => TAG_LABEL[x]);
-  if (!d.model && !labels.length) return "";
-  return `<span class="tags">${d.model ? '<span class="tag t3d">3D · AR</span>' : ""}${labels.map(l => `<span class="tag">${l}</span>`).join("")}</span>`;
+  if (!d.model && !labels.length && !d.soldOut) return "";
+  return `<span class="tags">${d.soldOut ? '<span class="tag sold">Agotado hoy</span>' : ""}${d.model ? '<span class="tag t3d">3D · AR</span>' : ""}${labels.map(l => `<span class="tag">${l}</span>`).join("")}</span>`;
 }
 menuEl.innerHTML = DATA.categories.map(c => `
   <section class="cat${c.slug === "vinos" ? " wine" : ""}" id="${c.slug}" data-cat="${c.slug}">
@@ -210,7 +213,7 @@ menuEl.innerHTML = DATA.categories.map(c => `
     <ul class="dishes">
       ${c.dishes.map(d => `
         <li data-search="${esc(norm([d.name, d.description, (d.ingredients || []).join(" "), (d.tags || []).join(" "), c.name].join(" ")))}">
-          <button class="dish-row" type="button" data-dish="${d.slug}">
+          <button class="dish-row${d.soldOut ? " is-sold" : ""}" type="button" data-dish="${d.slug}">
             <span>
               <span class="line"><span class="name">${esc(d.name)}</span><span class="leader" aria-hidden="true"></span>${fmt(d.price)}</span>
               ${d.description ? `<span class="desc">${esc(d.description.split("\n")[0])}</span>` : ""}
@@ -311,7 +314,7 @@ function openDish(slug, push = true) {
   sheet.classList.toggle("is-wine", d.cat.slug === "vinos");
   showPhoto(d);
   $("#sheetTitle").textContent = d.name;
-  $("#sheetPrice").innerHTML = fmt(d.price);
+  $("#sheetPrice").innerHTML = fmt(d.price) + (d.soldOut ? ' <span class="tag sold">Agotado hoy</span>' : "");
   $("#sheetDesc").textContent = d.description || "";
   $("#sheetDesc").hidden = !d.description;
   let extra = "";

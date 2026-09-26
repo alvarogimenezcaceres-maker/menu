@@ -55,3 +55,15 @@ La realidad aumentada («Ver en mi mesa») solo se puede probar en el celular, c
 ## Nuevo restaurante
 
 Copiar `seed/filigrana/` a `seed/<nuevo-slug>/`, reemplazar `menu.json`, las imágenes y los modelos, y hacer push. Queda en `…/<nuevo-slug>/` con su propia hoja de QR.
+
+## Panel de administración (en la notebook)
+
+El panel (Payload CMS) corre en tu notebook y publica en GitHub Pages con un botón. Si la notebook está apagada, el menú en línea sigue funcionando; solo se pausan las ediciones.
+
+- **Iniciar:** doble clic en `iniciar-panel.cmd`. Se abre http://localhost:3100/admin (la primera carga tarda ~30 s).
+- **Usuarios y claves:** `.local/credenciales.txt` (no se sube al repo).
+  - `admin@menu3d.local`: ve todos los restaurantes y puede crear nuevos.
+  - `filigrana@menu3d.local`: el personal de Filigrana; solo ve su restaurante.
+- **Flujo:** editar platos o precios → *Guardar* → Restaurantes → Filigrana → **Publicar ahora**. En 1–2 minutos se ve en el QR.
+- **Datos:** base PostgreSQL propia en `.local/pgdata` (puerto 55433); fotos y modelos en `apps/web/media/`.
+- **Cargar otro restaurante** desde un `seed/<slug>/menu.json`: `cd apps/web && npm run seed -- <slug>`.

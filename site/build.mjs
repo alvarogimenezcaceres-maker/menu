@@ -26,8 +26,8 @@ function publicMenu(m) {
     slug: c.slug, name: c.name, description: c.description, cover: c.cover,
     dishes: c.dishes
       .filter(d => d.status !== "draft" && d.price != null)
-      .map(({ slug, name, description, price, ingredients, tags, options, photo, model, modelNote }) =>
-        ({ slug, name, description, price, ingredients, tags, options, photo, model, modelNote })),
+      .map(({ slug, name, description, price, ingredients, tags, options, photo, model, modelNote, soldOut }) =>
+        ({ slug, name, description, price, ingredients, tags, options, photo, model, modelNote, soldOut })),
   })).filter(c => c.dishes.length);
   return { categories };
 }
@@ -52,8 +52,12 @@ function jsonLd(m, url) {
 async function buildImages(seedDir, outDir, names) {
   await mkdir(outDir, { recursive: true });
   for (const name of names) {
-    const src = path.join(seedDir, "images", `${name}.png`);
-    if (!(await exists(src))) throw new Error(`Missing image ${src}`);
+    let src = null;
+    for (const ext of [".png", ".webp", ".jpg", ".jpeg"]) {
+      const p = path.join(seedDir, "images", name + ext);
+      if (await exists(p)) { src = p; break; }
+    }
+    if (!src) throw new Error(`Missing image ${name} in ${seedDir}/images`);
     await sharp(src).webp({ quality: 85 }).toFile(path.join(outDir, `${name}.webp`)); // full size (OG image)
     for (const w of SIZES) {
       await sharp(src).resize({ width: w, height: w, fit: "inside", withoutEnlargement: true })

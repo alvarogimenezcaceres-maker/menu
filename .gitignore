@@ -6,3 +6,6 @@ dist/
 
 # Business notes (pricing, clients) — never in the public repo
 negocio/
+
+# Local dev database and secrets
+.local/

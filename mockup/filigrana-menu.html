@@ -275,7 +275,7 @@ const DATA = {"categories":[{"slug":"entradas","name":"Entradas","dishes":[{"slu
 
 const $ = (s, el = document) => el.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-const norm = s => String(s ?? "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+const norm = s => String(s ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 const fmt = n => n == null ? '<span class="price pending">Precio a confirmar</span>' : `<span class="price"><small>₲</small>${n.toLocaleString("es-PY")}</span>`;
 const img = name => `img/${name}.webp`;
 const TAG_LABEL = { "para compartir": "Para compartir", destacado: "Destacado", picante: "Picante", "sin gluten": "Sin gluten", "sin alcohol": "0,0 %", "de la casa": "De la casa", extra: "Agregado" };
