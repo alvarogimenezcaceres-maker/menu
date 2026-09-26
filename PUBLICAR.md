@@ -67,3 +67,21 @@ El panel (Payload CMS) corre en tu notebook y publica en GitHub Pages con un bot
 - **Flujo:** editar platos o precios → *Guardar* → Restaurantes → Filigrana → **Publicar ahora**. En 1–2 minutos se ve en el QR.
 - **Datos:** base PostgreSQL propia en `.local/pgdata` (puerto 55433); fotos y modelos en `apps/web/media/`.
 - **Cargar otro restaurante** desde un `seed/<slug>/menu.json`: `cd apps/web && npm run seed -- <slug>`.
+
+## Generar un modelo 3D desde fotos (fotogrametría, en la notebook)
+
+Herramientas open source portables en `.local/tools/` (COLMAP 4.2 sin CUDA, OpenMVS 2.4) más Blender 4.5 LTS instalado. Todo corre en la CPU: no hace falta placa NVIDIA, pero es más lento.
+
+1. Poné 40–80 fotos del plato en `.local/fotogrametria/<plato>/images/` (JPG). Seguí la guía de captura: `docs/04-photogrammetry-pipeline.md` §13.5.
+2. Corré:
+   ```bash
+   python workers/3d/pipeline.py .local/fotogrametria/<plato> --diameter-cm 27 --quality fast
+   ```
+   Si una etapa falla, al volver a correrlo retoma desde ahí. Hay un log por etapa en `logs/`.
+3. El resultado queda en `out/model-web.glb` (y `poster.png`). Subilo desde el panel en el campo **Modelo 3D** del plato, o con:
+   ```bash
+   cd apps/web && npm run attach-model -- <restaurante> <plato> ../../.local/fotogrametria/<plato>/out/model-web.glb ../../.local/fotogrametria/<plato>/out/poster.png "Nota"
+   ```
+4. Restaurante → **Publicar ahora**.
+
+`workers/3d/render_views.py` es **solo para demostración**: simula una sesión de fotos renderizando un modelo escaneado.
