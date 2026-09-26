@@ -126,6 +126,51 @@ Los menús se publican en **Cloudflare Workers** (archivos estáticos, plan grat
   - `GITHUB_BRANCH`
   - `MENU_BASE_URL`
   - `NODE_ENV`
+  - `WORKER_SECRET`: el mismo valor que el secreto de GitHub (ver abajo).
 
   Copia local en `.local/render.env`, sin el token de GitHub.
-- **Pendiente:** la fotogrametría (fotos → 3D) sigue corriendo en la notebook. Pasarla a GitHub Actions.
+- **Al cargar una variable, pegá solo el valor.** Nunca la línea entera `NOMBRE=valor` ni las comillas. Ejemplo: `UPLOADTHING_TOKEN` empieza con `eyJ`.
+
+## Generar 3D desde fotos (en la nube, desde el 26/09/2026)
+
+La fotogrametría corre gratis en GitHub Actions (el repo es público) con `.github/workflows/photogrammetry.yml`: COLMAP 3.9 (apt), OpenMVS 2.4 y Blender 4.5 LTS sobre Ubuntu. La notebook no hace falta.
+
+**En el panel:**
+
+1. Abrí el plato → **«Generar 3D desde fotos»**. Se crea un **Escaneo 3D**.
+2. Completá el **diámetro real** en cm y subí **40 a 80 fotos JPG** (mínimo 30, máximo 120). Seguí la guía de captura: `docs/04-photogrammetry-pipeline.md` §13.5.
+3. **Guardar** → **Generar 3D**. El estado pasa a *En cola* → *Procesando* → *Listo* (o *Falló*), con un link al proceso en GitHub.
+   - Tarda unos **17 minutos**; se puede cerrar la página.
+4. Al terminar, el modelo queda en el campo **Modelo 3D** del plato. El póster se usa como foto solo si el plato no tenía.
+5. Restaurante → **Publicar ahora**.
+
+**Qué pasa por detrás:**
+
+- «Generar 3D» commitea `jobs/3d/<id>.json` (solo números) y ese push arranca el workflow.
+- El workflow le pide al panel las direcciones de las fotos y le devuelve el GLB y el póster. Las dos llamadas van firmadas con HMAC-SHA256 (`WORKER_SECRET`) y vencen a los 5 minutos.
+- Al terminar, bien o mal, **las fotos se borran de UploadThing** para no pasar de los 2 GB gratis. Si falló, hay que subir fotos nuevas.
+- El personal de un restaurante solo puede escanear platos de su restaurante.
+
+**Secretos (una sola vez):**
+
+- GitHub → repo → Settings → Secrets and variables → Actions:
+  - `WORKER_SECRET`
+  - `PANEL_URL` = `https://menu3d-panel.onrender.com`
+- Render → `menu3d-panel` → Environment: `WORKER_SECRET` con **el mismo valor**.
+- El valor está en `.local/worker.env` (no se sube).
+
+**Probar sin el panel:**
+
+1. Subí un `images.zip` con las fotos a un release temporal:
+   ```bash
+   gh release create test-data-torta images.zip --prerelease --title "Fotos de prueba (temporal)" --notes "Temporal"
+   ```
+2. Actions → *Fotogrametría* → **Run workflow** con el número de escaneo vacío. El resultado queda como artefacto del run.
+3. Borrá el release:
+   ```bash
+   gh release delete test-data-torta --cleanup-tag --yes
+   ```
+
+**Si falla:** el panel muestra la etapa que falló. Los logs quedan 3 días como artefacto del run (sin fotos ni modelo).
+
+La versión para la notebook (sección de arriba) sigue funcionando igual.
