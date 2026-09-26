@@ -145,6 +145,22 @@ async function main() {
     : `<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Menús</title><ul>${built.map(b => `<li><a href="${b.slug}/">${attr(b.name)}</a></li>`).join("")}</ul>`;
   await writeFile(path.join(DIST, "index.html"), index);
   await writeFile(path.join(DIST, ".nojekyll"), "");
+  // Cloudflare Pages response headers (GitHub Pages ignores this file). File names aren't hashed,
+  // so caches stay short: an edited photo shows up within the hour.
+  await writeFile(path.join(DIST, "_headers"), [
+    "/*",
+    "  X-Content-Type-Options: nosniff",
+    "  Referrer-Policy: strict-origin-when-cross-origin",
+    "  Permissions-Policy: camera=(self), xr-spatial-tracking=(self), geolocation=()",
+    "/*/models/*",
+    "  Content-Type: model/gltf-binary",
+    "  Cache-Control: public, max-age=3600, stale-while-revalidate=86400",
+    "/*/img/*",
+    "  Cache-Control: public, max-age=3600, stale-while-revalidate=86400",
+    "/assets/*",
+    "  Cache-Control: public, max-age=86400",
+    "",
+  ].join("\n"));
   if (process.env.CUSTOM_DOMAIN) await writeFile(path.join(DIST, "CNAME"), process.env.CUSTOM_DOMAIN + "\n");
   console.log(`Listo → dist/ (SITE_URL=${SITE_URL})`);
 }
