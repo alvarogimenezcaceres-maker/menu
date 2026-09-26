@@ -3,7 +3,7 @@
 #   1. copia la base local (restaurantes, platos, usuarios) a Neon
 #   2. sube las fotos y modelos 3D de apps/web/media a UploadThing
 # Se corre UNA vez, desde Git Bash, en la notebook:   bash infra/migrar-a-la-nube.sh
-# Lee la conexión de Neon y el token de UploadThing de .local/nube.env (o los pide sin mostrarlos).
+# Lee la conexión de Neon y el token de UploadThing de .local/nube.env (o los pide por pantalla).
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -16,8 +16,8 @@ SECRETS=".local/nube.env"
 fromfile() { [ -f "$SECRETS" ] && grep -m1 "^$1=" "$SECRETS" | cut -d= -f2- | tr -d '' || true; }
 NEON_URL=$(fromfile NEON_URL)
 UT_TOKEN=$(fromfile UPLOADTHING_TOKEN)
-[ -n "$NEON_URL" ] && echo "→ Conexión de Neon: tomada de $SECRETS" || { read -rsp "Pegá la conexión de Neon (postgresql://...) y Enter: " NEON_URL; echo; }
-[ -n "$UT_TOKEN" ] && echo "→ Token de UploadThing: tomado de $SECRETS" || { read -rsp "Pegá el token de UploadThing y Enter: " UT_TOKEN; echo; }
+[ -n "$NEON_URL" ] && echo "→ Conexión de Neon: tomada de $SECRETS" || { read -rp "Pegá la conexión de Neon (postgresql://...) y Enter: " NEON_URL; }
+[ -n "$UT_TOKEN" ] && echo "→ Token de UploadThing: tomado de $SECRETS" || { read -rp "Pegá el token de UploadThing y Enter: " UT_TOKEN; }
 
 # accept what the dashboards' copy buttons give: psql '...', UPLOADTHING_TOKEN='...', quotes
 NEON_URL=$(printf '%s' "$NEON_URL" | sed -E "s/^[[:space:]]*psql[[:space:]]+//; s/^[\"']//; s/[\"'][[:space:]]*$//")
