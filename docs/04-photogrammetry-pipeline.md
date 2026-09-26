@@ -46,12 +46,45 @@ Deliverable **#13**. Everything below is OSS: COLMAP (BSD), OpenMVS (AGPL, unmod
 | 3 | **Blender A** (headless `blender -b -P clean.py`) | detect table plane (RANSAC on low vertices) → delete everything below it and outside a cylinder around the dish centroid → keep largest connected component → fill small holes → **Decimate** to target tris (fast 20k / standard 40k / high 80k) → export PLY *in the same coordinate frame* | mesh_clean.ply | 30–60 s |
 | 4 | Texture | `TextureMesh scene_dense.mvs -m mesh_clean.ply --export-type obj --resolution-level 0 --max-texture-size 4096` | textured.obj + atlas | 1–2 min |
 | 5 | **Blender B** (`finalize.py`) | import → origin to bottom-centre → rotate to canonical "front" (camera #1 direction) → **scale to metres** (see 13.3) → bake neutral lighting out (optional delight) → set PBR (roughness 0.6, metallic 0) → export **GLB** (Y-up) + **USDZ** (`bpy.ops.wm.usd_export(filepath='model.usdz')`) | raw.glb, model.usdz | 30 s |
-| 6 | Optimise | `gltf-transform optimize raw.glb model.glb --compress meshopt --texture-compress ktx2 --texture-size 2048 --simplify false` (use `webp` instead of `ktx2` if `toktx` absent) then `gltf-transform inspect` | model.glb 0.8–3 MB | 10–30 s |
+| 6 | Optimise | *Design:* `gltf-transform optimize raw.glb model.glb --compress meshopt --texture-compress ktx2 --texture-size 2048 --simplify false`. **As built:** `node workers/3d/optimize.mjs` (see 13.2.1) | model.glb 0.8–3 MB (as built: ~1.4 MB) | 10–30 s (as built: <1 s) |
 | 7a | Validate | `gltf_validator model.glb -o` → reject on errors | report.json | 2 s |
 | 7b | Poster | headless render via Blender Eevee (or Playwright + model-viewer `toDataURL`) → `poster.webp` 1024², plus 400 px thumb | poster.webp | 10 s |
 | 7c | Upload + callback | S3 PUT to `models-public/t/{tenant}/dishes/{dish}/models/{model}/v{n}/`. `POST /internal/jobs/:id/complete` | n/a | 5 s |
 
 \*RTX 4000 Ada-class GPU, 60 × 12 MP photos. **About 10–20 min end-to-end** on "standard".
+
+### 13.2.1 As built (2026-09-26): what the code actually does
+
+The table above is the original design. The running pipeline is `workers/3d/pipeline.py`: the same script on
+GitHub Actions (`.github/workflows/photogrammetry.yml`, Ubuntu) and on the Windows notebook (tools from
+`COLMAP_EXE`, `OPENMVS_DIR`, `BLENDER_EXE`). Differences that matter:
+
+- **Stage 6** is `workers/3d/optimize.mjs` (glTF-Transform 4.5 API): smooth normals shared by position → dedup →
+  weld → prune → base-colour texture **JPEG 2048 px**. **No mesh compression, no KTX2/WebP.**
+  - Blender exports the OpenMVS mesh flat-shaded, so every triangle had its own 3 vertices (~120k for 40k tris)
+    and the mesh weighed ~4.3 MB while the texture was ~200 KB. Smoothing and welding leaves ~28k vertices.
+  - The GLB requires no glTF extensions, because Android Scene Viewer only documents `KHR_materials_unlit` and
+    `KHR_texture_transform`. iOS Quick Look uses the USDZ that model-viewer builds in the browser.
+  - Measured on the torta test (40k tris):
+
+    | Variant | GLB |
+    |---|---|
+    | Previous: flat, WebP 2048 (`gltf-transform optimize --compress false`) | 4.31 MB |
+    | Flat, WebP 1024 | 4.18 MB |
+    | Flat, WebP 1024 + Draco | 0.26 MB |
+    | **Smooth, JPEG 2048 (chosen)** | **1.37 MB** |
+    | Smooth, WebP 2048 | 1.28 MB |
+    | Smooth, WebP 2048 + Draco | 0.34 MB |
+    | Smooth, WebP 1536 + meshopt | 0.51 MB |
+    | Smooth, 25k tris, WebP 1536 + Draco | 0.23 MB |
+
+    Draco is always about half of meshopt. 1024 px textures look blurry on phones; 1536 is slightly soft.
+    Switching to Draco needs the decoder self-hosted beside `model-viewer.min.js` and a real-Android AR check.
+- **Stage 7** is `workers/3d/validate.mjs` (Khronos glTF-Validator), must report 0 errors. The poster is a
+  Blender PNG (≈0.6 MB), not WebP.
+- **Delivery:** the worker sends the GLB and poster back in an HMAC-signed call to the panel
+  (`workers/3d/job.mjs`), which stores them in UploadThing and deletes the dish's previous model if nothing else
+  uses it. One run takes ~15 min on a free Actions runner.
 
 ### Quality presets (stored in `captures.options`)
 | Preset | Densify level | Refine | Target tris | Texture | Use |

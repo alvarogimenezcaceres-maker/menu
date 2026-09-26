@@ -68,11 +68,14 @@ El panel (Payload CMS) corre en tu notebook y publica en GitHub Pages con un bot
   - `gringo-bar@menu3d.local`: el personal de Gringo Bar; solo ve su restaurante.
 - **Flujo:** editar platos o precios → *Guardar* → Restaurantes → Filigrana → **Publicar ahora**. En 1–2 minutos se ve en el QR.
 - **Datos:** base PostgreSQL propia en `.local/pgdata` (puerto 55433); fotos y modelos en `apps/web/media/`.
+- Es el mismo código que el panel en la nube (`apps/web`); lo que cambie en uno cambia en el otro.
 - **Cargar otro restaurante** desde un `seed/<slug>/menu.json`: `cd apps/web && npm run seed -- <slug>`.
 
 ## Generar un modelo 3D desde fotos (fotogrametría, en la notebook)
 
 Herramientas open source portables en `.local/tools/` (COLMAP 4.2 sin CUDA, OpenMVS 2.4) más Blender 4.5 LTS instalado. Todo corre en la CPU: no hace falta placa NVIDIA, pero es más lento.
+
+**Es el mismo código que corre en la nube** (`workers/3d/pipeline.py`): solo cambia dónde están las herramientas (variables `COLMAP_EXE`, `OPENMVS_DIR` y `BLENDER_EXE`). El GLB sale igual en los dos lados. Ver «Tamaño y capacidad» más abajo.
 
 1. Poné 40–80 fotos del plato en `.local/fotogrametria/<plato>/images/` (JPG). Seguí la guía de captura: `docs/04-photogrammetry-pipeline.md` §13.5.
 2. Corré:
@@ -80,7 +83,7 @@ Herramientas open source portables en `.local/tools/` (COLMAP 4.2 sin CUDA, Open
    python workers/3d/pipeline.py .local/fotogrametria/<plato> --diameter-cm 27 --quality fast
    ```
    Si una etapa falla, al volver a correrlo retoma desde ahí. Hay un log por etapa en `logs/`.
-3. El resultado queda en `out/model-web.glb` (y `poster.png`). Subilo desde el panel en el campo **Modelo 3D** del plato, o con:
+3. El resultado queda en `out/model-web.glb` (≈1,4 MB) y `poster.png`. Subilo desde el panel en el campo **Modelo 3D** del plato, o con:
    ```bash
    cd apps/web && npm run attach-model -- <restaurante> <plato> ../../.local/fotogrametria/<plato>/out/model-web.glb ../../.local/fotogrametria/<plato>/out/poster.png "Nota"
    ```
@@ -157,6 +160,7 @@ La fotogrametría corre gratis en GitHub Actions (el repo es público) con `.git
 - Cada modelo queda en **≈1,4 MB** (antes 4,5 MB): 40.000 triángulos con normales suaves y textura JPEG de 2048 px, sin compresión de malla. El validador de Khronos da 0 errores.
 - No se usa Draco, meshopt ni WebP: Scene Viewer (el AR de Android) no los tiene en su lista de extensiones soportadas. Así, el GLB no exige ninguna extensión.
 - Por plato escaneado se guardan ≈2 MB en UploadThing: el GLB más el póster PNG (≈0,6 MB).
+- Si cambia la etapa 6 (`workers/3d/optimize.mjs`), hay que actualizar este bloque, `CLAUDE.md` y `docs/04-photogrammetry-pipeline.md` §13.2.1.
 - **Capacidad del plan gratis (2 GB):** dejando ≈300 MB libres para las fotos de un escaneo en curso, entran unos **140 restaurantes con 6 platos en 3D** (antes unos 55). No incluye las fotos normales de los platos.
 
 **Secretos (una sola vez):**

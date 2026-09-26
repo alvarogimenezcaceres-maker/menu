@@ -168,6 +168,7 @@ Rules:
 **Analytics:** listen to `ar-status` (`session-started`, `object-placed`, `failed`) → `POST /api/events` (anonymous, tenant-scoped).
 
 **Performance budget:** GLB ≤ 3 MB (target 1–2 MB), ≤ 50k triangles, one 2048² KTX2/WebP base-colour texture (plus optional normal map), USDZ ≤ 8 MB.
+*As built (2026-09-26):* ~1.4 MB, 40k triangles, one 2048² **JPEG** texture and no mesh compression, so the GLB needs no extensions (Scene Viewer). See [docs/04 §13.2.1](04-photogrammetry-pipeline.md#1321-as-built-2026-09-26-what-the-code-actually-does).
 
 ---
 
