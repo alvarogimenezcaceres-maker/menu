@@ -654,7 +654,7 @@
           "name": "Torta 3 leches",
           "price": 39000,
           "photo": "torta-fotogrametria-demo",
-          "model": "torta-fotogrametria-demo.glb",
+          "model": "torta-tres-leches-3d-2.glb",
           "modelNote": "Demostración de fotogrametría: torta de ejemplo escaneada, no es la de Filigrana"
         },
         {
