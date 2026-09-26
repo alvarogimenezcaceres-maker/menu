@@ -12,3 +12,4 @@ negocio/
 
 # Raw source material from restaurants (screenshots, photos; data already extracted to seed/<slug>/)
 gringodatos/
+dist-redirect/

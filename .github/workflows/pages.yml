@@ -1,9 +1,11 @@
-name: Publicar menús
+name: Redirigir GitHub Pages a Cloudflare
 
+# The menus now live on Cloudflare (site/deploy-cloudflare.mjs). GitHub Pages only serves
+# redirect pages so old QR codes and shared links keep working.
 on:
   push:
     branches: [main]
-    paths: ["seed/**", "site/**", ".github/workflows/pages.yml"]
+    paths: ["site/redirect-site.mjs", ".github/workflows/pages.yml"]
   workflow_dispatch:
 
 permissions:
@@ -23,24 +25,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
-          cache-dependency-path: site/package-lock.json
-      - run: npm ci
-        working-directory: site
-      - id: pages
-        uses: actions/configure-pages@v5
-      - name: Generar sitio estático
-        run: node build.mjs
-        working-directory: site
-        env:
-          # Repo variables (Settings → Secrets and variables → Actions → Variables):
-          #   SITE_URL       https://menu.tudominio.com/   (the QR codes point here — set it before printing)
-          #   CUSTOM_DOMAIN  menu.tudominio.com
-          SITE_URL: ${{ vars.SITE_URL || steps.pages.outputs.base_url }}
-          CUSTOM_DOMAIN: ${{ vars.CUSTOM_DOMAIN }}
+      - uses: actions/configure-pages@v5
+      - name: Generar páginas de redirección
+        run: node site/redirect-site.mjs
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: dist-redirect
 
   deploy:
     needs: build
