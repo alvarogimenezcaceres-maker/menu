@@ -16,6 +16,9 @@ read -rsp "Pegá el token de UploadThing y Enter: " UT_TOKEN; echo
 
 # accept what the dashboards' copy buttons give: psql '...', UPLOADTHING_TOKEN='...', quotes
 NEON_URL=$(printf '%s' "$NEON_URL" | sed -E "s/^[[:space:]]*psql[[:space:]]+//; s/^[\"']//; s/[\"'][[:space:]]*$//")
+# hidden input makes double pastes easy: keep only the first URL; channel_binding is not needed
+NEON_URL=$(printf '%s' "$NEON_URL" | sed -E "s/(.)postgres(ql)?:\/\/.*/\1/; s/[\"' ].*$//; s/[&?]channel_binding=[a-z]*//")
+case "$NEON_URL" in *\?*) ;; *) NEON_URL="${NEON_URL/&/?}" ;; esac
 UT_TOKEN=$(printf '%s' "$UT_TOKEN" | sed -E "s/^[[:space:]]*UPLOADTHING_TOKEN=//; s/^[\"']//; s/[\"'][[:space:]]*$//")
 case "$NEON_URL" in postgres://*|postgresql://*) ;; *) echo "Eso no parece una conexión de Neon (tiene que empezar con postgresql://)."; exit 1 ;; esac
 
