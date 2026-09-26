@@ -1,35 +1,18 @@
 {
-  "$source": "Filigrana oficio (22 x 33 cm).pdf — Canva, 11 páginas, creado 2026-09-22. Transcripción verificada contra el render de cada página.",
+  "$source": "Exportado desde el panel de administración",
   "tenant": {
-    "name": "Filigrana",
+    "name": "Filigrana Bar-Restaurante",
     "slug": "filigrana"
   },
   "restaurant": {
     "name": "Filigrana Bar-Restaurante",
     "slug": "filigrana",
     "description": "Bar-Restaurante. Pizzas artesanales, hamburguesas, milanesas, picadas, pastas, cócteles y vinos.",
+    "tagline": "Pizzas artesanales, parrilla, milanesas, cócteles y vinos.",
     "currency": "PYG",
     "default_locale": "es",
     "logo": "logo-blanco",
-    "cover": "fondue",
-    "theme": {
-      "preset": "filigrana-dark",
-      "primary": "#ED9D15",
-      "primaryLight": "#FFB943",
-      "accentWine": "#8F1B51",
-      "wineText": "#B6555A",
-      "background": "#181818",
-      "surface": "#000000",
-      "foreground": "#FFFFFF",
-      "fontHeading": "League Spartan",
-      "fontBody": "Glacial Indifference",
-      "fontDisplaySerif": "Playfair Display",
-      "ornament": "ornamento",
-      "logoDark": "logo-oscuro",
-      "$note": "Century Gothic (usada en el PDF) no es libre; se sustituye por Glacial Indifference/Questrial (OFL)."
-    },
     "hero": "hamburguesa-de-la-casa",
-    "tagline": "Pizzas artesanales, parrilla, milanesas, cócteles y vinos.",
     "tables": 20,
     "cuisine": [
       "Pizza",
@@ -37,7 +20,13 @@
       "Hamburguesas",
       "Pastas",
       "Cócteles"
-    ]
+    ],
+    "theme": {
+      "primary": "#ED9D15",
+      "primaryLight": "#FFB943",
+      "background": "#181818",
+      "accentWine": "#8F1B51"
+    }
   },
   "categories": [
     {
@@ -72,8 +61,8 @@
         {
           "slug": "montaditos-bruschetta-combinados",
           "name": "Montaditos de bruschetta combinados",
-          "price": 80000,
           "description": "Combinación de tres montaditos: Bruschetta napolitana (muzzarella artesanal, tomate cherry, albahaca, ajo y queso parmesano); Calabresa (calabresa, pepperoni, morrón rojo escabechado artesanal, queso muzzarella artesanal y aceitunas); Pickles caseros (muzzarella artesanal y pickles caseros: pepinillos, cebolla y zanahoria encurtidos).",
+          "price": 80000,
           "ingredients": [
             "muzzarella artesanal",
             "tomate cherry",
@@ -95,19 +84,18 @@
         {
           "slug": "montadito-cuatro-quesos-carne-ahumada",
           "name": "Montadito de cuatro quesos y desmechado de carne ahumada",
-          "price": 120000,
           "description": "Combinación de cuatro quesos gratinados y desmechado de carne ahumada.",
+          "price": 120000,
           "ingredients": [
             "cuatro quesos",
             "carne ahumada desmechada"
-          ],
-          "review": "El precio ₲120.000 aparece en el bloque de este montadito; el Fondue no muestra precio. Confirmar a cuál corresponde."
+          ]
         },
         {
           "slug": "tablita-quesos-finos",
           "name": "Tablita de quesos finos",
-          "price": 70000,
           "description": "Variedad de quesos finos, selección especial.",
+          "price": 70000,
           "tags": [
             "para compartir"
           ]
@@ -115,16 +103,18 @@
         {
           "slug": "fondue",
           "name": "Fondue",
-          "price": null,
-          "status": "draft",
-          "photo": "fondue",
           "description": "Queso azul, sardo, muzzarella, paraguay y parmesano. Condimentos a elección.\n\nNació en los Alpes suizos en el siglo XVIII como un recurso de supervivencia invernal: los campesinos derretían quesos curados endurecidos con vino blanco para ablandar el pan seco y aprovechar los alimentos disponibles en épocas de escasez.",
+          "price": null,
           "ingredients": [
             "queso azul",
             "queso sardo",
             "muzzarella",
             "queso paraguay",
             "queso parmesano"
+          ],
+          "tags": [
+            "destacado",
+            "para compartir"
           ],
           "options": [
             {
@@ -137,11 +127,8 @@
               ]
             }
           ],
-          "tags": [
-            "destacado",
-            "para compartir"
-          ],
-          "review": "SIN PRECIO en el PDF. Queda en borrador hasta confirmar precio."
+          "photo": "fondue",
+          "status": "draft"
         }
       ]
     },
@@ -152,8 +139,8 @@
         {
           "slug": "hamburguesa-de-vacio",
           "name": "Hamburguesa de vacío",
-          "price": 70000,
           "description": "Carne, pan brioche, lechuga repollada, tomate, cebolla morada y queso cheddar.",
+          "price": 70000,
           "ingredients": [
             "carne de vacío",
             "pan brioche",
@@ -166,8 +153,8 @@
         {
           "slug": "hamburguesa-doble",
           "name": "Hamburguesa doble",
-          "price": 95000,
           "description": "Dos medallones de 170 g de carne, pan brioche, lechuga repollada, tomate, cebolla morada y queso cheddar.",
+          "price": 95000,
           "ingredients": [
             "2 medallones de carne 170 g",
             "pan brioche",
@@ -180,15 +167,14 @@
         {
           "slug": "combo-de-vacio",
           "name": "Combo de vacío",
-          "price": 85000,
-          "description": "Hamburguesa de vacío con papas fritas."
+          "description": "Hamburguesa de vacío con papas fritas.",
+          "price": 85000
         },
         {
           "slug": "hamburguesa-de-la-casa",
           "name": "Hamburguesa de la Casa",
-          "price": 125000,
-          "photo": "hamburguesa-de-la-casa",
           "description": "200 g de carne de vacío, huevo, cebolla caramelizada, queso mozzarella, panceta, lechuga repollada, tomate, salsa rosa y papas.",
+          "price": 125000,
           "ingredients": [
             "carne de vacío 200 g",
             "huevo",
@@ -202,13 +188,14 @@
           ],
           "tags": [
             "destacado"
-          ]
+          ],
+          "photo": "hamburguesa-de-la-casa"
         },
         {
           "slug": "guarnicion-de-papas",
           "name": "Guarnición de papas",
-          "price": 23000,
           "description": "Agregado para cualquier hamburguesa.",
+          "price": 23000,
           "tags": [
             "extra"
           ]
@@ -222,9 +209,8 @@
         {
           "slug": "parrillita-especial-2p",
           "name": "Parrillita Especial p/2 personas",
-          "price": 196000,
-          "photo": "parrillita-especial",
           "description": "Carne vacuna a la pizza, vacío, variedad de choricitos, brochetas de pollo, carne, verduras y panceta ahumada.",
+          "price": 196000,
           "ingredients": [
             "carne vacuna a la pizza",
             "vacío",
@@ -236,14 +222,14 @@
           ],
           "tags": [
             "para compartir"
-          ]
+          ],
+          "photo": "parrillita-especial"
         },
         {
           "slug": "parrillita-especial-4p",
           "name": "Parrillita Especial p/4 personas",
-          "price": 280000,
-          "photo": "parrillita-especial",
           "description": "Carne vacuna a la pizza, vacío, variedad de choricitos, brochetas de pollo, carne, verduras y panceta ahumada.",
+          "price": 280000,
           "ingredients": [
             "carne vacuna a la pizza",
             "vacío",
@@ -256,7 +242,8 @@
           "tags": [
             "para compartir",
             "destacado"
-          ]
+          ],
+          "photo": "parrillita-especial"
         }
       ]
     },
@@ -268,29 +255,25 @@
           "slug": "fettuccine",
           "name": "Fettuccine",
           "price": 65000,
-          "photo": "fettuccine",
-          "review": "Sin descripción/salsa en el PDF (la foto muestra salsa bolognesa)."
+          "photo": "fettuccine"
         },
         {
           "slug": "noquis",
           "name": "Ñoquis",
           "price": 70000,
-          "photo": "noquis",
-          "review": "Sin descripción en el PDF (foto: salsa pomodoro y parmesano)."
+          "photo": "noquis"
         },
         {
           "slug": "ravioles",
           "name": "Ravioles",
           "price": 80000,
-          "photo": "ravioles",
-          "review": "Sin descripción en el PDF (foto: salsa rosa)."
+          "photo": "ravioles"
         },
         {
           "slug": "lasana",
           "name": "Lasaña",
           "price": 80000,
-          "photo": "lasana",
-          "review": "Sin descripción en el PDF."
+          "photo": "lasana"
         }
       ]
     },
@@ -303,8 +286,8 @@
         {
           "slug": "milanesa-filigrana",
           "name": "Milanesa Filigrana",
-          "price": 168000,
           "description": "Milanesa de carne vacuna de 350 g, rellena de 4 quesos, champiñón y locote de colores, huevo frito y pan francés entero.",
+          "price": 168000,
           "ingredients": [
             "milanesa de carne vacuna 350 g",
             "4 quesos",
@@ -321,8 +304,7 @@
           "slug": "milanesa-de-carne",
           "name": "Milanesa de carne",
           "price": 70000,
-          "photo": "milanesa",
-          "review": "La foto de la sección es genérica; confirmar si corresponde a este plato."
+          "photo": "milanesa"
         },
         {
           "slug": "milanesa-de-pollo",
@@ -337,8 +319,8 @@
         {
           "slug": "chivito-filigrana-2p",
           "name": "Chivito Filigrana al plato p/2 personas",
-          "price": 168000,
           "description": "Carne vacuna, mozzarella, cheddar, panceta, huevo y mini ensalada.",
+          "price": 168000,
           "ingredients": [
             "carne vacuna",
             "mozzarella",
@@ -354,8 +336,8 @@
         {
           "slug": "picada-de-milanesitas",
           "name": "Picada de milanesitas",
-          "price": 70000,
           "description": "Milanesitas de carne o pollo.",
+          "price": 70000,
           "options": [
             {
               "group": "Milanesitas de",
@@ -374,8 +356,7 @@
                 "Chipa guasu"
               ]
             }
-          ],
-          "review": "El PDF dice 'Milanesitas con sopa o chipaguazu'. Confirmar si 'sopa' es sopa paraguaya."
+          ]
         },
         {
           "slug": "milanesitas-con-bolitas-de-queso",
@@ -391,8 +372,8 @@
         {
           "slug": "ensalada-cesar",
           "name": "Ensalada César",
-          "price": 80000,
           "description": "Crujiente lechuga romana, pollo grillado, tomates cherry, parmesano y crutones dorados, con aderezo César cremoso de la casa.",
+          "price": 80000,
           "ingredients": [
             "lechuga romana",
             "pollo grillado",
@@ -405,8 +386,8 @@
         {
           "slug": "ensalada-mixta",
           "name": "Ensalada mixta",
-          "price": 70000,
           "description": "Fresca combinación de lechuga, tomate, cebolla morada, zanahoria rallada y pepino, con un toque de aceite de oliva y vinagre balsámico.",
+          "price": 70000,
           "ingredients": [
             "lechuga",
             "tomate",
@@ -420,8 +401,8 @@
         {
           "slug": "ensalada-rucula-parmesano",
           "name": "Ensalada de rúcula y parmesano",
-          "price": 80000,
           "description": "Rúcula fresca, finas láminas de parmesano y un toque de aceite de oliva extra virgen.",
+          "price": 80000,
           "ingredients": [
             "rúcula",
             "parmesano",
@@ -437,8 +418,8 @@
         {
           "slug": "pizza-jamon-y-morrones",
           "name": "Jamón y morrones",
-          "price": 84000,
           "description": "Masa artesanal, salsa pomodoro, aceituna, morrones y jamón.",
+          "price": 84000,
           "ingredients": [
             "masa artesanal",
             "salsa pomodoro",
@@ -450,9 +431,8 @@
         {
           "slug": "pizza-cuatro-quesos",
           "name": "Cuatro quesos",
-          "price": 98000,
-          "photo": "pizza-cuatro-quesos",
           "description": "Masa artesanal, salsa pomodoro, aceituna, mozzarella, queso parmesano, queso azul y queso catupiry.",
+          "price": 98000,
           "ingredients": [
             "masa artesanal",
             "salsa pomodoro",
@@ -462,13 +442,13 @@
             "queso azul",
             "catupiry"
           ],
-          "review": "El PDF lista 'mozzarella' dos veces; se dejó una sola."
+          "photo": "pizza-cuatro-quesos"
         },
         {
           "slug": "pizza-pollo-al-pesto",
           "name": "Pollo al pesto",
-          "price": 91000,
           "description": "Masa artesanal, salsa pomodoro, mozzarella, pollo y salsa pesto.",
+          "price": 91000,
           "ingredients": [
             "masa artesanal",
             "salsa pomodoro",
@@ -480,8 +460,8 @@
         {
           "slug": "pizza-volare",
           "name": "Volare",
-          "price": 98000,
           "description": "Masa artesanal, salsa pomodoro, mozzarella, rúcula, jamón, tomate cherry y queso parmesano.",
+          "price": 98000,
           "ingredients": [
             "masa artesanal",
             "salsa pomodoro",
@@ -495,8 +475,8 @@
         {
           "slug": "pizza-mexicana",
           "name": "Mexicana",
-          "price": 98000,
           "description": "Masa artesanal, salsa pomodoro, aceituna negra, morrón rojo, carne salteada, cebolla y jalapeño.",
+          "price": 98000,
           "ingredients": [
             "masa artesanal",
             "salsa pomodoro",
@@ -513,8 +493,8 @@
         {
           "slug": "pizza-de-la-casa",
           "name": "De la casa",
-          "price": 112000,
           "description": "Carne salteada, cebolla salteada, panceta y chorizo.",
+          "price": 112000,
           "ingredients": [
             "carne salteada",
             "cebolla salteada",
@@ -525,8 +505,8 @@
         {
           "slug": "pizza-anchoa",
           "name": "Anchoa",
-          "price": 95000,
           "description": "Masa artesanal, salsa pomodoro, aceituna y anchoas.",
+          "price": 95000,
           "ingredients": [
             "masa artesanal",
             "salsa pomodoro",
@@ -537,8 +517,8 @@
         {
           "slug": "pizza-mozzarella",
           "name": "Mozzarella",
-          "price": 70000,
           "description": "Masa media artesanal, salsa pomodoro, queso mozzarella, orégano y aceitunas.",
+          "price": 70000,
           "ingredients": [
             "masa media artesanal",
             "salsa pomodoro",
@@ -550,9 +530,8 @@
         {
           "slug": "pizza-margarita",
           "name": "Margarita",
-          "price": 70000,
-          "photo": "pizza-margarita",
           "description": "Masa artesanal, salsa pomodoro, mozzarella, aceituna, albahaca y ajo.",
+          "price": 70000,
           "ingredients": [
             "masa artesanal",
             "salsa pomodoro",
@@ -561,14 +540,15 @@
             "albahaca",
             "ajo"
           ],
+          "photo": "pizza-margarita",
           "model": "pizza-margarita-demo.glb",
           "modelNote": "Modelo de demostración"
         },
         {
           "slug": "pizza-primavera",
           "name": "Primavera",
-          "price": 84000,
           "description": "Masa artesanal, salsa pomodoro, queso mozzarella, tomate y albahaca.",
+          "price": 84000,
           "ingredients": [
             "masa artesanal",
             "salsa pomodoro",
@@ -580,8 +560,8 @@
         {
           "slug": "pizza-choclo-con-catupiry",
           "name": "Choclo con catupiry",
-          "price": 90000,
           "description": "Masa artesanal, salsa pomodoro, aceitunas, choclo y catupiry.",
+          "price": 90000,
           "ingredients": [
             "masa artesanal",
             "salsa pomodoro",
@@ -593,8 +573,8 @@
         {
           "slug": "pizza-pepperoni",
           "name": "Pepperoni",
-          "price": 91000,
           "description": "Masa artesanal, salsa pomodoro, mozzarella, aceituna y pepperoni.",
+          "price": 91000,
           "ingredients": [
             "masa artesanal",
             "salsa pomodoro",
@@ -606,8 +586,8 @@
         {
           "slug": "pizza-jamon-con-rucula",
           "name": "Jamón con rúcula",
-          "price": 84000,
           "description": "Masa artesanal, salsa pomodoro, mozzarella, jamón y rúcula.",
+          "price": 84000,
           "ingredients": [
             "masa artesanal",
             "salsa pomodoro",
@@ -619,8 +599,8 @@
         {
           "slug": "pizza-pollo-con-catupiry",
           "name": "Pollo con catupiry",
-          "price": 91000,
           "description": "Masa artesanal, salsa pomodoro, mozzarella, pollo y queso catupiry.",
+          "price": 91000,
           "ingredients": [
             "masa artesanal",
             "salsa pomodoro",
@@ -632,8 +612,8 @@
         {
           "slug": "lomipizza-6p",
           "name": "Lomipizza p/6 personas",
-          "price": 180000,
           "description": "500 g de lomo, lechuga, repollo, tomate, huevo, tapa de pizza y mozzarella.",
+          "price": 180000,
           "ingredients": [
             "lomo 500 g",
             "lechuga",
@@ -692,10 +672,6 @@
       "slug": "cocteles",
       "name": "Cócteles",
       "cover": "coctel-azul",
-      "gallery": [
-        "coctel-azul",
-        "coctel-naranja"
-      ],
       "dishes": [
         {
           "slug": "sangria",
@@ -719,8 +695,7 @@
           "slug": "caipirinha",
           "name": "Caipiriña",
           "price": 25000,
-          "photo": "caipirinha",
-          "review": "Foto asignada por aspecto (lima + hielo); confirmar."
+          "photo": "caipirinha"
         },
         {
           "slug": "caipiroska",
@@ -741,8 +716,7 @@
                 "Limón"
               ]
             }
-          ],
-          "review": "En el PDF figura como 'Daikiri'."
+          ]
         },
         {
           "slug": "pina-colada",
@@ -797,8 +771,7 @@
           "price": 40000,
           "tags": [
             "de la casa"
-          ],
-          "review": "Sin descripción. ¿Es el cóctel azul de la foto?"
+          ]
         },
         {
           "slug": "moscow-mule",
@@ -948,23 +921,18 @@
     {
       "slug": "vinos",
       "name": "Vinos",
-      "theme": {
-        "accent": "#8F1B51",
-        "font": "Playfair Display"
-      },
       "dishes": [
         {
           "slug": "sanz-calvo",
           "name": "Sanz Calvo",
-          "price": 120000,
           "description": "Vino afrutado, en el que destacan los cítricos y los aromas florales. En boca destaca su intensidad y su acidez refrescante.",
-          "review": "El PDF no indica tipo/uva (la descripción sugiere blanco)."
+          "price": 120000
         },
         {
           "slug": "artoje-rioja",
           "name": "Artoje Rioja",
-          "price": 125000,
           "description": "El vino Artoje Rioja Reserva tiene aromas a madera y en boca se percibe un sabor que se equilibra.",
+          "price": 125000,
           "tags": [
             "tinto",
             "Rioja"
@@ -973,8 +941,8 @@
         {
           "slug": "cordero-con-piel-de-lobo-malbec",
           "name": "Cordero con Piel de Lobo Malbec",
-          "price": 130000,
           "description": "Un vino tinto versátil, rico en matices y con un toque especiado, que destaca por su equilibrio de acidez.",
+          "price": 130000,
           "tags": [
             "tinto",
             "Malbec"
@@ -983,8 +951,8 @@
         {
           "slug": "zuazo-gaston-crianza-2008",
           "name": "Zuazo Gastón Rioja Crianza 2008",
-          "price": 170000,
           "description": "Rioja 100% Tempranillo, con notas de roble, vainilla y fruta confitada. Equilibrado y elegante, con final persistente. Ideal para carnes y quesos.",
+          "price": 170000,
           "tags": [
             "tinto",
             "Rioja"
@@ -993,8 +961,8 @@
         {
           "slug": "corte-viola-cabernet-veneto",
           "name": "Corte Viola Cabernet Veneto",
-          "price": 200000,
           "description": "Vino tinto con aromas de frutas rojas maduras y toques herbáceos. Equilibrado, seco y fresco, ideal para carnes rojas, asados y quesos.",
+          "price": 200000,
           "tags": [
             "tinto",
             "Italia"
@@ -1003,8 +971,8 @@
         {
           "slug": "terra-aprica-negroamaro",
           "name": "Terra Aprica Negroamaro",
-          "price": 200000,
           "description": "Vino tinto italiano de Apulia, con notas de frutas rojas maduras, cereza, regaliz y mermelada de ciruela. De cuerpo sostenido, ideal para carnes rojas y quesos.",
+          "price": 200000,
           "tags": [
             "tinto",
             "Italia"
@@ -1013,19 +981,18 @@
         {
           "slug": "lappassione-rosso-trevenezie",
           "name": "L'Appassione Rosso Trevenezie",
-          "price": 220000,
           "description": "Vino tinto con aromas de frutas rojas maduras, especias y vainilla. De cuerpo cálido y equilibrado, ideal para pasta, carnes y quesos.",
+          "price": 220000,
           "tags": [
             "tinto",
             "Italia"
-          ],
-          "review": "Aparece DOS veces en el PDF; la primera copia tiene la descripción del Corte Viola. ¿Falta un vino distinto en ese lugar?"
+          ]
         },
         {
           "slug": "conde-de-jauregui-reserva-2012",
           "name": "Conde de Jauregui Reserva 2012",
-          "price": 250000,
           "description": "Color rojo granate de buena capa, con ligeros destellos teja en su ribete. Elegante y complejo en nariz, muestra aromas especiados (clavo y pimienta), notas balsámicas y reminiscencias licorosas de fruta roja madura.",
+          "price": 250000,
           "tags": [
             "tinto",
             "Rioja"
@@ -1034,8 +1001,8 @@
         {
           "slug": "delle-rocche-montepulciano",
           "name": "Delle Rocche Montepulciano d'Abruzzo",
-          "price": 250000,
           "description": "Vino tinto elaborado 100% con uvas Montepulciano, de la región de Abruzzo. Aroma intenso y afrutado con notas de fruta roja, bien equilibrado.",
+          "price": 250000,
           "tags": [
             "tinto",
             "Italia"
@@ -1044,8 +1011,8 @@
         {
           "slug": "sonsierra-reserva-2008",
           "name": "Sonsierra Reserva Rioja 2008",
-          "price": 300000,
           "description": "Sabor a frutas rojas maduras con toques licorosos y de compota, acompañado de especias, notas balsámicas y tostados. En boca es potente, estructurado y con taninos presentes, dejando un final cálido y persistente.",
+          "price": 300000,
           "tags": [
             "tinto",
             "Rioja"
@@ -1054,8 +1021,8 @@
         {
           "slug": "valsarte-rioja-2001",
           "name": "Valsarte Rioja 2001",
-          "price": 500000,
           "description": "Tinto de la D.O.Ca. Rioja, elaborado por la Bodega Solana de Ramírez. Color rojo cereza brillante, aromas de frambuesa y regaliz, y un final equilibrado.",
+          "price": 500000,
           "tags": [
             "tinto",
             "Rioja"
@@ -1064,102 +1031,13 @@
         {
           "slug": "imperial-reserva-2005",
           "name": "'Imperial' Reserva 2005",
-          "price": 900000,
           "description": "Color granate, con aromas complejos de frutos del bosque y especias; en boca es suave, elegante y fresco.",
+          "price": 900000,
           "tags": [
             "tinto"
-          ],
-          "review": "Falta la bodega (¿CVNE Imperial Reserva?). Confirmar nombre completo."
+          ]
         }
       ]
     }
-  ],
-  "images": {
-    "logo-blanco": {
-      "xref": 891,
-      "use": "logo (fondo oscuro)"
-    },
-    "logo-oscuro": {
-      "xref": 562,
-      "use": "logo (fondo claro)"
-    },
-    "ornamento": {
-      "xref": 906,
-      "use": "ornamento de títulos de sección"
-    },
-    "fondue": {
-      "xref": 529
-    },
-    "hamburguesa-de-la-casa": {
-      "xref": 545
-    },
-    "parrillita-especial": {
-      "xref": 550
-    },
-    "fettuccine": {
-      "xref": 564
-    },
-    "noquis": {
-      "xref": 565
-    },
-    "ravioles": {
-      "xref": 566
-    },
-    "lasana": {
-      "xref": 567
-    },
-    "milanesa": {
-      "xref": 579
-    },
-    "pizza-margarita": {
-      "xref": 589
-    },
-    "pizza-cuatro-quesos": {
-      "xref": 596
-    },
-    "brownie-con-helado": {
-      "xref": 609
-    },
-    "torta-tres-leches-con-helado": {
-      "xref": 610
-    },
-    "flan": {
-      "xref": 1085
-    },
-    "coctel-azul": {
-      "xref": 626,
-      "use": "sin plato asignado"
-    },
-    "aperol": {
-      "xref": 627
-    },
-    "coctel-naranja": {
-      "xref": 628,
-      "use": "sin plato asignado"
-    },
-    "caipirinha": {
-      "xref": 629
-    },
-    "cuba-libre": {
-      "xref": 630
-    },
-    "heineken": {
-      "xref": 653
-    },
-    "chopp-munich": {
-      "xref": 654
-    },
-    "corona": {
-      "xref": 655
-    },
-    "jugo-de-naranja": {
-      "xref": 656
-    },
-    "jugo-de-frutilla": {
-      "xref": 657
-    },
-    "jugo-de-limon": {
-      "xref": 658
-    }
-  }
+  ]
 }
