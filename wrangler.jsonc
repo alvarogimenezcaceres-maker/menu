@@ -1,0 +1,11 @@
+// Public menus on Cloudflare Workers (static assets only, free plan).
+// Build first: cd site && SITE_URL=<public url> node build.mjs   → deploy: npx wrangler deploy
+{
+  "name": "menu3d-demo",
+  "compatibility_date": "2026-09-25",
+  "assets": {
+    "directory": "./dist",
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "none"
+  }
+}

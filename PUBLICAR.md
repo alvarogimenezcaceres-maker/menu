@@ -87,3 +87,18 @@ Herramientas open source portables en `.local/tools/` (COLMAP 4.2 sin CUDA, Open
 4. Restaurante → **Publicar ahora**.
 
 `workers/3d/render_views.py` es **solo para demostración**: simula una sesión de fotos renderizando un modelo escaneado.
+
+## Menú público en Cloudflare (desde el 26/09/2026)
+
+Los menús se publican en **Cloudflare Workers** (archivos estáticos, plan gratis):
+**https://menu3d-demo.alvarogimenezcaceres.workers.dev/** (`/filigrana/`, `/gringo-bar/`, `…/qr/` para la hoja de QR).
+
+- **Publicar desde el panel:** «Publicar ahora» hace el push y además, en segundo plano, reconstruye y sube el sitio a Cloudflare (≈1 min). El registro queda en `.local/deploy-cloudflare.log`.
+- **Publicar a mano:**
+  ```bash
+  node site/deploy-cloudflare.mjs
+  ```
+  La primera vez en una máquina nueva hay que iniciar sesión con `npx wrangler login`.
+- **Configuración:** `wrangler.jsonc` (proyecto `menu3d-demo`). Los encabezados de respuesta (formato de modelos 3D, permiso de cámara para AR) los genera `site/build.mjs` en `dist/_headers`.
+- **Dominio propio (más adelante):** agregarlo en Cloudflare y correr `CF_SITE_URL=https://menu.tudominio.com/ node site/deploy-cloudflare.mjs`, para regenerar los QR con esa dirección.
+- **GitHub Pages** sigue publicando en paralelo hasta que decidamos apagarlo.

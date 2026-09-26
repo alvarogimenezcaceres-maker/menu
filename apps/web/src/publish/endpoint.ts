@@ -1,7 +1,7 @@
 import type { Endpoint } from 'payload'
 
 import { exportRestaurant } from './export'
-import { commitAndPush } from './git'
+import { commitAndPush, deployToCloudflare } from './git'
 
 let busy = false
 
@@ -24,6 +24,7 @@ export const publishEndpoint: Endpoint = {
       const out = await exportRestaurant(req.payload, id)
       const who = (req.user as { name?: string; email?: string }).name || (req.user as { email?: string }).email
       const result = await commitAndPush(out.relDir, `Menú ${out.name}: publicado desde el panel (${who})`)
+      if (result.changed) deployToCloudflare()
       await req.payload.update({ collection: 'restaurants', id, data: { lastPublishedAt: new Date().toISOString() }, overrideAccess: true })
 
       const base = process.env.MENU_BASE_URL ? process.env.MENU_BASE_URL.replace(/\/?$/, '/') : ''
