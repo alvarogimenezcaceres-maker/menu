@@ -102,3 +102,30 @@ Los menús se publican en **Cloudflare Workers** (archivos estáticos, plan grat
 - **Configuración:** `wrangler.jsonc` (proyecto `menu3d-demo`). Los encabezados de respuesta (formato de modelos 3D, permiso de cámara para AR) los genera `site/build.mjs` en `dist/_headers`.
 - **Dominio propio (más adelante):** agregarlo en Cloudflare y correr `CF_SITE_URL=https://menu.tudominio.com/ node site/deploy-cloudflare.mjs`, para regenerar los QR con esa dirección.
 - **GitHub Pages** sigue publicando en paralelo hasta que decidamos apagarlo.
+
+## Todo en la nube (desde el 26/09/2026): la notebook ya no hace falta
+
+| Pieza | Dónde | Dirección |
+|---|---|---|
+| Panel de administración | Render (plan gratis, imagen `ghcr.io/alvarogimenezcaceres-maker/menu3d-panel:latest`) | https://menu3d-panel.onrender.com/admin |
+| Base de datos | Neon (PostgreSQL, São Paulo) | — |
+| Fotos y modelos 3D | UploadThing (direcciones públicas `utfs.io/f/…`) | — |
+| Menús públicos | Cloudflare Workers | https://menu3d-demo.alvarogimenezcaceres.workers.dev/ |
+
+- **Publicar:** «Publicar ahora» en el panel hace un commit por la API de GitHub (`GITHUB_TOKEN` en Render). El workflow `deploy-menus.yml` publica en Cloudflare en ~1 minuto.
+- **Actualizar el panel después de cambiar su código:**
+  1. Al hacer push, GitHub arma la imagen nueva (`panel-image.yml`).
+  2. En Render: **Manual Deploy → Deploy latest reference**. Render no la toma sola.
+- **Plan gratis de Render:** el panel se duerme a los 15 minutos sin uso; la primera carga después tarda ~1 minuto. El menú público no tiene ese problema.
+- **Variables de Render:**
+  - `DATABASE_URL`
+  - `PAYLOAD_SECRET`
+  - `UPLOADTHING_TOKEN`
+  - `GITHUB_TOKEN`: token clásico con solo `public_repo`, vence en 1 año; renovarlo antes.
+  - `GITHUB_REPO`
+  - `GITHUB_BRANCH`
+  - `MENU_BASE_URL`
+  - `NODE_ENV`
+
+  Copia local en `.local/render.env`, sin el token de GitHub.
+- **Pendiente:** la fotogrametría (fotos → 3D) sigue corriendo en la notebook. Pasarla a GitHub Actions.
