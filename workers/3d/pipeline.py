@@ -159,9 +159,7 @@ stage("5-final", "out/model.glb", blender("finalize.py", "textured.obj", "transf
 
 # 6. Web optimization (glTF-Transform) + 7. validation (Khronos)
 node = shutil.which("node") or "node"
-gltf_cli = str(HERE / "node_modules/@gltf-transform/cli/bin/cli.js")
-stage("6-optimizar", "out/model-web.glb", [node, gltf_cli, "optimize", "out/model.glb", "out/model-web.glb",
-      "--compress", "false", "--texture-compress", "webp", "--texture-size", "2048"])
+stage("6-optimizar", "out/model-web.glb", [node, str(HERE / "optimize.mjs"), "out/model.glb", "out/model-web.glb"])
 stage("7-validar", "out/validation.json", [node, str(HERE / "validate.mjs"), "out/model-web.glb", "out/validation.json"])
 
 report["total_seconds"] = round(time.time() - t_all, 1)
