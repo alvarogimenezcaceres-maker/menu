@@ -38,8 +38,10 @@ export const logoHtml = ({ animated = false, tag = "span" } = {}) => {
   const end = animated
     ? `<circle class="mv-dot" cx="84" cy="82" r="10" fill="${colours.end}">${ANIM.replaceAll(' dur="8s"', ' begin="indefinite" dur="8s"')}</circle>`
     : "";
-  return `<${tag} class="mv-wordmark"${animated ? " data-animated" : ""} role="img" aria-label="MESAVERSO">` +
+  // The visible "ESAVERSO" is drawn by CSS (attr) so the text that search engines and screen
+  // readers get is the brand name, "Mesaverso", not "ESAVERSO".
+  return `<${tag} class="mv-wordmark"${animated ? " data-animated" : ""}>` +
     `<svg viewBox="${CROP.x} ${CROP.y} ${CROP.w} ${CROP.h}" aria-hidden="true" focusable="false">` +
     glyph(colours, { endDot: !animated }) + end +
-    `</svg><span aria-hidden="true">ESAVERSO</span></${tag}>`;
+    `</svg><span class="mv-wordmark__rest" data-text="ESAVERSO" aria-hidden="true"></span><span class="sr-only">Mesaverso</span></${tag}>`;
 };

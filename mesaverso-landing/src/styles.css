@@ -5,6 +5,13 @@
    No brand red/orange/green (not even WhatsApp green), no gradients, glow or dramatic shadows.
    Components use ONLY the semantic tokens below. WCAG AA pairs: niebla/noche 16.9 · titanio/noche 11.3 ·
    titanio/grafito 8.2 · muted/grafito 5.2 · noche/luz 14 · grafito/niebla 12.3 · muted-light/niebla 5.7. */
+/* Self-hosted fonts (Google Fonts, OFL; latin subset). Familjen Grotesk and Instrument Sans are
+   variable (one file per family); IBM Plex Mono only in the two weights used. */
+@font-face { font-family: "Familjen Grotesk"; src: url("/fonts/familjen-grotesk-latin.woff2") format("woff2"); font-weight: 400 700; font-style: normal; font-display: swap; }
+@font-face { font-family: "Instrument Sans"; src: url("/fonts/instrument-sans-latin.woff2") format("woff2"); font-weight: 400 700; font-style: normal; font-display: swap; }
+@font-face { font-family: "IBM Plex Mono"; src: url("/fonts/ibm-plex-mono-400-latin.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "IBM Plex Mono"; src: url("/fonts/ibm-plex-mono-500-latin.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: swap; }
+
 :root {
   /* palette 5B */
   --mv-noche: #0e1014;
@@ -111,6 +118,7 @@ button { cursor: pointer; }
 /* ---------- logo: [M]ESAVERSO (the isotype IS the M, cap height of Familjen Grotesk) ---------- */
 .mv-wordmark { display: inline-flex; align-items: baseline; font-family: var(--display); font-weight: 600; letter-spacing: .04em; line-height: 1; color: var(--text); white-space: nowrap; }
 .mv-wordmark svg { height: .65em; width: .758em; margin-right: .05em; overflow: visible; flex: none; }
+.mv-wordmark__rest::after { content: attr(data-text); }
 
 /* ---------- buttons ---------- */
 .btn { --h: 52px; display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: var(--h); padding: 0 26px; border-radius: var(--r-pill); border: 1px solid transparent; font-weight: 600; font-size: 16px; line-height: 1.1; text-decoration: none; text-align: center; transition: background-color .2s, border-color .2s, color .2s; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
@@ -170,6 +178,8 @@ button { cursor: pointer; }
 .hero__grid { display: grid; gap: 56px; position: relative; }
 .hero__copy { display: grid; gap: 22px; align-content: start; }
 .hero__title { font-size: clamp(40px, 11.4vw, 78px); letter-spacing: -.025em; line-height: 1.02; }
+/* The H1 starts with what the product is (for people and search engines), then the tagline. */
+.hero__product { display: block; margin-bottom: 18px; font-family: var(--mono); font-size: 13px; font-weight: 500; letter-spacing: .1em; line-height: 1.5; text-transform: uppercase; color: var(--text-2); }
 .hero__lead { color: var(--text-2); font-size: 18px; max-width: 52ch; }
 .hero__ctas { display: grid; gap: 12px; }
 .hero__facts { color: var(--text-3); font-size: 14px; }
@@ -504,14 +514,44 @@ button { cursor: pointer; }
 /* ---------- faq ---------- */
 .faq .sec-head { margin-bottom: 24px; }
 .faq__list { display: grid; }
-.faq details { border-bottom: 1px solid var(--divider); }
-.faq summary { list-style: none; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 64px; padding: 14px 2px; font-weight: 600; font-size: 17px; }
-.faq summary::-webkit-details-marker { display: none; }
-.faq summary::after { content: ""; flex: none; width: 18px; height: 18px; background: var(--icon); -webkit-mask: var(--ico-plus) center / contain no-repeat; mask: var(--ico-plus) center / contain no-repeat; transition: transform .25s var(--ease); }
-.faq details[open] summary::after { transform: rotate(45deg); }
+.faq__item { border-bottom: 1px solid var(--divider); }
+.faq__h { font-family: var(--body); font-size: 17px; font-weight: 600; letter-spacing: 0; line-height: 1.35; }
+.faq__q { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 64px; padding: 14px 2px; border: 0; background: transparent; color: var(--text); font: inherit; text-align: left; cursor: pointer; }
+.faq__q::after { content: ""; flex: none; width: 18px; height: 18px; background: var(--icon); -webkit-mask: var(--ico-plus) center / contain no-repeat; mask: var(--ico-plus) center / contain no-repeat; transition: transform .25s var(--ease); }
+.faq__q[aria-expanded="true"]::after { transform: rotate(45deg); }
+.faq__a[hidden] { display: none; }
 .faq__a { padding: 0 2px 20px; color: var(--text-2); font-size: 16px; }
 .faq__a s { color: var(--text-3); }
 .faq__a strong { color: var(--text); }
+
+/* ---------- internal links and inner pages ---------- */
+.more-link { justify-self: start; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; color: var(--text); font-weight: 600; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 5px; }
+.more-link svg { width: 16px; height: 16px; flex: none; }
+.kinds__lead { margin: -8px 0 24px; }
+.kinds__lead a, .prose a, .final .sec-lead a { color: var(--text); text-decoration-thickness: 1px; text-underline-offset: 4px; }
+.crumbs { font-size: 14px; color: var(--text-3); }
+.crumbs ol { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.crumbs li + li::before { content: "/"; margin-right: 6px; color: var(--text-3); }
+.crumbs a { color: var(--text-2); text-decoration: none; display: inline-flex; align-items: center; min-height: 44px; }
+.crumbs a:hover { color: var(--text); text-decoration: underline; }
+.crumbs [aria-current] { display: inline-flex; align-items: center; min-height: 44px; }
+.prose { display: grid; gap: 16px; max-width: 68ch; color: var(--text-2); }
+.prose strong { color: var(--text); }
+.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 16px; counter-reset: step; }
+.steps li { display: grid; grid-template-columns: 44px 1fr; gap: 16px; align-items: start; padding: 20px; border-radius: var(--r-card); background: var(--surface); border: 1px solid var(--line); counter-increment: step; }
+.steps li::before { content: counter(step, decimal-leading-zero); width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; border: 1px solid var(--mv-titanio); color: var(--text-2); font-family: var(--mono); font-size: 13px; font-weight: 500; }
+.steps h3 { font-size: 20px; margin-bottom: 4px; }
+.steps p { color: var(--text-2); }
+.cards2 { display: grid; gap: 16px; }
+.cards2 > * { padding: 26px 22px; border-radius: var(--r-card); border: 1px solid var(--line); background: var(--surface); display: grid; gap: 10px; align-content: start; }
+.cards2 h3 { font-size: 22px; }
+.cards2 p { color: var(--text-2); }
+@media (min-width: 860px) { .steps { grid-template-columns: repeat(3, 1fr); } .steps li { grid-template-columns: 1fr; } .cards2 { grid-template-columns: 1fr 1fr; gap: 20px; } .cards2 > * { padding: 36px; } }
+.page-hero { padding: 24px 0 64px; border-top: 0; }
+.page-hero__in { display: grid; gap: 22px; }
+.page-hero__in > * { max-width: 820px; }
+.page-hero h1 { font-size: clamp(38px, 9.6vw, 68px); letter-spacing: -.025em; line-height: 1.04; }
+@media (min-width: 1024px) { .page-hero { padding: 40px 0 96px; } }
 
 /* ---------- final ---------- */
 .final__in { display: grid; justify-items: center; text-align: center; gap: 20px; }

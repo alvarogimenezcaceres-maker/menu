@@ -35,6 +35,20 @@ La identidad (manual 5B · Titanio + Luz Cálida, logo `[M]ESAVERSO`) está resu
 - Los logos están en `src/brand/` y se publican en `/brand/…`. Se generan con `npm run brand` desde `scripts/brand.mjs`, que es la misma geometría que usa la página; nunca se editan a mano.
 - Las imágenes para compartir y los íconos (`og.png`, `icon-32.png`, `apple-touch-icon.png`, `icon-512.png`) se generan con `npm run images`.
 
+## Páginas y SEO
+
+Qué se hizo y por qué está en **`SEO-FASE-1.md`**.
+
+| Qué | Dónde |
+|---|---|
+| Páginas indexables, title, description y OG | `PAGES` en `src/content.mjs` |
+| Preguntas frecuentes (se generan la FAQ visible y el JSON-LD `FAQPage`) | `FAQS` en `src/content.mjs` |
+| Head, íconos, header y footer compartidos | `src/partials/` |
+| Páginas internas | `src/pages/` (por ejemplo `/pedidos-por-whatsapp/`) |
+| Canonical, sitemap, robots, schema | los arma `build.mjs` desde `SITE_URL` |
+
+Para agregar una página, sumala a `PAGES` y creá su archivo en `src/pages/`. El sitemap y el QA la toman solos.
+
 ## Publicar
 
 ```
@@ -43,6 +57,16 @@ npm install        # la primera vez
 npm run deploy     # arma dist/ y publica en Cloudflare (wrangler tiene que estar logueado)
 npm run qa -- https://mesaverso-landing.alvarogimenezcaceres.workers.dev --no-submit
 ```
+
+Preview antes de producción (con `noindex`, no toca la versión publicada):
+
+```
+PREVIEW=1 node build.mjs && npx wrangler versions upload --preview-alias seo-fase-1
+npm run qa -- https://seo-fase-1-mesaverso-landing.alvarogimenezcaceres.workers.dev --no-submit --preview
+npm run deploy     # producción (vuelve a armar sin noindex)
+```
+
+Volver a una versión anterior: `npx wrangler deployments list` y `npx wrangler rollback <version-id>`.
 
 `npm run qa` prueba 8 anchos de pantalla (360 a 1920 px), las reglas de marca (Luz Cálida ≤ 8 %, sin verde/rojo/naranja ni degradés, animación del logo), los enlaces de WhatsApp, precios, menú móvil, FAQ, demo, 3D y
 formulario. Sin `--no-submit` manda una solicitud de prueba real, que después hay que borrar del KV.

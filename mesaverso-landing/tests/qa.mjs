@@ -54,7 +54,8 @@ for (const [w, h] of VIEWPORTS) {
     // Small touch targets outside the phone mockups.
     const small = [];
     if (vw < 1024) for (const el of document.querySelectorAll("a[href],button,summary,input,select,textarea")) {
-      if (el.closest("[hidden],.hp,.phone,.sr-only,.nav__links,.skip") || getComputedStyle(el).display === "none") continue;
+      // Links inside a sentence are exempt (WCAG 2.5.8 "inline" exception).
+      if (el.closest("[hidden],.hp,.phone,.sr-only,.nav__links,.skip") || getComputedStyle(el).display === "none" || (el.tagName === "A" && el.parentElement.tagName === "P" && getComputedStyle(el).display === "inline")) continue;
       const b = el.getBoundingClientRect();
       if (b.width && (b.height < 44 || b.width < 44)) small.push(`${el.tagName.toLowerCase()} "${(el.textContent || el.getAttribute("aria-label") || "").trim().slice(0, 30)}" ${Math.round(b.width)}×${Math.round(b.height)}`);
     }
@@ -161,7 +162,7 @@ ok("mobile menu aria-expanded", (await page.getAttribute(".nav__toggle", "aria-e
 await page.keyboard.press("Escape");
 ok("mobile menu closes with Escape", !(await page.isVisible("#menu-movil")));
 await page.click(".nav__toggle");
-await page.click('#menu-movil a[href="#planes"]');
+await page.click('#menu-movil a[href="/#planes"]');
 await page.waitForTimeout(2500);
 const navState = await page.evaluate(() => ({ hash: location.hash, top: Math.round(document.querySelector("#planes").getBoundingClientRect().top), open: !document.querySelector("#menu-movil").hidden, overflow: document.body.style.overflow }));
 ok("mobile menu link closes menu and navigates", !navState.open && navState.hash === "#planes" && Math.abs(navState.top) < 120 && navState.overflow === "", JSON.stringify(navState));
@@ -196,13 +197,16 @@ ok("pricing has a worked example", text.includes("Ejemplo: ¿cuánto pagás?"));
 ok("demo WhatsApp fills chat message", msg.includes("1 × Hamburguesa clásica") && msg.includes("¿Delivery o pick up?"));
 
 // FAQ
-const sum = page.locator(".faq summary").first();
+const sum = page.locator(".faq__q").first();
 await sum.scrollIntoViewIfNeeded();
 await sum.click();
-ok("FAQ opens", await page.$eval(".faq details", (d) => d.open));
+const faqState = () => page.$eval(".faq__q", (b) => ({ exp: b.getAttribute("aria-expanded"), shown: !document.getElementById(b.getAttribute("aria-controls")).hidden }));
+let fs = await faqState();
+ok("FAQ opens (button + aria-expanded)", fs.exp === "true" && fs.shown, JSON.stringify(fs));
 await sum.focus();
 await page.keyboard.press("Enter");
-ok("FAQ toggles with keyboard", !(await page.$eval(".faq details", (d) => d.open)));
+fs = await faqState();
+ok("FAQ toggles with keyboard", fs.exp === "false" && !fs.shown, JSON.stringify(fs));
 
 // 3D inside the phone: the featured dish loads its real model on demand
 await page.evaluate(() => scrollTo(0, 0));
@@ -250,11 +254,68 @@ await page.keyboard.press("Tab");
 ok("skip link first in tab order", (await page.evaluate(() => document.activeElement.className)) === "skip");
 
 // Assets and routes
-for (const p of ["/styles.css", "/app.js", "/vendor/model-viewer.min.js", "/assets/torta-3d.glb", "/assets/og.png", "/favicon.svg", "/robots.txt", "/sitemap.xml", "/gracias.html"]) {
+for (const p of ["/styles.css", "/app.js", "/vendor/model-viewer.min.js", "/assets/torta-de-zanahoria-3d.glb", "/assets/og.png", "/favicon.svg", "/robots.txt", "/sitemap.xml", "/gracias.html"]) {
   const res = await fetch(BASE + p);
   ok(`GET ${p} → 200`, res.status === 200, String(res.status));
 }
 ok("unknown page → 404", (await fetch(BASE + "/no-existe")).status === 404);
+
+/* ---------- SEO: every URL in the sitemap ---------- */
+{
+  const PREVIEW_RUN = process.argv.includes("--preview");
+  const sm = await (await fetch(BASE + "/sitemap.xml")).text();
+  const locs = [...sm.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
+  const origin = new URL(locs[0] || "https://x").origin;
+  ok("sitemap lists the canonical pages", locs.length >= 2 && locs.every((l) => l.startsWith(origin) && !/localhost|127\.0|--|preview/.test(l)), locs.join(" "));
+  const robots = await (await fetch(BASE + "/robots.txt")).text();
+  ok("robots.txt allows the site and names the sitemap", PREVIEW_RUN ? /Disallow: \//.test(robots) : /Allow: \//.test(robots) && robots.includes(`Sitemap: ${origin}/sitemap.xml`) && !/Disallow: \/(\s|$)/m.test(robots), robots.replace(/\n/g, " | "));
+  const seen = new Set();
+  for (const loc of locs) {
+    const pathName = new URL(loc).pathname;
+    const res = await fetch(BASE + pathName);
+    const html = await res.text();
+    const tag = (re) => (html.match(re) || [])[1];
+    const title = tag(/<title>([^<]*)<\/title>/), desc = tag(/<meta name="description" content="([^"]*)"/), canon = tag(/<link rel="canonical" href="([^"]*)"/);
+    const robotsMeta = tag(/<meta name="robots" content="([^"]*)"/) || "";
+    const h1s = (html.match(/<h1[\s>]/g) || []).length;
+    ok(`${pathName} → 200`, res.status === 200, String(res.status));
+    ok(`${pathName} title/description lengths`, title && title.length <= 60 && desc && desc.length >= 110 && desc.length <= 160, `${title?.length} / ${desc?.length}`);
+    ok(`${pathName} one H1`, h1s === 1, String(h1s));
+    ok(`${pathName} canonical = sitemap URL`, canon === loc, canon);
+    ok(`${pathName} robots meta`, PREVIEW_RUN ? /noindex/.test(robotsMeta) : !/noindex/.test(robotsMeta) && !/noindex/i.test(res.headers.get("x-robots-tag") || ""), robotsMeta + " · " + res.headers.get("x-robots-tag"));
+    ok(`${pathName} Open Graph`, [/og:title/, /og:description/, new RegExp(`og:url" content="${loc}"`), /og:image" content="https:[^"]+og\.png"/, /twitter:card" content="summary_large_image"/].every((r) => r.test(html)));
+    // JSON-LD: parses, uses the stable origin, no ratings/reviews/LocalBusiness, FAQ matches the page
+    let graph = [];
+    try { graph = JSON.parse(tag(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/))["@graph"]; } catch {}
+    const types = graph.map((n) => n["@type"]);
+    const ldText = JSON.stringify(graph);
+    ok(`${pathName} JSON-LD valid`, types.includes("Organization") && types.includes("WebSite") && types.includes("WebPage") && types.includes("Service") && (pathName === "/" || types.includes("BreadcrumbList")), types.join(","));
+    ok(`${pathName} JSON-LD honest`, !/aggregateRating|"review"|LocalBusiness|sameAs/i.test(ldText) && [...ldText.matchAll(/https?:\/\/[^"\\]+/g)].every((m) => m[0].startsWith(origin) || m[0].startsWith("https://schema.org")), "");
+    const faqNode = graph.find((n) => n["@type"] === "FAQPage");
+    if (faqNode) {
+      const visibleQ = [...html.matchAll(/class="faq__q"[^>]*>([^<]+)<\/button>/g)].map((m) => m[1]);
+      ok(`${pathName} FAQPage = visible FAQ`, JSON.stringify(faqNode.mainEntity.map((q) => q.name)) === JSON.stringify(visibleQ), `${faqNode.mainEntity.length} vs ${visibleQ.length}`);
+    }
+    const imgs = [...html.matchAll(/<img[^>]*>/g)].map((m) => m[0]);
+    ok(`${pathName} images have alt, width, height`, imgs.every((i) => /alt="/.test(i) && /width="/.test(i) && /height="/.test(i)), imgs.filter((i) => !/alt="/.test(i)).join(" "));
+    ok(`${pathName} no email in HTML`, !/@gmail\.com|mailto:/i.test(html));
+    for (const m of html.matchAll(/href="(\/[^"#?]*)/g)) seen.add(m[1]);
+  }
+  const broken = [];
+  for (const href of seen) { const r = await fetch(BASE + href, { redirect: "manual" }); if (r.status !== 200) broken.push(`${href} ${r.status}`); }
+  ok("internal links resolve (200, no redirects)", broken.length === 0, broken.join(" | "));
+  // Inner pages on phones
+  for (const w of [360, 390, 430]) {
+    const c2 = await browser.newContext({ viewport: { width: w, height: 800 }, isMobile: true, hasTouch: true });
+    const p2 = await c2.newPage(); watch(p2, `landing ${w}px`);
+    for (const loc of locs.slice(1)) {
+      await p2.goto(BASE + new URL(loc).pathname, { waitUntil: "networkidle" });
+      const r2 = await p2.evaluate(() => ({ sw: document.documentElement.scrollWidth, vw: document.documentElement.clientWidth }));
+      ok(`${new URL(loc).pathname} ${w}px no horizontal scroll`, r2.sw <= r2.vw, `${r2.sw}/${r2.vw}`);
+    }
+    await c2.close();
+  }
+}
 
 /* ---------- logo animation ---------- */
 {
@@ -282,10 +343,10 @@ ok("brand SVG files served and well-formed", badBrand.length === 0, badBrand.joi
 for (const p of ["/assets/apple-touch-icon.png", "/assets/icon-512.png", "/assets/icon-32.png", "/site.webmanifest"]) ok(`GET ${p} → 200`, (await fetch(BASE + p)).status === 200);
 const logo = await page.evaluate(() => {
   const w = document.querySelector(".nav .mv-wordmark"); if (!w) return null;
-  const m = w.querySelector("svg").getBoundingClientRect(), t = w.querySelector("span");
-  return { m: Math.round(m.width) + "×" + Math.round(m.height), text: t.textContent, label: w.getAttribute("aria-label") };
+  const m = w.querySelector("svg").getBoundingClientRect(), rest = w.querySelector(".mv-wordmark__rest");
+  return { m: Math.round(m.width) + "×" + Math.round(m.height), shown: getComputedStyle(rest, "::after").content, text: w.textContent.trim() };
 });
-ok("navbar logo is [M]ESAVERSO", logo && logo.text === "ESAVERSO" && logo.label === "MESAVERSO" && !logo.m.startsWith("0"), JSON.stringify(logo));
+ok("navbar logo is [M]ESAVERSO (text for search engines: Mesaverso)", logo && logo.shown === '"ESAVERSO"' && logo.text === "Mesaverso" && !logo.m.startsWith("0"), JSON.stringify(logo));
 
 ok("no console errors", consoleErrors.length === 0, consoleErrors.slice(0, 5).join(" | "));
 await browser.close();
