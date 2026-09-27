@@ -1,0 +1,26 @@
+{
+  "name": "mesaverso-landing",
+  "private": true,
+  "type": "module",
+  "description": "Mesaverso commercial landing page (static site + Cloudflare Worker for the demo form)",
+  "scripts": {
+    "build": "node build.mjs",
+    "dev": "node build.mjs && npx -y wrangler@4 dev --port 8788",
+    "deploy": "node build.mjs && npx -y wrangler@4 deploy",
+    "qa": "node tests/qa.mjs",
+    "images": "node scripts/make-images.mjs",
+    "leads": "node scripts/leads.mjs",
+    "brand": "node scripts/make-brand.mjs"
+  },
+  "dependencies": {
+    "@google/model-viewer": "4.3.1",
+    "qrcode": "1.5.4"
+  },
+  "devDependencies": {
+    "opentype.js": "^1.3.4",
+    "playwright-core": "1.58.2"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

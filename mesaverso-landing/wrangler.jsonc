@@ -1,0 +1,22 @@
+// Mesaverso landing: its own Worker, separate from the menus (menu3d-demo in the repo root).
+// Static assets from dist/ are served directly; only /api/* runs src/worker.js (demo form).
+// Build + deploy: npm run deploy   (from this folder; wrangler must be logged in)
+// Custom domain later: add  "routes": [{ "pattern": "<tu-dominio>", "custom_domain": true }]
+// and rebuild with SITE_URL=https://<tu-dominio> (see README.md).
+{
+  "name": "mesaverso-landing",
+  "main": "src/worker.js",
+  "compatibility_date": "2026-09-25",
+  "workers_dev": true,
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "run_worker_first": ["/api/*"],
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page"
+  },
+  "kv_namespaces": [
+    { "binding": "LEADS", "id": "70aea932f1d24c649e1e70273901a996" }
+  ],
+  "observability": { "enabled": true }
+}

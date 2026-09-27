@@ -1,0 +1,231 @@
+// End-to-end QA against a running site (local `npm run dev` or the public URL).
+//   node tests/qa.mjs [baseUrl] [--no-submit]
+// Uses the locally installed Chrome (playwright-core, channel "chrome"). Screenshots → tests/out/.
+import { chromium } from "playwright-core";
+import { mkdir } from "node:fs/promises";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { MESAVERSO_WHATSAPP, WHATSAPP_MESSAGES, PRICES, formatGs } from "../site.config.mjs";
+
+const BASE = (process.argv[2] || "http://127.0.0.1:8788").replace(/\/$/, "");
+const SUBMIT = !process.argv.includes("--no-submit");
+const OUT = path.join(path.dirname(fileURLToPath(import.meta.url)), "out");
+await mkdir(OUT, { recursive: true });
+
+const results = [];
+const ok = (name, pass, info = "") => { results.push({ name, pass, info }); console.log(`${pass ? "PASS" : "FAIL"}  ${name}${info ? "  · " + info : ""}`); };
+
+const browser = await chromium.launch({ channel: "chrome" });
+const consoleErrors = [];
+const watch = (page, tag) => {
+  page.on("console", (m) => { if (m.type() === "error" && !/status of 422/.test(m.text())) consoleErrors.push(`[${tag}] ${m.text()}`); });
+  page.on("pageerror", (e) => consoleErrors.push(`[${tag}] ${e.message}`));
+};
+
+/* ---------- responsive sweep ---------- */
+const VIEWPORTS = [[360, 740], [390, 844], [430, 932], [768, 1024], [1024, 768], [1440, 900], [1920, 1080]];
+for (const [w, h] of VIEWPORTS) {
+  const ctx = await browser.newContext({ viewport: { width: w, height: h }, deviceScaleFactor: 1, isMobile: w < 768, hasTouch: w < 1024, reducedMotion: "reduce" });
+  const page = await ctx.newPage();
+  watch(page, `${w}px`);
+  await page.goto(BASE + "/", { waitUntil: "networkidle" });
+  const r = await page.evaluate(() => {
+    const vw = document.documentElement.clientWidth;
+    const off = [];
+    for (const el of document.querySelectorAll("body *")) {
+      const cs = getComputedStyle(el);
+      if (cs.display === "none" || cs.visibility === "hidden" || el.closest("[hidden],.hp,.sr-only,svg defs,symbol")) continue;
+      const b = el.getBoundingClientRect();
+      if (!b.width || !b.height) continue;
+      // Clipped by an overflow:clip/hidden ancestor that itself fits? Then it's not visible overflow.
+      let clipped = false;
+      for (let p = el.parentElement; p && p !== document.body; p = p.parentElement) {
+        const pc = getComputedStyle(p);
+        if (/(clip|hidden|auto|scroll)/.test(pc.overflowX)) { const pb = p.getBoundingClientRect(); if (pb.left >= -1 && pb.right <= vw + 1) { clipped = true; break; } }
+      }
+      if (!clipped && (b.right > vw + 1 || b.left < -1)) off.push(`${el.tagName.toLowerCase()}.${[...el.classList].join(".")} [${Math.round(b.left)},${Math.round(b.right)}]`);
+    }
+    // Text that overflows its own box horizontally (clipped labels).
+    const clippedText = [];
+    for (const el of document.querySelectorAll("h1,h2,h3,p,a,button,li,dt,dd,strong,span,label,summary")) {
+      if (el.closest("[hidden],.hp,.sr-only,.app-cats,.item__txt small")) continue;
+      if (el.scrollWidth > el.clientWidth + 2 && getComputedStyle(el).overflowX !== "visible" && el.clientWidth > 0) clippedText.push(el.textContent.trim().slice(0, 40));
+    }
+    // Small touch targets outside the phone mockups.
+    const small = [];
+    if (vw < 1024) for (const el of document.querySelectorAll("a[href],button,summary,input,select,textarea")) {
+      if (el.closest("[hidden],.hp,.phone,.sr-only,.nav__links,.skip") || getComputedStyle(el).display === "none") continue;
+      const b = el.getBoundingClientRect();
+      if (b.width && (b.height < 44 || b.width < 44)) small.push(`${el.tagName.toLowerCase()} "${(el.textContent || el.getAttribute("aria-label") || "").trim().slice(0, 30)}" ${Math.round(b.width)}×${Math.round(b.height)}`);
+    }
+    // Phone mockups fully inside the viewport horizontally.
+    const phones = [...document.querySelectorAll(".phone")].map((p) => p.getBoundingClientRect()).filter((b) => b.left < -1 || b.right > vw + 1).length;
+    return { scrollW: document.documentElement.scrollWidth, vw, off: off.slice(0, 8), offCount: off.length, clippedText: clippedText.slice(0, 8), small: small.slice(0, 12), phones };
+  });
+  ok(`${w}px no horizontal scroll`, r.scrollW <= r.vw, `scrollWidth ${r.scrollW} / ${r.vw}`);
+  ok(`${w}px no element outside viewport`, r.offCount === 0, r.off.join(" | "));
+  ok(`${w}px phone mockups inside viewport`, r.phones === 0);
+  ok(`${w}px no clipped text`, r.clippedText.length === 0, r.clippedText.join(" | "));
+  if (w < 1024) ok(`${w}px touch targets ≥44px`, r.small.length === 0, r.small.join(" | "));
+  await page.screenshot({ path: path.join(OUT, `full-${w}.png`), fullPage: true });
+  await ctx.close();
+}
+
+/* ---------- functional checks on a phone ---------- */
+const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 2 });
+const page = await ctx.newPage();
+watch(page, "func");
+const bodies = [];
+page.on("response", async (res) => { try { const t = res.headers()["content-type"] || ""; if (/html|javascript|css|json|svg|text/.test(t)) bodies.push(await res.text()); } catch {} });
+await page.goto(BASE + "/", { waitUntil: "networkidle" });
+
+// WhatsApp links
+const links = await page.$$eval("a[href*='wa.me']", (as) => as.map((a) => ({ href: a.href, text: a.textContent.trim(), track: a.dataset.track, where: a.dataset.trackWhere || "" })));
+const expected = new Set(Object.values(WHATSAPP_MESSAGES));
+const bad = links.filter((l) => { const u = new URL(l.href); return u.pathname !== `/${MESAVERSO_WHATSAPP}` || !expected.has(u.searchParams.get("text")); });
+ok("all WhatsApp links → 595984900323 with a known message", links.length > 0 && bad.length === 0, `${links.length} links; bad: ${bad.map((b) => b.href).join(", ")}`);
+const msgOf = (sel) => page.$eval(sel, (a) => new URL(a.href).searchParams.get("text"));
+ok("hero demo CTA message", (await msgOf('.hero a[data-track="hero_demo_click"]')) === WHATSAPP_MESSAGES.demo);
+ok("digital plan CTA message", (await msgOf('a[data-track="pricing_digital_click"]')) === WHATSAPP_MESSAGES.planDigital);
+ok("3D plan CTA message", (await msgOf('.pricing a[data-track="pricing_3d_click"]')) === WHATSAPP_MESSAGES.plan3d);
+ok("extra 3D CTA message", (await msgOf('a[data-track="pricing_extra3d_click"]')) === WHATSAPP_MESSAGES.extra3d);
+ok("final WhatsApp CTA message", (await msgOf('.final a[data-track-where="final"]')) === WHATSAPP_MESSAGES.general);
+ok("links are URL-encoded", links.every((l) => !/\s/.test(l.href) && l.href.includes("%20")));
+const allNumbers = (await page.content()).match(/\b5959\d{8}\b/g) || [];
+ok("no other phone number in the page", allNumbers.every((n) => n === MESAVERSO_WHATSAPP), [...new Set(allNumbers)].join(","));
+
+// Privacy: the lead destination never reaches the browser
+const text = await page.evaluate(() => document.body.innerText);
+ok("no email address visible or shipped", !/@gmail.com|mailto:/i.test(bodies.join("\n") + text));
+
+// Remote ordering is stated before pricing
+const order = await page.evaluate(() => {
+  const y = (sel) => document.querySelector(sel).getBoundingClientRect().top + scrollY;
+  return { claim: y("#how-title"), journey: y(".journey"), plans: y("#planes") };
+});
+ok("remote-order message appears before pricing", order.journey < order.claim && order.claim < order.plans);
+ok("remote claim text", text.includes("Tu cliente puede pedir desde donde esté."));
+
+// Pricing
+const need = [formatGs(PRICES.implementationOriginal), formatGs(PRICES.implementationPromo), "50% OFF", formatGs(PRICES.planDigital), formatGs(PRICES.plan3d), formatGs(PRICES.extra3dDish), "Pago único", "6 platos en 3D", "1 actualización de un plato 3D por mes", "Sin comisiones por pedido".toUpperCase()];
+const upper = text.replace(/ /g, " ");
+const missing = need.filter((s) => !upper.includes(s.replace(/ /g, " ")) && !upper.toUpperCase().includes(s.replace(/ /g, " ").toUpperCase()));
+ok("all prices and plan terms present", missing.length === 0, missing.join(" | "));
+const noBadges = !/más vendido|favorito|más elegido|recomendado|preferido/i.test(text);
+ok("no unsupported plan badges", noBadges);
+const risky = (text.match(/[^.\n]*\b(caja|POS|cocina|pago online|pagos integrados|factura|reserva|aument[a-z]* (tus )?ventas|conversi[oó]n|testimonio)\b[^.\n]*/gi) || []);
+ok("no unsupported product claims (keyword scan)", risky.length === 0, risky.join(" | "));
+
+// Mobile menu
+await page.click(".nav__toggle");
+ok("mobile menu opens", await page.isVisible("#menu-movil"));
+ok("mobile menu aria-expanded", (await page.getAttribute(".nav__toggle", "aria-expanded")) === "true");
+await page.keyboard.press("Escape");
+ok("mobile menu closes with Escape", !(await page.isVisible("#menu-movil")));
+await page.click(".nav__toggle");
+await page.click('#menu-movil a[href="#planes"]');
+await page.waitForTimeout(2500);
+const navState = await page.evaluate(() => ({ hash: location.hash, top: Math.round(document.querySelector("#planes").getBoundingClientRect().top), open: !document.querySelector("#menu-movil").hidden, overflow: document.body.style.overflow }));
+ok("mobile menu link closes menu and navigates", !navState.open && navState.hash === "#planes" && Math.abs(navState.top) < 120 && navState.overflow === "", JSON.stringify(navState));
+
+// Anchors
+for (const id of ["como-funciona", "desde-donde-esten", "whatsapp", "3d", "planes", "faq", "demo"]) ok(`anchor #${id} exists`, (await page.$(`[id="${id}"]`)) !== null);
+
+// Demo menu
+await page.evaluate(() => scrollTo(0, 0));
+await page.click('[data-inc="burger"]');
+ok("demo add updates count", (await page.textContent("[data-demo-count]")) === "4");
+ok("WhatsApp chip mirrors the order", (await page.textContent("[data-demo-wa-chip-count]")) === "4 productos");
+await page.fill("[data-demo-search]", "limon");
+const vis = await page.evaluate(() => [...document.querySelectorAll(".item")].filter((i) => !i.hidden).map((i) => i.dataset.id));
+const sv = await page.evaluate(() => location.href + "|" + document.querySelector("[data-demo-search]").value + "|" + [...document.querySelectorAll(".chip")].map((c) => c.className).join(","));
+ok("demo search filters", vis.length === 1 && vis[0] === "limonada", vis.join(",") + " search=" + sv);
+await page.fill("[data-demo-search]", "");
+await page.click('[data-cat="bebidas"]');
+ok("demo category filters", await page.evaluate(() => [...document.querySelectorAll(".item")].filter((i) => !i.hidden).every((i) => i.dataset.cat === "bebidas")));
+await page.click('[data-cat="todo"]');
+await page.click("[data-demo-open]");
+ok("demo order sheet opens", await page.isVisible("[data-demo-sheet]"));
+await page.click("[data-demo-waiter]");
+ok("demo waiter view", await page.isVisible("[data-demo-waiter-view]") && (await page.textContent("[data-demo-waiter-view]")).includes("Hamburguesa clásica"));
+await page.click("[data-demo-waiter-close]");
+await page.click("[data-demo-open]");
+await page.click("[data-demo-wa]");
+await page.waitForTimeout(900);
+const msg = await page.textContent("[data-wa-message]");
+ok("extra 3D dish: pay per dish when needed", text.includes("por plato, cada vez que necesites uno nuevo"));
+ok("pricing has a worked example", text.includes("Ejemplo: ¿cuánto pagás?"));
+ok("demo WhatsApp fills chat message", msg.includes("1 × Hamburguesa clásica") && msg.includes("¿Delivery o pick up?"));
+
+// FAQ
+const sum = page.locator(".faq summary").first();
+await sum.scrollIntoViewIfNeeded();
+await sum.click();
+ok("FAQ opens", await page.$eval(".faq details", (d) => d.open));
+await sum.focus();
+await page.keyboard.press("Enter");
+ok("FAQ toggles with keyboard", !(await page.$eval(".faq details", (d) => d.open)));
+
+// 3D viewer
+await page.locator("[data-3d-load]").scrollIntoViewIfNeeded();
+await page.click("[data-3d-load]");
+try { await page.waitForSelector("[data-3d].is-live", { timeout: 30000 }); ok("3D model loads on demand", true); } catch { ok("3D model loads on demand", false); }
+await page.screenshot({ path: path.join(OUT, "3d-390.png") });
+
+// Form: validation
+await page.locator("#demo").scrollIntoViewIfNeeded();
+await page.click("[data-form-submit]");
+ok("form shows error summary on empty submit", await page.isVisible("[data-form-summary]"));
+ok("form marks invalid fields", (await page.$$("[aria-invalid=true]")).length === 4);
+ok("server rejects invalid lead", (await page.evaluate(async () => (await fetch("/api/lead", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ name: "x" }) })).status)) === 422);
+ok("server rejects cross-origin", (await (await fetch(BASE + "/api/lead", { method: "POST", headers: { origin: "https://evil.example", "content-type": "application/json" }, body: "{}" })).status) === 403);
+ok("server rejects GET", (await (await fetch(BASE + "/api/lead")).status) === 405);
+if (SUBMIT) {
+  await page.fill("#f-name", "Prueba QA");
+  await page.fill("#f-business", "Pizzería de prueba (QA automático)");
+  await page.fill("#f-phone", "0981 000 000");
+  await page.selectOption("#f-type", "Pizzería");
+  await page.fill("#f-msg", "Envío automático de QA, ignorar.");
+  await page.waitForTimeout(2700);
+  let posts = 0;
+  page.on("request", (r) => { if (r.url().endsWith("/api/lead") && r.method() === "POST") posts++; });
+  // Two submits in the same tick: the second must be ignored while the first is in flight.
+  const busy = await page.evaluate(() => { const f = document.querySelector("[data-lead-form]"); f.requestSubmit(); const b = f.classList.contains("is-sending"); f.requestSubmit(); return b; });
+  await page.waitForSelector(".form__status.is-ok, .form__status.is-err", { timeout: 15000, state: "attached" }).catch(() => {});
+  const st = await page.textContent("[data-form-status]");
+  ok("form loading state", busy);
+  ok("no double submission", posts === 1, `${posts} POSTs`);
+  ok("form submits and shows success", st.includes("Recibimos tu solicitud"), st.trim().slice(0, 120) + " summary=" + (await page.textContent("[data-form-summary]")).slice(0, 120));
+  await page.screenshot({ path: path.join(OUT, "form-390.png") });
+}
+
+// Keyboard: skip link is first focusable
+await page.goto(BASE + "/", { waitUntil: "networkidle" });
+await page.keyboard.press("Tab");
+ok("skip link first in tab order", (await page.evaluate(() => document.activeElement.className)) === "skip");
+
+// Assets and routes
+for (const p of ["/styles.css", "/app.js", "/vendor/model-viewer.min.js", "/assets/torta-3d.glb", "/assets/og.png", "/favicon.svg", "/robots.txt", "/sitemap.xml", "/gracias.html"]) {
+  const res = await fetch(BASE + p);
+  ok(`GET ${p} → 200`, res.status === 200, String(res.status));
+}
+ok("unknown page → 404", (await fetch(BASE + "/no-existe")).status === 404);
+
+/* ---------- brand files ---------- */
+const BRAND_FILES = ["logo-mesaverso.svg", "logo-mesaverso-light.svg", "logo-mesaverso-dark.svg", "logo-mesaverso-black.svg", "logo-mesaverso-white.svg", "wordmark-mesaverso.svg", "wordmark-mesaverso-dark.svg", "isotype-mesaverso.svg", "isotype-mesaverso-dark.svg", "isotype-mesaverso-mono.svg", "app-icon-mesaverso.svg"];
+const badBrand = [];
+for (const f of BRAND_FILES) {
+  const res = await fetch(`${BASE}/brand/${f}`);
+  const t = await res.text();
+  if (res.status !== 200 || !/image\/svg\+xml/.test(res.headers.get("content-type") || "") || !/^<svg [^>]*viewBox="0 0 \d+ 32"/.test(t) || !/<\/svg>\s*$/.test(t)) badBrand.push(`${f} ${res.status}`);
+}
+ok("brand SVG files served and well-formed", badBrand.length === 0, badBrand.join(" | "));
+for (const p of ["/assets/apple-touch-icon.png", "/assets/icon-512.png"]) ok(`GET ${p} → 200`, (await fetch(BASE + p)).status === 200);
+const logoBox = await page.evaluate(() => [...document.querySelectorAll(".nav .brand svg")].map((s) => { const b = s.getBoundingClientRect(); return Math.round(b.width) + "×" + Math.round(b.height); }));
+ok("navbar logo renders (mark + wordmark)", logoBox.length === 2 && logoBox.every((x) => !x.startsWith("0")), logoBox.join(" "));
+
+ok("no console errors", consoleErrors.length === 0, consoleErrors.slice(0, 5).join(" | "));
+await browser.close();
+const failed = results.filter((r) => !r.pass);
+console.log(`\n${results.length - failed.length}/${results.length} checks passed`);
+process.exit(failed.length ? 1 : 0);

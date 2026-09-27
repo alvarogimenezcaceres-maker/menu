@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.wrangler/
+# Local Worker secrets for `wrangler dev` (RESEND_API_KEY, LEAD_TO_EMAIL). Never commit.
+.dev.vars
+.env*
+tests/out/
