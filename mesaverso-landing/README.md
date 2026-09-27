@@ -21,19 +21,19 @@ Después de cambiar algo: `npm run deploy`.
 
 ## Marca y colores
 
-La identidad («Añil y Azafrán», logo de la M plegada) se explica en **`BRAND-DIRECTION.md`**, con la investigación y las fuentes.
+La identidad (manual 5B · Titanio + Luz Cálida, logo `[M]ESAVERSO`) está resumida en **`BRAND-DIRECTION.md`**.
 
-- Los colores están en `:root` de `src/styles.css`, en capas: primitivos → roles. Los componentes usan solo los roles:
+- Los colores están en `:root` de `src/styles.css`, en capas: paleta `--mv-*` → roles → componentes. Una sección con `.is-light` usa fondo Niebla. Los componentes usan solo los roles:
 
 | Rol | Uso |
 |---|---|
-| `--brand-primary` / `--cta-primary` (añil `#3A5BF0`) | la marca y la acción principal («Quiero una demo»), con texto blanco |
-| `--brand-text` (añil claro) | la marca como texto o línea sobre fondo oscuro |
-| `--food-accent` (azafrán `#FFB547`) | precios, comida y promo; los platos van sobre `--plate`, que es cálido |
-| `--whatsapp` (verde) | solo el destino de conversión (enviar el pedido, hablar por WhatsApp) |
+| `--bg` / `--surface` (Noche `#0E1014` / Grafito `#2A2D33`) | fondo de la página y de las tarjetas |
+| `--text` / `--text-2` (Niebla / Titanio `#C3C8CE`) | texto principal y secundario, íconos |
+| `--cta-bg` (Luz Cálida `#FFD6A5`) | el único botón primario por vista y el punto del logo (≤ 8 % de la pantalla) |
 
-- Los logos están en `src/brand/` y se publican en `/brand/…`. Se generan con `npm run brand`; nunca se editan a mano.
-- Las imágenes para compartir y los íconos (`og.png`, `apple-touch-icon.png`, `icon-512.png`) se generan con `npm run images`.
+- No se usa verde de WhatsApp ni ningún rojo, naranja o verde de marca.
+- Los logos están en `src/brand/` y se publican en `/brand/…`. Se generan con `npm run brand` desde `scripts/brand.mjs`, que es la misma geometría que usa la página; nunca se editan a mano.
+- Las imágenes para compartir y los íconos (`og.png`, `icon-32.png`, `apple-touch-icon.png`, `icon-512.png`) se generan con `npm run images`.
 
 ## Publicar
 
@@ -44,7 +44,7 @@ npm run deploy     # arma dist/ y publica en Cloudflare (wrangler tiene que esta
 npm run qa -- https://mesaverso-landing.alvarogimenezcaceres.workers.dev --no-submit
 ```
 
-`npm run qa` prueba 7 anchos de pantalla (360 a 1920 px), los enlaces de WhatsApp, precios, menú móvil, FAQ, demo, 3D y
+`npm run qa` prueba 8 anchos de pantalla (360 a 1920 px), las reglas de marca (Luz Cálida ≤ 8 %, sin verde/rojo/naranja ni degradés, animación del logo), los enlaces de WhatsApp, precios, menú móvil, FAQ, demo, 3D y
 formulario. Sin `--no-submit` manda una solicitud de prueba real, que después hay que borrar del KV.
 
 Probar en la compu: `npm run dev` → http://127.0.0.1:8788

@@ -45,6 +45,24 @@
     if (e.key === "Escape" && !sheet.hidden) setMenu(false);
   });
   matchMedia("(min-width: 900px)").addEventListener("change", (m) => { if (m.matches && !sheet.hidden) setMenu(false, { focus: false }); });
+  // One primary per view: the header CTA is secondary while the hero (with its primary) is visible.
+  const hero = $(".hero");
+  if (hero && "IntersectionObserver" in window) {
+    new IntersectionObserver(([en]) => nav.classList.toggle("is-past-hero", !en.isIntersecting), { rootMargin: "-68px 0px 0px 0px" }).observe(hero);
+  }
+
+  /* ---------- logo: every 8 s the warm dot travels the M (brand manual 5B §5) ----------
+     The SMIL animation is in the markup with begin="indefinite"; start it only when motion is OK. */
+  const motion = matchMedia("(prefers-reduced-motion: reduce)");
+  const animateLogos = () => $$(".mv-wordmark[data-animated]").forEach((logo) => {
+    const dot = $(".mv-dot", logo);
+    const anims = [...dot.children];
+    if (motion.matches) { anims.forEach((a) => a.endElement && a.endElement()); dot.setAttribute("cx", 84); dot.setAttribute("cy", 82); return; }
+    dot.setAttribute("cx", 0); dot.setAttribute("cy", 0); // animateMotion places it on the line
+    anims.forEach((a) => a.beginElement && a.beginElement());
+  });
+  animateLogos();
+  motion.addEventListener("change", animateLogos);
 
   /* ---------- money ---------- */
   const gs = (n) => "Gs. " + n.toLocaleString("de-DE");
@@ -79,14 +97,12 @@
   };
   const waChip = $("[data-demo-wa-chip]");
   const waChipCount = $("[data-demo-wa-chip-count]");
-  const replay = (el, cls) => { el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); };
   const bump = (id) => {
     const li = byId[id].el;
     li.classList.add("just-added");
     clearTimeout(li._t); li._t = setTimeout(() => li.classList.remove("just-added"), 700);
     waChip.classList.add("is-ping");
     clearTimeout(waChip._t); waChip._t = setTimeout(() => waChip.classList.remove("is-ping"), 900);
-    if (!reduceMotion) replay(bar, "bump");
   };
   Object.keys(byId).forEach(renderQty);
   renderBar();
@@ -279,7 +295,7 @@
       $("[data-form-t]").value = String(Date.now());
       setStatus("ok", `<strong>¡Listo, ${esc(data.name.split(" ")[0])}! Recibimos tu solicitud.</strong><span>Te vamos a escribir por WhatsApp para coordinar la demo.</span>`);
     } catch (err) {
-      setStatus("err", `<strong>${esc(err.message)}</strong><span>Probá de nuevo en un momento o escribinos directamente:</span><a class="btn btn--wa" href="${waDemo}" target="_blank" rel="noopener" data-track="whatsapp_click" data-track-where="form_error"><svg aria-hidden="true"><use href="#i-wa"/></svg>Escribinos por WhatsApp</a>`);
+      setStatus("err", `<strong>${esc(err.message)}</strong><span>Probá de nuevo en un momento o escribinos directamente:</span><a class="btn btn--secondary" href="${waDemo}" target="_blank" rel="noopener" data-track="whatsapp_click" data-track-where="form_error"><svg aria-hidden="true"><use href="#i-wa"/></svg>Escribinos por WhatsApp</a>`);
     } finally {
       sending = false;
       form.classList.remove("is-sending");

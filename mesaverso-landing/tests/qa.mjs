@@ -23,7 +23,7 @@ const watch = (page, tag) => {
 };
 
 /* ---------- responsive sweep ---------- */
-const VIEWPORTS = [[360, 740], [390, 844], [430, 932], [768, 1024], [1024, 768], [1440, 900], [1920, 1080]];
+const VIEWPORTS = [[360, 740], [390, 844], [430, 932], [768, 1024], [1024, 768], [1280, 800], [1440, 900], [1920, 1080]];
 for (const [w, h] of VIEWPORTS) {
   const ctx = await browser.newContext({ viewport: { width: w, height: h }, deviceScaleFactor: 1, isMobile: w < 768, hasTouch: w < 1024, reducedMotion: "reduce" });
   const page = await ctx.newPage();
@@ -63,6 +63,44 @@ for (const [w, h] of VIEWPORTS) {
     return { scrollW: document.documentElement.scrollWidth, vw, off: off.slice(0, 8), offCount: off.length, clippedText: clippedText.slice(0, 8), small: small.slice(0, 12), phones };
   });
   ok(`${w}px no horizontal scroll`, r.scrollW <= r.vw, `scrollWidth ${r.scrollW} / ${r.vw}`);
+  // Brand manual 5B: Luz Cálida ≤ ~8% of every screen; no brand red/orange/green, no gradients.
+  const brand = await page.evaluate(async () => {
+    const LUZ = "rgb(255, 214, 165)";
+    const shares = [];
+    const H = document.documentElement.scrollHeight;
+    for (let y = 0; y < H; y += innerHeight) {
+      scrollTo(0, y); await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+      let area = 0;
+      for (const el of document.querySelectorAll("body *")) {
+        const cs = getComputedStyle(el);
+        if (cs.display === "none" || cs.visibility === "hidden" || el.closest("[hidden],.sr-only") || +cs.opacity === 0) continue;
+        const b = el.getBoundingClientRect();
+        const vis = Math.max(0, Math.min(b.right, innerWidth) - Math.max(b.left, 0)) * Math.max(0, Math.min(b.bottom, innerHeight) - Math.max(b.top, 0));
+        if (!vis) continue;
+        if (cs.backgroundColor === LUZ) area += vis;
+        else if (cs.color === LUZ && [...el.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim())) area += vis * 0.35; // glyph ink ≈ 35% of the text box
+      }
+      shares.push(area / (innerWidth * innerHeight));
+    }
+    scrollTo(0, 0);
+    const banned = [];
+    const hue = (c) => { const m = c.match(/rgba?\((\d+), (\d+), (\d+)(?:, ([\d.]+))?/); if (!m || m[4] === "0") return null; const [r, g, bl] = [m[1], m[2], m[3]].map((v) => v / 255); const mx = Math.max(r, g, bl), mn = Math.min(r, g, bl), d = mx - mn; if (d < .25 || mx < .3) return null; const h = mx === r ? ((g - bl) / d) % 6 : mx === g ? (bl - r) / d + 2 : (r - g) / d + 4; return (h * 60 + 360) % 360; };
+    for (const el of document.querySelectorAll("body *")) {
+      // Food imagery keeps its real colour; form error states are functional, not brand colour.
+      if (el.closest(".item__img,.float--3d,.three__viewer,[hidden],.field__err,.form__summary,.form__status.is-err")) continue;
+      const cs = getComputedStyle(el);
+      if (cs.display === "none") continue;
+      if (/gradient/.test(cs.backgroundImage)) banned.push("gradient " + el.className);
+      for (const prop of ["color", "backgroundColor", "borderTopColor", "fill", "stroke"]) {
+        const h = hue(cs[prop]);
+        if (h === null) continue;
+        if (h < 25 || h > 330 || (h >= 80 && h <= 170)) banned.push(`${prop} ${cs[prop]} .${[...el.classList].join(".")}`);
+      }
+    }
+    return { max: Math.max(...shares), banned: [...new Set(banned)].slice(0, 6) };
+  });
+  ok(`${w}px Luz Cálida ≤ 8% of every screen`, brand.max <= 0.08, `max ${(brand.max * 100).toFixed(1)}%`);
+  ok(`${w}px no brand red/orange/green, no gradients`, brand.banned.length === 0, brand.banned.join(" | "));
   ok(`${w}px no element outside viewport`, r.offCount === 0, r.off.join(" | "));
   ok(`${w}px phone mockups inside viewport`, r.phones === 0);
   ok(`${w}px no clipped text`, r.clippedText.length === 0, r.clippedText.join(" | "));
@@ -211,18 +249,36 @@ for (const p of ["/styles.css", "/app.js", "/vendor/model-viewer.min.js", "/asse
 }
 ok("unknown page → 404", (await fetch(BASE + "/no-existe")).status === 404);
 
+/* ---------- logo animation ---------- */
+{
+  const still = await browser.newContext({ reducedMotion: "reduce" });
+  const sp = await still.newPage(); await sp.goto(BASE + "/", { waitUntil: "networkidle" });
+  const st = await sp.evaluate(() => { const d = document.querySelector(".nav .mv-dot"); return d.getAttribute("cx") + "," + d.getAttribute("cy"); });
+  ok("logo static with reduced motion", st === "84,82", st);
+  await still.close();
+  const moving = await browser.newContext({ reducedMotion: "no-preference" });
+  const mp = await moving.newPage(); await mp.goto(BASE + "/", { waitUntil: "networkidle" });
+  const mv = await mp.evaluate(() => { const d = document.querySelector(".nav .mv-dot"); const a = d.querySelector("animateMotion"); return { cx: d.getAttribute("cx"), dur: a.getAttribute("dur"), started: (() => { try { return a.getStartTime() >= 0; } catch { return false; } })() }; });
+  ok("logo animates every 8 s otherwise", mv.cx === "0" && mv.dur === "8s" && mv.started, JSON.stringify(mv));
+  await moving.close();
+}
+
 /* ---------- brand files ---------- */
-const BRAND_FILES = ["logo-mesaverso.svg", "logo-mesaverso-light.svg", "logo-mesaverso-dark.svg", "logo-mesaverso-black.svg", "logo-mesaverso-white.svg", "wordmark-mesaverso.svg", "wordmark-mesaverso-dark.svg", "isotype-mesaverso.svg", "isotype-mesaverso-dark.svg", "isotype-mesaverso-mono.svg", "app-icon-mesaverso.svg"];
+const BRAND_FILES = ["logo-mesaverso.svg", "logo-mesaverso-dark.svg", "logo-mesaverso-light.svg", "logo-mesaverso-black.svg", "logo-mesaverso-white.svg", "logo-mesaverso-small.svg", "isotype-mesaverso.svg", "isotype-mesaverso-light.svg", "isotype-mesaverso-mono.svg", "isotype-mesaverso-animated.svg", "app-icon-mesaverso.svg"];
 const badBrand = [];
 for (const f of BRAND_FILES) {
   const res = await fetch(`${BASE}/brand/${f}`);
   const t = await res.text();
-  if (res.status !== 200 || !/image\/svg\+xml/.test(res.headers.get("content-type") || "") || !/^<svg [^>]*viewBox="0 0 \d+ 32"/.test(t) || !/<\/svg>\s*$/.test(t)) badBrand.push(`${f} ${res.status}`);
+  if (res.status !== 200 || !/image\/svg\+xml/.test(res.headers.get("content-type") || "") || !/^<svg [^>]*viewBox="[-\d. ]+"/.test(t) || !/<\/svg>\s*$/.test(t)) badBrand.push(`${f} ${res.status}`);
 }
 ok("brand SVG files served and well-formed", badBrand.length === 0, badBrand.join(" | "));
-for (const p of ["/assets/apple-touch-icon.png", "/assets/icon-512.png"]) ok(`GET ${p} → 200`, (await fetch(BASE + p)).status === 200);
-const logoBox = await page.evaluate(() => [...document.querySelectorAll(".nav .brand svg")].map((s) => { const b = s.getBoundingClientRect(); return Math.round(b.width) + "×" + Math.round(b.height); }));
-ok("navbar logo renders (mark + wordmark)", logoBox.length === 2 && logoBox.every((x) => !x.startsWith("0")), logoBox.join(" "));
+for (const p of ["/assets/apple-touch-icon.png", "/assets/icon-512.png", "/assets/icon-32.png", "/site.webmanifest"]) ok(`GET ${p} → 200`, (await fetch(BASE + p)).status === 200);
+const logo = await page.evaluate(() => {
+  const w = document.querySelector(".nav .mv-wordmark"); if (!w) return null;
+  const m = w.querySelector("svg").getBoundingClientRect(), t = w.querySelector("span");
+  return { m: Math.round(m.width) + "×" + Math.round(m.height), text: t.textContent, label: w.getAttribute("aria-label") };
+});
+ok("navbar logo is [M]ESAVERSO", logo && logo.text === "ESAVERSO" && logo.label === "MESAVERSO" && !logo.m.startsWith("0"), JSON.stringify(logo));
 
 ok("no console errors", consoleErrors.length === 0, consoleErrors.slice(0, 5).join(" | "));
 await browser.close();
