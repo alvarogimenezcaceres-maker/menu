@@ -195,11 +195,34 @@ button { cursor: pointer; }
 .hero__stage { position: relative; display: grid; justify-items: center; }
 .demo-hint { margin-top: 16px; color: var(--text-3); font-size: 14px; text-align: center; }
 
-/* ---------- phone (interactive demo: the MESAVERSO customer UI, dark theme) ---------- */
-.phone { --pw: min(300px, 82vw); position: relative; width: var(--pw); aspect-ratio: 300 / 610; border-radius: 18px; padding: 8px; background: var(--mv-grafito); border: 1px solid rgb(195 200 206 / .25); }
-.phone__notch { position: absolute; top: 16px; left: 50%; translate: -50% 0; width: 72px; height: 20px; background: var(--mv-noche); border-radius: var(--r-pill); z-index: 3; }
-.screen { position: relative; height: 100%; border-radius: var(--r-screen); overflow: hidden; background: var(--mv-noche); display: flex; flex-direction: column; padding: 46px 12px 12px; font-size: 13px; line-height: 1.3; }
+/* ---------- phone: iPhone 18 Pro, front view (the MESAVERSO customer UI, dark theme) ----------
+   Real proportions (71.9 × 150 mm), concentric corners, Silver aluminium frame drawn in Titanio,
+   thin black border, smaller Dynamic Island, Action + volume (left), side button + Camera Control
+   (right). Flat: no gradients, reflections or shadows (manual 5B). Device corners follow the
+   hardware; the 12–18px mockup radius of the manual applies to the UI inside. */
+.phone {
+  --pw: min(300px, 82vw);
+  --frame: calc(var(--pw) * .012);   /* aluminium band */
+  --bezel: calc(var(--pw) * .02);    /* black border around the display */
+  --r-body: calc(var(--pw) * .16);
+  position: relative; width: var(--pw); aspect-ratio: 71.9 / 150; border-radius: var(--r-body);
+  padding: var(--frame); background: var(--mv-titanio);
+}
+.phone__bezel { height: 100%; padding: var(--bezel); border-radius: calc(var(--r-body) - var(--frame)); background: #000; box-shadow: inset 0 0 0 1px var(--mv-grafito); }
+.phone__btn { position: absolute; width: 3px; border-radius: 2px; background: var(--mv-titanio); }
+.phone__btn--action { left: -2px; top: 19%; height: 4.6%; }
+.phone__btn--vol-up { left: -2px; top: 27%; height: 7.4%; }
+.phone__btn--vol-down { left: -2px; top: 36.4%; height: 7.4%; }
+.phone__btn--side { right: -2px; top: 29%; height: 11.5%; }
+.phone__btn--camera { right: -1px; top: 62%; height: 6.6%; width: 2px; background: var(--mv-titanio-apagado); }
+.screen { position: relative; height: 100%; border-radius: calc(var(--r-body) - var(--frame) - var(--bezel)); overflow: hidden; background: var(--mv-noche); display: flex; flex-direction: column; padding: 46px 12px 30px; font-size: 13px; line-height: 1.3; }
 .phone--hero { z-index: 2; }
+/* status bar + Dynamic Island (≈ 24% of the display width on the 18 Pro) */
+.phone__island { position: absolute; z-index: 6; top: 9px; left: 50%; translate: -50% 0; width: 24%; height: 25px; border-radius: var(--r-pill); background: #000; pointer-events: none; }
+.phone__status { position: absolute; z-index: 6; top: 12px; left: 0; right: 0; height: 19px; padding: 0 22px 0 28px; display: flex; align-items: center; justify-content: space-between; color: var(--mv-niebla); font: 600 13px/1 var(--body); letter-spacing: .01em; font-variant-numeric: tabular-nums; pointer-events: none; }
+.phone__status span { display: flex; align-items: center; gap: 5px; }
+.phone__status svg { height: 11px; width: auto; }
+.phone__home { position: absolute; z-index: 6; bottom: 7px; left: 50%; translate: -50% 0; width: 36%; height: 4px; border-radius: var(--r-pill); background: var(--mv-niebla); pointer-events: none; }
 .app-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
 .app-brand { display: flex; align-items: center; gap: 10px; }
 .app-brand strong { display: block; font-family: var(--display); font-size: 17px; font-weight: 700; }
@@ -214,32 +237,37 @@ button { cursor: pointer; }
 .app-cats::-webkit-scrollbar { display: none; }
 .chip { flex: none; height: 34px; padding: 0 13px; border-radius: var(--r-pill); border: 1px solid var(--line); background: transparent; font-size: 13px; font-weight: 500; color: var(--text-2); }
 .chip.is-on { background: var(--mv-niebla); color: var(--mv-noche); border-color: var(--mv-niebla); }
-.app-list { list-style: none; margin: 0; padding: 0 0 64px; display: grid; overflow-y: auto; scrollbar-width: none; flex: 1; align-content: start; }
+.app-list { list-style: none; margin: 0; padding: 0 0 56px; display: grid; overflow-y: auto; scrollbar-width: none; flex: 1; align-content: start; }
 .app-list::-webkit-scrollbar { display: none; }
 /* Items are typographic rows (name, short description, price, +). Only the real 3D dish has a picture. */
 .item { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 10px; padding: 11px 2px; border-bottom: 1px solid var(--mv-grafito); }
 .item.just-added .item__txt strong { color: var(--mv-luz-calida); }
 .item[hidden] { display: none; }
-.item--3d { grid-template-columns: 64px minmax(0, 1fr) auto; }
-.item__img { width: 64px; height: 64px; border-radius: 10px; overflow: hidden; background: var(--mv-grafito); }
-.item__img img { width: 100%; height: 100%; object-fit: cover; }
+/* Featured dish: the real 3D model, first and biggest. Food in its real colour, no filters. */
+.item--feature { padding-top: 2px; row-gap: 10px; }
+.feature__media { grid-column: 1 / -1; position: relative; aspect-ratio: 5 / 4; border-radius: 12px; overflow: hidden; background: var(--mv-grafito); display: grid; place-items: center; }
+.feature__poster { width: 80%; height: auto; translate: 0 -9%; }
+.feature__media model-viewer { position: absolute; inset: 0; width: 100%; height: 100%; --poster-color: transparent; --progress-bar-color: var(--mv-titanio); --progress-bar-height: 2px; background: transparent; }
+.feature__media.is-live .feature__poster, .feature__media.is-live .feature__3d { display: none; }
+.feature__tag { position: absolute; top: 10px; left: 10px; font-family: var(--mono); font-size: 10px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; padding: 3px 8px; border-radius: var(--r-pill); background: var(--mv-noche); color: var(--mv-titanio); }
+.feature__3d { position: absolute; left: 50%; bottom: 10px; translate: -50% 0; display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 14px; border-radius: var(--r-pill); border: 1px solid var(--mv-titanio); background: var(--mv-noche); color: var(--mv-niebla); font-weight: 600; font-size: 13px; white-space: nowrap; }
+.feature__3d svg { width: 15px; height: 15px; }
+.feature__3d:disabled { opacity: .8; cursor: progress; }
 .item__txt { display: grid; gap: 2px; min-width: 0; }
 .item__txt strong { font-size: 14px; font-weight: 600; transition: color .3s; }
 .item__txt small { color: var(--text-3); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .item__txt b { font-size: 13px; color: var(--text); font-weight: 600; font-variant-numeric: tabular-nums; }
-.tag3d { justify-self: start; display: inline-flex; align-items: center; gap: 4px; margin-top: 3px; font-family: var(--mono); font-size: 10px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; padding: 2px 7px; border-radius: var(--r-pill); border: 1px solid rgb(195 200 206 / .35); color: var(--text-2); }
-.tag3d svg { width: 11px; height: 11px; }
 .qty { display: flex; align-items: center; gap: 2px; }
 .qty button { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--line); display: grid; place-items: center; background: transparent; color: var(--text); }
 .qty button svg { width: 15px; height: 15px; }
 .qty button.add { background: var(--mv-grafito); border-color: var(--mv-grafito); }
 .qty output { min-width: 20px; text-align: center; font-weight: 600; font-variant-numeric: tabular-nums; }
 .app-empty { color: var(--text-3); text-align: center; padding: 20px 0; }
-.app-bar { position: absolute; left: 12px; right: 12px; bottom: 12px; height: 50px; border: 0; border-radius: var(--r-pill); background: var(--mv-niebla); color: var(--mv-noche); display: flex; align-items: center; gap: 10px; padding: 0 16px 0 8px; font-weight: 600; font-size: 14px; }
+.app-bar { position: absolute; left: 12px; right: 12px; bottom: 22px; height: 50px; border: 0; border-radius: var(--r-pill); background: var(--mv-niebla); color: var(--mv-noche); display: flex; align-items: center; gap: 10px; padding: 0 16px 0 8px; font-weight: 600; font-size: 14px; }
 .app-bar b { margin-left: auto; font-variant-numeric: tabular-nums; }
 .app-bar__count { min-width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: var(--mv-noche); color: var(--mv-niebla); font-weight: 600; }
 .app-bar[data-empty] { opacity: .5; pointer-events: none; }
-.sheet { position: absolute; inset: auto 0 0; z-index: 4; background: var(--mv-grafito); border-radius: var(--r-screen) var(--r-screen) 0 0; padding: 16px 14px 14px; display: grid; gap: 10px; }
+.sheet { position: absolute; inset: auto 0 0; z-index: 4; background: var(--mv-grafito); border-radius: var(--r-screen) var(--r-screen) 0 0; padding: 16px 14px 24px; display: grid; gap: 10px; }
 .sheet[hidden], .waiter-view[hidden] { display: none; }
 @media (prefers-reduced-motion: no-preference) { .sheet:not([hidden]) { animation: sheet-up .3s var(--ease); } @keyframes sheet-up { from { transform: translateY(16px); opacity: 0; } } }
 .sheet__head { display: flex; align-items: center; justify-content: space-between; }
@@ -253,7 +281,7 @@ button { cursor: pointer; }
 .app-btn { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; border-radius: var(--r-pill); border: 1px solid var(--mv-titanio); background: transparent; color: var(--text); font-weight: 600; font-size: 14px; padding: 0 12px; }
 .app-btn svg { width: 17px; height: 17px; flex: none; }
 .app-btn--wa { background: var(--mv-luz-calida); color: var(--mv-noche); border-color: var(--mv-luz-calida); }
-.waiter-view { position: absolute; inset: 0; z-index: 5; background: var(--mv-noche); padding: 52px 18px 16px; display: flex; flex-direction: column; gap: 4px; }
+.waiter-view { position: absolute; inset: 0; z-index: 5; background: var(--mv-noche); padding: 52px 18px 26px; display: flex; flex-direction: column; gap: 4px; }
 .waiter-view__who { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--text-3); }
 .waiter-view__mesa { font-family: var(--display); font-size: 34px; font-weight: 700; line-height: 1.05; margin: 2px 0 10px; }
 .waiter-view ul { list-style: none; margin: 0; padding: 0; overflow-y: auto; }
@@ -272,17 +300,13 @@ button { cursor: pointer; }
   .src-icons { display: flex !important; gap: 4px; }
   .src-icons svg { width: 26px; height: 26px; padding: 5px; border-radius: 50%; border: 1px solid var(--line); color: var(--icon); }
   .float--src { top: 13%; left: -200px; }
-  .float--3d { bottom: 20%; left: -124px; flex-direction: column; gap: 6px; padding: 8px 8px 10px; }
-  .float--3d img { width: 84px; height: 84px; object-fit: cover; border-radius: 4px; }
-  .float--3d span { display: inline-flex; align-items: center; gap: 5px; font-family: var(--mono); font-size: 11px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--text-2); }
-  .float--3d span svg { width: 13px; height: 13px; }
-  .float--wa { top: 7%; right: -176px; transition: border-color .3s; }
+  .float--wa { top: 7%; right: -206px; transition: border-color .3s; }
   .float--wa > svg { width: 32px; height: 32px; padding: 7px; border-radius: 50%; border: 1px solid var(--mv-titanio); color: var(--icon); flex: none; }
   .float--wa.is-ping { border-color: var(--mv-luz-calida); }
 }
 @media (min-width: 1024px) and (max-width: 1199px) {
   .float { scale: .88; }
-  .float--src { left: -150px; } .float--3d { left: -96px; } .float--wa { right: auto; top: auto; left: -168px; bottom: 58%; }
+  .float--src { left: -150px; } .float--wa { right: auto; top: auto; left: -168px; bottom: 58%; }
 }
 
 /* ---------- sin comisiones: delivery app vs MESAVERSO (text only, no third-party logos) ---------- */

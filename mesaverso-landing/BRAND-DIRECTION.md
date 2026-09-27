@@ -63,6 +63,20 @@ Un menú digital que lleva el pedido **directo del cliente al local**, sin inter
 - **Botón secundario:** contorno de 1 px Titanio (Noche en las secciones claras).
 - **Movimiento:** fade/slide de 12 px en 450 ms, sin rebotes. La única animación de marca es la del logo.
 
+## Mockup del celular
+
+- **Modelo:** es el último iPhone, el 18 Pro (salió el 18/09/2026), de frente y con proporciones reales (71,9 × 150 mm).
+- **Hardware:**
+  - Marco de aluminio en color Plata, dibujado en Titanio. Se descartó el Burgundy porque es rojo y el manual lo prohíbe.
+  - Borde negro fino y Dynamic Island más chica (~24 % del ancho).
+  - Barra de estado (9:41), indicador de inicio y botones reales: Acción y volumen a la izquierda, lateral y Camera Control a la derecha.
+  - Todo plano, sin reflejos, degradés ni sombras.
+- **Esquinas:** las del equipo siguen al hardware. El radio de 12–18 px del manual se aplica a la interfaz de adentro.
+- **El 3D es lo principal dentro del celular:** la torta real va primera y grande, con la etiqueta «Plato 3D» y el botón «Ver en 3D».
+  - El botón carga el modelo 3D real adentro del teléfono, para girarlo con el dedo.
+  - Se carga recién al tocar el botón, igual que en la sección 3D, y comparte el mismo visor.
+  - Los demás platos siguen como filas tipográficas.
+
 ## Decisiones del dueño (sobre los conflictos del manual)
 
 1. **Nada de verde de WhatsApp.**
@@ -72,7 +86,7 @@ Un menú digital que lleva el pedido **directo del cliente al local**, sin inter
    - El ícono de WhatsApp siempre va chico y monocromo. La conversación de WhatsApp de la maqueta también se dibujó neutra.
 2. **Header:** el CTA es secundario mientras se ve el hero y pasa a primario después, al hacer scroll.
 3. **Sin ilustraciones de platos ni placeholders:**
-   - La torta 3D real es la única imagen: aparece en la sección 3D, en el chip «Ver en 3D» y como única fila con foto de la maqueta.
+   - La torta 3D real es la única imagen: aparece en la sección 3D y como plato destacado del celular.
    - Los demás platos son filas tipográficas (nombre, descripción, precio, «+»).
    - También se sacaron los emojis de comida de «rubros».
 

@@ -116,8 +116,18 @@
       <div class="phone-wrap">
       <!-- Interactive product demo: a real, working mini version of the customer menu -->
       <div class="phone phone--hero" role="region" aria-label="Demo interactiva del menú Mesaverso">
-        <div class="phone__notch" aria-hidden="true"></div>
+        <span class="phone__btn phone__btn--action" aria-hidden="true"></span><span class="phone__btn phone__btn--vol-up" aria-hidden="true"></span><span class="phone__btn phone__btn--vol-down" aria-hidden="true"></span><span class="phone__btn phone__btn--side" aria-hidden="true"></span><span class="phone__btn phone__btn--camera" aria-hidden="true"></span>
+        <div class="phone__bezel">
         <div class="screen" data-demo>
+          <div class="phone__island" aria-hidden="true"></div>
+          <div class="phone__status" aria-hidden="true">
+            <span>9:41</span>
+            <span>
+              <svg viewBox="0 0 18 12"><rect x="0" y="8" width="3" height="4" rx="1" fill="currentColor"/><rect x="5" y="5.5" width="3" height="6.5" rx="1" fill="currentColor"/><rect x="10" y="3" width="3" height="9" rx="1" fill="currentColor"/><rect x="15" y="0" width="3" height="12" rx="1" fill="currentColor"/></svg>
+              <svg viewBox="0 0 16 12"><path d="M8 11.5 5.4 8.9a3.7 3.7 0 0 1 5.2 0zM2.8 6.3a7.4 7.4 0 0 1 10.4 0l-1.3 1.3a5.6 5.6 0 0 0-7.8 0zM.2 3.7a11 11 0 0 1 15.6 0l-1.3 1.3a9.2 9.2 0 0 0-13 0z" fill="currentColor"/></svg>
+              <svg viewBox="0 0 27 12"><rect x=".5" y=".5" width="22" height="11" rx="3.5" fill="none" stroke="currentColor" stroke-opacity=".45"/><rect x="2" y="2" width="16" height="8" rx="2" fill="currentColor"/><path d="M24.5 4v4c.8-.3 1.3-1.1 1.3-2s-.5-1.7-1.3-2z" fill="currentColor" fill-opacity=".45"/></svg>
+            </span>
+          </div>
           <div class="app-top">
             <div class="app-brand">
               <span class="app-logo" aria-hidden="true">LB</span>
@@ -137,9 +147,14 @@
             <button type="button" class="chip" aria-pressed="false" data-cat="bebidas">Bebidas</button>
           </div>
           <ul class="app-list" data-demo-list>
-            <li class="item item--3d" data-id="torta" data-cat="postres" data-name="Torta de zanahoria" data-price="22000">
-              <span class="item__img"><img src="/assets/torta-thumb.webp" alt="" width="112" height="112" decoding="async"></span>
-              <span class="item__txt"><strong>Torta de zanahoria</strong><small>Con frosting de queso</small><b>Gs. 22.000</b><span class="tag3d"><svg aria-hidden="true"><use href="#i-cube"/></svg>Ver en 3D</span></span>
+            <!-- Featured dish: the real 3D example is the protagonist of the menu -->
+            <li class="item item--feature" data-id="torta" data-cat="postres" data-name="Torta de zanahoria" data-price="22000">
+              <div class="feature__media" data-3d-phone>
+                <img class="feature__poster" src="/assets/torta-3d.webp" alt="Torta de zanahoria, plato con modelo 3D" width="800" height="800" decoding="async">
+                <span class="feature__tag" aria-hidden="true">Plato 3D</span>
+                <button type="button" class="feature__3d" data-3d-phone-load data-track="phone_3d_view_click"><svg aria-hidden="true"><use href="#i-cube"/></svg><span>Ver en 3D</span></button>
+              </div>
+              <span class="item__txt"><strong>Torta de zanahoria</strong><small>Con frosting de queso</small><b>Gs. 22.000</b></span>
               <span class="qty" data-qty></span>
             </li>
             <li class="item" data-id="pizza" data-cat="pizzas" data-name="Pizza Napolitana" data-price="65000">
@@ -188,16 +203,14 @@
             <div class="waiter-view__tot"><span>Total</span><b data-demo-waiter-total></b></div>
             <button type="button" class="app-btn" data-demo-waiter-close>Listo</button>
           </div>
+          <div class="phone__home" aria-hidden="true"></div>
+        </div>
         </div>
       </div>
 
       <div class="float float--src" aria-hidden="true">
         <span class="src-icons"><svg><use href="#i-insta"/></svg><svg><use href="#i-wa"/></svg><svg><use href="#i-link"/></svg></span>
         <span><strong>Abrió tu link</strong><small>desde su casa</small></span>
-      </div>
-      <div class="float float--3d" aria-hidden="true">
-        <img src="/assets/torta-thumb.webp" alt="" width="112" height="112" decoding="async">
-        <span><svg><use href="#i-cube"/></svg>Ver en 3D</span>
       </div>
       <div class="float float--wa" data-demo-wa-chip aria-hidden="true">
         <svg><use href="#i-wa"/></svg>

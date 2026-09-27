@@ -87,7 +87,7 @@ for (const [w, h] of VIEWPORTS) {
     const hue = (c) => { const m = c.match(/rgba?\((\d+), (\d+), (\d+)(?:, ([\d.]+))?/); if (!m || m[4] === "0") return null; const [r, g, bl] = [m[1], m[2], m[3]].map((v) => v / 255); const mx = Math.max(r, g, bl), mn = Math.min(r, g, bl), d = mx - mn; if (d < .25 || mx < .3) return null; const h = mx === r ? ((g - bl) / d) % 6 : mx === g ? (bl - r) / d + 2 : (r - g) / d + 4; return (h * 60 + 360) % 360; };
     for (const el of document.querySelectorAll("body *")) {
       // Food imagery keeps its real colour; form error states are functional, not brand colour.
-      if (el.closest(".item__img,.float--3d,.three__viewer,[hidden],.field__err,.form__summary,.form__status.is-err")) continue;
+      if (el.closest(".feature__media,.three__viewer,[hidden],.field__err,.form__summary,.form__status.is-err")) continue;
       const cs = getComputedStyle(el);
       if (cs.display === "none") continue;
       if (/gradient/.test(cs.backgroundImage)) banned.push("gradient " + el.className);
@@ -203,6 +203,13 @@ ok("FAQ opens", await page.$eval(".faq details", (d) => d.open));
 await sum.focus();
 await page.keyboard.press("Enter");
 ok("FAQ toggles with keyboard", !(await page.$eval(".faq details", (d) => d.open)));
+
+// 3D inside the phone: the featured dish loads its real model on demand
+await page.evaluate(() => scrollTo(0, 0));
+await page.locator("[data-3d-phone-load]").scrollIntoViewIfNeeded();
+await page.click("[data-3d-phone-load]");
+try { await page.waitForSelector("[data-3d-phone].is-live", { timeout: 30000 }); ok("phone 3D dish loads on demand", true); } catch { ok("phone 3D dish loads on demand", false); }
+await page.screenshot({ path: path.join(OUT, "phone-3d-390.png") });
 
 // 3D viewer
 await page.locator("[data-3d-load]").scrollIntoViewIfNeeded();

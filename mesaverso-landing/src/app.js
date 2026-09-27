@@ -186,29 +186,41 @@
     $("#wa-title").focus({ preventScroll: true });
   });
 
-  /* ---------- 3D: model-viewer only loads when the visitor asks for it ---------- */
-  const viewer = $("[data-3d]");
-  const loadBtn = $("[data-3d-load]");
-  loadBtn.addEventListener("click", () => {
-    loadBtn.disabled = true;
-    loadBtn.lastChild.textContent = "Cargando 3D…";
+  /* ---------- 3D: model-viewer only loads when the visitor asks for it ----------
+     Two viewers share this: the 3D section ([data-3d]) and the featured dish inside the phone
+     ([data-3d-phone]). The script is fetched once, on the first "Ver en 3D". */
+  let mvScript;
+  const loadModelViewer = () => mvScript || (mvScript = new Promise((resolve, reject) => {
     const s = document.createElement("script");
     s.type = "module";
     s.src = "/vendor/model-viewer.min.js";
-    s.onerror = () => { loadBtn.disabled = false; loadBtn.lastChild.textContent = "Reintentar 3D"; };
+    s.onload = resolve;
+    s.onerror = () => { mvScript = null; s.remove(); reject(); };
     document.head.append(s);
+  }));
+  const mount3d = (viewer, btn, extra = {}) => btn.addEventListener("click", () => {
+    const label = btn.querySelector("span") || btn.lastChild;
+    const idle = label.textContent;
+    const fail = () => { btn.disabled = false; label.textContent = "Reintentar 3D"; };
+    btn.disabled = true;
+    label.textContent = "Cargando 3D…";
+    loadModelViewer().catch(fail);
     const mv = document.createElement("model-viewer");
     Object.entries({
       src: "/assets/torta-3d.glb", alt: "Torta de zanahoria en 3D, modelo interactivo de ejemplo",
-      "camera-controls": "", "touch-action": "pan-y", "shadow-intensity": "1", exposure: "1.05",
+      "camera-controls": "", "touch-action": "pan-y", "shadow-intensity": ".6", exposure: "1.05",
       "camera-orbit": "30deg 70deg auto", "interaction-prompt": "none",
-      ar: "", "ar-modes": "webxr scene-viewer quick-look",
+      ar: "", "ar-modes": "webxr scene-viewer quick-look", ...extra,
     }).forEach(([k, v]) => mv.setAttribute(k, v));
     if (!reduceMotion) { mv.setAttribute("auto-rotate", ""); mv.setAttribute("auto-rotate-delay", "0"); mv.setAttribute("rotation-per-second", "18deg"); }
-    mv.addEventListener("load", () => viewer.classList.add("is-live"), { once: true });
-    mv.addEventListener("error", () => { loadBtn.disabled = false; loadBtn.lastChild.textContent = "Reintentar 3D"; mv.remove(); }, { once: true });
+    mv.addEventListener("load", () => { viewer.classList.add("is-live"); label.textContent = idle; }, { once: true });
+    mv.addEventListener("error", () => { fail(); mv.remove(); }, { once: true });
     viewer.append(mv);
+    track("three_d_view", { where: viewer.hasAttribute("data-3d-phone") ? "phone" : "three_section" });
   });
+  mount3d($("[data-3d]"), $("[data-3d-load]"));
+  const phone3d = $("[data-3d-phone]");
+  if (phone3d) mount3d(phone3d, $("[data-3d-phone-load]", phone3d), { "camera-orbit": "20deg 65deg auto" });
 
   /* ---------- reveal on scroll ---------- */
   const reveals = $$(".reveal");
