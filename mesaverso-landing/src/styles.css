@@ -180,6 +180,7 @@ button { cursor: pointer; }
 /* The H1 starts with what the product is (for people and search engines), then the tagline. */
 .hero__product { display: block; margin-bottom: 18px; font-family: var(--mono); font-size: 13px; font-weight: 500; letter-spacing: .1em; line-height: 1.5; text-transform: uppercase; color: var(--text-2); }
 .hero__lead { color: var(--text-2); font-size: 18px; max-width: 52ch; }
+.hero__lead strong { color: var(--text); font-weight: 600; }
 .hero__ctas { display: grid; gap: 12px; }
 .hero__facts { color: var(--text-3); font-size: 14px; }
 .hero__facts strong { color: var(--text-2); font-weight: 600; }
