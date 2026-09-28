@@ -7,6 +7,16 @@ dist/
 # Business notes (pricing, clients) — never in the public repo
 negocio/
 
+# Company operating docs (strategy, finances, sales, security audit) — never in the public repo
+docs/00_company_os/
+docs/01_ceo/
+docs/02_cto/
+docs/03_cpo/
+docs/04_cro/
+docs/05_growth/
+docs/06_bizops/
+docs/reports/
+
 # Local dev database and secrets
 .local/
 
@@ -16,3 +26,9 @@ dist-redirect/
 
 # Wrangler local cache
 .wrangler/
+
+# AI-team business plan (pricing, finances) — never in the public repo
+plan/
+
+# Reusable AI-team agent definitions (business roles) — keep out of the public repo
+.claude/agents/
