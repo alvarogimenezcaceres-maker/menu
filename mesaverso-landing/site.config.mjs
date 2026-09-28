@@ -30,6 +30,16 @@ export const PRICES = {
   plan3dDishes: 6,
 };
 
+// Launch promo terms (Ley 1334/98: an offer without a stated term is treated as permanent).
+// Ends at whichever comes first: `slots` new clients or the `until` date (inclusive).
+export const PROMO = {
+  slots: 6,
+  until: "2026-12-31",
+};
+
+const untilLabel = PROMO.until.split("-").reverse().join("/");
+export const PROMO_TERMS = `Válida para los primeros ${PROMO.slots} locales o hasta el ${untilLabel}, lo que ocurra primero.`;
+
 export const waUrl = (key) => {
   const text = WHATSAPP_MESSAGES[key];
   if (!text) throw new Error(`Unknown WhatsApp message key: ${key}`);

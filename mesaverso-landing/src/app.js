@@ -4,6 +4,7 @@
   "use strict";
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
   const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
   document.documentElement.classList.add("js");
 
@@ -186,7 +187,6 @@
 
     // "Enviar por WhatsApp" in the demo: fill the WhatsApp section with this order and go there.
     // (In a real Mesaverso menu this button opens the business's WhatsApp with the message.)
-    const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
     $("[data-demo-wa]", demo).addEventListener("click", () => {
       const ls = lines();
       const bubble = $("[data-wa-message]");

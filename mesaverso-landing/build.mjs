@@ -8,7 +8,7 @@ import { createHash } from "node:crypto";
 import { cp, mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { MESAVERSO_WHATSAPP, PRICES, SITE_URL, WHATSAPP_MESSAGES, formatGs, waUrl } from "./site.config.mjs";
+import { MESAVERSO_WHATSAPP, PRICES, PROMO, PROMO_TERMS, SITE_URL, WHATSAPP_MESSAGES, formatGs, waUrl } from "./site.config.mjs";
 import { BUSINESS_TYPES } from "./src/lead-schema.js";
 import { logoHtml } from "./scripts/brand.mjs";
 import { BRAND, FAQS, PAGES } from "./src/content.mjs";
@@ -60,7 +60,7 @@ const serviceNode = {
   offers: [
     monthly("Plan Menú Digital", "planDigital"),
     monthly("Plan Menú 3D", "plan3d"),
-    { "@type": "Offer", name: "Implementación (pago único, precio de lanzamiento)", price: String(PRICES.implementationPromo), priceCurrency: "PYG", url: abs("/#implementacion") },
+    { "@type": "Offer", name: "Implementación (pago único, precio de lanzamiento)", price: String(PRICES.implementationPromo), priceCurrency: "PYG", validThrough: PROMO.until, url: abs("/#implementacion") },
     { "@type": "Offer", name: "Plato 3D adicional", price: String(PRICES.extra3dDish), priceCurrency: "PYG", url: abs("/#planes") },
   ],
 };
@@ -147,6 +147,7 @@ function render(template, page) {
       case "LOGO": return logoHtml({ animated: arg === "animated" });
       case "WA_DISPLAY": return waDisplay;
       case "DISCOUNT": return String(discount);
+      case "PROMO_TERMS": return escapeHtml(PROMO_TERMS);
       case "YEAR": return String(new Date().getFullYear());
       case "BUSINESS_OPTIONS": return BUSINESS_TYPES.map((t) => `<option>${escapeHtml(t)}</option>`).join("");
       default: throw new Error(`Unknown placeholder ${m}`);

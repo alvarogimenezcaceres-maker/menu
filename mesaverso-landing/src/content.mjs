@@ -1,7 +1,7 @@
 // Per-page SEO metadata and FAQ content (single source of truth). build.mjs renders the visible
 // FAQ accordion AND the FAQPage JSON-LD from the same entries, so they always match exactly.
 // Answers are HTML; the JSON-LD gets the same text with tags stripped.
-import { PRICES, formatGs } from "../site.config.mjs";
+import { PRICES, PROMO_TERMS, formatGs } from "../site.config.mjs";
 
 const gs = (k) => formatGs(PRICES[k]);
 
@@ -23,7 +23,7 @@ export const FAQS = {
     ["¿Mesaverso cobra comisión por cada pedido?", `<p>No. Pagás un plan mensual fijo y Mesaverso no cobra comisión por pedido.</p>`],
     ["¿Qué incluye el plan 3D?", `<p>Todo lo del Plan Menú Digital, más ${PRICES.plan3dDishes} platos en 3D y una actualización de un plato 3D por mes sin costo adicional.</p>`],
     ["¿Cuánto cuesta un plato 3D adicional?", `<p>${gs("extra3dDish")} por plato, cada vez que necesites sumar uno nuevo.</p>`],
-    ["¿Cuánto cuesta la implementación?", `<p><s>${gs("implementationOriginal")}</s>. Durante la promoción de lanzamiento: <strong>${gs("implementationPromo")}</strong>. Es un pago único.</p>`],
+    ["¿Cuánto cuesta la implementación?", `<p><s>${gs("implementationOriginal")}</s>. Durante la promoción de lanzamiento: <strong>${gs("implementationPromo")}</strong>. Es un pago único. ${PROMO_TERMS} Los QR impresos y la sesión de fotos 3D presencial se cotizan aparte.</p>`],
     ["¿Cuánto cuesta el menú?", `<p>El Plan Menú Digital cuesta ${gs("planDigital")} por mes y el Plan Menú 3D, ${gs("plan3d")} por mes.</p>`],
   ],
   whatsapp: [
