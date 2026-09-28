@@ -1,7 +1,7 @@
 // Per-page SEO metadata and FAQ content (single source of truth). build.mjs renders the visible
 // FAQ accordion AND the FAQPage JSON-LD from the same entries, so they always match exactly.
 // Answers are HTML; the JSON-LD gets the same text with tags stripped.
-import { PRICES, PROMO_TERMS, formatGs } from "../site.config.mjs";
+import { PRICES, formatGs } from "../site.config.mjs";
 
 const gs = (k) => formatGs(PRICES[k]);
 
@@ -21,17 +21,16 @@ export const FAQS = {
     ["¿Cómo recibo los pedidos?", `<p>Por WhatsApp. El cliente arma su pedido en el menú y Mesaverso prepara el mensaje con los productos, las cantidades y el total. El cliente lo revisa y te lo envía desde su WhatsApp; vos respondés y coordinás el pago y la entrega como siempre.</p>`],
     ["¿Puedo mostrar el pedido al mozo?", `<p>Sí. El cliente puede mostrar desde su propio teléfono la lista del pedido para que el mozo lo tome de forma tradicional.</p>`],
     ["¿Mesaverso cobra comisión por cada pedido?", `<p>No. Pagás un plan mensual fijo y Mesaverso no cobra comisión por pedido.</p>`],
-    ["¿Qué incluye el plan 3D?", `<p>Todo lo del Plan Menú Digital, más ${PRICES.plan3dDishes} platos en 3D y una actualización de un plato 3D por mes sin costo adicional.</p>`],
-    ["¿Cuánto cuesta un plato 3D adicional?", `<p>${gs("extra3dDish")} por plato, cada vez que necesites sumar uno nuevo.</p>`],
-    ["¿Cuánto cuesta la implementación?", `<p><s>${gs("implementationOriginal")}</s>. Durante la promoción de lanzamiento: <strong>${gs("implementationPromo")}</strong>. Es un pago único. ${PROMO_TERMS} Los QR impresos y la sesión de fotos 3D presencial se cotizan aparte.</p>`],
-    ["¿Cuánto cuesta el menú?", `<p>El Plan Menú Digital cuesta ${gs("planDigital")} por mes y el Plan Menú 3D, ${gs("plan3d")} por mes.</p>`],
+    ["¿Cuánto cuesta el menú?", `<p>El plan mensual cuesta ${gs("planMonthly")} por mes, con un mínimo de ${PRICES.minMonths} meses. El plan anual cuesta ${gs("planAnnual")} por año, pagado por adelantado: son 12 meses al precio de ${PRICES.annualMonthsCharged}.</p>`],
+    ["¿Cuánto cuesta la implementación?", `<p>${gs("implementation")}, en un solo pago, con el plan mensual. Con el plan anual está incluida. Los QR impresos se cotizan aparte.</p>`],
+    ["¿Cómo sumo platos en 3D?", `<p>Con el Pack 3D: ${gs("pack3dDish")} por plato, en un solo pago, con cualquiera de los dos planes. Pagás solo los platos que quieras mostrar en 3D. La sesión de fotos 3D presencial se cotiza aparte.</p>`],
   ],
   whatsapp: [
     ["¿Mi cliente tiene que instalar una aplicación?", `<p>No. Tu menú se abre en el navegador del celular, desde el link o escaneando el QR. Cuando envía el pedido, se abre su WhatsApp con el mensaje ya preparado.</p>`],
     ["¿El pedido llega a mi número de siempre?", `<p>Sí. Llega al número de WhatsApp de tu negocio, tanto si usás WhatsApp como WhatsApp Business.</p>`],
     ["¿Sirve si vendo solo por Instagram?", `<p>Sí. Ponés el link del menú en tu perfil y en tus historias o estados: tus clientes ven los productos y los precios, arman el pedido y te lo mandan por WhatsApp. No necesitás local.</p>`],
     ["¿Cómo cobro y coordino la entrega?", `<p>Como ya lo hacés: respondés el mensaje y acordás con tu cliente el pago y la entrega. Mesaverso se encarga de que vea tu menú y de que el pedido te llegue claro y completo.</p>`],
-    ["¿Mesaverso cobra comisión por pedido?", `<p>No. Pagás un plan mensual fijo, desde ${gs("planDigital")} por mes, sin comisión por pedido.</p>`],
+    ["¿Mesaverso cobra comisión por pedido?", `<p>No. Pagás un plan mensual fijo, desde ${gs("planMonthly")} por mes, sin comisión por pedido.</p>`],
   ],
 };
 

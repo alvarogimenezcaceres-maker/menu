@@ -8,7 +8,7 @@ import { createHash } from "node:crypto";
 import { cp, mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { MESAVERSO_WHATSAPP, PRICES, PROMO, PROMO_TERMS, SITE_URL, WHATSAPP_MESSAGES, formatGs, waUrl } from "./site.config.mjs";
+import { MESAVERSO_WHATSAPP, PRICES, SITE_URL, WHATSAPP_MESSAGES, formatGs, waUrl } from "./site.config.mjs";
 import { BUSINESS_TYPES } from "./src/lead-schema.js";
 import { logoHtml } from "./scripts/brand.mjs";
 import { BRAND, FAQS, PAGES } from "./src/content.mjs";
@@ -32,7 +32,6 @@ for (const f of ["styles.css", "app.js"]) {
 const hash = (f) => createHash("sha256").update(files[f]).digest("hex").slice(0, 10);
 
 const waDisplay = `+${MESAVERSO_WHATSAPP.slice(0, 3)} ${MESAVERSO_WHATSAPP.slice(3, 6)} ${MESAVERSO_WHATSAPP.slice(6, 9)} ${MESAVERSO_WHATSAPP.slice(9)}`;
-const discount = Math.round((1 - PRICES.implementationPromo / PRICES.implementationOriginal) * 100);
 const escapeHtml = (s) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 const stripHtml = (s) => s.replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
 const abs = (p) => SITE_URL + p;
@@ -46,22 +45,22 @@ const OG_IMAGE = abs("/assets/og.png");
 const ORG = `${SITE_URL}/#organization`;
 const SITE = `${SITE_URL}/#website`;
 const SERVICE = `${SITE_URL}/#service`;
-const monthly = (name, key) => ({
+const recurring = (name, key, unitText, unitCode) => ({
   "@type": "Offer", name, price: String(PRICES[key]), priceCurrency: "PYG", url: abs("/#planes"),
-  priceSpecification: { "@type": "UnitPriceSpecification", price: PRICES[key], priceCurrency: "PYG", unitText: "mes", referenceQuantity: { "@type": "QuantitativeValue", value: 1, unitCode: "MON" } },
+  priceSpecification: { "@type": "UnitPriceSpecification", price: PRICES[key], priceCurrency: "PYG", unitText, referenceQuantity: { "@type": "QuantitativeValue", value: 1, unitCode } },
 });
 const serviceNode = {
   "@type": "Service", "@id": SERVICE, name: "Mesaverso",
   serviceType: "Menú digital interactivo para restaurantes y negocios gastronómicos",
-  description: "Menú digital con QR y link directo: los clientes buscan productos, arman su pedido y lo envían por WhatsApp al negocio o se lo muestran al mozo. Sin comisión por pedido. Platos en 3D según el plan.",
+  description: "Menú digital con QR y link directo: los clientes buscan productos, arman su pedido y lo envían por WhatsApp al negocio o se lo muestran al mozo. Sin comisión por pedido. Platos en 3D opcionales, con un pago único por plato.",
   provider: { "@id": ORG },
   areaServed: { "@type": "Country", name: "Paraguay" },
   audience: { "@type": "BusinessAudience", audienceType: "Restaurantes y negocios gastronómicos" },
   offers: [
-    monthly("Plan Menú Digital", "planDigital"),
-    monthly("Plan Menú 3D", "plan3d"),
-    { "@type": "Offer", name: "Implementación (pago único, precio de lanzamiento)", price: String(PRICES.implementationPromo), priceCurrency: "PYG", validThrough: PROMO.until, url: abs("/#implementacion") },
-    { "@type": "Offer", name: "Plato 3D adicional", price: String(PRICES.extra3dDish), priceCurrency: "PYG", url: abs("/#planes") },
+    recurring(`Plan mensual (mínimo ${PRICES.minMonths} meses)`, "planMonthly", "mes", "MON"),
+    recurring("Plan anual (pago por adelantado, implementación incluida)", "planAnnual", "año", "ANN"),
+    { "@type": "Offer", name: "Implementación (pago único; incluida en el plan anual)", price: String(PRICES.implementation), priceCurrency: "PYG", url: abs("/#implementacion") },
+    { "@type": "Offer", name: "Pack 3D (pago único por plato)", price: String(PRICES.pack3dDish), priceCurrency: "PYG", url: abs("/#pack-3d") },
   ],
 };
 function jsonLd(page) {
@@ -146,8 +145,6 @@ function render(template, page) {
       case "HASH": return hash(arg);
       case "LOGO": return logoHtml({ animated: arg === "animated" });
       case "WA_DISPLAY": return waDisplay;
-      case "DISCOUNT": return String(discount);
-      case "PROMO_TERMS": return escapeHtml(PROMO_TERMS);
       case "YEAR": return String(new Date().getFullYear());
       case "BUSINESS_OPTIONS": return BUSINESS_TYPES.map((t) => `<option>${escapeHtml(t)}</option>`).join("");
       default: throw new Error(`Unknown placeholder ${m}`);

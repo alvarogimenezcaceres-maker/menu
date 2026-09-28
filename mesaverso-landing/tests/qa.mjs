@@ -125,9 +125,9 @@ const bad = links.filter((l) => { const u = new URL(l.href); return u.pathname !
 ok("all WhatsApp links → 595984900323 with a known message", links.length > 0 && bad.length === 0, `${links.length} links; bad: ${bad.map((b) => b.href).join(", ")}`);
 const msgOf = (sel) => page.$eval(sel, (a) => new URL(a.href).searchParams.get("text"));
 ok("hero demo CTA message", (await msgOf('.hero a[data-track="hero_demo_click"]')) === WHATSAPP_MESSAGES.demo);
-ok("digital plan CTA message", (await msgOf('a[data-track="pricing_digital_click"]')) === WHATSAPP_MESSAGES.planDigital);
-ok("3D plan CTA message", (await msgOf('.pricing a[data-track="pricing_3d_click"]')) === WHATSAPP_MESSAGES.plan3d);
-ok("extra 3D CTA message", (await msgOf('a[data-track="pricing_extra3d_click"]')) === WHATSAPP_MESSAGES.extra3d);
+ok("monthly plan CTA message", (await msgOf('a[data-track="pricing_digital_click"][data-track-where="monthly"]')) === WHATSAPP_MESSAGES.planMonthly);
+ok("annual plan CTA message", (await msgOf('a[data-track="pricing_digital_click"][data-track-where="annual"]')) === WHATSAPP_MESSAGES.planAnnual);
+ok("3D pack CTA message", (await msgOf('.pricing a[data-track="pricing_3d_click"]')) === WHATSAPP_MESSAGES.pack3d);
 ok("final WhatsApp CTA message", (await msgOf('.final a[data-track-where="final"]')) === WHATSAPP_MESSAGES.general);
 ok("links are URL-encoded", links.every((l) => !/\s/.test(l.href) && l.href.includes("%20")));
 const allNumbers = (await page.content()).match(/\b5959\d{8}\b/g) || [];
@@ -146,7 +146,7 @@ ok("remote-order message appears before pricing", order.journey < order.claim &&
 ok("remote claim text", text.includes("Tu cliente puede pedir desde donde esté."));
 
 // Pricing
-const need = [formatGs(PRICES.implementationOriginal), formatGs(PRICES.implementationPromo), "50% OFF", formatGs(PRICES.planDigital), formatGs(PRICES.plan3d), formatGs(PRICES.extra3dDish), "Pago único", "6 platos en 3D", "1 actualización de un plato 3D por mes", "Sin comisiones por pedido".toUpperCase()];
+const need = [formatGs(PRICES.planMonthly), formatGs(PRICES.planAnnual), formatGs(PRICES.implementation), formatGs(PRICES.pack3dDish), formatGs(PRICES.firstYearMonthly), formatGs(PRICES.annualSaving), "Pago único", `Mínimo ${PRICES.minMonths} meses`, "12 meses al precio de 10", "Incluida en el plan anual", "por plato, pago único", "Sin comisiones por pedido".toUpperCase()];
 const upper = text.replace(/ /g, " ");
 const missing = need.filter((s) => !upper.includes(s.replace(/ /g, " ")) && !upper.toUpperCase().includes(s.replace(/ /g, " ").toUpperCase()));
 ok("all prices and plan terms present", missing.length === 0, missing.join(" | "));
@@ -192,8 +192,8 @@ await page.click("[data-demo-open]");
 await page.click("[data-demo-wa]");
 await page.waitForTimeout(900);
 const msg = await page.textContent("[data-wa-message]");
-ok("extra 3D dish: pay per dish when needed", text.includes("por plato, cada vez que necesites uno nuevo"));
-ok("pricing has a worked example", text.includes("Ejemplo: ¿cuánto pagás?"));
+ok("no launch-promo anchor or monthly 3D plan left", !/\d+% OFF|Promoción de lanzamiento|Plan Menú 3D|270\.000/.test(text) && (await page.$(".pricing s")) === null);
+ok("pricing has a worked example", text.includes("Ejemplo: ¿cuánto pagás el primer año?"));
 ok("demo WhatsApp fills chat message", msg.includes("1 × Hamburguesa clásica") && msg.includes("¿Delivery o pick up?"));
 
 // FAQ

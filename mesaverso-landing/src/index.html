@@ -253,13 +253,13 @@
     <div class="three__copy">
       <p class="kicker"><svg aria-hidden="true"><use href="#i-cube"/></svg>Platos en 3D</p>
       <h2 id="three-title">Mirá el plato antes de pedirlo.</h2>
-      <p class="sec-lead">Con Mesaverso 3D podés presentar determinados platos de tu menú mediante modelos tridimensionales interactivos.</p>
+      <p class="sec-lead">Con el <a href="#pack-3d">Pack 3D</a> podés presentar determinados platos de tu menú mediante modelos tridimensionales interactivos.</p>
       <ul class="ticks">
         <li><svg aria-hidden="true"><use href="#i-check"/></svg>Tus clientes giran el plato y lo miran desde cualquier ángulo.</li>
         <li><svg aria-hidden="true"><use href="#i-check"/></svg>En celulares compatibles, también pueden verlo sobre la mesa con realidad aumentada.</li>
       </ul>
-      <a class="btn btn--primary" href="{{wa:plan3d}}" target="_blank" rel="noopener" data-track="pricing_3d_click" data-track-where="three_section">
-        <svg aria-hidden="true"><use href="#i-wa"/></svg>Quiero el plan 3D</a>
+      <a class="btn btn--primary" href="{{wa:pack3d}}" target="_blank" rel="noopener" data-track="pricing_3d_click" data-track-where="three_section">
+        <svg aria-hidden="true"><use href="#i-wa"/></svg>Quiero platos en 3D</a>
     </div>
   </div>
 </section>
@@ -290,42 +290,24 @@
   </div>
 </section>
 
-<!-- ============ PRECIOS (light): 1 pago único → 2 plan mensual → 3 extras opcionales ============ -->
+<!-- ============ PRECIOS (light): 1 plan (mensual o anual) → 2 implementación → 3 Pack 3D opcional ============ -->
 <section class="section pricing is-light" id="planes" aria-labelledby="plans-title">
   <div class="wrap">
     <header class="sec-head">
       <p class="kicker">Precios claros · Sin comisiones por pedido</p>
       <h2 id="plans-title">Planes y precios</h2>
-      <p class="sec-lead">Elegí cómo querés mostrar tu menú. Así se paga Mesaverso, en 3 partes:</p>
+      <p class="sec-lead">Un precio fijo, sin comisión por pedido. Así se paga Mesaverso:</p>
     </header>
 
     <ol class="price-steps">
-      <!-- 1. Implementación -->
-      <li class="pstep" id="implementacion">
-        <p class="pstep__n"><span>1</span>Para empezar · <strong>Pago único</strong></p>
-        <article class="impl-card" aria-labelledby="impl-title">
-          <div class="impl-card__top">
-            <h3 id="impl-title">Implementación</h3>
-            <span class="badge badge--promo">Promoción de lanzamiento</span>
-          </div>
-          <p class="impl-card__price">
-            <s><span class="sr-only">Antes </span>{{price:implementationOriginal}}</s>
-            <strong><span class="sr-only">Ahora </span>{{price:implementationPromo}}</strong>
-            <span class="badge badge--off">{{DISCOUNT}}% OFF</span>
-          </p>
-          <p class="impl-card__txt">Se paga una sola vez. Incluye la configuración inicial de tu menú, la carga y organización de la información de tu negocio (nos mandás tu carta en PDF o fotos) y la puesta en funcionamiento de tu espacio Mesaverso. Los QR impresos y la sesión de fotos 3D presencial se cotizan aparte.</p>
-          <p class="example__note">{{PROMO_TERMS}}</p>
-        </article>
-      </li>
-
-      <!-- 2. Plan mensual -->
+      <!-- 1. Plan -->
       <li class="pstep">
-        <p class="pstep__n"><span>2</span>Tu plan · <strong>Por mes</strong></p>
+        <p class="pstep__n"><span>1</span>Tu plan · <strong>Mensual o anual</strong></p>
         <div class="plans__grid">
-          <article class="plan" aria-labelledby="plan-digital">
-            <h3 id="plan-digital" class="plan__name">Plan Menú Digital</h3>
-            <p class="plan__price"><span class="plan__amount">{{price:planDigital}}</span><span class="plan__per">/ mes</span></p>
-            <p class="plan__for">Menú, pedidos por WhatsApp y QR.</p>
+          <article class="plan" aria-labelledby="plan-monthly">
+            <h3 id="plan-monthly" class="plan__name">Plan mensual</h3>
+            <p class="plan__price"><span class="plan__amount">{{price:planMonthly}}</span><span class="plan__per">/ mes</span></p>
+            <p class="plan__for">Mínimo {{RAW:minMonths}} meses, más la implementación.</p>
             <ul class="plan__list">
               <li>Menú digital optimizado para celular</li>
               <li>QR por mesa y link directo al menú</li>
@@ -346,46 +328,59 @@
                 <li>Pedido por WhatsApp</li>
               </ul>
             </details>
-            <a class="btn btn--secondary btn--block" href="{{wa:planDigital}}" target="_blank" rel="noopener" data-track="pricing_digital_click">
-              <svg aria-hidden="true"><use href="#i-wa"/></svg>Quiero este plan</a>
+            <a class="btn btn--secondary btn--block" href="{{wa:planMonthly}}" target="_blank" rel="noopener" data-track="pricing_digital_click" data-track-where="monthly">
+              <svg aria-hidden="true"><use href="#i-wa"/></svg>Quiero el plan mensual</a>
           </article>
 
-          <article class="plan plan--3d" aria-labelledby="plan-3d">
-            <span class="badge badge--3d"><svg aria-hidden="true"><use href="#i-cube"/></svg>Experiencia 3D</span>
-            <h3 id="plan-3d" class="plan__name">Plan Menú 3D</h3>
-            <p class="plan__price"><span class="plan__amount">{{price:plan3d}}</span><span class="plan__per">/ mes</span></p>
-            <p class="plan__for">Todo lo del Plan Menú Digital, más:</p>
+          <article class="plan plan--featured" aria-labelledby="plan-annual">
+            <span class="badge badge--promo">12 meses al precio de {{RAW:annualMonthsCharged}}</span>
+            <h3 id="plan-annual" class="plan__name">Plan anual</h3>
+            <p class="plan__price"><span class="plan__amount">{{price:planAnnual}}</span><span class="plan__per">/ año</span></p>
+            <p class="plan__for">Todo lo del plan mensual, más:</p>
             <ul class="plan__list plan__list--plus">
-              <li><span><strong>{{RAW:plan3dDishes}} platos en 3D</strong> incluidos</span></li>
-              <li><span><strong>1 actualización de un plato 3D por mes</strong> sin costo adicional</span></li>
+              <li><span><strong>Implementación incluida</strong>: te ahorrás {{price:implementation}}</span></li>
+              <li><span><strong>Un solo pago por año</strong>, por adelantado</span></li>
             </ul>
-            <a class="btn btn--primary btn--block" href="{{wa:plan3d}}" target="_blank" rel="noopener" data-track="pricing_3d_click" data-track-where="plans">
-              <svg aria-hidden="true"><use href="#i-wa"/></svg>Quiero el plan 3D</a>
+            <a class="btn btn--primary btn--block" href="{{wa:planAnnual}}" target="_blank" rel="noopener" data-track="pricing_digital_click" data-track-where="annual">
+              <svg aria-hidden="true"><use href="#i-wa"/></svg>Quiero el plan anual</a>
           </article>
         </div>
       </li>
 
-      <!-- 3. Extras -->
-      <li class="pstep">
+      <!-- 2. Implementación -->
+      <li class="pstep" id="implementacion">
+        <p class="pstep__n"><span>2</span>Para empezar · <strong>Pago único</strong></p>
+        <article class="impl-card" aria-labelledby="impl-title">
+          <div class="impl-card__top">
+            <h3 id="impl-title">Implementación</h3>
+            <span class="badge">Incluida en el plan anual</span>
+          </div>
+          <p class="impl-card__price"><strong>{{price:implementation}}</strong></p>
+          <p class="impl-card__txt">Se paga una sola vez con el plan mensual. Incluye la configuración inicial de tu menú, la carga y organización de la información de tu negocio (nos mandás tu carta en PDF o fotos) y la puesta en funcionamiento de tu espacio Mesaverso. Los QR impresos se cotizan aparte.</p>
+        </article>
+      </li>
+
+      <!-- 3. Pack 3D -->
+      <li class="pstep" id="pack-3d">
         <p class="pstep__n"><span>3</span>Opcional · <strong>Cuando lo necesites</strong></p>
         <article class="extra" aria-labelledby="extra-title">
           <div>
-            <h3 id="extra-title">¿Querés más platos en 3D?</h3>
-            <p class="extra__price">{{price:extra3dDish}} <small>por plato, cada vez que necesites uno nuevo</small></p>
-            <p class="extra__txt">Pagás solo los platos que sumes, cuando los sumes. El Plan Menú 3D ya incluye {{RAW:plan3dDishes}}.</p>
+            <h3 id="extra-title">Pack 3D: tus platos en 3D</h3>
+            <p class="extra__price">{{price:pack3dDish}} <small>por plato, pago único</small></p>
+            <p class="extra__txt">Sumalo a cualquiera de los dos planes y pagá solo los platos que quieras mostrar en 3D. La sesión de fotos 3D presencial se cotiza aparte.</p>
           </div>
-          <a class="btn btn--secondary" href="{{wa:extra3d}}" target="_blank" rel="noopener" data-track="pricing_extra3d_click">Consultar</a>
+          <a class="btn btn--secondary" href="{{wa:pack3d}}" target="_blank" rel="noopener" data-track="pricing_3d_click" data-track-where="plans">Consultar</a>
         </article>
       </li>
     </ol>
 
     <aside class="example" aria-labelledby="example-title">
-      <h3 id="example-title">Ejemplo: ¿cuánto pagás?</h3>
+      <h3 id="example-title">Ejemplo: ¿cuánto pagás el primer año?</h3>
       <dl class="example__rows">
-        <div><dt>Con el Plan Menú Digital</dt><dd><strong>{{price:implementationPromo}}</strong> una sola vez <span aria-hidden="true">+</span> <strong>{{price:planDigital}}</strong> por mes</dd></div>
-        <div><dt>Con el Plan Menú 3D</dt><dd><strong>{{price:implementationPromo}}</strong> una sola vez <span aria-hidden="true">+</span> <strong>{{price:plan3d}}</strong> por mes</dd></div>
+        <div><dt>Con el plan mensual</dt><dd><strong>{{price:implementation}}</strong> una sola vez <span aria-hidden="true">+</span> 12 meses de <strong>{{price:planMonthly}}</strong> <span aria-hidden="true">=</span> <strong>{{price:firstYearMonthly}}</strong></dd></div>
+        <div><dt>Con el plan anual</dt><dd><strong>{{price:planAnnual}}</strong>, con la implementación incluida</dd></div>
       </dl>
-      <p class="example__note">Sin comisiones por pedido. La implementación usa el precio de lanzamiento. {{PROMO_TERMS}}</p>
+      <p class="example__note">Con el plan anual ahorrás {{price:annualSaving}} el primer año. Sin comisiones por pedido.</p>
     </aside>
   </div>
 </section>

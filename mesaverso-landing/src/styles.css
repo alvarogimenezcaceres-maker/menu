@@ -145,7 +145,6 @@ button { cursor: pointer; }
 .badge svg { width: 14px; height: 14px; }
 .badge--promo { background: var(--mv-luz-calida); border-color: var(--mv-luz-calida); color: var(--mv-noche); }
 .badge--off { letter-spacing: .04em; }
-.badge--3d { justify-self: start; }
 
 /* ---------- nav ---------- */
 .nav { position: sticky; top: 0; z-index: 50; background: var(--mv-noche); border-bottom: 1px solid transparent; transition: border-color .2s; }
@@ -444,7 +443,8 @@ button { cursor: pointer; }
 .plan__more[open] summary::after { content: "−"; }
 .plan__more[open] summary { margin-bottom: 8px; }
 .plan__more[open] ~ .plan__list, .plan:has(.plan__more[open]) > .plan__list { display: none; }
-.plan--3d { border-color: var(--text); }
+.plan--featured { border-color: var(--text); }
+.plan > .badge { justify-self: start; }
 .plan .btn { margin-top: 6px; }
 .extra { display: grid; gap: 16px; }
 .extra h3 { font-size: 22px; margin-bottom: 8px; }

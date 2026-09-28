@@ -14,31 +14,26 @@ export const MESAVERSO_WHATSAPP = "595984900323";
 export const WHATSAPP_MESSAGES = {
   demo: "Hola, quiero solicitar una demo de Mesaverso.",
   general: "Hola, quiero hablar con Mesaverso.",
-  planDigital: "Hola, estoy interesado en el Plan Menú Digital de Mesaverso.",
-  plan3d: "Hola, estoy interesado en el Plan Menú 3D de Mesaverso.",
-  extra3d: "Hola, quiero consultar sobre platos 3D adicionales para Mesaverso.",
-  implementation: "Hola, quiero consultar por la implementación de Mesaverso con la promoción de lanzamiento.",
+  planMonthly: "Hola, estoy interesado en el plan mensual de Mesaverso.",
+  planAnnual: "Hola, estoy interesado en el plan anual de Mesaverso.",
+  pack3d: "Hola, quiero consultar por el Pack 3D de Mesaverso.",
 };
 
 // Prices in guaraníes. Shown as "Gs. 150.000". Change here, never in the HTML.
+// Offer approved 2026-09-27 ("Pedidos Directo"): monthly with a 6-month minimum plus a one-off
+// implementation, or annual paid upfront (12 months for the price of `annualMonthsCharged`)
+// with the implementation included. 3D is an optional one-off pack per dish.
 export const PRICES = {
-  planDigital: 150000,
-  plan3d: 270000,
-  extra3dDish: 90000,
-  implementationOriginal: 600000,
-  implementationPromo: 300000,
-  plan3dDishes: 6,
+  planMonthly: 150000,
+  minMonths: 6,
+  annualMonthsCharged: 10,
+  implementation: 300000,
+  pack3dDish: 120000,
 };
-
-// Launch promo terms (Ley 1334/98: an offer without a stated term is treated as permanent).
-// Ends at whichever comes first: `slots` new clients or the `until` date (inclusive).
-export const PROMO = {
-  slots: 6,
-  until: "2026-12-31",
-};
-
-const untilLabel = PROMO.until.split("-").reverse().join("/");
-export const PROMO_TERMS = `Válida para los primeros ${PROMO.slots} locales o hasta el ${untilLabel}, lo que ocurra primero.`;
+PRICES.planAnnual = PRICES.planMonthly * PRICES.annualMonthsCharged;
+// First year on each plan, for the worked example.
+PRICES.firstYearMonthly = PRICES.implementation + PRICES.planMonthly * 12;
+PRICES.annualSaving = PRICES.firstYearMonthly - PRICES.planAnnual;
 
 export const waUrl = (key) => {
   const text = WHATSAPP_MESSAGES[key];
