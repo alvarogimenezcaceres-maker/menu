@@ -12,8 +12,10 @@
     "not_found_handling": "none",
     "run_worker_first": ["/e"]
   },
-  "analytics_engine_datasets": [
-    { "binding": "MV_EVENTS", "dataset": "mesaverso_menu_events" }
-  ],
+  // Analytics Engine binding, off until it is enabled on the account (deploys fail with error 10089
+  // otherwise). Until then /e accepts the events and drops them. To turn it on, uncomment:
+  // "analytics_engine_datasets": [
+  //   { "binding": "MV_EVENTS", "dataset": "mesaverso_menu_events" }
+  // ],
   "observability": { "enabled": true }
 }
