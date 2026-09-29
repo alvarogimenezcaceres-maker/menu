@@ -70,6 +70,17 @@ export async function exportRestaurant(payload: Payload, restaurantId: number | 
       tables: r.tables ?? 0,
       whatsapp: r.whatsapp || undefined,
       cuisine: r.cuisine ?? [],
+      ordering: {
+        orderTypes: r.orderTypes?.length ? r.orderTypes : undefined,
+        paymentMethods: r.paymentMethods?.length ? r.paymentMethods : undefined,
+        deliveryFee: r.deliveryFee ?? undefined,
+        minOrder: r.minOrder || undefined,
+        deliveryZones: r.deliveryZones?.length ? r.deliveryZones.map((z) => ({ name: z.name, fee: z.fee })) : undefined,
+        transferInfo: r.transferInfo || undefined,
+        hours: r.hours?.length
+          ? r.hours.map((h) => ({ days: h.days ?? [], open: h.open.trim(), close: h.close.trim() }))
+          : undefined,
+      },
       theme: {
         primary: r.theme?.primary,
         primaryLight: r.theme?.primaryLight,
@@ -92,7 +103,15 @@ export async function exportRestaurant(payload: Payload, restaurantId: number | 
           ingredients: d.ingredients?.length ? d.ingredients : undefined,
           tags: d.tags?.length ? d.tags : undefined,
           options: d.options?.length
-            ? d.options.map((o) => ({ group: o.group, multiple: Boolean(o.multiple), choices: o.choices ?? [] }))
+            ? d.options.map((o) => ({
+                group: o.group,
+                multiple: Boolean(o.multiple),
+                required: o.required ?? !o.multiple,
+                // dishes saved before option prices existed still only have `choices`
+                items: o.items?.length
+                  ? o.items.map((i) => ({ name: i.name, price: i.price || 0 }))
+                  : (o.choices ?? []).map((name) => ({ name, price: 0 })),
+              }))
             : undefined,
           photo: image(d.photo),
           model: model(d.model),

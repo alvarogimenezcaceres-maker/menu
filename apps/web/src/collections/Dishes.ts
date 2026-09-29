@@ -62,17 +62,64 @@ export const Dishes: CollectionConfig = {
       type: 'array',
       label: 'Opciones para elegir',
       labels: { singular: 'Grupo de opciones', plural: 'Grupos de opciones' },
-      admin: { description: 'Ej.: Sabor → Durazno, Frutilla, Limón.', initCollapsed: true },
+      admin: {
+        description: 'Ej.: Tamaño → Mediana, Grande (+₲ 15.000). Extras → Cheddar (+₲ 5.000), Panceta (+₲ 7.000).',
+        initCollapsed: true,
+      },
       fields: [
         {
           type: 'row',
           fields: [
-            { name: 'group', type: 'text', label: 'Grupo', required: true },
+            { name: 'group', type: 'text', label: 'Grupo', required: true, admin: { width: '40%' } },
             { name: 'multiple', type: 'checkbox', label: 'Se pueden elegir varias', defaultValue: false },
+            {
+              name: 'required',
+              type: 'checkbox',
+              label: 'Obligatorio',
+              defaultValue: true,
+              admin: { description: 'El cliente tiene que elegir al menos una.' },
+            },
           ],
         },
-        { name: 'choices', type: 'text', hasMany: true, label: 'Opciones', required: true },
+        {
+          name: 'items',
+          type: 'array',
+          label: 'Opciones',
+          labels: { singular: 'Opción', plural: 'Opciones' },
+          minRows: 1,
+          fields: [
+            {
+              type: 'row',
+              fields: [
+                { name: 'name', type: 'text', label: 'Nombre', required: true, admin: { width: '60%' } },
+                {
+                  name: 'price',
+                  type: 'number',
+                  label: 'Precio extra',
+                  min: 0,
+                  defaultValue: 0,
+                  admin: { width: '40%', description: 'En guaraníes. 0 = sin cargo.' },
+                },
+              ],
+            },
+          ],
+        },
+        // Before 2026-09-29 options were plain text. Kept hidden so old dishes still publish; the first
+        // save copies them into `items` (see the hook below).
+        { name: 'choices', type: 'text', hasMany: true, label: 'Opciones (formato anterior)', admin: { hidden: true } },
       ],
+      hooks: {
+        afterRead: [
+          ({ value }) =>
+            Array.isArray(value)
+              ? value.map((o) =>
+                  o && !o.items?.length && o.choices?.length
+                    ? { ...o, items: o.choices.map((name: string) => ({ name, price: 0 })) }
+                    : o,
+                )
+              : value,
+        ],
+      },
     },
     {
       type: 'row',

@@ -115,7 +115,16 @@ Cada menú cuenta, de forma anónima, visitas, platos mirados, búsquedas, plato
 - **Reporte del mes** (en la notebook, nunca en Actions porque el repo es público):
   1. Una sola vez: en Cloudflare, *My Profile → API Tokens → Create Token*, permiso **Account → Account Analytics → Read**. Crear `.local/cloudflare-analytics.env` con dos líneas: `CF_ACCOUNT_ID=` y `CF_ANALYTICS_TOKEN=` seguidas del valor.
   2. Cada mes: `node site/stats-month.mjs 2026-10` → deja un texto por local en `negocio/reportes/2026-10/`, listo para pegar en WhatsApp. El ahorro se calcula con una comisión de app del 10 %.
-- **Pruebas:** `node --test site/worker.test.mjs` (también corren en `deploy-menus.yml` antes de publicar).
+- **Pruebas:** `node --test site/worker.test.mjs site/order-core.test.mjs` (también corren en `deploy-menus.yml` antes de publicar).
+
+### Pedidos: opciones con precio y datos de entrega
+
+- **Opciones del plato** (panel → plato → «Opciones para elegir»): cada grupo tiene sus opciones con **precio extra** (0 = sin cargo), «Se pueden elegir varias» y «Obligatorio». Ej.: *Tamaño* (obligatorio) → Mediana, Grande +₲ 15.000; *Extras* (varias, opcional) → Cheddar +₲ 5.000. Si un grupo obligatorio suma precio, la lista muestra «desde ₲…». El cliente también puede escribir una **aclaración** por plato («sin cebolla»).
+- **Datos del pedido** (panel → restaurante → «Pedidos por WhatsApp»): delivery y/o retiro, costo de envío fijo o **zonas** con su costo, **pedido mínimo** para delivery, **formas de pago** (efectivo con vuelto, transferencia, QR, tarjeta al recibir), **datos para transferir** y **horarios** en hora de Paraguay (si cierra después de medianoche, se carga igual: 18:00 a 02:00). Fuera de horario el menú se ve, pero no deja mandar el pedido. Sin horarios, siempre abierto.
+- Sin nada cargado, el menú pide delivery o retiro, nombre, dirección y efectivo o transferencia, con el envío «a confirmar».
+- El nombre y la dirección del cliente se guardan **solo en su celular** para la próxima vez y viajan en el mensaje de WhatsApp; la analítica sigue sin guardar datos personales.
+- En la mesa (QR con `?mesa=`) no se piden datos ni aplica el horario.
+- Los platos con opciones cargadas antes del 29/09/2026 siguen funcionando (sin precio extra); al guardarlos en el panel pasan al formato nuevo.
 - **Capacidad:** plan gratis hasta ≈ 300 locales (100.000 eventos y requests por día); después Workers Paid, US$5/mes.
 
 ## Todo en la nube (desde el 26/09/2026): la notebook ya no hace falta

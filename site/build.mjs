@@ -5,6 +5,7 @@
 import { readFile, writeFile, mkdir, cp, rm, readdir, access } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import vm from "node:vm";
 import sharp from "sharp";
 import QRCode from "qrcode";
 
@@ -12,6 +13,9 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const DIST = path.join(ROOT, "dist");
 const SITE_URL = (process.env.SITE_URL || "http://localhost:8080/").replace(/\/?$/, "/");
 const SIZES = [360, 720, 1200];
+// order logic shared with the page: the same file is inlined into every menu
+const ORDER_CORE = await readFile(path.join(ROOT, "site", "order-core.js"), "utf8");
+const OrderCore = vm.runInNewContext(ORDER_CORE + "\nOrderCore;");
 
 const exists = p => access(p).then(() => true, () => false);
 const fill = (tpl, vars) => tpl.replace(/\{\{(\w+)\}\}/g, (_, k) => {
@@ -33,7 +37,7 @@ function publicMenu(m) {
     dishes: c.dishes
       .filter(d => d.status !== "draft" && d.price != null)
       .map(({ slug, name, description, price, ingredients, tags, options, photo, model, modelNote, soldOut }) =>
-        ({ slug, name, description, price, ingredients, tags, options, photo, model, modelNote, soldOut })),
+        ({ slug, name, description, price, ingredients, tags, options: options?.length ? OrderCore.normalizeOptions(options) : undefined, photo, model, modelNote, soldOut })),
   })).filter(c => c.dishes.length);
   return { categories };
 }
@@ -95,7 +99,7 @@ async function buildRestaurant(slug, templates) {
     ...theme, NAME: attr(r.name), NAME_JSON: jsonForScript(r.name), DESCRIPTION: attr(r.description), TAGLINE: attr(r.tagline || ""),
     URL: url, LOGO: r.logo, OG_IMAGE: r.hero || r.logo, JSONLD: jsonLd(m, url), DATA: jsonForScript(menu),
     HERO_IMG: r.hero ? `<img class="dish" src="img/${r.hero}-720.webp" alt="" fetchpriority="high">` : "",
-    WHATSAPP: whatsappDigits(r.whatsapp),
+    WHATSAPP: whatsappDigits(r.whatsapp), ORDERING: jsonForScript(OrderCore.orderingConfig(r.ordering)), ORDER_CORE,
   }));
 
   // QR codes: general (?s=qr, so the monthly report can tell QR visits apart) + one per table (?table=N, counted as QR)

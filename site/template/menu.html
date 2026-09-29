@@ -47,7 +47,7 @@
     padding: env(safe-area-inset-top, 0px) 16px env(safe-area-inset-bottom, 0px);
   }
   img { max-width: 100%; }
-  button, input { font: inherit; color: inherit; }
+  button, input, textarea, select { font: inherit; color: inherit; }
   button { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
   .skip { position: absolute; left: 16px; top: -60px; z-index: 30; background: var(--amber); color: #15100a; padding: 10px 14px; border-radius: 10px; font: 600 14px/1 var(--display); text-decoration: none; }
   .skip:focus { top: calc(8px + env(safe-area-inset-top, 0px)); }
@@ -139,10 +139,6 @@
   .block-label { font: 600 12.5px/1 var(--display); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin: 18px 0 8px; }
   .ingr { display: flex; flex-wrap: wrap; gap: 6px; }
   .ingr span { background: var(--raised); border-radius: 8px; padding: 5px 10px; font-size: 14px; }
-  .opt-group { margin-top: 10px; }
-  .opt-group .g { font-size: 14px; margin-bottom: 6px; }
-  .opt-group .choices { display: flex; flex-wrap: wrap; gap: 6px; }
-  .opt-group span { border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px; font-size: 14px; }
   .ar-btn { margin-top: 20px; width: 100%; min-height: 52px; display: flex; align-items: center; justify-content: center; gap: 10px; background: var(--amber); color: #1a1206; border: 0; border-radius: 14px; padding: 15px 16px 13px; cursor: pointer; font: 700 16px/1 var(--display); letter-spacing: .04em; text-transform: uppercase; }
   .ar-btn svg { width: 22px; height: 22px; }
   .ar-note { margin-top: 10px; background: var(--raised); border-radius: 12px; padding: 12px 14px; font-size: 14px; color: #d6cfc4; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: center; }
@@ -287,6 +283,56 @@
   .waiter .done { margin-top: 26px; }
   .waiter .tot .price { font-size: 30px; }
   .sel-clear { margin-top: 12px; min-height: 44px; background: none; border: 0; color: var(--muted); text-decoration: underline; cursor: pointer; font-size: 14px; }
+
+  /* opciones del plato (tamaño, extras) y aclaración */
+  :root { --err: #ff9d8c; }
+  .price .from { font: 500 12px/1 var(--body); color: var(--muted); margin-right: 4px; letter-spacing: 0; }
+  fieldset.opt { border: 0; margin: 18px 0 0; padding: 0; min-width: 0; }
+  fieldset.opt legend { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; padding: 0; margin-bottom: 10px; font: 600 16px/1.2 var(--display); }
+  fieldset.opt legend .req { font: 500 13px/1.2 var(--body); color: var(--muted); }
+  fieldset.opt.invalid legend .req { color: var(--err); }
+  .opt-choices { display: flex; flex-wrap: wrap; gap: 8px; }
+  .choice { position: relative; display: inline-flex; }
+  .choice input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+  .choice span { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 8px 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--raised); font-size: 15px; line-height: 1.25; transition: background-color .15s, border-color .15s, color .15s; }
+  .choice span em { font-style: normal; color: var(--amber-soft); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .choice input:checked + span { background: var(--amber); border-color: var(--amber); color: #15100a; font-weight: 600; }
+  .choice input:checked + span em { color: #15100a; }
+  .choice input:focus-visible + span { outline: 2px solid var(--amber-soft); outline-offset: 2px; }
+  .err { margin: 8px 0 0; color: var(--err); font-size: 14px; }
+  .field { display: grid; gap: 6px; margin-top: 16px; }
+  .field > label { font: 600 15px/1.2 var(--display); }
+  .opt-l, .help { font: 400 13px/1.3 var(--body); color: var(--muted); }
+  .waiter .wx { display: block; font: 500 17px/1.3 var(--body); color: var(--muted); }
+  .waiter .wx.note { color: var(--amber-soft); }
+  .field input, .field textarea, .field select { width: 100%; min-height: 48px; background: var(--raised); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; font-size: 16px; outline: none; }
+  .field textarea { resize: vertical; min-height: 64px; }
+  .field input:focus, .field textarea:focus, .field select:focus { border-color: var(--amber); }
+  .field [aria-invalid="true"] { border-color: var(--err); }
+  .add-bar { position: sticky; bottom: calc(-22px - env(safe-area-inset-bottom, 0px)); z-index: 2; display: flex; gap: 12px; align-items: center; margin: 18px -20px 0; padding: 12px 20px calc(14px + env(safe-area-inset-bottom, 0px)); background: var(--surface); border-top: 1px solid var(--line); }
+  .add-btn { flex: 1; min-height: 52px; border: 0; border-radius: 14px; background: var(--amber); color: #1a1206; cursor: pointer; font: 700 16px/1 var(--display); letter-spacing: .03em; font-variant-numeric: tabular-nums; }
+  .add-btn.done { background: var(--raised); color: var(--amber-soft); box-shadow: inset 0 0 0 1px var(--amber); }
+  .in-sel { margin: 10px 0 0; color: var(--muted); font-size: 14px; text-align: center; }
+  .in-sel button { background: none; border: 0; color: var(--amber-soft); text-decoration: underline; cursor: pointer; min-height: 44px; font-size: 14px; }
+  .sel-item .sub .x { display: block; color: #d6cfc4; }
+
+  /* checkout de WhatsApp */
+  .co { margin-top: 8px; }
+  .co h3 { margin: 22px 0 0; font: 700 13px/1 var(--display); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  .seg { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; }
+  .seg .choice span { width: 100%; justify-content: center; }
+  .choice.wide { flex: 1 1 140px; }
+  .choice.wide span { width: 100%; }
+  .pay-info { margin: 10px 0 0; padding: 12px 14px; border-radius: 12px; background: var(--raised); border: 1px dashed rgba(255,185,67,.35); white-space: pre-line; font-size: 14.5px; }
+  .totals { margin-top: 20px; display: grid; gap: 6px; font-variant-numeric: tabular-nums; }
+  .totals div { display: flex; justify-content: space-between; color: #d6cfc4; }
+  .totals .grand { margin-top: 6px; color: var(--text); font: 700 20px/1 var(--display); }
+  .totals .grand .price { font-size: 22px; }
+  .notice { margin: 12px 0 0; padding: 12px 14px; border-radius: 12px; background: rgba(255,157,140,.1); border: 1px solid rgba(255,157,140,.35); color: var(--text); font-size: 14.5px; }
+  .order a[aria-disabled="true"] { opacity: .55; }
+  .open-chip { display: inline-flex; align-items: center; gap: 6px; font: 600 12.5px/1 var(--display); letter-spacing: .06em; text-transform: uppercase; padding: 7px 10px 6px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); }
+  .open-chip i { width: 8px; height: 8px; border-radius: 50%; background: #7bc47f; }
+  .open-chip.closed i { background: var(--err); }
 </style>
 </head>
 <body>
@@ -300,6 +346,7 @@
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M3 10h18M6 10v9M18 10v9M4 6h16"/></svg>
         <span id="tableLabel"></span>
       </span>
+      <span class="open-chip" id="openChip" hidden><i aria-hidden="true"></i><span></span></span>
     </div>
     {{HERO_IMG}}
   </header>
@@ -355,20 +402,28 @@
   <div class="stage" id="stage"></div>
   <h2 id="sheetTitle" class="sheet-title"></h2>
   <div class="price" id="sheetPrice"></div>
-  <button class="sel-btn" id="selBtn" type="button" aria-pressed="false"></button>
   <p class="desc" id="sheetDesc"></p>
   <div id="sheetExtra"></div>
+  <div id="addBox"></div>
 </div>
 
 <script>
 const DATA = {{DATA}};
 const RESTAURANT = {{NAME_JSON}};
 const WHATSAPP = "{{WHATSAPP}}"; // solo dígitos, con código de país; vacío = sin botón
+const CFG = {{ORDERING}}; // tipos de pedido, envío, mínimo, formas de pago y horarios (OrderCore.orderingConfig)
+{{ORDER_CORE}}
+const C = OrderCore;
 
 const $ = (s, el = document) => el.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const norm = s => String(s ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 const fmt = n => `<span class="price"><small>₲</small>${n.toLocaleString("es-PY")}</span>`;
+// lowest possible price: required groups add their cheapest option
+const fromPrice = d => (d.options || []).reduce((p, o) => p + (o.required ? Math.min(...o.items.map(i => i.price)) : 0), d.price);
+const hasPricedOptions = d => (d.options || []).some(o => o.items.some(i => i.price > 0));
+const fmtDish = d => hasPricedOptions(d) ? fmt(fromPrice(d)).replace("<small>", '<span class="from">desde</span><small>') : fmt(d.price);
+const needsChoice = d => (d.options || []).some(o => o.required);
 const TAG_LABEL = { "para compartir": "Para compartir", destacado: "Destacado", picante: "Picante", "sin gluten": "Sin gluten", "sin alcohol": "0,0 %", "de la casa": "De la casa", extra: "Agregado" };
 const DRINKS = ["vinos", "cervezas", "sin-alcohol", "cocteles"];
 const menuEl = $("#menu"), chipsEl = $("#chips");
@@ -383,6 +438,17 @@ const replay = (el, cls) => { if (REDUCED || !el) return; el.classList.remove(cl
 const params = new URLSearchParams(location.search);
 const table = (params.get("table") || params.get("mesa") || "").slice(0, 12);
 if (table) { $("#tableLabel").textContent = "Mesa " + table; $("#tableChip").hidden = false; }
+
+/* abierto / cerrado según los horarios del local (hora de Paraguay); en la mesa no aplica */
+const openNow = () => (table ? null : C.openState(CFG.hours));
+function renderOpenChip() {
+  const st = openNow(), chip = $("#openChip");
+  chip.hidden = !st;
+  if (!st) return;
+  chip.classList.toggle("closed", !st.open);
+  chip.querySelector("span").textContent = st.open ? `Abierto hasta las ${st.until}` : `Cerrado · abre ${st.next}`;
+}
+renderOpenChip(); setInterval(renderOpenChip, 60000);
 
 /* anonymous analytics: events stay in memory and go to /e a few seconds after the last one, when the
    page is hidden and right away when the order is sent (phones may kill a hidden tab before its
@@ -431,7 +497,7 @@ menuEl.innerHTML = DATA.categories.map(c => `
         <li${d.photo ? "" : ' class="no-thumb"'} data-search="${esc(norm([d.name, d.description, (d.ingredients || []).join(" "), (d.tags || []).join(" "), c.name].join(" ")))}">
           <button class="dish-row${d.soldOut ? " is-sold" : ""}" type="button" data-dish="${d.slug}" aria-haspopup="dialog">
             <span>
-              <span class="line"><span class="name">${esc(d.name)}</span><span class="leader" aria-hidden="true"></span>${fmt(d.price)}</span>
+              <span class="line"><span class="name">${esc(d.name)}</span><span class="leader" aria-hidden="true"></span>${fmtDish(d)}</span>
               ${d.description ? `<span class="desc">${esc(d.description.split("\n")[0])}</span>` : ""}
               ${tagsHtml(c, d)}
             </span>
@@ -482,7 +548,7 @@ if (picks.length) {
     <button class="card" type="button" data-dish="${d.slug}" data-view="${d.model ? "3d" : "foto"}" aria-haspopup="dialog">
       ${d.model ? '<span class="tag t3d">3D · AR</span>' : ""}
       <span class="ph">${d.photo ? `<img src="img/${d.photo}-360.webp" alt="" loading="lazy">` : ""}</span>
-      <span class="n">${esc(d.name)}</span>${fmt(d.price)}
+      <span class="n">${esc(d.name)}</span>${fmtDish(d)}
     </button>`).join("");
   $("#spot").hidden = false;
   $("#rail").addEventListener("click", e => { const b = e.target.closest("[data-dish]"); if (b) openDish(b.dataset.dish, "push", { view: b.dataset.view }); });
@@ -580,15 +646,11 @@ function openDish(slug, mode = "push", opts = {}) { // "push": from the menu · 
   sheet.classList.toggle("is-wine", d.cat.slug === "vinos");
   showPhoto(d);
   $("#sheetTitle").textContent = d.name;
-  $("#sheetPrice").innerHTML = fmt(d.price) + (d.soldOut ? ' <span class="tag sold">Agotado hoy</span>' : "");
-  renderSelBtn(d);
+  $("#sheetPrice").innerHTML = fmtDish(d) + (d.soldOut ? ' <span class="tag sold">Agotado hoy</span>' : "");
   $("#sheetDesc").textContent = d.description || "";
   $("#sheetDesc").hidden = !d.description;
   let extra = "";
   if (d.ingredients?.length) extra += `<div class="block-label">Ingredientes</div><div class="ingr">${d.ingredients.map(i => `<span>${esc(i)}</span>`).join("")}</div>`;
-  if (d.options?.length) extra += `<div class="block-label">Opciones</div>` + d.options.map(o => `
-    <div class="opt-group"><div class="g">${esc(o.group)}${o.multiple ? " (podés elegir varios)" : ""}</div>
-      <div class="choices">${o.choices.map(ch => `<span>${esc(ch)}</span>`).join("")}</div></div>`).join("");
   if (d.model) {
     extra += `<button class="ar-btn" id="arBtn" type="button">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3 3 7.5v9L12 21l9-4.5v-9L12 3Z"/><path d="M3 7.5 12 12l9-4.5M12 12v9"/></svg>
@@ -596,6 +658,7 @@ function openDish(slug, mode = "push", opts = {}) { // "push": from the menu · 
       ${d.modelNote ? `<p class="model-note">${esc(d.modelNote)}</p>` : ""}`;
   }
   $("#sheetExtra").innerHTML = extra;
+  renderAdd(d);
   if (opts.view === "3d" && d.model) show3D(d);
   scrim.hidden = false; sheet.hidden = false;
   requestAnimationFrame(() => { scrim.classList.add("open"); sheet.classList.add("open"); });
@@ -631,7 +694,7 @@ addEventListener("popstate", e => {
 function swipeToClose(el, close) {
   let dragY = null;
   el.addEventListener("touchstart", e => {
-    if (el.scrollTop > 0 || e.target.closest("model-viewer, .qty")) return;
+    if (el.scrollTop > 0 || e.target.closest("model-viewer, .qty, input, textarea, select")) return;
     dragY = e.touches[0].clientY; el.classList.add("dragging");
   }, { passive: true });
   el.addEventListener("touchmove", e => {
@@ -652,28 +715,32 @@ $("#closeSheet").addEventListener("click", closeDish);
 addEventListener("keydown", e => { if (e.key !== "Escape") return; if (!waiterEl.hidden) closeWaiter(); else if (!sheet.hidden) closeDish(); else if (!selSheet.hidden) closeSel(); });
 
 /* ---------- Mi selección (se guarda en este celular) ---------- */
+// One line per dish + options + note: { k, slug, picks: [[itemIndex…] per group], note, n }
 const selbar = $("#selbar"), selSheet = $("#selSheet"), live = $("#live");
-const SEL_KEY = "seleccion:" + location.pathname;
-let sel = {};
-try { sel = JSON.parse(localStorage.getItem(SEL_KEY) || "{}") || {}; } catch (e) { sel = {}; }
-Object.keys(sel).forEach(k => { if (!bySlug[k] || bySlug[k].soldOut || !(sel[k] > 0)) delete sel[k]; });
-const saveSel = () => { try { localStorage.setItem(SEL_KEY, JSON.stringify(sel)); } catch (e) {} };
-const selCount = () => Object.values(sel).reduce((a, b) => a + b, 0);
-const selTotal = () => Object.entries(sel).reduce((a, [k, n]) => a + bySlug[k].price * n, 0);
+const SEL_KEY = "pedido:" + location.pathname, OLD_SEL_KEY = "seleccion:" + location.pathname;
+const DATA_KEY = "datos:" + location.pathname; // name and address, only on this phone, to fill the form next time
+let lines = [];
+try {
+  const saved = JSON.parse(localStorage.getItem(SEL_KEY) || "null");
+  if (saved) lines = saved;
+  else { // selections saved before options had prices: { slug: qty }
+    const old = JSON.parse(localStorage.getItem(OLD_SEL_KEY) || "{}") || {};
+    lines = Object.entries(old).map(([slug, n]) => ({ slug, picks: (bySlug[slug]?.options || []).map(() => []), note: "", n }));
+  }
+} catch (e) { lines = []; }
+lines = C.restoreLines(lines, bySlug);
+const saveSel = () => { try { localStorage.setItem(SEL_KEY, JSON.stringify(lines.map(({ slug, picks, note, n }) => ({ slug, picks, note, n })))); localStorage.removeItem(OLD_SEL_KEY); } catch (e) {} };
+const lineUnit = l => C.unitPrice(bySlug[l.slug], l.picks);
+const selCount = () => lines.reduce((a, l) => a + l.n, 0);
+const selTotal = () => lines.reduce((a, l) => a + lineUnit(l) * l.n, 0);
+const slugCount = slug => lines.reduce((a, l) => a + (l.slug === slug ? l.n : 0), 0);
 
-function renderSelBtn(d) {
-  const b = $("#selBtn");
-  b.hidden = !!d.soldOut;
-  const on = !!sel[d.slug];
-  b.setAttribute("aria-pressed", on);
-  b.innerHTML = HEART + (on ? `En tu selección${sel[d.slug] > 1 ? " (" + sel[d.slug] + ")" : ""}` : "Agregar a mi selección");
-}
 function renderSel(changed) {
   const n = selCount();
   document.querySelectorAll(".fav[data-fav]").forEach(b => {
-    const on = !!sel[b.dataset.fav], name = bySlug[b.dataset.fav].name;
+    const d = bySlug[b.dataset.fav], on = slugCount(d.slug) > 0;
     b.setAttribute("aria-pressed", on);
-    b.setAttribute("aria-label", (on ? "Quitar " : "Agregar ") + name + (on ? " de" : " a") + " mi selección");
+    b.setAttribute("aria-label", on ? `Quitar ${d.name} de mi selección` : needsChoice(d) ? `Elegir opciones de ${d.name}` : `Agregar ${d.name} a mi selección`);
   });
   $("#selCount").textContent = n + (n === 1 ? " plato" : " platos");
   $("#selSum").textContent = plain(selTotal());
@@ -681,53 +748,236 @@ function renderSel(changed) {
   if (n > 0 && selbar.hidden) { selbar.hidden = false; requestAnimationFrame(() => selbar.classList.add("show")); }
   if (n === 0 && !selbar.hidden) { selbar.classList.remove("show"); setTimeout(() => { if (!selCount()) selbar.hidden = true; }, 380); }
   if (changed) replay($("#selSum"), "pop");
-  if (!sheet.hidden && sheet.dataset.dish) renderSelBtn(bySlug[sheet.dataset.dish]);
+  if (!sheet.hidden && sheet.dataset.dish) renderInSel(bySlug[sheet.dataset.dish]);
   if (!selSheet.hidden) renderSelPanel();
 }
-function setQty(slug, n) {
-  const before = sel[slug] || 0;
-  if (n > 0) sel[slug] = Math.min(n, 20); else delete sel[slug];
+function addLine(slug, picks, note, n) {
+  const k = C.lineKey(slug, picks, note), d = bySlug[slug];
+  const line = lines.find(l => l.k === k);
+  if (line) line.n = Math.min(line.n + n, 20); else lines.push({ k, slug, picks, note, n: Math.min(n, 20) });
   saveSel(); haptic(); renderSel(true);
-  const d = bySlug[slug];
-  if (n > before) track("add_item", { dish: slug, cat: d.cat.slug, price: d.price, n: n - before });
+  track("add_item", { dish: slug, cat: d.cat.slug, price: C.unitPrice(d, picks), n });
+  live.textContent = `Agregado: ${n} × ${d.name}. ${selCount()} en tu selección, total ${plain(selTotal())}.`;
+}
+function setLineQty(k, n) {
+  const line = lines.find(l => l.k === k); if (!line) return;
+  const d = bySlug[line.slug], before = line.n;
+  if (n > 0) line.n = Math.min(n, 20); else lines = lines.filter(l => l !== line);
+  saveSel(); haptic(); renderSel(true);
+  if (n > before) track("add_item", { dish: d.slug, cat: d.cat.slug, price: lineUnit(line), n: n - before });
   live.textContent = (n > before ? "Agregado: " : n === 0 ? "Quitado: " : "Actualizado: ") + d.name + ". " + selCount() + " en tu selección, total " + plain(selTotal()) + ".";
 }
-const toggleSel = slug => setQty(slug, sel[slug] ? 0 : 1);
-
+// heart on the list: quick add, or open the dish when a choice is required; pressed again removes it
+function toggleSel(slug) {
+  const d = bySlug[slug];
+  if (slugCount(slug)) { lines = lines.filter(l => l.slug !== slug); saveSel(); haptic(); renderSel(true); live.textContent = `Quitado: ${d.name}.`; return false; }
+  if (needsChoice(d)) { openDish(slug); return false; }
+  addLine(slug, (d.options || []).map(() => []), "", 1);
+  return true;
+}
 menuEl.addEventListener("click", e => {
   const f = e.target.closest(".fav"); if (!f) return;
-  e.stopPropagation(); toggleSel(f.dataset.fav); replay(f, "pop");
+  e.stopPropagation(); if (toggleSel(f.dataset.fav)) replay(f, "pop");
 });
-$("#selBtn").addEventListener("click", () => { const slug = sheet.dataset.dish; toggleSel(slug); if (sel[slug]) replay($("#selBtn svg"), "pop"); });
+
+/* ficha del plato: opciones, aclaración, cantidad y «Agregar» */
+let draft = null;
+function renderAdd(d) {
+  const box = $("#addBox");
+  if (d.soldOut) { box.innerHTML = ""; draft = null; return; }
+  draft = { slug: d.slug, picks: (d.options || []).map(() => []), note: "", n: 1, tried: false };
+  box.innerHTML = `${(d.options || []).map((o, gi) => `
+    <fieldset class="opt" id="og${gi}" aria-describedby="ogr${gi} oge${gi}">
+      <legend><span>${esc(o.group)}</span><span class="req" id="ogr${gi}">${o.required ? (o.multiple ? "Obligatorio · elegí una o más" : "Obligatorio · elegí una") : o.multiple ? "Opcional · podés elegir varias" : "Opcional"}</span></legend>
+      <div class="opt-choices">${o.items.map((it, ii) => `
+        <label class="choice"><input type="${o.multiple || !o.required ? "checkbox" : "radio"}" name="og${gi}" data-g="${gi}" data-i="${ii}"><span>${esc(it.name)}${it.price ? ` <em>+${plain(it.price)}</em>` : ""}</span></label>`).join("")}
+      </div>
+      <p class="err" id="oge${gi}" hidden></p>
+    </fieldset>`).join("")}
+    <div class="field"><label for="itemNote">Aclaración <span class="opt-l">(opcional)</span></label>
+      <textarea id="itemNote" rows="2" maxlength="140" placeholder="Ej.: sin cebolla, bien cocida"></textarea></div>
+    <div class="add-bar">
+      <div class="qty" role="group" aria-label="Cantidad"><button type="button" data-dq="-1" aria-label="Uno menos">−</button><output id="draftN" aria-live="polite">1</output><button type="button" data-dq="1" aria-label="Uno más">+</button></div>
+      <button class="add-btn" id="addBtn" type="button"></button>
+    </div>
+    <p class="in-sel" id="inSel" hidden></p>`;
+  updateAdd(d);
+  renderInSel(d);
+}
+function updateAdd(d) {
+  $("#draftN").textContent = draft.n;
+  const btn = $("#addBtn");
+  if (!btn.classList.contains("done")) btn.textContent = `Agregar · ${plain(C.unitPrice(d, draft.picks) * draft.n)}`;
+  if (draft.tried) showPickErrors(d);
+}
+function showPickErrors(d) {
+  const missing = C.missingGroups(d, draft.picks);
+  (d.options || []).forEach((o, gi) => {
+    const bad = missing.includes(gi), fs = $("#og" + gi), err = $("#oge" + gi);
+    fs.classList.toggle("invalid", bad);
+    err.hidden = !bad; err.textContent = bad ? `Elegí ${o.multiple ? "al menos una opción" : "una opción"} de «${o.group}».` : "";
+  });
+  return missing;
+}
+function renderInSel(d) {
+  const p = $("#inSel"); if (!p) return;
+  const n = slugCount(d.slug);
+  p.hidden = !n;
+  p.innerHTML = n ? `Ya tenés ${n} en tu selección · <button type="button" id="goSel">Ver lista</button>` : "";
+}
+$("#addBox").addEventListener("change", e => {
+  const inp = e.target.closest("input[data-g]"); if (!inp || !draft) return;
+  const d = bySlug[draft.slug], gi = +inp.dataset.g, o = d.options[gi];
+  // an optional single choice is a checkbox that behaves like a radio (so it can be left empty)
+  if (!o.multiple && inp.checked) $("#og" + gi).querySelectorAll("input").forEach(x => { if (x !== inp) x.checked = false; });
+  draft.picks[gi] = [...$("#og" + gi).querySelectorAll("input:checked")].map(x => +x.dataset.i);
+  updateAdd(d);
+});
+$("#addBox").addEventListener("input", e => { if (e.target.id === "itemNote" && draft) draft.note = e.target.value.slice(0, 140); });
+$("#addBox").addEventListener("click", e => {
+  if (!draft) return;
+  const d = bySlug[draft.slug];
+  const dq = e.target.closest("[data-dq]");
+  if (dq) { draft.n = Math.max(1, Math.min(20, draft.n + Number(dq.dataset.dq))); updateAdd(d); return; }
+  if (e.target.closest("#goSel")) { openSel(); return; }
+  if (!e.target.closest("#addBtn")) return;
+  draft.tried = true;
+  const missing = showPickErrors(d);
+  if (missing.length) {
+    const first = $("#og" + missing[0]);
+    first.scrollIntoView({ block: "center", behavior: REDUCED ? "auto" : "smooth" });
+    first.querySelector("input").focus({ preventScroll: true });
+    live.textContent = $("#oge" + missing[0]).textContent;
+    return;
+  }
+  addLine(d.slug, C.cleanPicks(d, draft.picks), draft.note.trim(), draft.n);
+  renderAdd(d); // fresh form for another one with other options
+  const fresh = $("#addBtn");
+  fresh.classList.add("done"); fresh.textContent = "Agregado ✓";
+  fresh.focus({ preventScroll: true });
+  replay(fresh, "pop");
+  setTimeout(() => { if (fresh.isConnected) { fresh.classList.remove("done"); updateAdd(d); } }, 1400);
+});
+
+function lineSub(l) {
+  const d = bySlug[l.slug], extras = C.describePicks(d, l.picks);
+  return `${extras.length ? `<span class="x">${esc(extras.join(", "))}</span>` : ""}${l.note ? `<span class="x">«${esc(l.note)}»</span>` : ""}${plain(lineUnit(l))} × ${l.n} = ${plain(lineUnit(l) * l.n)}`;
+}
+
+/* ---------- Datos del pedido por WhatsApp (delivery o retiro) ---------- */
+const withForm = () => !table && !!WHATSAPP;
+let co = { type: CFG.orderTypes[0], name: "", address: "", reference: "", zone: -1, payment: CFG.paymentMethods[0], cash: "", note: "" };
+try { Object.assign(co, JSON.parse(localStorage.getItem(DATA_KEY) || "{}")); } catch (e) {}
+if (!CFG.orderTypes.includes(co.type)) co.type = CFG.orderTypes[0];
+if (!CFG.paymentMethods.includes(co.payment)) co.payment = CFG.paymentMethods[0];
+if (!CFG.zones[co.zone]) co.zone = -1;
+co.cash = ""; co.note = ""; // those are for one order only
+let coTried = false;
+const saveCo = () => { try { const { type, name, address, reference, zone, payment } = co; localStorage.setItem(DATA_KEY, JSON.stringify({ type, name, address, reference, zone, payment })); } catch (e) {} };
+const chip = (name, value, label, checked, cls = "") => `<label class="choice ${cls}"><input type="radio" name="${name}" value="${value}"${checked ? " checked" : ""}><span>${label}</span></label>`;
+
+function checkoutHtml() {
+  const st = openNow();
+  return `
+    ${st && !st.open ? `<p class="notice" role="status">El local está cerrado ahora: abre ${esc(st.next)}. Podés armar tu pedido y mandarlo cuando abra.</p>` : ""}
+    <div class="co">
+      <h3>Tus datos</h3>
+      <fieldset class="opt" id="f-type" aria-describedby="e-type"><legend><span>¿Cómo lo querés?</span></legend>
+        <div class="seg">${CFG.orderTypes.map(t => chip("type", t, C.TYPE_LABEL[t], co.type === t)).join("")}</div>
+        <p class="err" id="e-type" hidden></p></fieldset>
+      <div class="field"><label for="f-name">Nombre</label>
+        <input id="f-name" name="name" autocomplete="name" maxlength="60" value="${esc(co.name)}" aria-describedby="e-name"><p class="err" id="e-name" hidden></p></div>
+      <div id="deliveryFields"${co.type === "delivery" ? "" : " hidden"}>
+        ${CFG.zones.length ? `<div class="field"><label for="f-zone">Zona</label>
+          <select id="f-zone" name="zone" aria-describedby="e-zone"><option value="-1">Elegí tu zona</option>${CFG.zones.map((z, i) => `<option value="${i}"${co.zone === i ? " selected" : ""}>${esc(z.name)} · envío ${plain(z.fee)}</option>`).join("")}</select>
+          <p class="err" id="e-zone" hidden></p></div>` : ""}
+        <div class="field"><label for="f-address">Dirección de entrega</label>
+          <input id="f-address" name="address" autocomplete="street-address" maxlength="140" value="${esc(co.address)}" aria-describedby="e-address"><p class="err" id="e-address" hidden></p></div>
+        <div class="field"><label for="f-reference">Referencia <span class="opt-l">(opcional)</span></label>
+          <input id="f-reference" name="reference" maxlength="100" placeholder="Ej.: portón verde, frente a la plaza" value="${esc(co.reference)}"></div>
+      </div>
+      <fieldset class="opt" id="f-payment" aria-describedby="e-payment"><legend><span>¿Cómo pagás?</span></legend>
+        <div class="opt-choices">${CFG.paymentMethods.map(p => chip("payment", p, C.PAYMENT_LABEL[p], co.payment === p, "wide")).join("")}</div>
+        <p class="err" id="e-payment" hidden></p></fieldset>
+      <div class="field" id="cashField"${co.payment === "efectivo" ? "" : " hidden"}><label for="f-cash">¿Con cuánto pagás? <span class="opt-l">(opcional, para el vuelto)</span></label>
+        <input id="f-cash" name="cash" inputmode="numeric" autocomplete="off" maxlength="12" placeholder="Ej.: 100.000" value="${esc(co.cash)}" aria-describedby="e-cash"><p class="err" id="e-cash" hidden></p></div>
+      ${CFG.transferInfo ? `<p class="pay-info" id="payInfo"${["transferencia", "qr"].includes(co.payment) ? "" : " hidden"}><b>Datos para pagar</b>\n${esc(CFG.transferInfo)}\nMandá el comprobante por WhatsApp.</p>` : ""}
+      <div class="field"><label for="f-note">Nota para el local <span class="opt-l">(opcional)</span></label>
+        <textarea id="f-note" name="note" rows="2" maxlength="200">${esc(co.note)}</textarea></div>
+      <p class="field help">Tu nombre y dirección quedan guardados solo en este celular y viajan en el mensaje de WhatsApp.</p>
+    </div>`;
+}
+function totalsHtml() {
+  const sub = selTotal();
+  if (!withForm()) return `<div class="grand"><span>Total</span>${fmt(sub)}</div>`;
+  const fee = C.deliveryFee(CFG, co);
+  const rows = [`<div><span>Subtotal</span><span>${plain(sub)}</span></div>`];
+  if (co.type === "delivery") rows.push(`<div><span>Envío${CFG.zones[co.zone] ? " · " + esc(CFG.zones[co.zone].name) : ""}</span><span>${fee == null ? (CFG.zones.length ? "elegí tu zona" : "a confirmar") : plain(fee)}</span></div>`);
+  rows.push(`<div class="grand"><span>Total</span><span>${fmt(sub + (fee || 0))}${fee == null && co.type === "delivery" ? ' <span class="opt-l">+ envío</span>' : ""}</span></div>`);
+  if (co.type === "delivery" && CFG.minOrder && sub < CFG.minOrder) rows.push(`<p class="notice">Pedido mínimo para delivery: ${plain(CFG.minOrder)}. Te faltan ${plain(CFG.minOrder - sub)}.</p>`);
+  return rows.join("");
+}
+// errors show up after the first try to send, then stay up to date while typing
+const CO_FIELDS = ["type", "name", "zone", "address", "payment", "cash"];
+function showCoErrors() {
+  const errs = C.checkoutErrors(CFG, co, selTotal());
+  for (const id of CO_FIELDS) {
+    const p = $("#e-" + id); if (!p) continue;
+    const msg = coTried ? errs[id] || "" : "";
+    p.hidden = !msg; p.textContent = msg;
+    const field = $("#f-" + id);
+    if (field && field.matches("input, select")) field.setAttribute("aria-invalid", msg ? "true" : "false");
+  }
+  return errs;
+}
+function refreshCheckout() {
+  const t = $("#coTotals"); if (t) t.innerHTML = totalsHtml();
+  const wa = $("#waBtn"); if (wa) wa.href = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(orderText())}`;
+  if (withForm()) {
+    const st = openNow();
+    if (wa) wa.setAttribute("aria-disabled", st && !st.open ? "true" : "false");
+    $("#deliveryFields").hidden = co.type !== "delivery";
+    $("#cashField").hidden = co.payment !== "efectivo";
+    const info = $("#payInfo"); if (info) info.hidden = !["transferencia", "qr"].includes(co.payment);
+    showCoErrors();
+  }
+}
+function readCo(e) {
+  const el = e.target; if (!el.name || !(el.name in co)) return;
+  if (el.name === "zone") co.zone = +el.value;
+  else if (el.name === "cash") co.cash = el.value.replace(/\D/g, "");
+  else co[el.name] = el.value;
+  if (["type", "zone", "payment", "name", "address", "reference"].includes(el.name)) saveCo();
+  refreshCheckout();
+}
+$("#selBody").addEventListener("input", readCo);
+$("#selBody").addEventListener("change", readCo);
+$("#selBody").addEventListener("focusout", e => { if (e.target.name === "cash" && co.cash) e.target.value = Number(co.cash).toLocaleString("es-PY"); });
 
 function renderSelPanel() {
-  const items = Object.entries(sel);
-  $("#selBody").innerHTML = items.length ? `
+  $("#selBody").innerHTML = lines.length ? `
     ${table ? `<p class="sel-hint" style="margin-top:6px">Mesa ${esc(table)}</p>` : ""}
-    <ul class="sel-list">${items.map(([k, n]) => { const d = bySlug[k]; return `
+    <ul class="sel-list">${lines.map(l => { const d = bySlug[l.slug]; return `
       <li class="sel-item">
-        <div><button class="nm" type="button" data-open="${k}">${esc(d.name)}</button><div class="sub">${plain(d.price)} × ${n} = ${plain(d.price * n)}</div></div>
+        <div><button class="nm" type="button" data-open="${l.slug}">${esc(d.name)}</button><div class="sub">${lineSub(l)}</div></div>
         <div class="qty" role="group" aria-label="Cantidad de ${esc(d.name)}">
-          <button type="button" data-q="${k}" data-d="-1" aria-label="Uno menos">−</button><output aria-live="off">${n}</output><button type="button" data-q="${k}" data-d="1" aria-label="Uno más">+</button>
+          <button type="button" data-q="${esc(l.k)}" data-d="-1" aria-label="Uno menos">−</button><output aria-live="off">${l.n}</output><button type="button" data-q="${esc(l.k)}" data-d="1" aria-label="Uno más">+</button>
         </div>
       </li>`; }).join("")}</ul>
-    <div class="sel-total"><span>Total</span>${fmt(selTotal())}</div>
+    ${withForm() ? checkoutHtml() : ""}
+    <div class="totals" id="coTotals">${totalsHtml()}</div>
     <div class="order">${orderButtons()}</div>
     <p class="sel-hint">${table ? "Estás en el local: mostrale el pedido al mozo." : WHATSAPP ? "Mandá el pedido por WhatsApp al local, o mostráselo al mozo si estás ahí." : "Mostrale el pedido al mozo."} La lista queda guardada en este celular.</p>
     <button class="sel-clear" type="button" id="selClear">Vaciar la selección</button>`
     : `<p class="sel-hint">Todavía no agregaste platos. Tocá el corazón de cualquier plato para sumarlo acá.</p>`;
+  if (lines.length) refreshCheckout();
 }
 /* ---------- Pedido: por WhatsApp al local o en pantalla para el mozo ---------- */
 const WA_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20.5 11.6a8.5 8.5 0 0 1-12.6 7.5L3.5 20.5l1.4-4.2a8.5 8.5 0 1 1 15.6-4.7Z"/><path d="M9 8.5c0 3.5 2.9 6.5 6.5 6.5l1-1.6-2-1-1 .8a4.5 4.5 0 0 1-2.4-2.4l.8-1-1-2L9.3 8Z" fill="currentColor" stroke="none"/></svg>';
 const WAITER_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="5" y="2.5" width="14" height="19" rx="3"/><path d="M9 7h6M9 11h6M9 15h3"/></svg>';
-function orderText() {
-  const lines = Object.entries(sel).map(([k, n]) => `• ${n} × ${bySlug[k].name} — ${plain(bySlug[k].price * n)}`);
-  return [`¡Hola ${RESTAURANT}! Quiero hacer este pedido:`, "", ...lines, "", `*Total: ${plain(selTotal())}*`,
-    ...(table ? [`Mesa ${table}`] : ["", "Nombre: ", "¿Delivery o pick up?: ", "Dirección (si es delivery): "]),
-    "", "Pedido desde el menú digital #MV"].join("\n");
-}
+const orderText = () => C.orderMessage({ restaurant: RESTAURANT, lines, bySlug, table, cfg: CFG, form: withForm() ? co : null });
 function orderButtons() {
-  const wa = WHATSAPP ? `<a class="${table ? "sel-btn" : "ar-btn"}" id="waBtn" href="https://wa.me/${WHATSAPP}?text=${encodeURIComponent(orderText())}" target="_blank" rel="noopener">${WA_ICON}Enviar pedido por WhatsApp</a>` : "";
+  const wa = WHATSAPP ? `<a class="${table ? "sel-btn" : "ar-btn"}" id="waBtn" href="https://wa.me/${WHATSAPP}" target="_blank" rel="noopener">${WA_ICON}Enviar pedido por WhatsApp</a>` : "";
   const waiter = `<button class="${table || !WHATSAPP ? "ar-btn" : "sel-btn"}" type="button" id="waiterBtn">${WAITER_ICON}Mostrar al mozo</button>`;
   return table ? waiter + wa : wa + waiter;
 }
@@ -737,7 +987,7 @@ function openWaiter() {
   waiterEl.innerHTML = `
     <span class="who">${esc(RESTAURANT)} · Pedido</span>
     <h2 class="mesa" id="waiterTitle">${table ? "Mesa " + esc(table) : "Mi pedido"}</h2>
-    <ul>${Object.entries(sel).map(([k, n]) => `<li><b>${n}×</b><span>${esc(bySlug[k].name)}</span></li>`).join("")}</ul>
+    <ul>${lines.map(l => { const x = C.describePicks(bySlug[l.slug], l.picks); return `<li><b>${l.n}×</b><span>${esc(bySlug[l.slug].name)}${x.length ? `<small class="wx">${esc(x.join(", "))}</small>` : ""}${l.note ? `<small class="wx note">«${esc(l.note)}»</small>` : ""}</span></li>`; }).join("")}</ul>
     <div class="tot"><span>Total</span>${fmt(selTotal())}</div>
     <button class="ar-btn done" type="button" id="waiterDone">Listo</button>`;
   waiterEl.hidden = false;
@@ -748,12 +998,36 @@ waiterEl.addEventListener("click", e => { if (e.target.id === "waiterDone") clos
 
 $("#selBody").addEventListener("click", e => {
   if (e.target.closest("#waiterBtn")) { openWaiter(); return; }
-  // no preventDefault: the wa.me link must open even if the beacon fails
-  if (e.target.closest("#waBtn")) { track("order_tap", { n: selCount(), total: selTotal(), mode: table ? "table" : "" }); flushEvents(); return; }
+  if (e.target.closest("#waBtn")) {
+    if (withForm()) {
+      const st = openNow();
+      coTried = true;
+      const errs = showCoErrors(), first = CO_FIELDS.find(id => errs[id]);
+      if (st && !st.open) {
+        e.preventDefault();
+        live.textContent = `El local está cerrado. Abre ${st.next}.`;
+        $(".notice")?.scrollIntoView({ block: "center" });
+        return;
+      }
+      if (first) {
+        e.preventDefault();
+        const target = $("#f-" + first);
+        const focusEl = target.matches("fieldset") ? target.querySelector("input:checked, input") : target;
+        target.scrollIntoView({ block: "center", behavior: REDUCED ? "auto" : "smooth" });
+        focusEl.focus({ preventScroll: true });
+        live.textContent = errs[first];
+        return;
+      }
+      $("#waBtn").href = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(orderText())}`;
+    }
+    // no preventDefault from here on: the wa.me link must open even if the beacon fails
+    track("order_tap", { n: selCount(), total: selTotal(), mode: table ? "table" : withForm() ? co.type : "" }); flushEvents();
+    return;
+  }
   const q = e.target.closest("[data-q]"), o = e.target.closest("[data-open]");
-  if (q) setQty(q.dataset.q, (sel[q.dataset.q] || 0) + Number(q.dataset.d));
+  if (q) { const l = lines.find(x => x.k === q.dataset.q); if (l) setLineQty(l.k, l.n + Number(q.dataset.d)); }
   else if (o) { hideSel(true); openDish(o.dataset.open); }
-  else if (e.target.id === "selClear") { sel = {}; saveSel(); renderSel(true); live.textContent = "Selección vacía."; }
+  else if (e.target.id === "selClear") { lines = []; saveSel(); renderSel(true); live.textContent = "Selección vacía."; }
 });
 let selLastFocus = null;
 function openSel(mode = "push") {

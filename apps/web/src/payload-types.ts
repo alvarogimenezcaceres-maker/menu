@@ -154,6 +154,41 @@ export interface Restaurant {
    * Ej.: 0976 145 539. Si está vacío, el menú no muestra el botón «Enviar pedido por WhatsApp».
    */
   whatsapp?: string | null;
+  orderTypes?: ('delivery' | 'pickup')[] | null;
+  paymentMethods?: ('efectivo' | 'transferencia' | 'qr' | 'tarjeta')[] | null;
+  /**
+   * En guaraníes. Vacío = «a confirmar». Si cargás zonas, se usa el de la zona.
+   */
+  deliveryFee?: number | null;
+  /**
+   * En guaraníes, sin contar el envío. Vacío = sin mínimo.
+   */
+  minOrder?: number | null;
+  /**
+   * Opcional. Ej.: Centro ₲ 10.000, Lambaré ₲ 15.000.
+   */
+  deliveryZones?:
+    | {
+        name: string;
+        fee: number;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Se muestran si el cliente elige transferencia o QR. Ej.: Alias 0981 123 456 · Banco… · a nombre de…
+   */
+  transferInfo?: string | null;
+  /**
+   * Hora de Paraguay. Si cierra después de medianoche, poné la hora de cierre igual (ej.: 18:00 a 02:00). Vacío = siempre abierto.
+   */
+  hours?:
+    | {
+        days: ('mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sat' | 'sun')[];
+        open: string;
+        close: string;
+        id?: string | null;
+      }[]
+    | null;
   /**
    * Ej.: Pizza, Parrilla. Ayuda en Google.
    */
@@ -252,13 +287,27 @@ export interface Dish {
    */
   tags?: string[] | null;
   /**
-   * Ej.: Sabor → Durazno, Frutilla, Limón.
+   * Ej.: Tamaño → Mediana, Grande (+₲ 15.000). Extras → Cheddar (+₲ 5.000), Panceta (+₲ 7.000).
    */
   options?:
     | {
         group: string;
         multiple?: boolean | null;
-        choices: string[];
+        /**
+         * El cliente tiene que elegir al menos una.
+         */
+        required?: boolean | null;
+        items?:
+          | {
+              name: string;
+              /**
+               * En guaraníes. 0 = sin cargo.
+               */
+              price?: number | null;
+              id?: string | null;
+            }[]
+          | null;
+        choices?: string[] | null;
         id?: string | null;
       }[]
     | null;
@@ -476,6 +525,26 @@ export interface RestaurantsSelect<T extends boolean = true> {
   tables?: T;
   currency?: T;
   whatsapp?: T;
+  orderTypes?: T;
+  paymentMethods?: T;
+  deliveryFee?: T;
+  minOrder?: T;
+  deliveryZones?:
+    | T
+    | {
+        name?: T;
+        fee?: T;
+        id?: T;
+      };
+  transferInfo?: T;
+  hours?:
+    | T
+    | {
+        days?: T;
+        open?: T;
+        close?: T;
+        id?: T;
+      };
   cuisine?: T;
   theme?:
     | T
@@ -521,6 +590,14 @@ export interface DishesSelect<T extends boolean = true> {
     | {
         group?: T;
         multiple?: T;
+        required?: T;
+        items?:
+          | T
+          | {
+              name?: T;
+              price?: T;
+              id?: T;
+            };
         choices?: T;
         id?: T;
       };

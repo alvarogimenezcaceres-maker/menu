@@ -19,7 +19,7 @@ type SeedDish = {
   price?: number | null
   ingredients?: string[]
   tags?: string[]
-  options?: { group: string; multiple?: boolean; choices: string[] }[]
+  options?: { group: string; multiple?: boolean; required?: boolean; choices?: string[]; items?: { name: string; price?: number }[] }[]
   photo?: string
   model?: string
   modelNote?: string
@@ -135,7 +135,12 @@ async function main() {
           description: d.description,
           ingredients: d.ingredients ?? [],
           tags: d.tags ?? [],
-          options: (d.options ?? []).map((o) => ({ group: o.group, multiple: Boolean(o.multiple), choices: o.choices })),
+          options: (d.options ?? []).map((o) => ({
+            group: o.group,
+            multiple: Boolean(o.multiple),
+            required: o.required ?? !o.multiple,
+            items: o.items?.length ? o.items.map((i) => ({ name: i.name, price: i.price || 0 })) : (o.choices ?? []).map((name) => ({ name, price: 0 })),
+          })),
           photo: d.photo ? mediaIds.get(d.photo) : undefined,
           model: d.model ? modelIds.get(d.model) : undefined,
           modelNote: d.modelNote,
