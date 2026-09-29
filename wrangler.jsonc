@@ -1,11 +1,19 @@
-// Public menus on Cloudflare Workers (static assets only, free plan).
+// Public menus on Cloudflare Workers (free plan). Static assets are served directly; only POST /e
+// runs site/worker.js, which writes the anonymous menu events to Analytics Engine.
 // Build first: cd site && SITE_URL=<public url> node build.mjs   → deploy: npx wrangler deploy
 {
   "name": "menu3d-demo",
+  "main": "site/worker.js",
   "compatibility_date": "2026-09-25",
   "assets": {
     "directory": "./dist",
+    "binding": "ASSETS",
     "html_handling": "auto-trailing-slash",
-    "not_found_handling": "none"
-  }
+    "not_found_handling": "none",
+    "run_worker_first": ["/e"]
+  },
+  "analytics_engine_datasets": [
+    { "binding": "MV_EVENTS", "dataset": "mesaverso_menu_events" }
+  ],
+  "observability": { "enabled": true }
 }

@@ -106,6 +106,18 @@ Los menús se publican en **Cloudflare Workers** (archivos estáticos, plan grat
 - **Dominio propio (más adelante):** agregarlo en Cloudflare y correr `CF_SITE_URL=https://menu.tudominio.com/ node site/deploy-cloudflare.mjs`, para regenerar los QR con esa dirección.
 - **GitHub Pages** sigue publicando en paralelo hasta que decidamos apagarlo.
 
+### Analítica de los menús (desde el 29/09/2026)
+
+Cada menú cuenta, de forma anónima, visitas, platos mirados, búsquedas, platos agregados, listas abiertas y toques en «Enviar pedido» (con su total). No usa cookies ni guarda IP, nombre, teléfono, dirección ni el texto del pedido. El mensaje de WhatsApp termina con **#MV** para que el local cuente los pedidos que le llegan.
+
+- **Cómo funciona:** el menú manda los eventos a `/e` en un solo envío por visita. Solo esa ruta ejecuta `site/worker.js` (validación en `site/events.js`), que los guarda en **Analytics Engine** (dataset `mesaverso_menu_events`, 3 meses). Si falla, el menú sigue funcionando igual. En GitHub Pages `/e` no existe y no pasa nada.
+- **Origen de la visita:** agregar `?s=` al link según dónde se comparte: `?s=ig` (Instagram), `?s=maps` (Google Maps), `?s=wa` (WhatsApp), `?s=fb` (Facebook), `?s=web`. Los QR ya llevan `?s=qr` (y los de mesa cuentan como QR). Sin marca, la visita sale como «Directo».
+- **Reporte del mes** (en la notebook, nunca en Actions porque el repo es público):
+  1. Una sola vez: en Cloudflare, *My Profile → API Tokens → Create Token*, permiso **Account → Account Analytics → Read**. Crear `.local/cloudflare-analytics.env` con dos líneas: `CF_ACCOUNT_ID=` y `CF_ANALYTICS_TOKEN=` seguidas del valor.
+  2. Cada mes: `node site/stats-month.mjs 2026-10` → deja un texto por local en `negocio/reportes/2026-10/`, listo para pegar en WhatsApp. El ahorro se calcula con una comisión de app del 10 %.
+- **Pruebas:** `node --test site/worker.test.mjs` (también corren en `deploy-menus.yml` antes de publicar).
+- **Capacidad:** plan gratis hasta ≈ 300 locales (100.000 eventos y requests por día); después Workers Paid, US$5/mes.
+
 ## Todo en la nube (desde el 26/09/2026): la notebook ya no hace falta
 
 | Pieza | Dónde | Dirección |

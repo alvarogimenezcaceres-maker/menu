@@ -98,11 +98,11 @@ async function buildRestaurant(slug, templates) {
     WHATSAPP: whatsappDigits(r.whatsapp),
   }));
 
-  // QR codes: general + one per table (?table=N)
+  // QR codes: general (?s=qr, so the monthly report can tell QR visits apart) + one per table (?table=N, counted as QR)
   const qrOpts = { margin: 1, errorCorrectionLevel: "M", color: { dark: "#121110", light: "#ffffff" } };
-  await writeFile(path.join(out, "qr.svg"), await QRCode.toString(url, { ...qrOpts, type: "svg" }));
+  await writeFile(path.join(out, "qr.svg"), await QRCode.toString(`${url}?s=qr`, { ...qrOpts, type: "svg" }));
   const cards = [];
-  const card = (target, label) => QRCode.toString(target, { ...qrOpts, type: "svg" }).then(svg => `
+  const card = (target, label, encoded = target) => QRCode.toString(encoded, { ...qrOpts, type: "svg" }).then(svg => `
     <div class="card">
       <img class="logo" src="img/${r.logo}-360.webp" alt="${attr(r.name)}">
       <div class="qr"><img src="data:image/svg+xml;base64,${Buffer.from(svg).toString("base64")}" alt="QR ${attr(label || r.name)}"></div>
@@ -111,7 +111,7 @@ async function buildRestaurant(slug, templates) {
       ${label ? `<div class="table">${attr(label)}</div>` : ""}
       <div class="url">${attr(target)}</div>
     </div>`);
-  cards.push(await card(url, ""));
+  cards.push(await card(url, "", `${url}?s=qr`));
   for (let i = 1; i <= (r.tables || 0); i++) cards.push(await card(`${url}?table=${i}`, `Mesa ${i}`));
   await mkdir(path.join(out, "qr"), { recursive: true });
   await writeFile(path.join(out, "qr", "index.html"),

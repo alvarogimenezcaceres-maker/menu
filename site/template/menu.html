@@ -114,6 +114,7 @@
   .empty { text-align: center; color: var(--muted); padding: 40px 12px; font-size: 15px; }
   footer.foot { color: var(--muted); font-size: 13px; text-align: center; padding: 28px 0 8px; display: grid; gap: 6px; justify-items: center; }
   footer.foot img { width: 90px; opacity: .6; }
+  footer.foot .privacy { font-size: 12px; }
 
   .scrim { position: fixed; inset: 0; background: rgba(0,0,0,.62); z-index: 20; opacity: 0; transition: opacity .2s; }
   .scrim.open { opacity: 1; }
@@ -330,6 +331,7 @@
   <footer class="foot">
     <img src="img/{{LOGO}}-360.webp" alt="">
     <span>Precios en guaraníes (₲). Consultá por alérgenos al personal.</span>
+    <span class="privacy">Este menú cuenta visitas y pedidos de forma anónima, sin cookies ni datos personales.</span>
   </footer>
 </main>
 
@@ -381,6 +383,34 @@ const replay = (el, cls) => { if (REDUCED || !el) return; el.classList.remove(cl
 const params = new URLSearchParams(location.search);
 const table = (params.get("table") || params.get("mesa") || "").slice(0, 12);
 if (table) { $("#tableLabel").textContent = "Mesa " + table; $("#tableChip").hidden = false; }
+
+/* anonymous analytics: events stay in memory and go to /e in one beacon per visit (and right away
+   when the order is sent). No cookies, no storage, no personal data; see site/worker.js. */
+const SLUG = location.pathname.split("/").filter(Boolean).pop() || "";
+const SRC = (s => ["qr", "ig", "maps", "wa", "dir", "fb", "web"].includes(s) ? s : table ? "qr" : "direct")(params.get("s"));
+const VISIT = Math.random().toString(36).slice(2, 12).padEnd(8, "0");
+const seen = new Set();
+let evBuf = [];
+function flushEvents() {
+  if (!evBuf.length) return;
+  try {
+    const now = new Date();
+    const body = JSON.stringify({ v: 1, slug: SLUG, visit: VISIT, src: SRC, dev: matchMedia("(pointer: coarse)").matches ? "m" : "d",
+      hour: now.getHours(), dow: now.getDay(), webdriver: navigator.webdriver === true, events: evBuf });
+    evBuf = [];
+    navigator.sendBeacon && navigator.sendBeacon("/e", new Blob([body], { type: "text/plain" }));
+  } catch (e) { evBuf = []; }
+}
+function track(ev, data = {}, once) {
+  try {
+    if (once) { if (seen.has(once)) return; seen.add(once); }
+    evBuf.push({ ev, ...data });
+    if (evBuf.length >= 50) flushEvents();
+  } catch (e) {}
+}
+addEventListener("pagehide", flushEvents);
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") flushEvents(); });
+track("menu_view");
 
 function tagsHtml(c, d) {
   const t = d.tags || [];
@@ -491,7 +521,15 @@ function applySearch() {
   empty.textContent = total ? "" : `No hay platos que coincidan con «${q.value.trim()}». Probá con un ingrediente, por ejemplo «queso».`;
   chipsEl.querySelectorAll(".chip").forEach(ch => ch.hidden = document.getElementById(ch.dataset.go).hidden);
 }
-q.addEventListener("input", applySearch);
+let searchTimer = 0;
+q.addEventListener("input", () => {
+  applySearch();
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => {
+    const term = norm(q.value.trim()).replace(/[^a-zñ ]/g, "").slice(0, 40).trim();
+    if (term.length >= 2) track("search", { q: term, n: document.querySelectorAll("section.cat li:not([hidden])").length }, "q:" + term);
+  }, 1000);
+});
 clearQ.addEventListener("click", () => { q.value = ""; applySearch(); q.focus(); });
 
 /* dish sheet */
@@ -521,6 +559,7 @@ async function show3D(d) {
       max-camera-orbit="auto 85deg auto" shadow-intensity="1" shadow-softness="0.8" exposure="1.05"
       ar ar-modes="webxr scene-viewer quick-look" ar-placement="floor" ar-scale="fixed"></model-viewer>
     <span class="hint3d">Arrastrá para girar · pellizcá para acercar</span>`;
+  track("model_open", { dish: d.slug }, "m:" + d.slug);
   return $("#mv");
 }
 stage.addEventListener("click", e => {
@@ -531,6 +570,7 @@ stage.addEventListener("click", e => {
 
 function openDish(slug, mode = "push", opts = {}) { // "push": from the menu · "deep": shared link · "pop": browser Back/Forward
   const d = bySlug[slug]; if (!d) return;
+  track("dish_view", { dish: slug, cat: d.cat.slug, has3d: !!d.model }, "d:" + slug);
   hideSel(true);
   lastFocus = document.activeElement;
   sheet.dataset.dish = slug;
@@ -646,6 +686,7 @@ function setQty(slug, n) {
   if (n > 0) sel[slug] = Math.min(n, 20); else delete sel[slug];
   saveSel(); haptic(); renderSel(true);
   const d = bySlug[slug];
+  if (n > before) track("add_item", { dish: slug, cat: d.cat.slug, price: d.price, n: n - before });
   live.textContent = (n > before ? "Agregado: " : n === 0 ? "Quitado: " : "Actualizado: ") + d.name + ". " + selCount() + " en tu selección, total " + plain(selTotal()) + ".";
 }
 const toggleSel = slug => setQty(slug, sel[slug] ? 0 : 1);
@@ -679,7 +720,8 @@ const WAITER_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" 
 function orderText() {
   const lines = Object.entries(sel).map(([k, n]) => `• ${n} × ${bySlug[k].name} — ${plain(bySlug[k].price * n)}`);
   return [`¡Hola ${RESTAURANT}! Quiero hacer este pedido:`, "", ...lines, "", `*Total: ${plain(selTotal())}*`,
-    ...(table ? [`Mesa ${table}`] : ["", "Nombre: ", "¿Delivery o pick up?: ", "Dirección (si es delivery): "])].join("\n");
+    ...(table ? [`Mesa ${table}`] : ["", "Nombre: ", "¿Delivery o pick up?: ", "Dirección (si es delivery): "]),
+    "", "Pedido desde el menú digital #MV"].join("\n");
 }
 function orderButtons() {
   const wa = WHATSAPP ? `<a class="${table ? "sel-btn" : "ar-btn"}" id="waBtn" href="https://wa.me/${WHATSAPP}?text=${encodeURIComponent(orderText())}" target="_blank" rel="noopener">${WA_ICON}Enviar pedido por WhatsApp</a>` : "";
@@ -688,6 +730,7 @@ function orderButtons() {
 }
 const waiterEl = $("#waiter");
 function openWaiter() {
+  track("waiter_show", { n: selCount(), total: selTotal(), mode: table ? "table" : "" });
   waiterEl.innerHTML = `
     <span class="who">${esc(RESTAURANT)} · Pedido</span>
     <h2 class="mesa" id="waiterTitle">${table ? "Mesa " + esc(table) : "Mi pedido"}</h2>
@@ -702,6 +745,8 @@ waiterEl.addEventListener("click", e => { if (e.target.id === "waiterDone") clos
 
 $("#selBody").addEventListener("click", e => {
   if (e.target.closest("#waiterBtn")) { openWaiter(); return; }
+  // no preventDefault: the wa.me link must open even if the beacon fails
+  if (e.target.closest("#waBtn")) { track("order_tap", { n: selCount(), total: selTotal(), mode: table ? "table" : "" }); flushEvents(); return; }
   const q = e.target.closest("[data-q]"), o = e.target.closest("[data-open]");
   if (q) setQty(q.dataset.q, (sel[q.dataset.q] || 0) + Number(q.dataset.d));
   else if (o) { hideSel(true); openDish(o.dataset.open); }
@@ -711,6 +756,7 @@ let selLastFocus = null;
 function openSel(mode = "push") {
   hideSheet();
   selLastFocus = document.activeElement;
+  if (selCount()) track("checkout_view", { n: selCount(), total: selTotal() });
   renderSelPanel();
   scrim.hidden = false; selSheet.hidden = false;
   requestAnimationFrame(() => { scrim.classList.add("open"); selSheet.classList.add("open"); });
@@ -746,7 +792,7 @@ sheet.addEventListener("click", async e => {
   if (!e.target.closest("#arBtn")) return;
   const d = bySlug[sheet.dataset.dish], note = $("#arNote");
   const mv = $("#mv") || await show3D(d);
-  if (mv && mv.canActivateAR) { mv.activateAR(); return; }
+  if (mv && mv.canActivateAR) { track("ar_open", { dish: d.slug }); flushEvents(); mv.activateAR(); return; }
   note.hidden = false;
   note.innerHTML = `<span>Para verlo sobre tu mesa, abrí este menú en tu celular: escaneá el código y tocá «Ver en mi mesa».</span><img src="qr.svg" alt="Código QR del menú">`;
 });

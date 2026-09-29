@@ -22,6 +22,7 @@ tokens, client pricing or business notes here (those live in `negocio/` and `.lo
 | Database | `apps/web/src/migrations` | Neon PostgreSQL | applied when the panel starts on Render (`prodMigrations`) |
 | Photos and 3D models | `apps/web` media collection | UploadThing (`utfs.io/f/…`), local `apps/web/media/` without a token | n/a |
 | Public menus | `site/` + `seed/<slug>/` | Cloudflare Workers `menu3d-demo` | push touching `site/**` or `seed/**` → `deploy-menus.yml`. **Ask the owner before pushing `site/**`** |
+| Menu analytics (anonymous events) | `site/worker.js` + `site/events.js` (only `POST /e`), report `site/stats-month.mjs` | Analytics Engine `mesaverso_menu_events` (3 months); report runs on the notebook only | deploys with the menus; tests `node --test site/worker.test.mjs`. Never store cookies, IP, UA, names, phones, addresses or order text |
 | Sales landing (Mesaverso) | `mesaverso-landing/` | Cloudflare Workers `mesaverso-landing` (own Worker + KV `LEADS`) | `npm run deploy` from that folder (not in CI); see its README |
 | Photogrammetry | `workers/3d` | GitHub Actions `photogrammetry.yml` (ubuntu-24.04) **and** Windows (the notebook) | same `pipeline.py` on both |
 

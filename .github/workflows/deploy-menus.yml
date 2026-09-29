@@ -38,6 +38,9 @@ jobs:
         if: env.CLOUDFLARE_API_TOKEN != ''
         run: npm ci
         working-directory: site
+      - name: Probar el receptor de eventos
+        if: env.CLOUDFLARE_API_TOKEN != ''
+        run: node --test site/worker.test.mjs
       - name: Armar y publicar
         if: env.CLOUDFLARE_API_TOKEN != ''
         run: node site/deploy-cloudflare.mjs
