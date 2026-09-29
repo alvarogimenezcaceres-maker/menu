@@ -127,6 +127,37 @@ Cada menú cuenta, de forma anónima, visitas, platos mirados, búsquedas, plato
 - Los platos con opciones cargadas antes del 29/09/2026 siguen funcionando (sin precio extra); al guardarlos en el panel pasan al formato nuevo.
 - **Capacidad:** plan gratis hasta ≈ 300 locales (100.000 eventos y requests por día); después Workers Paid, US$5/mes.
 
+### Caja del local (fase 1, desde el 29/09/2026)
+
+Pantalla para que el local reciba los pedidos del menú, los acepte, agregue ítems y registre el pago. Corre en el
+mismo Worker (`/api/<slug>/…`, Durable Object `Caja` con SQLite, plan gratis). El cobro se hace **por fuera**: la caja
+solo registra cómo se pagó. Diseño y plan: `plan/pos/` (gitignoreado).
+
+- **Dirección de la pantalla:** `https://menu3d-demo.alvarogimenezcaceres.workers.dev/<slug>/caja/`, en la tablet
+  o el celular del local.
+- **Una sola vez para todos los locales (el dueño):**
+  1. `node site/caja-codigo.mjs --init` crea `.local/caja.env` con un secreto nuevo. No se imprime.
+  2. En Cloudflare: **Workers & Pages → menu3d-demo → Settings → Variables and Secrets → Add**, tipo **Secret**,
+     nombre `CAJA_SECRET`, y pegá **solo el valor** (lo que está después de `CAJA_SECRET=` en ese archivo).
+     Sin este secreto, la caja responde «todavía no está habilitada» y el menú sigue funcionando igual.
+- **Activar un local:** `node site/caja-codigo.mjs <slug>` muestra su **código del local** (XXXX-XXXX-XXXX). El
+  encargado lo escribe en la pantalla de la caja con su nombre y un PIN de 4 números: queda como **encargado**. Desde
+  «Equipo» suma a los demás (mozo, cajero, encargado), vincula otras tablets y puede generar un código nuevo (el del
+  script deja de servir).
+- **Qué hace cada rol:** el mozo acepta, carga y agrega ítems; el cajero además registra pagos y rendiciones; el
+  encargado además cancela pedidos aceptados y maneja el equipo.
+- **Circuito:** el pedido del menú llega como «Nuevo» con sonido y su código (`#MV-K7Q2`, el mismo que ve el cliente en
+  WhatsApp) → Aceptar → En cocina → «Salió el delivery» o «Listo» → se cierra cuando está **entregado y pagado**
+  («Pago recibido», «Cobrar y entregar» o, en delivery en efectivo, «Rendido» cuando vuelve el delivery).
+- **Privacidad:** si el local no activó la caja, el Worker no guarda nada. Si la activó, nombre y dirección del
+  cliente se borran solos 30 días después de cerrada la venta. Las claves del personal nunca pasan por git (el PIN se
+  guarda como HMAC con el secreto) y 5 PIN mal puestos bloquean 10 minutos.
+- **Capacidad:** plan gratis ≈ 40–50 locales con salón (100.000 requests y 100.000 filas escritas por día).
+- **Probar en la notebook:** `cd site && node build.mjs`, después desde la raíz
+  `npx wrangler@4 dev --port 8799 --var CAJA_SECRET:prueba` y abrir `http://127.0.0.1:8799/<slug>/caja/`.
+- **Pruebas:** `node --test site/caja-core.test.mjs` (también en `deploy-menus.yml`).
+- **Todavía no:** mesas con cuenta abierta, comanda en PDF, cierre de caja por turno y precios en vivo (fases 2 a 5).
+
 ## Todo en la nube (desde el 26/09/2026): la notebook ya no hace falta
 
 | Pieza | Dónde | Dirección |

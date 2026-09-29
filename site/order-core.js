@@ -133,7 +133,7 @@ const OrderCore = (() => {
   }
 
   // The WhatsApp message. `form` is null for a table order (the diner is in the restaurant).
-  function orderMessage({ restaurant, lines, bySlug, table, cfg, form }) {
+  function orderMessage({ restaurant, lines, bySlug, table, cfg, form, ref }) {
     const subtotal = lines.reduce((s, l) => s + unitPrice(bySlug[l.slug], l.picks) * l.n, 0);
     const out = [`¡Hola ${restaurant}! Quiero hacer este pedido:`, "", ...lines.flatMap(l => lineText(l, bySlug[l.slug]))];
     if (table || !form) {
@@ -154,10 +154,12 @@ const OrderCore = (() => {
       out.push(pay);
       if (String(form.note || "").trim()) out.push(`Nota: ${String(form.note).trim()}`);
     }
-    out.push("", "Pedido desde el menú digital #MV");
+    out.push("", ref ? `Pedido #MV-${ref} desde el menú digital` : "Pedido desde el menú digital #MV");
     return out.join("\n");
   }
 
   return { PAYMENT_LABEL, TYPE_LABEL, money, normalizeOptions, cleanPicks, missingGroups, unitPrice, describePicks, lineKey,
     restoreLines, openState, orderingConfig, deliveryFee, checkoutErrors, orderMessage };
 })();
+// the Worker (an ES module bundle) reads it from here; the page and the tests use the top-level const
+globalThis.OrderCore = OrderCore;

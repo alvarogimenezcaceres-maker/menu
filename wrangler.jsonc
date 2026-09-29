@@ -1,5 +1,7 @@
-// Public menus on Cloudflare Workers (free plan). Static assets are served directly; only POST /e
-// runs site/worker.js, which writes the anonymous menu events to Analytics Engine.
+// Public menus on Cloudflare Workers (free plan). Static assets are served directly; only POST /e and
+// /api/* run site/worker.js: /e writes the anonymous menu events to Analytics Engine, /api/<slug>/… is
+// Mesaverso Caja (one SQLite Durable Object per restaurant, site/caja.js). The secret CAJA_SECRET is set
+// once in Cloudflare (PUBLICAR.md → «Caja»), never in this file.
 // Build first: cd site && SITE_URL=<public url> node build.mjs   → deploy: npx wrangler deploy
 {
   "name": "menu3d-demo",
@@ -10,10 +12,16 @@
     "binding": "ASSETS",
     "html_handling": "auto-trailing-slash",
     "not_found_handling": "none",
-    "run_worker_first": ["/e"]
+    "run_worker_first": ["/e", "/api/*"]
   },
   "analytics_engine_datasets": [
     { "binding": "MV_EVENTS", "dataset": "mesaverso_menu_events" }
+  ],
+  "durable_objects": {
+    "bindings": [{ "name": "CAJA", "class_name": "Caja" }]
+  },
+  "migrations": [
+    { "tag": "caja-v1", "new_sqlite_classes": ["Caja"] }
   ],
   "observability": { "enabled": true }
 }

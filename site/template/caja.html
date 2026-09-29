@@ -1,0 +1,712 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>{{NAME}} · Caja</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;600;700&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Mesaverso Caja, pantalla del local. Diseño: plan/pos/diseno/fase0.md (gitignored). Marca Mesaverso, acento Maíz (DEC-063). */
+:root {
+  --mv-noche: #0E1014; --mv-grafito: #2A2D33; --mv-titanio: #C3C8CE; --mv-niebla: #F1F2EE;
+  --mv-acento: #FFC23D; --mv-acento-hover: #FFCE66; --mv-acento-oscuro: #7A5600;
+  --display: "Familjen Grotesk", system-ui, sans-serif; --body: "Instrument Sans", system-ui, sans-serif; --mono: "IBM Plex Mono", ui-monospace, monospace;
+  --bg: var(--mv-noche); --panel: #16181D; --card: #1E2127; --raised: var(--mv-grafito); --line: #34383F;
+  --text: var(--mv-niebla); --text-2: var(--mv-titanio); --muted: #9A9FA7; --accent: var(--mv-acento); --on-accent: var(--mv-noche); --focus: var(--mv-acento);
+  --st-new: var(--mv-acento); --st-new-bg: rgba(255,194,61,.14); --st-prep: #8FB8FF; --st-prep-bg: rgba(143,184,255,.14);
+  --st-ready: #7BC47F; --st-ready-bg: rgba(123,196,127,.14); --st-pay: #FF9D8C; --st-pay-bg: rgba(255,157,140,.14);
+  --shadow: 0 10px 30px -12px rgba(0,0,0,.7);
+}
+:root[data-theme="light"] {
+  --bg: #E9EAE6; --panel: #F6F6F3; --card: #FFFFFF; --raised: #ECEDE9; --line: #D6D8D2; --text: var(--mv-noche); --text-2: #3A3E45; --muted: #5B5F66; --focus: var(--mv-acento-oscuro);
+  --st-new: #7A5600; --st-new-bg: #FFF1CC; --st-prep: #1F4FA8; --st-prep-bg: #E3ECFF; --st-ready: #22662A; --st-ready-bg: #E1F3E2; --st-pay: #A8322A; --st-pay-bg: #FBE5E1;
+  --shadow: 0 10px 30px -14px rgba(14,16,20,.35);
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { height: 100%; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.45 var(--body); -webkit-font-smoothing: antialiased; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; touch-action: manipulation; }
+button:disabled { cursor: not-allowed; opacity: .55; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 8px; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.mono { font-family: var(--mono); }
+svg.i { width: 20px; height: 20px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.app { display: grid; grid-template-columns: 88px minmax(0, 1fr); grid-template-rows: 60px minmax(0, 1fr); height: 100vh; }
+.top { grid-column: 1 / -1; display: flex; align-items: center; gap: 10px; padding: 0 16px; background: var(--panel); border-bottom: 1px solid var(--line); }
+.brand { font: 700 17px/1 var(--display); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sp { flex: 1; }
+.pill { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line); background: none; color: var(--text-2); font-size: 13.5px; white-space: nowrap; }
+.pill .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--st-ready); }
+.pill.off { color: var(--st-pay); border-color: var(--st-pay); }
+.pill.off .dot { background: var(--st-pay); }
+.rail { background: var(--panel); border-right: 1px solid var(--line); display: flex; flex-direction: column; gap: 6px; padding: 10px 8px; }
+.rail button { position: relative; display: grid; justify-items: center; gap: 4px; min-height: 64px; padding: 8px 4px; border: 0; border-radius: 12px; background: none; color: var(--muted); font: 600 12.5px/1.1 var(--display); }
+.rail button svg.i { width: 24px; height: 24px; }
+.rail button[aria-current="page"] { background: var(--raised); color: var(--text); }
+.badge { position: absolute; top: 4px; right: 12px; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 10px; background: var(--accent); color: var(--on-accent); font: 700 12px/20px var(--display); }
+main { min-width: 0; overflow: auto; padding: 18px 20px 28px; }
+.head { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; margin-bottom: 16px; }
+.head h1 { margin: 0; font: 700 24px/1.1 var(--display); }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 16px; border-radius: 12px; border: 1px solid var(--line); background: var(--card); color: var(--text); font: 600 14.5px/1 var(--display); white-space: nowrap; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.btn.primary:hover:not(:disabled) { background: var(--mv-acento-hover); }
+.btn.ghost { background: none; }
+.btn.danger { color: var(--st-pay); }
+.btn.big { min-height: 52px; font-size: 16px; }
+.btn.block { width: 100%; }
+.chips { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip { min-height: 40px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--line); background: none; color: var(--text-2); font: 600 13.5px/1 var(--display); }
+.chip[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.st { display: inline-flex; align-items: center; gap: 6px; padding: 4px 9px; border-radius: 8px; font: 600 12.5px/1.2 var(--display); white-space: nowrap; }
+.st svg.i { width: 15px; height: 15px; }
+.st.new { color: var(--st-new); background: var(--st-new-bg); } .st.prep { color: var(--st-prep); background: var(--st-prep-bg); }
+.st.ready { color: var(--st-ready); background: var(--st-ready-bg); } .st.pay { color: var(--st-pay); background: var(--st-pay-bg); }
+.st.neutral { color: var(--text-2); background: var(--raised); }
+.board { display: grid; grid-template-columns: repeat(3, minmax(250px, 1fr)); gap: 14px; align-items: start; }
+.col { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 12px; min-height: 200px; }
+.col h2 { display: flex; align-items: center; gap: 8px; margin: 2px 4px 12px; font: 700 15px/1 var(--display); }
+.col h2 .n { color: var(--muted); font-weight: 600; }
+.empty { color: var(--muted); font-size: 14px; padding: 18px 6px; text-align: center; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 12px; display: grid; gap: 8px; margin-bottom: 10px; box-shadow: var(--shadow); }
+.card.is-new { border-color: var(--st-new); box-shadow: 0 0 0 1px var(--st-new), var(--shadow); }
+.motion .card.is-new { animation: ring 1.6s ease-in-out infinite; }
+@keyframes ring { 50% { box-shadow: 0 0 0 4px var(--st-new-bg), var(--shadow); } }
+.row1 { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; }
+.code { font: 700 16px/1 var(--display); white-space: nowrap; }
+.src { display: inline-flex; align-items: center; gap: 5px; color: var(--text-2); font-size: 13px; white-space: nowrap; }
+.src svg.i { width: 16px; height: 16px; }
+.ago { margin-left: auto; color: var(--muted); font-size: 13px; white-space: nowrap; }
+.who { font: 600 15px/1.25 var(--display); }
+.meta { color: var(--muted); font-size: 13.5px; }
+.items { margin: 0; padding: 0; list-style: none; font-size: 14px; color: var(--text-2); }
+.items li { display: flex; gap: 6px; }
+.items b { color: var(--text); min-width: 1.8ch; }
+.foot { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.total { font: 700 17px/1 var(--display); margin-right: auto; }
+.acts { display: flex; gap: 8px; }
+.acts .btn { flex: 1; }
+.link { background: none; border: 0; color: var(--text-2); text-decoration: underline; min-height: 36px; padding: 0 4px; font-size: 13.5px; white-space: nowrap; }
+.scrim { position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 20; }
+.drawer { position: fixed; z-index: 21; top: 0; right: 0; bottom: 0; width: min(560px, 100%); background: var(--panel); border-left: 1px solid var(--line); display: grid; grid-template-rows: auto minmax(0, 1fr) auto; box-shadow: var(--shadow); }
+.drawer > header { display: flex; align-items: center; gap: 10px; padding: 14px 16px; border-bottom: 1px solid var(--line); }
+.drawer > header h2 { margin: 0; font: 700 20px/1.1 var(--display); }
+.icon-btn { width: 44px; height: 44px; display: grid; place-items: center; border-radius: 12px; border: 1px solid var(--line); background: var(--card); flex: none; }
+.drawer .body { overflow: auto; padding: 14px 16px; }
+.drawer > footer { padding: 12px 16px 16px; border-top: 1px solid var(--line); display: grid; gap: 10px; }
+.modal { position: fixed; z-index: 31; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(560px, calc(100% - 24px)); max-height: calc(100% - 24px); overflow: auto; background: var(--panel); border: 1px solid var(--line); border-radius: 20px; box-shadow: var(--shadow); padding: 18px; }
+.modal h2 { margin: 0 0 6px; font: 700 21px/1.15 var(--display); }
+.sec { margin: 4px 0 16px; }
+.sec h3 { margin: 0 0 8px; font: 700 12.5px/1 var(--display); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.lines { list-style: none; margin: 0; padding: 0; }
+.lines li { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--line); align-items: start; }
+.lines .q { font: 700 16px/1.3 var(--display); min-width: 2.2ch; }
+.lines .nm { font: 600 15px/1.3 var(--display); }
+.lines .x { display: block; color: var(--muted); font-size: 13.5px; }
+.lines .x.note { color: var(--st-new); }
+.lines .p { font: 600 15px/1.3 var(--display); }
+.kv { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 6px 14px; font-size: 14.5px; margin: 0; }
+.kv dt { color: var(--muted); } .kv dd { margin: 0; }
+.sum { display: grid; gap: 6px; font-size: 15px; }
+.sum div { display: flex; justify-content: space-between; }
+.sum .grand { font: 700 22px/1 var(--display); margin-top: 4px; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.timeline { list-style: none; margin: 0; padding: 0; font-size: 13.5px; color: var(--text-2); }
+.timeline li { padding: 3px 0; }
+.timeline .mono { color: var(--muted); margin-right: 8px; }
+.field { display: grid; gap: 6px; margin-top: 12px; }
+.field > label, .field > .lbl { font: 600 14px/1.2 var(--display); }
+.field input, .field select, .field textarea, .search { width: 100%; min-height: 46px; padding: 0 12px; border-radius: 12px; border: 1px solid var(--line); background: var(--card); font-size: 16px; }
+.field textarea { padding: 10px 12px; min-height: 64px; }
+.help { color: var(--muted); font-size: 13px; }
+.err { color: var(--st-pay); font-size: 14px; margin: 6px 0 0; }
+.seg { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 6px; background: var(--raised); padding: 4px; border-radius: 12px; }
+.seg button { min-height: 42px; border: 0; border-radius: 9px; background: none; color: var(--text-2); font: 600 14px/1 var(--display); }
+.seg button[aria-pressed="true"] { background: var(--card); color: var(--text); box-shadow: 0 1px 0 var(--line); }
+.opts { display: flex; flex-wrap: wrap; gap: 8px; }
+.opts button { min-height: 44px; padding: 0 14px; border-radius: 12px; border: 1px solid var(--line); background: var(--card); font-size: 14.5px; }
+.opts button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent); font-weight: 600; }
+.cat-chips { display: flex; gap: 8px; overflow-x: auto; padding: 10px 0; }
+.prod-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+.prod { text-align: left; display: grid; gap: 4px; min-height: 72px; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--line); background: var(--card); }
+.prod b { font: 600 14.5px/1.25 var(--display); } .prod span { color: var(--muted); font-size: 13.5px; }
+.draft { list-style: none; margin: 0; padding: 0; }
+.draft li { display: flex; gap: 8px; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
+.draft li span { flex: 1; }
+table.t { width: 100%; border-collapse: collapse; background: var(--card); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; }
+table.t th, table.t td { padding: 11px 12px; border-bottom: 1px solid var(--line); text-align: left; font-size: 14.5px; }
+table.t th { font: 700 12.5px/1 var(--display); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); background: var(--panel); }
+table.t tr:last-child td { border-bottom: 0; }
+.center { min-height: 100vh; display: grid; place-items: center; padding: 20px; }
+.box { width: min(440px, 100%); background: var(--panel); border: 1px solid var(--line); border-radius: 22px; padding: 22px; box-shadow: var(--shadow); }
+.box h1 { margin: 0 0 4px; font: 700 22px/1.15 var(--display); text-align: center; }
+.box .sub { color: var(--muted); margin: 0 0 12px; text-align: center; }
+.who-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; margin: 14px 0; }
+.who-list button { min-height: 64px; border-radius: 14px; border: 1px solid var(--line); background: var(--card); display: grid; gap: 2px; place-items: center; font: 600 14px/1.1 var(--display); }
+.who-list button small { color: var(--muted); font: 400 12px/1 var(--body); }
+.who-list button[aria-pressed="true"] { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.dots { display: flex; justify-content: center; gap: 12px; margin: 10px 0 14px; }
+.dots i { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--text-2); }
+.dots i.on { background: var(--text); border-color: var(--text); }
+.keys { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.keys button { min-height: 60px; border-radius: 14px; border: 1px solid var(--line); background: var(--card); font: 600 22px/1 var(--display); }
+.toast { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); z-index: 60; max-width: calc(100% - 24px); background: var(--text); color: var(--bg); padding: 12px 16px; border-radius: 12px; font: 600 14px/1.3 var(--display); box-shadow: var(--shadow); }
+.toast.bad { background: var(--st-pay); color: var(--mv-noche); }
+.banner { margin: 0 0 14px; padding: 12px 14px; border-radius: 12px; background: var(--st-pay-bg); color: var(--text); border: 1px solid var(--st-pay); font-size: 14.5px; }
+@media (max-width: 760px) {
+  .app { grid-template-columns: minmax(0, 1fr); grid-template-rows: 56px minmax(0, 1fr) 68px; }
+  .rail { grid-row: 3; flex-direction: row; border-right: 0; border-top: 1px solid var(--line); padding: 4px 6px; }
+  .rail button { flex: 1; min-height: 58px; }
+  .top .hide-sm { display: none; }
+  main { padding: 14px 12px 20px; }
+  .board { grid-template-columns: minmax(0, 1fr); }
+}
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<div id="overlay"></div>
+<div id="live" class="sr-only" aria-live="polite"></div>
+<script>
+{{ORDER_CORE}}
+const C = OrderCore;
+const RESTAURANT = {{NAME_JSON}};
+const SLUG = "{{SLUG}}";
+const API = "/api/" + SLUG;
+
+/* ---------- utilidades ---------- */
+const I = {
+  orders: '<path d="M8 3h8l1 3H7l1-3Z"/><rect x="4" y="6" width="16" height="15" rx="2"/><path d="M8 11h8M8 15h5"/>',
+  team: '<circle cx="9" cy="8" r="3.5"/><path d="M3 20a6 6 0 0 1 12 0M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6 6 0 0 1 3 6"/>',
+  wa: '<path d="M20.5 11.6a8.5 8.5 0 0 1-12.6 7.5L3.5 20.5l1.4-4.2a8.5 8.5 0 1 1 15.6-4.7Z"/>',
+  pen: '<path d="M4 20h4L19 9l-4-4L4 16v4Z"/><path d="m13.5 6.5 4 4"/>',
+  bell: '<path d="M6 16V11a6 6 0 1 1 12 0v5l1.5 2h-15L6 16Z"/><path d="M10 20a2 2 0 0 0 4 0"/>',
+  flame: '<path d="M12 3c1 3.5 5 5.5 5 10a5 5 0 0 1-10 0c0-2.5 1.5-3.8 2.5-5 .3 1.7 1.3 2.6 2.5 3 0-3-1-5.5 0-8Z"/>',
+  check: '<path d="m5 12.5 4.5 4.5L19 7.5"/>',
+  bike: '<circle cx="6" cy="16.5" r="3.5"/><circle cx="18" cy="16.5" r="3.5"/><path d="M6 16.5 9.5 9h5l3.5 7.5M12 9 10 5H7.5"/>',
+  money: '<rect x="3" y="6" width="18" height="12" rx="2"/><path d="M12 9v6M10 10.5c0-.8.9-1.5 2-1.5s2 .7 2 1.5-.9 1.2-2 1.5-2 .7-2 1.5.9 1.5 2 1.5 2-.7 2-1.5"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>', x: '<path d="M6 6l12 12M18 6 6 18"/>',
+  wifi: '<path d="M3 9a13 13 0 0 1 18 0M6.5 12.5a8 8 0 0 1 11 0M10 16a3 3 0 0 1 4 0"/><circle cx="12" cy="19" r=".8"/>',
+  sound: '<path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4v-5Z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/>',
+  user: '<circle cx="12" cy="8" r="3.5"/><path d="M5 20a7 7 0 0 1 14 0"/>',
+  sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+};
+const ic = n => `<svg class="i" viewBox="0 0 24 24" aria-hidden="true">${I[n]}</svg>`;
+const $ = (s, el = document) => el.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const gs = n => C.money(n);
+const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
+if (!REDUCED) document.documentElement.classList.add("motion");
+const store = { get: k => { try { return localStorage.getItem(`caja:${SLUG}:${k}`); } catch (e) { return null; } },
+  set: (k, v) => { try { v == null ? localStorage.removeItem(`caja:${SLUG}:${k}`) : localStorage.setItem(`caja:${SLUG}:${k}`, v); } catch (e) {} } };
+try { if (store.get("theme")) document.documentElement.dataset.theme = store.get("theme"); } catch (e) {}
+const ROLE_LABEL = { mozo: "Mozo", cajero: "Cajero", encargado: "Encargado" };
+const CAN_PAY = r => r === "cajero" || r === "encargado";
+const ago = t => { const m = Math.max(0, Math.round((Date.now() - t) / 60000)); return m < 1 ? "recién" : m < 60 ? `hace ${m} min` : `hace ${Math.floor(m / 60)} h ${m % 60} min`; };
+const hhmm = t => new Date(t).toLocaleTimeString("es-PY", { hour: "2-digit", minute: "2-digit", hourCycle: "h23", timeZone: "America/Asuncion" });
+function say(msg, bad) {
+  $("#live").textContent = msg;
+  document.querySelectorAll(".toast").forEach(t => t.remove());
+  const t = document.createElement("div"); t.className = "toast" + (bad ? " bad" : ""); t.setAttribute("role", bad ? "alert" : "status"); t.textContent = msg;
+  document.body.appendChild(t); setTimeout(() => t.remove(), bad ? 4500 : 2400);
+}
+
+/* ---------- API ---------- */
+let device = store.get("device"), session = store.get("session"), me = null;
+async function api(path, { method = "GET", body } = {}) {
+  const headers = { "content-type": "application/json" };
+  if (device) headers["x-device"] = device;
+  if (session) headers.authorization = "Bearer " + session;
+  let res;
+  try { res = await fetch(API + path, { method, headers, body: body ? JSON.stringify(body) : undefined }); }
+  catch (e) { throw Object.assign(new Error("Sin conexión. Revisá el internet y probá de nuevo."), { code: "net" }); }
+  const data = res.status === 204 ? {} : await res.json().catch(() => ({}));
+  if (!res.ok) {
+    const e = Object.assign(new Error(data.error || "Algo falló. Probá de nuevo."), { code: data.code, status: res.status });
+    if (res.status === 401 && path !== "/vincular") handleAuthLost(data.code, e.message);
+    throw e;
+  }
+  return data;
+}
+function handleAuthLost(code, message) {
+  if (/vinculad/.test(message)) { device = null; store.set("device", null); }
+  session = null; store.set("session", null); me = null; closeSocket();
+  screen = device ? "pin" : "link"; render(); say(message, true);
+}
+
+/* ---------- estado ---------- */
+let screen = device ? (session ? "board" : "pin") : "link";
+let view = "orders", filter = "all", orders = new Map(), catalog = null, users = [], team = null;
+let pinUser = null, pin = "", soundOn = store.get("sound") !== "off";
+const open = () => [...orders.values()].filter(o => !(o.status === "cancelled" || (o.status === "delivered" && o.paid)));
+
+/* ---------- en vivo ---------- */
+let ws = null, wsTries = 0, wsTimer = 0, pingTimer = 0, online = false;
+async function connect() {
+  closeSocket();
+  try {
+    const { ticket } = await api("/ws-ticket", { method: "POST" });
+    const proto = location.protocol === "https:" ? "wss:" : "ws:";
+    ws = new WebSocket(`${proto}//${location.host}${API}/ws?t=${encodeURIComponent(ticket)}`);
+    ws.onopen = async () => { wsTries = 0; online = true; await loadState(); renderTop(); clearInterval(pingTimer); pingTimer = setInterval(() => ws && ws.readyState === 1 && ws.send("ping"), 25000); };
+    ws.onmessage = e => { if (e.data === "pong") return; try { onMessage(JSON.parse(e.data)); } catch (err) {} };
+    ws.onclose = e => { online = false; renderTop(); clearInterval(pingTimer); if (e.code === 4001) { handleAuthLost("auth", "La sesión se cerró."); return; } if (screen === "board") retry(); };
+  } catch (e) { online = false; renderTop(); if (e.code !== "auth" && screen === "board") retry(); }
+}
+function retry() { clearTimeout(wsTimer); wsTimer = setTimeout(connect, Math.min(30000, 1000 * 2 ** wsTries++)); }
+function closeSocket() { clearTimeout(wsTimer); clearInterval(pingTimer); if (ws) { ws.onclose = null; try { ws.close(); } catch (e) {} ws = null; } online = false; }
+addEventListener("online", () => screen === "board" && connect());
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && screen === "board" && (!ws || ws.readyState > 1)) connect(); });
+function onMessage(msg) {
+  if (msg.t !== "order") return;
+  const was = orders.get(msg.order.ref);
+  orders.set(msg.order.ref, msg.order);
+  if (!was && msg.order.status === "new") alertNew(msg.order);
+  renderMain();
+  if (detailRef === msg.order.ref) openDetail(msg.order.ref, true);
+}
+async function loadState() {
+  const st = await api("/estado");
+  me = st.me; catalog = st.catalog;
+  orders = new Map(st.orders.map(o => [o.ref, o]));
+  render();
+}
+
+/* ---------- aviso de pedido nuevo: sonido, vibración y título ---------- */
+let audio = null, titleTimer = 0;
+function beep() {
+  if (!soundOn) return;
+  try {
+    audio = audio || new (window.AudioContext || window.webkitAudioContext)();
+    const now = audio.currentTime;
+    [0, 0.22, 0.44].forEach((d, i) => {
+      const o = audio.createOscillator(), g = audio.createGain();
+      o.frequency.value = i === 2 ? 1320 : 880; o.type = "sine";
+      g.gain.setValueAtTime(0.0001, now + d); g.gain.exponentialRampToValueAtTime(0.35, now + d + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, now + d + 0.18);
+      o.connect(g).connect(audio.destination); o.start(now + d); o.stop(now + d + 0.2);
+    });
+  } catch (e) {}
+}
+function alertNew(o) {
+  beep(); try { navigator.vibrate && navigator.vibrate([120, 80, 120]); } catch (e) {}
+  say(`Pedido nuevo #MV-${o.ref}${o.name ? " · " + o.name : ""}`);
+  clearInterval(titleTimer); let on = false;
+  titleTimer = setInterval(() => { document.title = (on = !on) ? `● Pedido nuevo · ${RESTAURANT}` : `${RESTAURANT} · Caja`; }, 1000);
+}
+addEventListener("focus", () => { clearInterval(titleTimer); document.title = `${RESTAURANT} · Caja`; });
+// the browser only plays sound after a tap: unlock it with the first one
+addEventListener("pointerdown", () => { try { audio = audio || new (window.AudioContext || window.webkitAudioContext)(); audio.resume(); } catch (e) {} }, { once: true });
+
+/* ---------- pantallas de acceso ---------- */
+function linkScreen(err = "", first = false) {
+  return `<div class="center"><form class="box" id="linkForm" novalidate>
+    <h1>Vincular esta tablet</h1><p class="sub">${esc(RESTAURANT)} · se hace una sola vez por dispositivo</p>
+    <div class="field"><label for="lcode">Código del local</label>
+      <input id="lcode" autocomplete="off" autocapitalize="characters" placeholder="XXXX-XXXX-XXXX" maxlength="14" required aria-describedby="lhelp lerr">
+      <span class="help" id="lhelp">Te lo da Mesaverso, o el encargado desde «Equipo».</span></div>
+    <div class="field"><label for="ldev">Nombre de este dispositivo</label><input id="ldev" value="Tablet mostrador" maxlength="40"></div>
+    <div id="firstFields"${first ? "" : " hidden"}>
+      <p class="help" style="margin:14px 0 0">Es la primera tablet del local: creá el usuario del encargado.</p>
+      <div class="field"><label for="lname">Tu nombre</label><input id="lname" autocomplete="name" maxlength="30"></div>
+      <div class="field"><label for="lpin">Tu PIN de 4 números</label><input id="lpin" inputmode="numeric" autocomplete="off" maxlength="4" pattern="\\d{4}"></div>
+    </div>
+    <p class="err" id="lerr" role="alert"${err ? "" : " hidden"}>${esc(err)}</p>
+    <button class="btn primary big block" style="margin-top:16px" type="submit">Vincular</button>
+  </form></div>`;
+}
+function pinScreen(err = "") {
+  return `<div class="center"><div class="box">
+    <h1>${esc(RESTAURANT)} · Caja</h1><p class="sub">¿Quién entra?</p>
+    <div class="who-list" role="group" aria-label="Usuario">${users.map(u => `<button type="button" data-user="${u.id}" aria-pressed="${pinUser === u.id}">${esc(u.name)}<small>${ROLE_LABEL[u.role]}</small></button>`).join("") || `<p class="empty">Cargando…</p>`}</div>
+    <div class="dots" role="img" aria-label="PIN: ${pin.length} de 4 números">${[0, 1, 2, 3].map(i => `<i class="${i < pin.length ? "on" : ""}"></i>`).join("")}</div>
+    <p class="err" role="alert" style="text-align:center"${err ? "" : " hidden"}>${esc(err)}</p>
+    <div class="keys">${[1, 2, 3, 4, 5, 6, 7, 8, 9, "", 0, "⌫"].map(k => k === "" ? "<span></span>" : `<button type="button" data-key="${k}" aria-label="${k === "⌫" ? "Borrar" : k}"${pinUser == null ? " disabled" : ""}>${k}</button>`).join("")}</div>
+  </div></div>`;
+}
+let usersAsked = false;
+async function loadUsers() {
+  usersAsked = true;
+  try { users = (await api("/usuarios")).users; if (users.length === 1) pinUser = users[0].id; render(); }
+  catch (e) { if (e.code !== "auth") { render(); say(e.message, true); } }
+}
+
+/* ---------- tablero ---------- */
+const srcLabel = o => o.src === "wa" ? `${ic("wa")}WhatsApp` : `${ic("pen")}A mano`;
+function statusChip(o) {
+  return { new: `<span class="st new">${ic("bell")}Nuevo</span>`, prep: `<span class="st prep">${ic("flame")}En cocina</span>`,
+    street: `<span class="st prep">${ic("bike")}En la calle</span>`, ready: `<span class="st ready">${ic("check")}Listo para retirar</span>`,
+    delivered: `<span class="st ready">${ic("check")}Entregado</span>`, cancelled: `<span class="st neutral">Cancelado</span>` }[o.status] || "";
+}
+function payChip(o) {
+  if (o.paid) return `<span class="st ready">${ic("check")}Pagado · ${C.PAYMENT_LABEL[o.payMethod] || ""}</span>`;
+  if (o.status === "street" && o.payMethod === "efectivo") return `<span class="st pay">${ic("bike")}Cobra ${esc(o.rider || "el delivery")} · ${gs(o.total)}</span>`;
+  return `<span class="st pay">${ic("money")}Falta pago · ${C.PAYMENT_LABEL[o.payMethod] || "a definir"}</span>`;
+}
+// the one main button for each state (fase0.md §3)
+function mainAction(o) {
+  const r = me.role, b = (act, label, icon, primary = true) => `<button class="btn${primary ? " primary" : ""}" data-act="${act}" data-ref="${o.ref}">${ic(icon)}${label}</button>`;
+  if (o.status === "new") return b("accept", "Aceptar", "check");
+  if (o.status === "prep") return o.type === "delivery" ? b("street", "Salió el delivery", "bike", false)
+    : CAN_PAY(r) && !o.paid ? b("charge", `Cobrar y entregar ${gs(o.total)}`, "money") : b("ready", "Listo", "check", false);
+  if (o.status === "street" && o.payMethod === "efectivo" && !o.paid) return CAN_PAY(r) ? b("rendido", `Rendido ${gs(o.total)}`, "money") : `<span class="meta">Lo cobra el cajero cuando vuelve el delivery</span>`;
+  if (!o.paid) return CAN_PAY(r) ? (o.type === "delivery" ? b("paid", "Pago recibido", "check") : b("charge", `Cobrar y entregar ${gs(o.total)}`, "money")) : `<span class="meta">Falta el pago: lo registra el cajero</span>`;
+  return b("deliver", "Entregado", "check");
+}
+function card(o) {
+  const shown = o.lines.slice(0, 3), more = o.lines.length - shown.length;
+  return `<article class="card${o.status === "new" ? " is-new" : ""}" aria-label="Pedido ${o.ref}">
+    <div class="row1"><span class="code">#MV-${esc(o.ref)}</span><span class="src">${srcLabel(o)}</span><span class="ago">${ago(o.createdAt)}</span></div>
+    <div><div class="who">${esc(o.name || "Sin nombre")}</div><div class="meta">${o.type === "delivery" ? `Delivery${o.zone ? " · " + esc(o.zone) : ""}` : "Retiro en el local"}</div></div>
+    <ul class="items">${shown.map(l => `<li><b>${l.n}×</b><span>${esc(l.name)}${l.extras.length ? " · " + esc(l.extras.join(", ")) : ""}${l.note ? ` · «${esc(l.note)}»` : ""}</span></li>`).join("")}${more ? `<li class="meta">y ${more} más</li>` : ""}</ul>
+    <div class="foot"><span class="total num">${gs(o.total)}</span>${statusChip(o)}${payChip(o)}</div>
+    <div class="acts">${mainAction(o)}</div>
+    <div class="row1"><button class="link" data-act="detail" data-ref="${o.ref}">Ver detalle</button>${o.status === "new" ? `<button class="link" data-act="reject" data-ref="${o.ref}" style="margin-left:auto">Rechazar</button>` : ""}</div>
+  </article>`;
+}
+function boardHtml() {
+  const list = open().filter(o => filter === "all" || (filter === "pay" ? !o.paid : o.src === filter)).sort((a, b) => a.createdAt - b.createdAt);
+  const cols = [["Nuevos", o => o.status === "new", "bell"], ["En cocina", o => o.status === "prep", "flame"], ["Listos y en la calle", o => ["ready", "street", "delivered"].includes(o.status), "bike"]];
+  return `<div class="head"><h1>Pedidos</h1>
+      <div class="chips" role="group" aria-label="Filtrar">${[["all", "Todos"], ["wa", "WhatsApp"], ["manual", "A mano"], ["pay", "Por cobrar"]].map(([k, l]) => `<button class="chip" data-filter="${k}" aria-pressed="${filter === k}">${l}</button>`).join("")}</div>
+      <span class="sp"></span><button class="btn primary" data-act="newOrder">${ic("plus")}Nuevo pedido</button></div>
+    ${!catalog ? `<p class="banner">No encontré el menú publicado de este local: «Nuevo pedido» y «Agregar ítems» no funcionan hasta publicar desde el panel.</p>` : ""}
+    <div class="board">${cols.map(([t, f, i]) => { const c = list.filter(f); return `<section class="col" aria-label="${t}"><h2>${ic(i)}${t} <span class="n">${c.length}</span></h2>${c.map(card).join("") || `<p class="empty">Nada por acá.</p>`}</section>`; }).join("")}</div>`;
+}
+
+/* ---------- equipo (encargado) ---------- */
+function teamHtml() {
+  if (!team) return `<div class="head"><h1>Equipo</h1></div><p class="empty">Cargando…</p>`;
+  return `<div class="head"><h1>Equipo</h1><span class="sp"></span><button class="btn primary" data-act="addUser">${ic("plus")}Agregar persona</button></div>
+    <table class="t"><thead><tr><th>Nombre</th><th>Rol</th><th></th></tr></thead><tbody>
+    ${team.users.map(u => `<tr><td>${esc(u.name)}${u.locked ? ' <span class="st pay">Bloqueado</span>' : ""}</td>
+      <td><select data-role="${u.id}" aria-label="Rol de ${esc(u.name)}"${u.id === me.id ? " disabled" : ""}>${["mozo", "cajero", "encargado"].map(r => `<option value="${r}"${u.role === r ? " selected" : ""}>${ROLE_LABEL[r]}</option>`).join("")}</select></td>
+      <td style="text-align:right;white-space:nowrap"><button class="btn ghost" data-act="setPin" data-id="${u.id}" data-name="${esc(u.name)}">Cambiar PIN</button>${u.id === me.id ? "" : ` <button class="btn ghost danger" data-act="removeUser" data-id="${u.id}" data-name="${esc(u.name)}">Quitar</button>`}</td></tr>`).join("")}
+    </tbody></table>
+    <h2 style="font:700 16px/1 var(--display);margin:24px 0 10px">Dispositivos vinculados</h2>
+    <table class="t"><thead><tr><th>Dispositivo</th><th>Último uso</th><th></th></tr></thead><tbody>
+    ${team.devices.map(d => `<tr><td>${esc(d.name)}</td><td>${new Date(d.seen).toLocaleString("es-PY", { timeZone: "America/Asuncion", hourCycle: "h23" })}</td><td style="text-align:right"><button class="btn ghost danger" data-act="unlink" data-id="${esc(d.id)}" data-name="${esc(d.name)}">Desvincular</button></td></tr>`).join("")}
+    </tbody></table>
+    <h2 style="font:700 16px/1 var(--display);margin:24px 0 6px">Código del local</h2>
+    <p class="help" style="margin:0 0 10px">Sirve para vincular otra tablet o celular. Si lo generás de nuevo, el anterior deja de servir (las tablets ya vinculadas siguen).</p>
+    <button class="btn" data-act="newCode">Generar código nuevo</button> <span id="codeOut" class="mono" style="font-size:20px;margin-left:10px"></span>`;
+}
+async function loadTeam() { try { team = await api("/equipo"); } catch (e) { say(e.message, true); } renderMain(); }
+
+/* ---------- render ---------- */
+function renderTop() {
+  const t = $(".top"); if (!t) return;
+  t.innerHTML = `<span class="brand">${esc(RESTAURANT)}</span><span class="sp"></span>
+    <span class="pill${online ? "" : " off"}" role="status">${ic("wifi")}<span class="dot"></span><span class="hide-sm">${online ? "En línea" : "Sin conexión, reintentando"}</span></span>
+    <button class="pill" data-act="sound" aria-pressed="${soundOn}" aria-label="Sonido de pedidos nuevos">${ic("sound")}<span class="hide-sm">${soundOn ? "Sonido" : "Sin sonido"}</span></button>
+    <button class="pill" data-act="theme" aria-label="Cambiar entre claro y oscuro">${ic("sun")}</button>
+    <button class="pill" data-act="logout">${ic("user")}${esc(me ? me.name + " · " + ROLE_LABEL[me.role] : "")}<span class="hide-sm"> · Salir</span></button>`;
+}
+function renderMain() {
+  const m = $("#main"); if (!m || !me) return;
+  const scroll = m.scrollTop;
+  m.innerHTML = view === "team" ? teamHtml() : boardHtml();
+  m.scrollTop = scroll;
+  const n = open().filter(o => o.status === "new").length;
+  const b = $('[data-view="orders"] .badge'); if (b) { b.textContent = n; b.hidden = !n; }
+}
+function render() {
+  const root = $("#root");
+  if (screen === "link") { root.innerHTML = linkScreen(); $("#lcode").focus(); return; }
+  if (screen === "pin") { root.innerHTML = pinScreen(); if (!users.length && !usersAsked) loadUsers(); return; }
+  if (!me) { root.innerHTML = `<div class="center"><p class="empty">Cargando…</p></div>`; return; }
+  root.innerHTML = `<div class="app"><header class="top"></header>
+    <nav class="rail" aria-label="Secciones">
+      <button data-view="orders"${view === "orders" ? ' aria-current="page"' : ""}>${ic("orders")}Pedidos<span class="badge" hidden></span></button>
+      ${me.role === "encargado" ? `<button data-view="team"${view === "team" ? ' aria-current="page"' : ""}>${ic("team")}Equipo</button>` : ""}
+    </nav><main id="main"></main></div>`;
+  renderTop(); renderMain();
+}
+setInterval(() => { if (screen === "board" && !$("#overlay").innerHTML) renderMain(); }, 30000);
+
+/* ---------- ventanas ---------- */
+let detailRef = null;
+function showOverlay(html, focusSel) {
+  $("#overlay").innerHTML = html;
+  $("#root").inert = true;
+  setTimeout(() => ($(focusSel || "#overlay input, #overlay .icon-btn, #overlay button") || {}).focus?.(), 0);
+}
+function closeOverlay() { $("#overlay").innerHTML = ""; $("#root").inert = false; detailRef = null; picker = null; }
+document.addEventListener("keydown", e => { if (e.key === "Escape" && $("#overlay").innerHTML) closeOverlay(); });
+
+async function openDetail(ref, refresh) {
+  const o = orders.get(ref); if (!o) return;
+  detailRef = ref;
+  let history = [];
+  try { history = (await api("/op", { method: "POST", body: { op: "history", ref } })).history; } catch (e) {}
+  if (detailRef !== ref) return;
+  const lines = `<ul class="lines">${o.lines.map(l => `<li><span class="q">${l.n}×</span><span><span class="nm">${esc(l.name)}</span>${l.extras.length ? `<span class="x">${esc(l.extras.join(", "))}</span>` : ""}${l.note ? `<span class="x note">«${esc(l.note)}»</span>` : ""}${l.round ? `<span class="x">Agregado después</span>` : ""}</span><span class="p num">${gs(l.unit * l.n)}</span></li>`).join("")}</ul>`;
+  const closed = o.status === "cancelled" || (o.status === "delivered" && o.paid);
+  const html = `<div class="scrim" data-act="close"></div><aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="dt">
+    <header><h2 id="dt">#MV-${esc(o.ref)}</h2>${statusChip(o)}<span class="sp"></span><button class="icon-btn" data-act="close" aria-label="Cerrar">${ic("x")}</button></header>
+    <div class="body">
+      <div class="sec"><h3>Cliente</h3><dl class="kv"><dt>Nombre</dt><dd>${esc(o.name || "—")}</dd>
+        <dt>Tipo</dt><dd>${o.type === "delivery" ? "Delivery" + (o.zone ? " · " + esc(o.zone) : "") : "Retiro en el local"}</dd>
+        ${o.address ? `<dt>Dirección</dt><dd>${esc(o.address)}${o.reference ? " · " + esc(o.reference) : ""}</dd>` : ""}
+        <dt>Pago</dt><dd>${C.PAYMENT_LABEL[o.payMethod] || "—"}${o.cash ? ` · paga con ${gs(o.cash)} (vuelto ${gs(o.cash - o.total)})` : ""}</dd>
+        ${o.note ? `<dt>Nota</dt><dd>${esc(o.note)}</dd>` : ""}${o.waRef && o.waRef !== o.ref ? `<dt>Código en WhatsApp</dt><dd>#MV-${esc(o.waRef)}</dd>` : ""}
+        ${o.cancelReason ? `<dt>Motivo</dt><dd>${esc(o.cancelReason)}</dd>` : ""}</dl></div>
+      <div class="sec"><h3>Pedido</h3>${lines}
+        <div class="sum" style="margin-top:10px"><div><span>Subtotal</span><span class="num">${gs(o.total - (o.fee || 0))}</span></div>${o.type === "delivery" ? `<div><span>Envío</span><span class="num">${o.fee == null ? "a confirmar" : gs(o.fee)}</span></div>` : ""}<div class="grand"><span>Total</span><span class="num">${gs(o.total)}</span></div></div>
+        ${closed ? "" : `<p><button class="btn" data-act="addItems" data-ref="${o.ref}"${catalog ? "" : " disabled"}>${ic("plus")}Agregar ítems</button></p>`}</div>
+      <div class="sec"><h3>Historial</h3><ul class="timeline">${history.map(h => `<li><span class="mono">${hhmm(h.at)}</span>${esc(h.text)}</li>`).join("") || "<li>—</li>"}</ul></div>
+    </div>
+    ${closed ? "" : `<footer>${payChip(o)}<div class="acts">${mainAction(o)}</div>
+      ${o.status === "new" ? `<button class="btn ghost danger" data-act="reject" data-ref="${o.ref}">Rechazar…</button>` : me.role === "encargado" ? `<button class="btn ghost danger" data-act="cancel" data-ref="${o.ref}">Cancelar pedido…</button>` : ""}</footer>`}
+  </aside>`;
+  showOverlay(html, refresh ? "#none" : null);
+}
+
+function reasonModal(ref, op) {
+  const reasons = op === "reject" ? ["No llegó el WhatsApp", "Fuera de zona", "Sin stock", "Local cerrado"] : ["El cliente no respondió", "El cliente canceló", "Sin stock", "Pedido duplicado"];
+  showOverlay(`<div class="scrim" data-act="close"></div><form class="modal" id="reasonForm" data-ref="${ref}" data-op="${op}" role="dialog" aria-modal="true" aria-labelledby="rt">
+    <h2 id="rt">${op === "reject" ? "Rechazar" : "Cancelar"} #MV-${esc(ref)}</h2><p class="help" style="margin:0">Queda anotado con el motivo.</p>
+    <div class="opts" style="margin-top:12px">${reasons.map(r => `<button type="button" data-reason="${esc(r)}" aria-pressed="false">${esc(r)}</button>`).join("")}</div>
+    <div class="field"><label for="rtext">Motivo</label><input id="rtext" maxlength="120" required></div>
+    <div class="grid2" style="margin-top:16px"><button class="btn" type="button" data-act="close">Volver</button><button class="btn primary" type="submit">${op === "reject" ? "Rechazar" : "Cancelar pedido"}</button></div></form>`, "#rtext");
+}
+function riderModal(ref) {
+  const riders = JSON.parse(store.get("riders") || "[]");
+  showOverlay(`<div class="scrim" data-act="close"></div><form class="modal" id="riderForm" data-ref="${ref}" role="dialog" aria-modal="true" aria-labelledby="rd">
+    <h2 id="rd">¿Quién lleva #MV-${esc(ref)}?</h2>
+    ${riders.length ? `<div class="opts" style="margin-top:10px">${riders.map(r => `<button type="button" data-rider="${esc(r)}">${esc(r)}</button>`).join("")}</div>` : ""}
+    <div class="field"><label for="rname">Delivery <span class="help">(opcional)</span></label><input id="rname" maxlength="40" autocomplete="off"></div>
+    <div class="grid2" style="margin-top:16px"><button class="btn" type="button" data-act="close">Volver</button><button class="btn primary" type="submit">${ic("bike")}Salió</button></div></form>`, "#rname");
+}
+function payModal(ref, deliver) {
+  const o = orders.get(ref);
+  showOverlay(`<div class="scrim" data-act="close"></div><form class="modal" id="payForm" data-ref="${ref}" data-deliver="${deliver ? 1 : ""}" role="dialog" aria-modal="true" aria-labelledby="pt">
+    <h2 id="pt">${deliver ? "Cobrar" : "Pago recibido"} · #MV-${esc(ref)}</h2>
+    <div class="sum" style="margin:6px 0 4px"><div class="grand"><span>Total</span><span class="num">${gs(o.total)}</span></div></div>
+    <div class="field"><span class="lbl">¿Cómo pagó?</span><div class="opts" role="group" aria-label="Forma de pago">${["efectivo", "transferencia", "qr", "tarjeta"].map(m => `<button type="button" data-method="${m}" aria-pressed="${o.payMethod === m}">${C.PAYMENT_LABEL[m]}</button>`).join("")}</div></div>
+    ${o.cash ? `<p class="help">Dijo que paga con ${gs(o.cash)}: vuelto ${gs(o.cash - o.total)}.</p>` : ""}
+    <div class="grid2" style="margin-top:16px"><button class="btn" type="button" data-act="close">Volver</button><button class="btn primary" type="submit">${ic("check")}${deliver ? "Cobrado y entregado" : "Confirmar pago"}</button></div></form>`, "#payForm button[aria-pressed=true]");
+}
+
+/* ---------- elegir productos (nuevo pedido y agregar ítems) ---------- */
+let picker = null; // { mode: "new" | "add", ref, lines: [], cat, form }
+function pickerHtml() {
+  const p = picker, cats = catalog.categories;
+  const cat = cats.find(c => c.slug === p.cat) || cats[0];
+  const sub = p.lines.reduce((s, l) => s + C.unitPrice(bySlug()[l.slug], l.picks) * l.n, 0);
+  const q = (p.q || "").trim().toLowerCase();
+  const dishes = q ? cats.flatMap(c => c.dishes).filter(d => d.name.toLowerCase().includes(q)) : cat.dishes;
+  return `<div class="scrim" data-act="close"></div><aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="pk">
+    <header><h2 id="pk">${p.mode === "new" ? "Nuevo pedido" : "Agregar a #MV-" + esc(p.ref)}</h2><span class="sp"></span><button class="icon-btn" data-act="close" aria-label="Cerrar">${ic("x")}</button></header>
+    <div class="body">
+      ${p.mode === "new" ? newOrderFields() : ""}
+      <h3 style="font:700 12.5px/1 var(--display);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:${p.mode === "new" ? "20px" : "0"} 0 8px">Productos</h3>
+      <input class="search" id="pq" type="search" placeholder="Buscar producto" value="${esc(p.q || "")}" aria-label="Buscar producto">
+      ${q ? "" : `<div class="cat-chips" role="group" aria-label="Categorías">${cats.map(c => `<button class="chip" data-cat="${c.slug}" aria-pressed="${c.slug === cat.slug}">${esc(c.name)}</button>`).join("")}</div>`}
+      <div class="prod-grid" style="margin-top:${q ? 10 : 0}px">${dishes.map(d => `<button class="prod" data-dish="${d.slug}"${d.soldOut ? " disabled" : ""}><b>${esc(d.name)}</b><span class="num">${d.soldOut ? "Agotado" : gs(d.price) + ((d.options || []).length ? " · opciones" : "")}</span></button>`).join("") || `<p class="empty">No hay productos con «${esc(p.q)}».</p>`}</div>
+      <h3 style="font:700 12.5px/1 var(--display);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:20px 0 8px">En este pedido</h3>
+      <ul class="draft">${p.lines.map((l, i) => { const d = bySlug()[l.slug]; const x = C.describePicks(d, l.picks); return `<li><b>${l.n}×</b><span>${esc(d.name)}${x.length ? " · " + esc(x.join(", ")) : ""}${l.note ? ` · «${esc(l.note)}»` : ""}</span><span class="num">${gs(C.unitPrice(d, l.picks) * l.n)}</span><button class="icon-btn" data-drop="${i}" aria-label="Quitar ${esc(d.name)}">${ic("x")}</button></li>`; }).join("") || `<li class="meta">Tocá un producto para sumarlo.</li>`}</ul>
+      <p class="err" id="pkErr" role="alert" hidden></p>
+    </div>
+    <footer><div class="sum"><div class="grand"><span>${p.mode === "new" ? "Subtotal" : "Se agrega"}</span><span class="num">${gs(sub)}</span></div></div>
+      <button class="btn primary big block" data-act="${p.mode === "new" ? "sendNew" : "sendAdd"}"${p.lines.length ? "" : " disabled"}>${ic("check")}${p.mode === "new" ? "Crear pedido (entra a cocina)" : "Agregar al pedido"}</button></footer>
+  </aside>`;
+}
+function newOrderFields() {
+  const f = picker.form, cfg = C.orderingConfig(catalog.ordering);
+  return `<div class="field" style="margin-top:0"><span class="lbl">Tipo</span><div class="seg" role="group" aria-label="Tipo">${cfg.orderTypes.map(t => `<button type="button" data-ftype="${t}" aria-pressed="${f.type === t}">${C.TYPE_LABEL[t]}</button>`).join("")}</div></div>
+    <div class="field"><label for="fname">Nombre del cliente</label><input id="fname" data-f="name" value="${esc(f.name)}" maxlength="60"></div>
+    ${f.type === "delivery" ? `${cfg.zones.length ? `<div class="field"><label for="fzone">Zona</label><select id="fzone" data-f="zone"><option value="-1">Elegí la zona</option>${cfg.zones.map((z, i) => `<option value="${i}"${f.zone === i ? " selected" : ""}>${esc(z.name)} · ${gs(z.fee)}</option>`).join("")}</select></div>` : ""}
+      <div class="field"><label for="faddr">Dirección <span class="help">(si no la tenés, la pedís después)</span></label><input id="faddr" data-f="address" value="${esc(f.address)}" maxlength="140"></div>` : ""}
+    <div class="field"><span class="lbl">Pago</span><div class="opts" role="group" aria-label="Pago">${cfg.paymentMethods.map(m => `<button type="button" data-fpay="${m}" aria-pressed="${f.payment === m}">${C.PAYMENT_LABEL[m]}</button>`).join("")}</div></div>
+    <div class="field"><label for="fnote">Nota <span class="help">(teléfono, aclaraciones)</span></label><input id="fnote" data-f="note" value="${esc(f.note)}" maxlength="200"></div>`;
+}
+let bySlugCache = null, bySlugFor = null;
+function bySlug() { if (bySlugFor !== catalog) { bySlugCache = {}; catalog.categories.forEach(c => c.dishes.forEach(d => bySlugCache[d.slug] = d)); bySlugFor = catalog; } return bySlugCache; }
+function renderPicker(focus) { const y = $("#overlay .body")?.scrollTop || 0; showOverlay(pickerHtml(), focus || "#none"); const b = $("#overlay .body"); if (b) b.scrollTop = y; }
+function dishModal(slug) {
+  const d = bySlug()[slug];
+  if (!(d.options || []).length) { addPickedLine(slug, [], "", 1); return; }
+  const picks = d.options.map(() => []);
+  const draw = err => {
+    const box = $("#dishBox");
+    box.innerHTML = `<h2 id="dm">${esc(d.name)}</h2>
+      ${d.options.map((o, gi) => `<div class="field"><span class="lbl">${esc(o.group)} <span class="help">${o.required ? "obligatorio" : "opcional"}${o.multiple ? " · varias" : ""}</span></span>
+        <div class="opts" role="group" aria-label="${esc(o.group)}">${o.items.map((it, ii) => `<button type="button" data-g="${gi}" data-i="${ii}" aria-pressed="${picks[gi].includes(ii)}">${esc(it.name)}${it.price ? " +" + gs(it.price) : ""}</button>`).join("")}</div></div>`).join("")}
+      <div class="field"><label for="dnote">Aclaración <span class="help">(opcional)</span></label><input id="dnote" maxlength="140" value="${esc(box.dataset.note || "")}"></div>
+      <p class="err" role="alert"${err ? "" : " hidden"}>${esc(err || "")}</p>
+      <div class="grid2" style="margin-top:14px"><button class="btn" type="button" data-act="dishCancel">Volver</button><button class="btn primary" type="button" data-act="dishAdd">Agregar · ${gs(C.unitPrice(d, picks))}</button></div>`;
+  };
+  const wrap = document.createElement("div");
+  wrap.innerHTML = `<div class="scrim" style="z-index:30"></div><div class="modal" id="dishBox" role="dialog" aria-modal="true" aria-labelledby="dm"></div>`;
+  $("#overlay").appendChild(wrap);
+  draw();
+  wrap.addEventListener("click", e => {
+    const b = e.target.closest("button"); if (!b) return;
+    const box = $("#dishBox"); box.dataset.note = $("#dnote").value;
+    if (b.dataset.g != null) {
+      const gi = +b.dataset.g, ii = +b.dataset.i, o = d.options[gi];
+      picks[gi] = picks[gi].includes(ii) ? picks[gi].filter(x => x !== ii) : o.multiple ? [...picks[gi], ii] : [ii];
+      draw(); return;
+    }
+    if (b.dataset.act === "dishCancel") { wrap.remove(); return; }
+    if (b.dataset.act === "dishAdd") {
+      const miss = C.missingGroups(d, picks);
+      if (miss.length) { draw(`Elegí ${d.options[miss[0]].group}.`); return; }
+      wrap.remove(); addPickedLine(slug, C.cleanPicks(d, picks), box.dataset.note.trim(), 1);
+    }
+  });
+  setTimeout(() => $("#dishBox button")?.focus(), 0);
+}
+function addPickedLine(slug, picks, note, n) {
+  const k = C.lineKey(slug, picks, note), l = picker.lines.find(x => C.lineKey(x.slug, x.picks, x.note) === k);
+  if (l) l.n++; else picker.lines.push({ slug, picks, note, n });
+  say(`${bySlug()[slug].name} agregado`); renderPicker();
+}
+
+/* ---------- acciones ---------- */
+let busy = false;
+async function run(ref, op, args = {}, okMsg) {
+  if (busy) return; busy = true;
+  try {
+    const cur = orders.get(ref);
+    const { order } = await api("/op", { method: "POST", body: { op, ref, args, updatedAt: cur && cur.updatedAt } });
+    orders.set(order.ref, order);
+    closeOverlay(); renderMain(); if (okMsg) say(okMsg(order));
+    if (op === "accept") { clearInterval(titleTimer); document.title = `${RESTAURANT} · Caja`; }
+  } catch (e) { say(e.message, true); if (e.code === "stale" || e.code === "closed" || e.code === "state") loadState().catch(() => {}); }
+  finally { busy = false; }
+}
+document.addEventListener("click", async e => {
+  const b = e.target.closest("button, [data-act]"); if (!b || b.disabled) return;
+  const d = b.dataset;
+  if (d.user) { pinUser = +d.user; pin = ""; $("#root").innerHTML = pinScreen(); return; }
+  if (d.key != null && screen === "pin") {
+    pin = d.key === "⌫" ? pin.slice(0, -1) : (pin + d.key).slice(0, 4);
+    $("#root").innerHTML = pinScreen();
+    if (pin.length === 4) {
+      const typed = pin; pin = "";
+      try {
+        const r = await api("/entrar", { method: "POST", body: { userId: pinUser, pin: typed } });
+        session = r.session; store.set("session", session); me = r.me; screen = "board"; view = "orders"; render(); connect();
+      } catch (err) { $("#root").innerHTML = pinScreen(err.message); }
+    }
+    return;
+  }
+  if (d.view) { view = d.view; render(); if (view === "team") loadTeam(); return; }
+  if (d.filter) { filter = d.filter; renderMain(); return; }
+  if (d.reason) { $("#rtext").value = d.reason; $("#rtext").focus(); return; }
+  if (d.rider) { $("#rname").value = d.rider; return; }
+  if (d.method) { b.parentElement.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b)); return; }
+  if (d.cat && picker) { picker.cat = d.cat; renderPicker(); return; }
+  if (d.dish && picker) { dishModal(d.dish); return; }
+  if (d.drop != null && picker) { picker.lines.splice(+d.drop, 1); renderPicker(); return; }
+  if (d.ftype && picker) { picker.form.type = d.ftype; renderPicker(); return; }
+  if (d.fpay && picker) { picker.form.payment = d.fpay; renderPicker(); return; }
+  const ref = d.ref;
+  switch (d.act) {
+    case "close": closeOverlay(); break;
+    case "detail": openDetail(ref); break;
+    case "accept": run(ref, "accept", {}, o => `#MV-${o.ref} aceptado · a cocina`); break;
+    case "reject": case "cancel": reasonModal(ref, d.act); break;
+    case "street": riderModal(ref); break;
+    case "ready": run(ref, "ready", {}, o => `#MV-${o.ref} listo para retirar`); break;
+    case "deliver": run(ref, "deliver", {}, o => `#MV-${o.ref} entregado · venta cerrada`); break;
+    case "rendido": if (confirm(`¿${orders.get(ref).rider || "El delivery"} rindió ${gs(orders.get(ref).total)} de #MV-${ref}?`)) run(ref, "rendido", {}, o => `#MV-${o.ref} rendido · venta cerrada`); break;
+    case "paid": payModal(ref, false); break;
+    case "charge": payModal(ref, true); break;
+    case "addItems": picker = { mode: "add", ref, lines: [], cat: null, q: "" }; renderPicker("#pq"); break;
+    case "newOrder": {
+      if (!catalog) { say("Primero publicá el menú desde el panel.", true); break; }
+      const cfg = C.orderingConfig(catalog.ordering);
+      picker = { mode: "new", lines: [], cat: null, q: "", form: { type: cfg.orderTypes[0], name: "", address: "", zone: -1, payment: cfg.paymentMethods[0], note: "" } };
+      renderPicker("#fname"); break;
+    }
+    case "sendAdd": {
+      try { const { order } = await api("/op", { method: "POST", body: { op: "addItems", ref: picker.ref, args: { lines: picker.lines } } }); orders.set(order.ref, order); closeOverlay(); renderMain(); say(`Agregado a #MV-${order.ref} · total ${gs(order.total)}`); }
+      catch (err) { const p = $("#pkErr"); p.hidden = false; p.textContent = err.message; }
+      break;
+    }
+    case "sendNew": {
+      try { const { order } = await api("/op", { method: "POST", body: { op: "create", lines: picker.lines, form: picker.form } }); orders.set(order.ref, order); closeOverlay(); renderMain(); say(`Pedido #MV-${order.ref} creado · a cocina`); }
+      catch (err) { const p = $("#pkErr"); p.hidden = false; p.textContent = err.message; }
+      break;
+    }
+    case "sound": soundOn = !soundOn; store.set("sound", soundOn ? "on" : "off"); renderTop(); if (soundOn) beep(); break;
+    case "theme": { const r = document.documentElement; r.dataset.theme = r.dataset.theme === "light" ? "dark" : "light"; store.set("theme", r.dataset.theme); break; }
+    case "logout": try { await api("/salir", { method: "POST" }); } catch (err) {} session = null; store.set("session", null); me = null; closeSocket(); screen = "pin"; pinUser = null; users = []; usersAsked = false; render(); break;
+    case "addUser": userModal(); break;
+    case "setPin": userModal(+d.id, d.name); break;
+    case "removeUser": if (confirm(`¿Quitar a ${d.name}? Ya no va a poder entrar.`)) teamCall({ action: "remove", id: +d.id }, `${d.name} quitado`); break;
+    case "unlink": if (confirm(`¿Desvincular «${d.name}»? Para usarlo de nuevo hace falta el código del local.`)) teamCall({ action: "unlinkDevice", id: d.id }, "Dispositivo desvinculado"); break;
+    case "newCode": if (confirm("¿Generar un código nuevo? El anterior deja de servir.")) { try { const r = await api("/equipo", { method: "POST", body: { action: "newCode" } }); $("#codeOut").textContent = r.code; say("Código nuevo generado. Anotalo: no se vuelve a mostrar."); } catch (err) { say(err.message, true); } } break;
+  }
+});
+document.addEventListener("input", e => {
+  if (e.target.id === "pq" && picker) { picker.q = e.target.value; const pos = e.target.selectionStart; renderPicker("#pq"); const i = $("#pq"); i.setSelectionRange(pos, pos); }
+  if (e.target.dataset.f && picker) picker.form[e.target.dataset.f] = e.target.dataset.f === "zone" ? +e.target.value : e.target.value;
+});
+document.addEventListener("change", e => {
+  if (e.target.dataset.f === "zone" && picker) { picker.form.zone = +e.target.value; }
+  if (e.target.dataset.role) teamCall({ action: "role", id: +e.target.dataset.role, role: e.target.value }, "Rol actualizado");
+});
+document.addEventListener("submit", async e => {
+  e.preventDefault();
+  const f = e.target;
+  if (f.id === "linkForm") {
+    const body = { code: $("#lcode").value, deviceName: $("#ldev").value, name: $("#lname").value, pin: $("#lpin").value };
+    const err = $("#lerr");
+    try {
+      const r = await api("/vincular", { method: "POST", body });
+      device = r.device; store.set("device", device);
+      if (r.session) { session = r.session; store.set("session", session); me = r.me; screen = "board"; render(); connect(); say("Tablet vinculada. Sos el encargado: sumá a tu equipo desde «Equipo»."); }
+      else { screen = "pin"; users = []; usersAsked = false; render(); say("Tablet vinculada"); }
+    } catch (x) {
+      // the first link also needs the encargado's name and PIN
+      if (x.code === "name" || x.code === "pin") $("#firstFields").hidden = false;
+      err.hidden = false; err.textContent = x.code === "name" ? "Es la primera tablet del local: completá tu nombre y un PIN." : x.message;
+    }
+    return;
+  }
+  if (f.id === "reasonForm") { const reason = $("#rtext").value.trim(); if (!reason) { $("#rtext").focus(); return; } run(f.dataset.ref, f.dataset.op, { reason }, o => `#MV-${o.ref} ${f.dataset.op === "reject" ? "rechazado" : "cancelado"}`); return; }
+  if (f.id === "riderForm") {
+    const rider = $("#rname").value.trim();
+    if (rider) { const list = [rider, ...JSON.parse(store.get("riders") || "[]").filter(x => x !== rider)].slice(0, 6); store.set("riders", JSON.stringify(list)); }
+    run(f.dataset.ref, "street", { rider }, o => `#MV-${o.ref} salió${o.rider ? " con " + o.rider : ""}`); return;
+  }
+  if (f.id === "payForm") {
+    const method = $("#payForm .opts button[aria-pressed=true]")?.dataset.method;
+    run(f.dataset.ref, "paid", { method, deliver: !!f.dataset.deliver }, o => `#MV-${o.ref}: ${f.dataset.deliver ? "cobrado y entregado" : "pago recibido"}`); return;
+  }
+  if (f.id === "userForm") {
+    const pinv = $("#upin").value, id = f.dataset.id;
+    if (!/^\d{4}$/.test(pinv)) { const p = $("#uerr"); p.hidden = false; p.textContent = "El PIN tiene 4 números."; return; }
+    if (id) teamCall({ action: "pin", id: +id, pin: pinv }, "PIN cambiado");
+    else teamCall({ action: "add", name: $("#uname").value, role: $("#urole").value, pin: pinv }, "Persona agregada");
+  }
+});
+function userModal(id, name) {
+  showOverlay(`<div class="scrim" data-act="close"></div><form class="modal" id="userForm" data-id="${id || ""}" role="dialog" aria-modal="true" aria-labelledby="ut">
+    <h2 id="ut">${id ? "Cambiar PIN de " + esc(name) : "Agregar persona"}</h2>
+    ${id ? "" : `<div class="field"><label for="uname">Nombre</label><input id="uname" maxlength="30" required></div>
+      <div class="field"><label for="urole">Rol</label><select id="urole"><option value="mozo">Mozo: acepta y carga pedidos</option><option value="cajero">Cajero: además cobra</option><option value="encargado">Encargado: además cancela y maneja el equipo</option></select></div>`}
+    <div class="field"><label for="upin">PIN de 4 números</label><input id="upin" inputmode="numeric" maxlength="4" autocomplete="off" required></div>
+    <p class="err" id="uerr" role="alert" hidden></p>
+    <div class="grid2" style="margin-top:16px"><button class="btn" type="button" data-act="close">Volver</button><button class="btn primary" type="submit">Guardar</button></div></form>`);
+}
+async function teamCall(body, okMsg) {
+  try { team = await api("/equipo", { method: "POST", body }); closeOverlay(); renderMain(); say(okMsg); }
+  catch (err) { const p = $("#uerr"); if (p) { p.hidden = false; p.textContent = err.message; } else say(err.message, true); if (body.action === "role") loadTeam(); }
+}
+
+/* ---------- arranque ---------- */
+render();
+if (screen === "board") api("/estado").then(st => { me = st.me; catalog = st.catalog; orders = new Map(st.orders.map(o => [o.ref, o])); render(); connect(); }).catch(() => {});
+</script>
+</body>
+</html>

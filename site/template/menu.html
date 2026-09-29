@@ -904,7 +904,7 @@ function checkoutHtml() {
       ${CFG.transferInfo ? `<p class="pay-info" id="payInfo"${["transferencia", "qr"].includes(co.payment) ? "" : " hidden"}><b>Datos para pagar</b>\n${esc(CFG.transferInfo)}\nMandá el comprobante por WhatsApp.</p>` : ""}
       <div class="field"><label for="f-note">Nota para el local <span class="opt-l">(opcional)</span></label>
         <textarea id="f-note" name="note" rows="2" maxlength="200">${esc(co.note)}</textarea></div>
-      <p class="field help">Tu nombre y dirección quedan guardados solo en este celular y viajan en el mensaje de WhatsApp.</p>
+      <p class="field help">Tu nombre y dirección le llegan solo a este local, con tu pedido. En este celular quedan guardados para la próxima vez.</p>
     </div>`;
 }
 function totalsHtml() {
@@ -975,7 +975,24 @@ function renderSelPanel() {
 /* ---------- Pedido: por WhatsApp al local o en pantalla para el mozo ---------- */
 const WA_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20.5 11.6a8.5 8.5 0 0 1-12.6 7.5L3.5 20.5l1.4-4.2a8.5 8.5 0 1 1 15.6-4.7Z"/><path d="M9 8.5c0 3.5 2.9 6.5 6.5 6.5l1-1.6-2-1-1 .8a4.5 4.5 0 0 1-2.4-2.4l.8-1-1-2L9.3 8Z" fill="currentColor" stroke="none"/></svg>';
 const WAITER_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="5" y="2.5" width="14" height="19" rx="3"/><path d="M9 7h6M9 11h6M9 15h3"/></svg>';
-const orderText = () => C.orderMessage({ restaurant: RESTAURANT, lines, bySlug, table, cfg: CFG, form: withForm() ? co : null });
+const orderText = () => C.orderMessage({ restaurant: RESTAURANT, lines, bySlug, table, cfg: CFG, form: withForm() ? co : null, ref: withForm() ? orderRef() : "" });
+/* Mesaverso Caja: the order also goes to the restaurant's screen with a short code that travels in the
+   WhatsApp message. The code stays the same while the order doesn't change, so sending twice is stored once.
+   If the restaurant doesn't use the caja, the Worker stores nothing. */
+const REF_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+let refFor = "", refCode = "";
+function orderRef() {
+  const sig = JSON.stringify([lines.map(l => [l.slug, l.picks, l.note, l.n]), co]);
+  if (sig !== refFor) { refFor = sig; refCode = [...crypto.getRandomValues(new Uint8Array(4))].map(b => REF_CHARS[b % 32]).join(""); }
+  return refCode;
+}
+function sendToCaja() {
+  try {
+    fetch("/api/" + SLUG + "/pedidos", { method: "POST", keepalive: true, headers: { "content-type": "application/json" },
+      body: JSON.stringify({ ref: orderRef(), lines: lines.map(({ slug, picks, note, n }) => ({ slug, picks, note, n })),
+        form: { type: co.type, name: co.name, address: co.address, reference: co.reference, zone: co.zone, payment: co.payment, cash: co.cash, note: co.note } }) }).catch(() => {});
+  } catch (e) { /* WhatsApp is the order; the caja copy is a convenience */ }
+}
 function orderButtons() {
   const wa = WHATSAPP ? `<a class="${table ? "sel-btn" : "ar-btn"}" id="waBtn" href="https://wa.me/${WHATSAPP}" target="_blank" rel="noopener">${WA_ICON}Enviar pedido por WhatsApp</a>` : "";
   const waiter = `<button class="${table || !WHATSAPP ? "ar-btn" : "sel-btn"}" type="button" id="waiterBtn">${WAITER_ICON}Mostrar al mozo</button>`;
@@ -1019,6 +1036,7 @@ $("#selBody").addEventListener("click", e => {
         return;
       }
       $("#waBtn").href = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(orderText())}`;
+      sendToCaja();
     }
     // no preventDefault from here on: the wa.me link must open even if the beacon fails
     track("order_tap", { n: selCount(), total: selTotal(), mode: table ? "table" : withForm() ? co.type : "" }); flushEvents();

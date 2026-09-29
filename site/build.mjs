@@ -102,6 +102,11 @@ async function buildRestaurant(slug, templates) {
     WHATSAPP: whatsappDigits(r.whatsapp), ORDERING: jsonForScript(OrderCore.orderingConfig(r.ordering)), ORDER_CORE,
   }));
 
+  // Mesaverso Caja: the catalog the Worker prices orders with (public data: the same as the menu) and the staff page
+  await writeFile(path.join(out, "catalog.json"), JSON.stringify({ name: r.name, ordering: r.ordering || {}, categories: menu.categories }));
+  await mkdir(path.join(out, "caja"), { recursive: true });
+  await writeFile(path.join(out, "caja", "index.html"), fill(templates.caja, { NAME: attr(r.name), NAME_JSON: jsonForScript(r.name), SLUG: slug, ORDER_CORE }));
+
   // QR codes: general (?s=qr, so the monthly report can tell QR visits apart) + one per table (?table=N, counted as QR)
   const qrOpts = { margin: 1, errorCorrectionLevel: "M", color: { dark: "#121110", light: "#ffffff" } };
   await writeFile(path.join(out, "qr.svg"), await QRCode.toString(`${url}?s=qr`, { ...qrOpts, type: "svg" }));
@@ -135,6 +140,7 @@ async function main() {
   const templates = {
     menu: await readFile(path.join(ROOT, "site", "template", "menu.html"), "utf8"),
     qr: await readFile(path.join(ROOT, "site", "template", "qr.html"), "utf8"),
+    caja: await readFile(path.join(ROOT, "site", "template", "caja.html"), "utf8"),
   };
   const slugs = [];
   for (const e of await readdir(path.join(ROOT, "seed"), { withFileTypes: true })) {
@@ -149,18 +155,23 @@ async function main() {
     : `<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Menús</title><ul>${built.map(b => `<li><a href="${b.slug}/">${attr(b.name)}</a></li>`).join("")}</ul>`;
   await writeFile(path.join(DIST, "index.html"), index);
   await writeFile(path.join(DIST, ".nojekyll"), "");
-  // Cloudflare Pages response headers (GitHub Pages ignores this file). File names aren't hashed,
+  // Cloudflare response headers (GitHub Pages ignores this file). One `*` per rule: use :slug for the folder. File names aren't hashed,
   // so caches stay short: an edited photo shows up within the hour.
   await writeFile(path.join(DIST, "_headers"), [
     "/*",
     "  X-Content-Type-Options: nosniff",
     "  Referrer-Policy: strict-origin-when-cross-origin",
     "  Permissions-Policy: camera=(self), xr-spatial-tracking=(self), geolocation=()",
-    "/*/models/*",
+    "/:slug/models/*",
     "  Content-Type: model/gltf-binary",
     "  Cache-Control: public, max-age=3600, stale-while-revalidate=86400",
-    "/*/img/*",
+    "/:slug/img/*",
     "  Cache-Control: public, max-age=3600, stale-while-revalidate=86400",
+    "/:slug/catalog.json",
+    "  Cache-Control: public, max-age=60",
+    "/:slug/caja/*",
+    "  X-Robots-Tag: noindex",
+    "  Cache-Control: no-cache",
     "/assets/*",
     "  Cache-Control: public, max-age=86400",
     "",

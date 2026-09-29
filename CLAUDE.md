@@ -23,6 +23,7 @@ tokens, client pricing or business notes here (those live in `negocio/` and `.lo
 | Photos and 3D models | `apps/web` media collection | UploadThing (`utfs.io/f/…`), local `apps/web/media/` without a token | n/a |
 | Public menus | `site/` + `seed/<slug>/` | Cloudflare Workers `menu3d-demo` | push touching `site/**` or `seed/**` → `deploy-menus.yml`. **Ask the owner before pushing `site/**`** |
 | Menu analytics (anonymous events) | `site/worker.js` + `site/events.js` (only `POST /e`), report `site/stats-month.mjs` | Analytics Engine `mesaverso_menu_events` (3 months); report runs on the notebook only | deploys with the menus; tests `node --test site/worker.test.mjs`. Never store cookies, IP, UA, names, phones, addresses or order text |
+| Mesaverso Caja (staff orders, phase 1) | `site/caja.js` (Durable Object `Caja`, SQLite) + `site/caja-core.js` (rules) + `site/template/caja.html` → `/<slug>/caja/` | Cloudflare Workers `menu3d-demo`, `/api/<slug>/…` | deploys with the menus; secret `CAJA_SECRET` set by the owner in Cloudflare; tests `node --test site/caja-core.test.mjs`. Staff PINs never go through git or `seed/` |
 | Sales landing (Mesaverso) | `mesaverso-landing/` | Cloudflare Workers `mesaverso-landing` (own Worker + KV `LEADS`) | `npm run deploy` from that folder (not in CI); see its README |
 | Photogrammetry | `workers/3d` | GitHub Actions `photogrammetry.yml` (ubuntu-24.04) **and** Windows (the notebook) | same `pipeline.py` on both |
 
