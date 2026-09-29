@@ -384,28 +384,31 @@ const params = new URLSearchParams(location.search);
 const table = (params.get("table") || params.get("mesa") || "").slice(0, 12);
 if (table) { $("#tableLabel").textContent = "Mesa " + table; $("#tableChip").hidden = false; }
 
-/* anonymous analytics: events stay in memory and go to /e in one beacon per visit (and right away
-   when the order is sent). No cookies, no storage, no personal data; see site/worker.js. */
+/* anonymous analytics: events stay in memory and go to /e a few seconds after the last one, when the
+   page is hidden and right away when the order is sent (phones may kill a hidden tab before its
+   beacon leaves). No cookies, no storage, no personal data; see site/worker.js. */
 const SLUG = location.pathname.split("/").filter(Boolean).pop() || "";
 const SRC = (s => ["qr", "ig", "maps", "wa", "dir", "fb", "web"].includes(s) ? s : table ? "qr" : "direct")(params.get("s"));
 const VISIT = Math.random().toString(36).slice(2, 12).padEnd(8, "0");
 const seen = new Set();
-let evBuf = [];
+let evBuf = [], idleTimer = 0;
 function flushEvents() {
-  if (!evBuf.length) return;
+  clearTimeout(idleTimer);
+  if (!evBuf.length || !navigator.sendBeacon) return;
   try {
-    const now = new Date();
+    const now = new Date(), batch = evBuf.slice(0, 50);
     const body = JSON.stringify({ v: 1, slug: SLUG, visit: VISIT, src: SRC, dev: matchMedia("(pointer: coarse)").matches ? "m" : "d",
-      hour: now.getHours(), dow: now.getDay(), webdriver: navigator.webdriver === true, events: evBuf });
-    evBuf = [];
-    navigator.sendBeacon && navigator.sendBeacon("/e", new Blob([body], { type: "text/plain" }));
-  } catch (e) { evBuf = []; }
+      hour: now.getHours(), dow: now.getDay(), webdriver: navigator.webdriver === true, events: batch });
+    // keep the events when the browser refuses the beacon; they go with the next flush
+    if (navigator.sendBeacon("/e", new Blob([body], { type: "text/plain" }))) evBuf = evBuf.slice(batch.length);
+  } catch (e) {}
 }
 function track(ev, data = {}, once) {
   try {
     if (once) { if (seen.has(once)) return; seen.add(once); }
     evBuf.push({ ev, ...data });
     if (evBuf.length >= 50) flushEvents();
+    else { clearTimeout(idleTimer); idleTimer = setTimeout(flushEvents, 5000); }
   } catch (e) {}
 }
 addEventListener("pagehide", flushEvents);
