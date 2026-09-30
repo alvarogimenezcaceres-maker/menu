@@ -115,6 +115,7 @@
   footer.foot { color: var(--muted); font-size: 13px; text-align: center; padding: 28px 0 8px; display: grid; gap: 6px; justify-items: center; }
   footer.foot img { width: 90px; opacity: .6; }
   footer.foot .privacy { font-size: 12px; }
+  footer.foot .privacy a { color: var(--amber-soft); }
   .remember { display: flex; align-items: center; gap: 10px; min-height: 44px; margin-top: 8px; font-size: 14.5px; cursor: pointer; }
   .remember input { width: 20px; height: 20px; accent-color: var(--amber); }
   .review-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 0 18px; border-radius: 14px; border: 1px solid rgba(255,185,67,.45); background: rgba(237,157,21,.08); color: var(--amber-soft); font: 700 14.5px/1 var(--display); letter-spacing: .03em; text-decoration: none; }
@@ -420,7 +421,7 @@
     <img src="img/{{LOGO}}-360.webp" alt="">
     <span>Precios en guaraníes (₲). Consultá por alérgenos al personal.</span>
     <a class="review-btn" id="reviewFoot" hidden target="_blank" rel="noopener"></a>
-    <span class="privacy">Sin cookies. Contamos visitas y clics de forma anónima para mejorar el menú.</span>
+    <span class="privacy">Sin cookies. Contamos visitas y clics de forma anónima para mejorar el menú.{{PRIVACY_LINK}}</span>
   </footer>
 </main>
 
@@ -1374,6 +1375,29 @@ mesaSheet.addEventListener("change", e => {
   if (token) { history.replaceState(null, "", location.pathname); joinMesa(token); }
   else if (mesa) { renderMesaChip(); connectMesa(); }
 }
+
+/* «Agotado hoy» marked from the caja: greyed out here and refused by the caja if someone tries anyway */
+function markSoldOut(slugs) {
+  let changed = false;
+  for (const slug of slugs) {
+    const d = bySlug[slug]; if (!d || d.soldOut) continue;
+    d.soldOut = true; changed = true;
+    const row = menuEl.querySelector(`.dish-row[data-dish="${slug}"]`);
+    if (row) {
+      row.classList.add("is-sold");
+      const tags = row.querySelector(".tags"), tag = '<span class="tag sold">Agotado hoy</span>';
+      if (tags) tags.insertAdjacentHTML("afterbegin", tag); else row.querySelector(":scope > span").insertAdjacentHTML("beforeend", `<span class="tags">${tag}</span>`);
+      row.parentElement.querySelector(".fav")?.remove();
+    }
+    // not a suggestion anymore
+    document.querySelector(`#rail [data-dish="${slug}"]`)?.remove();
+  }
+  if (!changed) return;
+  if (!document.querySelector("#rail [data-dish]")) $("#spot").hidden = true;
+  lines = lines.filter(l => !bySlug[l.slug].soldOut); saveSel(); renderSel(false);
+  if (!sheet.hidden && bySlug[sheet.dataset.dish]?.soldOut) openDish(sheet.dataset.dish, "pop");
+}
+fetch("/api/" + SLUG + "/agotados").then(r => r.ok ? r.json() : null).then(r => r && markSoldOut(r.slugs || [])).catch(() => {});
 
 let selLastFocus = null;
 function openSel(mode = "push") {

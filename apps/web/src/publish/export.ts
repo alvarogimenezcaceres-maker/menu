@@ -71,6 +71,9 @@ export async function exportRestaurant(payload: Payload, restaurantId: number | 
       whatsapp: r.whatsapp || undefined,
       cuisine: r.cuisine ?? [],
       googleReviewUrl: r.googleReviewUrl?.trim() || undefined,
+      legal: r.legal?.legalName?.trim() && r.legal?.ruc?.trim() && r.legal?.privacyContact?.trim()
+        ? { legalName: r.legal.legalName.trim(), ruc: r.legal.ruc.trim(), address: r.legal.address?.trim() || '', privacyContact: r.legal.privacyContact.trim() }
+        : undefined,
       ordering: {
         orderTypes: r.orderTypes?.length ? r.orderTypes : undefined,
         paymentMethods: r.paymentMethods?.length ? r.paymentMethods : undefined,

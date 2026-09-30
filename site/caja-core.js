@@ -25,6 +25,7 @@ const CAN = {
   paid: ["cajero", "encargado"], rendido: ["cajero", "encargado"],
   cancel: ["encargado"],
   shift: ["cajero", "encargado"],
+  soldOut: ROLES,
   users: ["encargado"], devices: ["encargado"], code: ["encargado"], take: STAFF, acceptRound: STAFF, rejectRound: STAFF,
 };
 export const can = (role, op) => (CAN[op] || []).includes(role);
@@ -312,3 +313,40 @@ export function shiftSummary(all, since, until = Date.now()) {
     },
   };
 }
+
+/* ---------- agotado hoy, desde la caja (fase 5, parte) ---------- */
+// A service day runs until 05:00 in Asunción, so a dish marked sold out at 23:50 is back the next day.
+export function serviceDay(ts) {
+  return new Intl.DateTimeFormat("en-CA", { timeZone: "America/Asuncion", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(ts - 5 * 3600000));
+}
+// marks: { slug: { at, by } } → the slugs sold out right now
+export const soldOutNow = (marks, now = Date.now()) => Object.entries(marks || {}).filter(([, m]) => m && serviceDay(m.at) === serviceDay(now)).map(([slug]) => slug);
+// the catalog as the caja must price it: today's sold-out dishes can't be ordered
+export function withSoldOut(catalog, slugs) {
+  if (!slugs.length) return catalog;
+  const out = new Set(slugs);
+  return { ...catalog, categories: catalog.categories.map(c => ({ ...c, dishes: c.dishes.map(d => (out.has(d.slug) ? { ...d, soldOut: true } : d)) })) };
+}
+
+/* ---------- ventas del turno en CSV (respaldo para Excel o el contador) ---------- */
+// One row per sale, and per person when a table split the bill. No customer names or addresses.
+const PAY_ROW = { efectivo: "Efectivo", transferencia: "Transferencia", qr: "QR", tarjeta: "Tarjeta", mixto: "Varias" };
+export function shiftRows(all, since, until = Date.now()) {
+  const fmt = (ts, opt) => new Intl.DateTimeFormat("es-PY", { timeZone: "America/Asuncion", ...opt }).format(new Date(ts));
+  const date = ts => fmt(ts, { day: "2-digit", month: "2-digit", year: "numeric" }), time = ts => fmt(ts, { hour: "2-digit", minute: "2-digit", hourCycle: "h23" });
+  const head = ["Fecha", "Hora", "Venta", "Tipo", "Persona", "Forma de pago", "Consumo", "Envío", "Propina", "Total", "Estado", "Motivo"];
+  const rows = [];
+  for (const o of all.filter(x => x.closedAt && x.closedAt >= since && x.closedAt <= until).sort((a, b) => a.closedAt - b.closedAt)) {
+    const base = [date(o.closedAt), time(o.closedAt), o.kind === "table" ? `Mesa ${o.table}` : `#MV-${o.ref}`, o.kind === "table" ? "Mesa" : o.type === "delivery" ? "Delivery" : "Retiro"];
+    if (o.status === "cancelled") { rows.push([...base, "", "", orderTotal(o), 0, 0, 0, "Cancelado", o.cancelReason || ""]); continue; }
+    if (o.kind === "table" && o.bill && o.bill.parts.every(p => o.bill.paid[p.key])) {
+      for (const p of o.bill.parts) rows.push([...base, p.color ? COLOR_NAME[p.color] : "Persona " + p.key.slice(1), PAY_ROW[o.bill.paid[p.key]] || o.bill.paid[p.key], p.amount, 0, p.tip || 0, p.pay, "Cobrado", ""]);
+    } else {
+      const fee = o.fee || 0;
+      rows.push([...base, "", PAY_ROW[o.payMethod] || o.payMethod || "", orderTotal(o) - fee, fee, 0, orderTotal(o), "Cobrado", ""]);
+    }
+  }
+  return [head, ...rows];
+}
+// «;» and a BOM so Excel in Spanish opens it in columns with accents right
+export const toCsv = rows => "﻿" + rows.map(r => r.map(v => (typeof v === "number" ? String(v) : /[;"\n]/.test(String(v)) ? `"${String(v).replace(/"/g, '""')}"` : String(v))).join(";")).join("\r\n") + "\r\n";

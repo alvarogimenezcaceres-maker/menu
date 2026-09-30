@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{NAME}} · Privacidad</title>
+<meta name="description" content="Qué datos usa el menú digital de {{NAME}}, para qué y por cuánto tiempo.">
+<meta name="theme-color" content="{{BG}}">
+<link rel="icon" href="../img/{{LOGO}}-360.webp">
+<style>
+  /* Aviso de privacidad para comensales: texto de plan/pos/legal/privacidad-menu-y-caja.md (b), generado por build.mjs */
+  :root { color-scheme: dark; --ink: {{BG}}; --surface: #1b1916; --line: #34302a; --amber: {{PRIMARY}}; --text: #f3ede3; --muted: #a89f92; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--ink); color: var(--text); font: 16px/1.6 system-ui, "Segoe UI", sans-serif; padding: 24px 16px 48px; }
+  main { max-width: 720px; margin: 0 auto; }
+  a { color: var(--amber); }
+  h1 { font-size: 26px; line-height: 1.2; margin: 12px 0 4px; }
+  h2 { font-size: 18px; margin: 28px 0 8px; color: var(--amber); }
+  .meta { color: var(--muted); font-size: 14px; margin: 0 0 20px; }
+  .back { display: inline-flex; align-items: center; min-height: 44px; }
+  .logo { width: 110px; display: block; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th, td { text-align: left; vertical-align: top; padding: 10px 8px; border-bottom: 1px solid var(--line); }
+  th { color: var(--muted); font-weight: 600; font-size: 13px; text-transform: uppercase; letter-spacing: .06em; }
+  @media (max-width: 600px) {
+    table, thead, tbody, tr, th, td { display: block; }
+    thead { display: none; }
+    tr { border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; margin-bottom: 10px; background: var(--surface); }
+    td { border: 0; padding: 4px 0; }
+    td::before { content: attr(data-label); display: block; color: var(--muted); font-size: 12.5px; text-transform: uppercase; letter-spacing: .06em; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <a class="back" href="../">← Volver al menú</a>
+  <img class="logo" src="../img/{{LOGO}}-360.webp" alt="{{NAME}}">
+  <h1>Aviso de privacidad del menú de {{NAME}}</h1>
+  <p class="meta">Actualizado: {{UPDATED}}</p>
+
+  <h2>Quién es responsable</h2>
+  <p><b>{{LEGAL_NAME}}</b>, RUC {{RUC}}{{ADDRESS}}, contacto {{CONTACT}} («el local») decide qué datos se usan y para qué.
+    El sistema lo provee <b>Mesaverso</b>{{MESAVERSO}}, que trata los datos <b>solo por cuenta y según instrucciones del
+    local</b> (encargado del tratamiento) y no los usa para nada propio.</p>
+
+  <h2>Qué datos y para qué</h2>
+  <table>
+    <thead><tr><th>Cuándo</th><th>Datos</th><th>Para qué</th><th>Cuánto tiempo</th></tr></thead>
+    <tbody>
+      <tr><td data-label="Cuándo">Mirás el menú</td><td data-label="Datos">Ninguno personal. Eventos anónimos (qué plato se abrió, búsquedas, clics en pedir), sin cookies, IP ni identificadores del aparato</td><td data-label="Para qué">Estadísticas del menú</td><td data-label="Cuánto tiempo">3 meses</td></tr>
+      <tr><td data-label="Cuándo">Pedís delivery o retiro</td><td data-label="Datos">Nombre, dirección, referencia, forma de pago, «con cuánto pagás», nota, platos y montos</td><td data-label="Para qué">Preparar, entregar y cobrar tu pedido</td><td data-label="Cuánto tiempo">Nombre, dirección, referencia y nota se borran solos <b>30 días</b> después de cerrada la venta. Platos y montos quedan, sin tus datos, para la contabilidad del local</td></tr>
+      <tr><td data-label="Cuándo">Pedís en la mesa</td><td data-label="Datos">Ninguno personal. Tu celular recibe un código al azar y un color (Azul, Verde…)</td><td data-label="Para qué">Separar los pedidos y dividir la cuenta</td><td data-label="Cuánto tiempo">Mientras dure la mesa; los platos y montos quedan para la contabilidad del local</td></tr>
+      <tr><td data-label="Cuándo">Si marcás «Recordar mis datos»</td><td data-label="Datos">Nombre, dirección, referencia y forma de pago, <b>solo en tu celular</b></td><td data-label="Para qué">Completar el formulario la próxima vez</td><td data-label="Cuánto tiempo">Hasta que toques «Olvidar mis datos» o borres los datos del navegador</td></tr>
+    </tbody>
+  </table>
+  <p>El pedido de delivery también viaja por <b>WhatsApp</b> desde tu cuenta a la del local; ese chat queda en WhatsApp
+    (Meta) y lo administra el local. Mesaverso <b>no cobra ni procesa pagos</b>: solo anota cómo pagaste. La factura la
+    emite el local como siempre.</p>
+
+  <h2>Base legal</h2>
+  <p>Tus datos de pedido se usan porque son necesarios para cumplir lo que pediste (ejecución del pedido). Recordarlos
+    en el celular es opcional (tu consentimiento). No se venden, no se usan para publicidad y no se comparten con otros
+    locales.</p>
+
+  <h2>Proveedores</h2>
+  <p>Cloudflare, Inc. (servidores del menú y de la caja, fuera de Paraguay) guarda los pedidos por cuenta del local. Los
+    demás servicios que usa Mesaverso (GitHub, Render, Neon, UploadThing) no reciben datos de comensales.</p>
+
+  <h2>Tus derechos</h2>
+  <p>Podés pedir acceso, corrección, borrado u oposición, y retirar tu consentimiento, escribiendo al local
+    ({{CONTACT}}). Se responde en un plazo máximo de 30 días corridos.</p>
+
+  <h2>Seguridad</h2>
+  <p>Cada local tiene su caja separada; el personal entra con PIN y los aparatos vinculados con una clave que no se
+    guarda en claro. Si hubiera un incidente que afecte tus datos, el local te avisará.</p>
+
+  <p><a class="back" href="../">← Volver al menú</a></p>
+</main>
+</body>
+</html>

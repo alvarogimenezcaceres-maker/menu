@@ -185,6 +185,28 @@ export const Restaurants: CollectionConfig = {
       ],
     },
     {
+      name: 'legal',
+      type: 'group',
+      label: 'Datos legales (página «Privacidad» del menú)',
+      admin: { description: 'Con razón social, RUC y contacto cargados, el menú publica su página de privacidad. Vacío = no se publica.' },
+      fields: [
+        {
+          type: 'row',
+          fields: [
+            { name: 'legalName', type: 'text', label: 'Razón social', admin: { width: '60%' } },
+            { name: 'ruc', type: 'text', label: 'RUC', admin: { width: '40%', placeholder: '80012345-6' } },
+          ],
+        },
+        { name: 'address', type: 'text', label: 'Domicilio' },
+        {
+          name: 'privacyContact',
+          type: 'text',
+          label: 'Contacto para datos personales',
+          admin: { description: 'WhatsApp o correo donde los clientes piden ver o borrar sus datos.' },
+        },
+      ],
+    },
+    {
       name: 'googleReviewUrl',
       type: 'text',
       label: 'Enlace para dejar reseña en Google',

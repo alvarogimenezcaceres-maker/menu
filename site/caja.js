@@ -12,7 +12,7 @@
 // watch the account; they get their own WebSocket with a filtered view (dinerView), never the staff broadcast.
 import QRCode from "qrcode/lib/core/qrcode.js";
 import QRSvg from "qrcode/lib/renderer/svg-tag.js";
-import { applyOp, applyTableOp, addDiner, addPending, addRound, buildOrder, can, dinerView, requestBill, shiftSummary, isClosed, newRef, openTable, orderTotal, priceLines, PII_DAYS, ROLES, validDiner, validRef, validTable, wipePii, CajaError } from "./caja-core.js";
+import { applyOp, applyTableOp, addDiner, addPending, addRound, buildOrder, can, dinerView, requestBill, shiftSummary, shiftRows, toCsv, soldOutNow, withSoldOut, isClosed, newRef, openTable, orderTotal, priceLines, PII_DAYS, ROLES, validDiner, validRef, validTable, wipePii, CajaError } from "./caja-core.js";
 import { sameOrigin } from "./events.js";
 
 const C = globalThis.OrderCore; // loaded by caja-core.js
@@ -91,6 +91,10 @@ export class Caja {
   setMeta(k, v) { this.sql.exec("INSERT INTO meta (k, v) VALUES (?, ?) ON CONFLICT(k) DO UPDATE SET v = excluded.v", k, String(v)); }
   activated() { return this.sql.exec("SELECT COUNT(*) AS n FROM users WHERE active = 1").one().n > 0; }
 
+  soldOutMarks() { try { return JSON.parse(this.meta("soldout", "{}")) || {}; } catch { return {}; } }
+  soldOutList() { return soldOutNow(this.soldOutMarks()); }
+  // what orders are priced and checked against: the published menu plus today's «agotado» marks from the caja
+  async orderCatalog(slug) { return withSoldOut(await this.loadCatalog(slug), this.soldOutList()); }
   async loadCatalog(slug) {
     if (this.catalog && Date.now() - this.catalogAt < 60000) return this.catalog;
     const res = await this.env.ASSETS.fetch(new Request(`https://assets.local/${slug}/catalog.json`));
@@ -116,6 +120,7 @@ export class Caja {
       }
       switch (route) {
         case "GET /activa": return json({ caja: this.activated() }); // the menu picks its privacy text
+        case "GET /agotados": return json({ slugs: this.soldOutList() }); // the menu greys these out
         case "POST /pedidos": return await this.publicOrder(body, slug);
         case "POST /mesa": return await this.tableDraft(body, slug, url);
         case "POST /mesa/unirse": return this.dinerJoin(body, slug, url);
@@ -257,7 +262,7 @@ export class Caja {
     const same = this.sql.exec("SELECT data FROM orders WHERE ref = ? AND created > ?", body.ref, now - 10 * 60000).toArray()[0];
     if (same) return json({ ref: body.ref });
     const catalog = await this.loadCatalog(slug);
-    const o = buildOrder({ ref: body.ref, lines: body.lines, form: body.form, src: "wa" }, catalog, now);
+    const o = buildOrder({ ref: body.ref, lines: body.lines, form: body.form, src: "wa" }, withSoldOut(catalog, this.soldOutList()), now);
     o.waRef = o.ref; // the code the customer sees in the WhatsApp message
     o.ref = this.freeRef(o.ref);
     this.save(o, "Menú", "Entró por el menú (WhatsApp)");
@@ -270,7 +275,7 @@ export class Caja {
     let catalog = null;
     try { catalog = await this.loadCatalog(slug); } catch { /* the board still works; pickers show an error */ }
     const dev = this.sql.exec("SELECT substr(hash, 1, 8) AS id, name, kind FROM devices WHERE hash = ?", s.device).toArray()[0] || {};
-    return json({ me: { id: s.id, name: s.name, role: s.role }, device: { id: dev.id, name: dev.name, kind: dev.kind || "" }, orders: this.rows("closed IS NULL OR closed > ?", since).map(o => this.withTotal(o)), catalog, tables: catalog?.tables || 20, now: Date.now() });
+    return json({ me: { id: s.id, name: s.name, role: s.role }, device: { id: dev.id, name: dev.name, kind: dev.kind || "" }, orders: this.rows("closed IS NULL OR closed > ?", since).map(o => this.withTotal(o)), catalog, soldOut: this.soldOutList(), tables: catalog?.tables || 20, now: Date.now() });
   }
 
   async op(request, body, slug) {
@@ -278,7 +283,7 @@ export class Caja {
     const who = s.name;
     if (body.op === "create") {
       if (!can(s.role, "create")) throw new CajaError("role", "Tu rol no puede crear pedidos.");
-      const catalog = await this.loadCatalog(slug);
+      const catalog = await this.orderCatalog(slug);
       const o = buildOrder({ ref: this.freeRef(newRef()), lines: body.lines, form: body.form, src: "manual" }, catalog);
       o.status = "prep"; // the staff typed it: it's already accepted
       this.save(o, who, "Cargado a mano por " + who);
@@ -287,6 +292,24 @@ export class Caja {
     }
     if (body.op === "history") return json({ history: this.sql.exec("SELECT at, who, text FROM history WHERE ref = ? ORDER BY id", String(body.ref)).toArray() });
     if (body.op === "draft") return json(this.readDraft(body.code));
+    if (body.op === "soldOut") {
+      if (!can(s.role, "soldOut")) throw new CajaError("role", "Tu rol no puede marcar agotados.");
+      const slugOk = typeof body.slug === "string" && /^[a-z0-9][a-z0-9-]{0,80}$/.test(body.slug);
+      if (!slugOk) throw new CajaError("slug", "Producto inválido.");
+      const marks = Object.fromEntries(Object.entries(this.soldOutMarks()).filter(([k]) => this.soldOutList().includes(k))); // drop yesterday's
+      if (body.on) marks[body.slug] = { at: Date.now(), by: who }; else delete marks[body.slug];
+      this.setMeta("soldout", JSON.stringify(marks));
+      const slugs = this.soldOutList();
+      this.broadcast({ t: "soldout", slugs });
+      return json({ slugs });
+    }
+    if (body.op === "shiftCsv") {
+      if (!can(s.role, "shift")) throw new CajaError("role", "Las ventas las ven la cajera y el encargado.");
+      // a closed shift by id, or the open one
+      const rec = body.id ? this.sql.exec("SELECT start, end FROM shifts WHERE id = ?", +body.id).toArray()[0] : { start: +this.meta("shift_start", 0), end: Date.now() };
+      if (!rec) throw new CajaError("state", "No encontré ese turno.");
+      return json({ csv: toCsv(shiftRows(this.rows("closed IS NOT NULL AND closed >= ? AND closed <= ?", rec.start, rec.end), rec.start, rec.end)), start: rec.start, end: rec.end });
+    }
     if (body.op === "shift" || body.op === "closeShift" || body.op === "shifts") {
       if (!can(s.role, "shift")) throw new CajaError("role", "El turno lo ven la cajera y el encargado.");
       if (body.op === "shifts") return json({ shifts: this.sql.exec("SELECT id, start, end, opened_by AS openedBy, closed_by AS closedBy, data FROM shifts ORDER BY id DESC LIMIT 30").toArray().map(r => ({ ...r, summary: JSON.parse(r.data), data: undefined })) });
@@ -317,7 +340,7 @@ export class Caja {
     }
     const current = this.getOrder(String(body.ref));
     if (current.kind === "table") {
-      const catalog = body.op === "addItems" ? await this.loadCatalog(slug) : null;
+      const catalog = body.op === "addItems" ? await this.orderCatalog(slug) : null;
       const { order, text } = applyTableOp(current, body.op, body.args || {}, s.role, catalog);
       this.save(order, who, `${text} (${who})`);
       if (body.op === "addItems" || body.op === "acceptRound") this.doc("comanda", order, { round: order.rounds - 1 });
@@ -328,7 +351,7 @@ export class Caja {
     if (body.updatedAt && body.updatedAt !== current.updatedAt && ["accept", "reject"].includes(body.op) && current.status !== "new") {
       throw new CajaError("stale", "Otra persona ya atendió este pedido.");
     }
-    const catalog = body.op === "addItems" ? await this.loadCatalog(slug) : null;
+    const catalog = body.op === "addItems" ? await this.orderCatalog(slug) : null;
     const { order, text } = applyOp(current, body.op, body.args || {}, s.role, catalog);
     this.save(order, who, `${text} (${who})`);
     if (body.op === "accept") this.doc("comanda", order, { round: null });
@@ -348,7 +371,7 @@ export class Caja {
     this.publicHits = this.publicHits.filter(t => now - t < 10 * 60000);
     if (this.publicHits.length >= 40) throw new CajaError("locked", "Demasiados pedidos seguidos. Mostrale la lista al mozo.");
     this.publicHits.push(now);
-    const lines = priceLines(body.lines, await this.loadCatalog(slug));
+    const lines = priceLines(body.lines, await this.orderCatalog(slug));
     const diner = validDiner(body.diner) ? body.diner : null;
     this.sql.exec("DELETE FROM drafts WHERE created < ?", now - DRAFT_MS);
     // the same phone showing the same order again gets the same code
@@ -432,7 +455,7 @@ export class Caja {
     const t = this.tableByToken(body.token);
     if (!t) throw new CajaError("mesa", "Esta mesa ya se cerró. Pedile al mozo que la abra de nuevo.");
     this.publicHits.push(now);
-    const lines = priceLines(body.lines, await this.loadCatalog(slug));
+    const lines = priceLines(body.lines, await this.orderCatalog(slug));
     const { session, color } = addPending(t, body.diner, lines, newRef(), now);
     this.save(session, "Menú", `Pedido nuevo desde el celular (${color}): ${lines.map(l => `${l.n} × ${l.name}`).join(", ")}`);
     return this.dinerReply(session, body.diner, url, slug);

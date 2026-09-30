@@ -247,6 +247,7 @@ const I = {
   wifi: '<path d="M3 9a13 13 0 0 1 18 0M6.5 12.5a8 8 0 0 1 11 0M10 16a3 3 0 0 1 4 0"/><circle cx="12" cy="19" r=".8"/>',
   sound: '<path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4v-5Z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/>',
   user: '<circle cx="12" cy="8" r="3.5"/><path d="M5 20a7 7 0 0 1 14 0"/>',
+  tag: '<path d="M3 12V4h8l10 10-8 8L3 12Z"/><circle cx="7.5" cy="7.5" r="1.5"/>',
   chef: '<path d="M6 13a4 4 0 1 1 2.5-7.1A4 4 0 0 1 16 5a4 4 0 1 1 2 8v6H6v-6Z"/><path d="M6 17h12"/>',
   cash: '<rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M7 9v.01M17 15v.01"/>',
   sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
@@ -328,6 +329,7 @@ function handleAuthLost(code, message) {
 /* ---------- estado ---------- */
 let screen = device ? (session ? "board" : "pin") : "link";
 let myDevice = {}; const isCaja = () => myDevice.kind === "caja";
+let soldOut = new Set(); // today's «agotado» marks (server)
 let view = "orders", filter = "all", orders = new Map(), catalog = null, users = [], team = null, tableCount = 20;
 const COLORS = { azul: ["Azul", "#5B9DFF"], verde: ["Verde", "#4CC38A"], naranja: ["Naranja", "#FF9A4D"], violeta: ["Violeta", "#B9A3FF"],
   rosa: ["Rosa", "#FF7EB6"], celeste: ["Celeste", "#4FD1E0"], amarillo: ["Amarillo", "#FFD84D"], rojo: ["Rojo", "#FF6B6B"] };
@@ -380,6 +382,7 @@ document.addEventListener("visibilitychange", () => { if (document.visibilitySta
 function onMessage(msg) {
   if (msg.t === "doc") { onDoc(msg); return; }
   if (msg.t === "devices") { loadState().catch(() => {}); return; }
+  if (msg.t === "soldout") { soldOut = new Set(msg.slugs || []); if (view === "products") renderMain(); return; }
   if (msg.t !== "order") return;
   const was = orders.get(msg.order.ref);
   orders.set(msg.order.ref, msg.order);
@@ -407,7 +410,7 @@ function onMessage(msg) {
 }
 async function loadState() {
   const st = await api("/estado");
-  me = st.me; catalog = st.catalog; tableCount = st.tables || 20; myDevice = st.device || {};
+  me = st.me; catalog = st.catalog; tableCount = st.tables || 20; myDevice = st.device || {}; soldOut = new Set(st.soldOut || []);
   if (me.role === "cocina") view = "kitchen";
   orders = new Map(st.orders.map(o => [o.ref, o]));
   render();
@@ -635,6 +638,20 @@ function takePreview() {
   </aside>`, "#none");
 }
 
+/* ---------- productos: agotado hoy (se repone solo al día siguiente, a las 5) ---------- */
+let prodQ = "";
+function productsHtml() {
+  if (!catalog) return `<div class="head"><h1>Productos</h1></div><p class="banner">No encontré el menú publicado de este local.</p>`;
+  const q = prodQ.trim().toLowerCase();
+  const cats = catalog.categories.map(c => ({ ...c, dishes: c.dishes.filter(d => !q || d.name.toLowerCase().includes(q)) })).filter(c => c.dishes.length);
+  return `<div class="head"><h1>Productos</h1><span class="meta">${soldOut.size} agotado${soldOut.size === 1 ? "" : "s"} hoy</span><span class="sp"></span>
+      <input class="search" id="prodQ" type="search" placeholder="Buscar producto" value="${esc(prodQ)}" aria-label="Buscar producto" style="max-width:300px"></div>
+    <p class="help" style="margin:-6px 0 14px">«Agotado hoy» se ve en el menú al instante y no deja pedirlo. Vuelve solo mañana (a las 5). Precios y fotos se cambian en el panel.</p>
+    ${cats.map(c => `<h2 style="font:700 16px/1 var(--display);margin:18px 0 10px">${esc(c.name)}</h2>
+      <table class="t"><tbody>${c.dishes.map(d => { const out = soldOut.has(d.slug) || d.soldOut; return `<tr><td>${esc(d.name)}${d.soldOut ? ' <span class="st neutral">Agotado desde el panel</span>' : ""}</td><td class="num" style="text-align:right">${gs(d.price)}</td>
+        <td style="text-align:right;width:1%;white-space:nowrap">${d.soldOut ? "" : `<button class="btn${out ? " danger" : ""}" data-act="soldout" data-slug="${esc(d.slug)}" data-on="${out ? "" : "1"}" aria-pressed="${out}">${out ? "Agotado hoy · reponer" : "Marcar agotado"}</button>`}</td></tr>`; }).join("")}</tbody></table>`).join("") || `<p class="empty">No hay productos con «${esc(prodQ)}».</p>`}`;
+}
+
 /* ---------- cocina: comandas en vivo, un toque para «Listo» ---------- */
 function kitchenHtml() {
   const items = kitchenItems(), ready = readyItems(), now = Date.now();
@@ -661,7 +678,7 @@ function cashHtml() {
   const s = shift.summary, p = s.pending, streets = Object.entries(p.street);
   const when = t => new Date(t).toLocaleString("es-PY", { weekday: "short", day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit", hourCycle: "h23", timeZone: "America/Asuncion" });
   return `<div class="head"><h1>Caja · turno abierto</h1><span class="st neutral">Desde ${esc(when(shift.start || s.since))}${shift.openedBy ? " · " + esc(shift.openedBy) : ""}</span><span class="sp"></span>
-      <button class="btn" data-act="shiftRefresh">Actualizar</button><button class="btn" data-act="shiftPdf">${ic("orders")}Resumen PDF</button><button class="btn primary" data-act="closeShift">${ic("check")}Cerrar turno</button></div>
+      <button class="btn" data-act="shiftRefresh">Actualizar</button><button class="btn" data-act="shiftCsv">Exportar CSV</button><button class="btn" data-act="shiftPdf">${ic("orders")}Resumen PDF</button><button class="btn primary" data-act="closeShift">${ic("check")}Cerrar turno</button></div>
     <div class="kpis">
       <div class="kpi"><span>Vendido (cerrado)</span><b>${gs(s.sales)}</b><small>${s.count} ventas · ${s.tables} mesas · ${s.orders} pedidos</small></div>
       <div class="kpi"><span>Propinas (aparte)</span><b>${gs(s.tips)}</b><small>${s.fees ? "Envíos cobrados " + gs(s.fees) : "Sin envíos"}</small></div>
@@ -675,7 +692,7 @@ function cashHtml() {
       <table class="t"><tbody>${s.cancelled.map(c => `<tr><td>${esc(c.label)}</td><td>${esc(c.reason)}</td><td style="text-align:right" class="num">${gs(c.amount)}</td></tr>`).join("")}</tbody></table>` : ""}
     <h2 style="font:700 16px/1 var(--display);margin:22px 0 10px">Turnos anteriores</h2>
     <table class="t"><tbody>${shifts.map(x => `<tr><td>${esc(when(x.start))} → ${esc(when(x.end))}</td><td>${esc(x.closedBy || "")}</td><td style="text-align:right" class="num">${gs(x.summary.sales)}</td>
-      <td style="text-align:right"><button class="btn ghost" data-act="oldShiftPdf" data-id="${x.id}">PDF</button></td></tr>`).join("") || `<tr><td class="meta">Todavía no se cerró ningún turno.</td></tr>`}</tbody></table>`;
+      <td style="text-align:right;white-space:nowrap"><button class="btn ghost" data-act="shiftCsv" data-id="${x.id}">CSV</button> <button class="btn ghost" data-act="oldShiftPdf" data-id="${x.id}">PDF</button></td></tr>`).join("") || `<tr><td class="meta">Todavía no se cerró ningún turno.</td></tr>`}</tbody></table>`;
 }
 
 /* ---------- equipo (encargado) ---------- */
@@ -711,7 +728,7 @@ function renderTop() {
 function renderMain() {
   const m = $("#main"); if (!m || !me) return;
   const scroll = m.scrollTop;
-  m.innerHTML = view === "kitchen" ? kitchenHtml() : view === "team" ? teamHtml() : view === "tables" ? tablesHtml() : view === "cash" ? cashHtml() : boardHtml();
+  m.innerHTML = view === "products" ? productsHtml() : view === "kitchen" ? kitchenHtml() : view === "team" ? teamHtml() : view === "tables" ? tablesHtml() : view === "cash" ? cashHtml() : boardHtml();
   m.scrollTop = scroll;
   const n = open().filter(o => o.status === "new").length + pendingRounds().length;
   const b = $('[data-view="orders"] .badge'); if (b) { b.textContent = n; b.hidden = !n; }
@@ -728,7 +745,8 @@ function render() {
       ${me.role === "cocina" || me.role === "encargado" ? `<button data-view="kitchen"${view === "kitchen" ? ' aria-current="page"' : ""}>${ic("chef")}Cocina</button>` : ""}
       ${me.role === "cocina" ? "" : `<button data-view="orders"${view === "orders" ? ' aria-current="page"' : ""}>${ic("orders")}Pedidos<span class="badge" hidden></span></button>
       <button data-view="tables"${view === "tables" ? ' aria-current="page"' : ""}>${ic("tables")}Mesas<span class="badge" hidden></span></button>
-      `}${CAN_PAY(me.role) ? `<button data-view="cash"${view === "cash" ? ' aria-current="page"' : ""}>${ic("cash")}Caja</button>` : ""}
+      `}<button data-view="products"${view === "products" ? ' aria-current="page"' : ""}>${ic("tag")}Productos</button>
+      ${CAN_PAY(me.role) ? `<button data-view="cash"${view === "cash" ? ' aria-current="page"' : ""}>${ic("cash")}Caja</button>` : ""}
       ${me.role === "encargado" ? `<button data-view="team"${view === "team" ? ' aria-current="page"' : ""}>${ic("team")}Equipo</button>` : ""}
     </nav><main id="main"></main></div>`;
   renderTop(); renderMain();
@@ -818,7 +836,7 @@ function pickerHtml() {
       <h3 style="font:700 12.5px/1 var(--display);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:${p.mode === "new" ? "20px" : "0"} 0 8px">Productos</h3>
       <input class="search" id="pq" type="search" placeholder="Buscar producto" value="${esc(p.q || "")}" aria-label="Buscar producto">
       ${q ? "" : `<div class="cat-chips" role="group" aria-label="Categorías">${cats.map(c => `<button class="chip" data-cat="${c.slug}" aria-pressed="${c.slug === cat.slug}">${esc(c.name)}</button>`).join("")}</div>`}
-      <div class="prod-grid" style="margin-top:${q ? 10 : 0}px">${dishes.map(d => `<button class="prod" data-dish="${d.slug}"${d.soldOut ? " disabled" : ""}><b>${esc(d.name)}</b><span class="num">${d.soldOut ? "Agotado" : gs(d.price) + ((d.options || []).length ? " · opciones" : "")}</span></button>`).join("") || `<p class="empty">No hay productos con «${esc(p.q)}».</p>`}</div>
+      <div class="prod-grid" style="margin-top:${q ? 10 : 0}px">${dishes.map(d => `<button class="prod" data-dish="${d.slug}"${isOut(d) ? " disabled" : ""}><b>${esc(d.name)}</b><span class="num">${isOut(d) ? "Agotado" : gs(d.price) + ((d.options || []).length ? " · opciones" : "")}</span></button>`).join("") || `<p class="empty">No hay productos con «${esc(p.q)}».</p>`}</div>
       <h3 style="font:700 12.5px/1 var(--display);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:20px 0 8px">En este pedido</h3>
       <ul class="draft">${p.lines.map((l, i) => { const d = bySlug()[l.slug]; const x = C.describePicks(d, l.picks); return `<li><b>${l.n}×</b><span>${esc(d.name)}${x.length ? " · " + esc(x.join(", ")) : ""}${l.note ? ` · «${esc(l.note)}»` : ""}</span><span class="num">${gs(C.unitPrice(d, l.picks) * l.n)}</span><button class="icon-btn" data-drop="${i}" aria-label="Quitar ${esc(d.name)}">${ic("x")}</button></li>`; }).join("") || `<li class="meta">Tocá un producto para sumarlo.</li>`}</ul>
       <p class="err" id="pkErr" role="alert" hidden></p>
@@ -838,6 +856,7 @@ function newOrderFields() {
 }
 let bySlugCache = null, bySlugFor = null;
 function bySlug() { if (bySlugFor !== catalog) { bySlugCache = {}; catalog.categories.forEach(c => c.dishes.forEach(d => bySlugCache[d.slug] = d)); bySlugFor = catalog; } return bySlugCache; }
+const isOut = d => d.soldOut || soldOut.has(d.slug);
 function renderPicker(focus) { const y = $("#overlay .body")?.scrollTop || 0; showOverlay(pickerHtml(), focus || "#none"); const b = $("#overlay .body"); if (b) b.scrollTop = y; }
 function dishModal(slug) {
   const d = bySlug()[slug];
@@ -997,6 +1016,18 @@ document.addEventListener("click", async e => {
     }
     case "sound": soundOn = !soundOn; store.set("sound", soundOn ? "on" : "off"); renderTop(); if (soundOn) beep(); break;
     case "shiftRefresh": loadShift(); break;
+    case "shiftCsv": {
+      try {
+        const r = await api("/op", { method: "POST", body: { op: "shiftCsv", id: d.id ? +d.id : undefined } });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(new Blob([r.csv], { type: "text/csv;charset=utf-8" }));
+        const day = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Asuncion" }).format(new Date(r.end));
+        a.download = `ventas-${SLUG}-${day}${d.id ? "-turno-" + d.id : ""}.csv`;
+        document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+        say("CSV descargado: se abre con Excel");
+      } catch (err) { say(err.message, true); }
+      break;
+    }
     case "shiftPdf": if (shift) savePdf(Ticket.resumen(shift.summary, { restaurant: RESTAURANT, openedBy: shift.openedBy }), "turno-parcial"); break;
     case "oldShiftPdf": { const x = shifts.find(y => y.id === +d.id); if (x) savePdf(Ticket.resumen(x.summary, { restaurant: RESTAURANT, openedBy: x.openedBy, closedBy: x.closedBy }), "turno"); break; }
     case "closeShift": {
@@ -1016,6 +1047,11 @@ document.addEventListener("click", async e => {
     case "theme": { const r = document.documentElement; r.dataset.theme = r.dataset.theme === "light" ? "dark" : "light"; store.set("theme", r.dataset.theme); break; }
     case "logout": try { await api("/salir", { method: "POST" }); } catch (err) {} session = null; store.set("session", null); me = null; closeSocket(); screen = "pin"; pinUser = null; users = []; usersAsked = false; render(); break;
     case "addUser": userModal(); break;
+    case "soldout": {
+      try { const r = await api("/op", { method: "POST", body: { op: "soldOut", slug: d.slug, on: !!d.on } }); soldOut = new Set(r.slugs); renderMain(); say(d.on ? "Marcado agotado hoy · ya se ve en el menú" : "Disponible de nuevo"); }
+      catch (err) { say(err.message, true); }
+      break;
+    }
     case "devKind": teamCall({ action: "deviceKind", id: d.id, kind: d.kind }, d.kind === "caja" ? "Marcada como caja: guarda los PDF" : "Ya no es la caja"); break;
     case "setPin": userModal(+d.id, d.name); break;
     case "removeUser": if (confirm(`¿Quitar a ${d.name}? Ya no va a poder entrar.`)) teamCall({ action: "remove", id: +d.id }, `${d.name} quitado`); break;
@@ -1024,6 +1060,7 @@ document.addEventListener("click", async e => {
   }
 });
 document.addEventListener("input", e => {
+  if (e.target.id === "prodQ") { prodQ = e.target.value; const pos = e.target.selectionStart; renderMain(); const i = $("#prodQ"); if (i) { i.focus(); i.setSelectionRange(pos, pos); } return; }
   if (e.target.id === "pq" && picker) { picker.q = e.target.value; const pos = e.target.selectionStart; renderPicker("#pq"); const i = $("#pq"); i.setSelectionRange(pos, pos); }
   if (e.target.dataset.f && picker) picker.form[e.target.dataset.f] = e.target.dataset.f === "zone" ? +e.target.value : e.target.value;
 });

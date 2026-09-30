@@ -107,7 +107,9 @@ async function buildRestaurant(slug, templates) {
     ...theme, NAME: attr(r.name), NAME_JSON: jsonForScript(r.name), DESCRIPTION: attr(r.description), TAGLINE: attr(r.tagline || ""),
     URL: url, LOGO: r.logo, OG_IMAGE: r.hero || r.logo, JSONLD: jsonLd(m, url), DATA: jsonForScript(menu),
     HERO_IMG: r.hero ? `<img class="dish" src="img/${r.hero}-720.webp" alt="" fetchpriority="high">` : "",
-    WHATSAPP: whatsappDigits(r.whatsapp), REVIEW_URL: jsonForScript(reviewUrl(r.googleReviewUrl)), ORDERING: jsonForScript(OrderCore.orderingConfig(r.ordering)), ORDER_CORE,
+    WHATSAPP: whatsappDigits(r.whatsapp),
+    PRIVACY_LINK: r.legal && r.legal.legalName && r.legal.ruc && r.legal.privacyContact ? ' · <a href="privacidad/">Privacidad</a>' : "",
+    REVIEW_URL: jsonForScript(reviewUrl(r.googleReviewUrl)), ORDERING: jsonForScript(OrderCore.orderingConfig(r.ordering)), ORDER_CORE,
   }));
 
   // Mesaverso Caja: the catalog the Worker prices orders with (public data: the same as the menu) and the staff page
@@ -125,6 +127,19 @@ async function buildRestaurant(slug, templates) {
   }
   await writeFile(path.join(out, "caja", "index.html"), fill(templates.caja, { NAME: attr(r.name), NAME_JSON: jsonForScript(r.name), SLUG: slug, ORDER_CORE, TICKET_CORE }));
 
+  // Privacy notice for diners (plan/pos/legal): published only when the restaurant's legal data is loaded in the panel
+  const legal = r.legal && r.legal.legalName && r.legal.ruc && r.legal.privacyContact ? r.legal : null;
+  if (legal) {
+    const mv = templates.mesaverso, mvParts = [mv.holder, mv.ruc && "RUC " + mv.ruc, mv.email].filter(Boolean);
+    await mkdir(path.join(out, "privacidad"), { recursive: true });
+    await writeFile(path.join(out, "privacidad", "index.html"), fill(templates.privacidad, {
+      NAME: attr(r.name), BG: theme.BG, PRIMARY: theme.PRIMARY, LOGO: r.logo,
+      UPDATED: new Date().toLocaleDateString("es-PY", { day: "numeric", month: "long", year: "numeric", timeZone: "America/Asuncion" }),
+      LEGAL_NAME: attr(legal.legalName), RUC: attr(legal.ruc), ADDRESS: legal.address ? ", " + attr(legal.address) : "",
+      CONTACT: attr(legal.privacyContact), MESAVERSO: mvParts.length ? " (" + mvParts.map(attr).join(", ") + ")" : "",
+    }));
+  }
+
   // QR code: one general QR (?s=qr, so the monthly report can tell QR visits apart). Tables have no QR of their own
   // since 2026-09-29: the diner shows the waiter a QR of the order and the waiter picks the table (plan/pos).
   const qrOpts = { margin: 1, errorCorrectionLevel: "M", color: { dark: "#121110", light: "#ffffff" } };
@@ -134,8 +149,8 @@ async function buildRestaurant(slug, templates) {
     <div class="card">
       <img class="logo" src="img/${r.logo}-360.webp" alt="${attr(r.name)}">
       <div class="qr"><img src="data:image/svg+xml;base64,${Buffer.from(svg).toString("base64")}" alt="QR ${attr(label || r.name)}"></div>
-      <strong>Escaneá y mirá el menú</strong>
-      <span>Algunos platos se pueden ver en 3D, sobre tu mesa.</span>
+      <strong>Escaneá y pedí desde tu celular</strong>
+      <span>Armá tu pedido y mostráselo al mozo. Los de tu mesa se suman desde su celular y al final dividen la cuenta.</span>
       ${label ? `<div class="table">${attr(label)}</div>` : ""}
       <div class="url">${attr(target)}</div>
     </div>`);
@@ -159,6 +174,8 @@ async function main() {
     menu: await readFile(path.join(ROOT, "site", "template", "menu.html"), "utf8"),
     qr: await readFile(path.join(ROOT, "site", "template", "qr.html"), "utf8"),
     caja: await readFile(path.join(ROOT, "site", "template", "caja.html"), "utf8"),
+    privacidad: await readFile(path.join(ROOT, "site", "template", "privacidad.html"), "utf8"),
+    mesaverso: JSON.parse(await readFile(path.join(ROOT, "site", "mesaverso.json"), "utf8")),
   };
   const slugs = [];
   for (const e of await readdir(path.join(ROOT, "seed"), { withFileTypes: true })) {

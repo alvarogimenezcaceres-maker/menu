@@ -1,7 +1,7 @@
 // node --test site/caja-core.test.mjs
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { buildOrder, applyOp, can, isClosed, newRef, validRef, orderTotal, CajaError, wipePii, openTable, addRound, addDiner, applyTableOp, priceLines, DINER_COLORS, addPending, dinerView, requestBill, shiftSummary } from "./caja-core.js";
+import { buildOrder, applyOp, can, isClosed, newRef, validRef, orderTotal, CajaError, wipePii, openTable, addRound, addDiner, applyTableOp, priceLines, DINER_COLORS, addPending, dinerView, requestBill, shiftSummary, soldOutNow, withSoldOut, shiftRows, toCsv } from "./caja-core.js";
 
 const catalog = {
   ordering: { orderTypes: ["delivery", "pickup"], paymentMethods: ["efectivo", "transferencia"], deliveryZones: [{ name: "Centro", fee: 10000 }] },
@@ -285,4 +285,39 @@ test("kitchen role: marks orders ready but can't accept, add, charge or cancel",
   o = applyOp(o, "street", { rider: "Hugo" }, "mozo", catalog).order; // then it leaves with the rider
   assert.equal(o.status, "street");
   throwsCode(() => applyOp(o, "kitchenUndo", {}, "cocina", catalog), "state");
+});
+
+/* ---------- agotado hoy ---------- */
+test("sold out today lasts until 05:00 next morning (Asunción) and blocks orders", () => {
+  const at = Date.UTC(2026, 9, 3, 2, 50); // Friday 23:50 in Asunción
+  const marks = { burger: { at, by: "Cocina" } };
+  assert.deepEqual(soldOutNow(marks, at + 3 * 3600000), ["burger"]); // 02:50, same service day
+  assert.deepEqual(soldOutNow(marks, Date.UTC(2026, 9, 3, 8, 30)), []); // 05:30, a new day
+  const cat = withSoldOut(catalog, ["burger"]);
+  throwsCode(() => buildOrder({ ref: "AB2C", lines: [{ slug: "burger", picks: [[0]], n: 1 }], form }, cat), "lines");
+  assert.equal(buildOrder({ ref: "AB2C", lines: [{ slug: "papas", picks: [], n: 1 }], form: { ...form, cash: "" } }, cat).lines.length, 1);
+  assert.equal(catalog.categories[0].dishes[0].soldOut, undefined); // the original catalog is untouched
+  assert.ok(can("cocina", "soldOut"));
+});
+
+/* ---------- CSV del turno ---------- */
+test("shift CSV: a row per sale, per person for split tables, cancellations marked, no personal data", () => {
+  const cash = applyOp(applyOp(applyOp(order(), "accept", {}, "mozo", catalog).order, "street", { rider: "Hugo" }, "mozo", catalog).order, "rendido", {}, "cajero", catalog, Date.UTC(2026, 9, 3, 1, 5)).order;
+  let t = openTable({ ref: "MESA", table: 1, lines: priced([{ slug: "burger", picks: [[0]], n: 1 }]), dinerId: "diner-aaaaaaaa" });
+  t = addPending(t, "diner-bbbbbbbb", priced([{ slug: "papas", picks: [], n: 2 }]), "p1").session;
+  t = applyTableOp(t, "acceptRound", { id: "p1" }, "mozo", catalog).order;
+  t = requestBill(t, { mode: "consumo", tipMode: "10" }, "diner-aaaaaaaa");
+  t = applyTableOp(t, "payPart", { key: "azul", method: "qr" }, "cajero", catalog).order;
+  t = applyTableOp(t, "payPart", { key: "verde", method: "efectivo" }, "cajero", catalog, Date.UTC(2026, 9, 3, 1, 10)).order;
+  const gone = applyOp(order({ ref: "CANC" }), "reject", { reason: "fuera de zona; lejos" }, "mozo", catalog, Date.UTC(2026, 9, 3, 1, 20)).order;
+  const rows = shiftRows([t, cash, gone], Date.UTC(2026, 9, 3, 0, 0), Date.UTC(2026, 9, 3, 3, 0));
+  assert.equal(rows.length, 1 + 1 + 2 + 1);
+  assert.deepEqual(rows[1], ["02/10/2026", "22:05", "#MV-AB2C", "Delivery", "", "Efectivo", 104000, 10000, 0, 114000, "Cobrado", ""]);
+  assert.deepEqual(rows[2].slice(2), ["Mesa 1", "Mesa", "Azul", "QR", 40000, 0, 4000, 44000, "Cobrado", ""]);
+  assert.deepEqual(rows[4].slice(10), ["Cancelado", "fuera de zona; lejos"]);
+  const csv = toCsv(rows);
+  assert.ok(csv.startsWith("﻿Fecha;Hora;"));
+  assert.ok(csv.includes('"fuera de zona; lejos"'));
+  assert.equal(csv.includes("Ana"), false); // no customer names
+  assert.equal(csv.includes("Palma"), false); // no addresses
 });

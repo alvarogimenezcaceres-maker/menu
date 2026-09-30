@@ -190,6 +190,18 @@ export interface Restaurant {
       }[]
     | null;
   /**
+   * Con razón social, RUC y contacto cargados, el menú publica su página de privacidad. Vacío = no se publica.
+   */
+  legal?: {
+    legalName?: string | null;
+    ruc?: string | null;
+    address?: string | null;
+    /**
+     * WhatsApp o correo donde los clientes piden ver o borrar sus datos.
+     */
+    privacyContact?: string | null;
+  };
+  /**
    * Aparece en el menú como «Dejanos tu reseña en Google», también cuando se cierra la mesa. Vacío = no se muestra.
    */
   googleReviewUrl?: string | null;
@@ -548,6 +560,14 @@ export interface RestaurantsSelect<T extends boolean = true> {
         open?: T;
         close?: T;
         id?: T;
+      };
+  legal?:
+    | T
+    | {
+        legalName?: T;
+        ruc?: T;
+        address?: T;
+        privacyContact?: T;
       };
   googleReviewUrl?: T;
   cuisine?: T;

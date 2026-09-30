@@ -196,8 +196,17 @@ solo registra cómo se pagó. Diseño y plan: `plan/pos/` (gitignoreado).
   (hay «Olvidar mis datos»). La caja borra nombre y dirección 30 días después de cerrado el pedido, y también de los
   pedidos que nunca se cerraron, 30 días después de entrar. La analítica guarda el texto de una búsqueda solo si
   encontró algo en el menú.
-- **Todavía no:** precios en vivo desde la caja (5), sin internet y respaldo (6), página de privacidad por local (falta
-  la razón social y el RUC de cada local), impresora térmica.
+- **Agotado hoy desde la caja:** sección **Productos** (todos, también la cocina): «Marcar agotado» se ve en el menú
+  al instante (tachado, sin corazón y fuera de Destacados) y la caja rechaza pedidos con ese plato. Vuelve solo al
+  día siguiente a las 5 de la mañana (hora de Paraguay), o con «reponer». El «Agotado hoy» del panel sigue igual.
+- **Ventas en CSV:** Caja → **Exportar CSV** (turno abierto) o **CSV** en cada turno anterior. Una fila por venta (y por
+  persona en las mesas divididas) con fecha, hora, tipo, forma de pago, consumo, envío, propina y total; cancelados con
+  su motivo. Sin nombres ni direcciones de clientes. Se abre con Excel (separado por «;»).
+- **Página de privacidad:** panel → restaurante → **Datos legales** (razón social, RUC, domicilio, contacto). Con esos
+  tres cargados, la próxima publicación genera `…/<slug>/privacidad/` (texto de `plan/pos/legal`) y el pie del menú
+  suma «Privacidad». Los datos de Mesaverso (titular, RUC, correo) van en `site/mesaverso.json`.
+- **Tarjeta del QR impresa:** «Escaneá y pedí desde tu celular», con cómo se pide, se suma la mesa y se divide.
+- **Todavía no:** cambiar precios y fotos desde la caja (5), sin internet (6), impresora térmica.
 
 ## Todo en la nube (desde el 26/09/2026): la notebook ya no hace falta
 
