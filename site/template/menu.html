@@ -323,6 +323,21 @@
   .invite .qr { background: #fff; border-radius: 10px; padding: 6px; }
   .invite .qr svg { display: block; width: 100%; height: auto; }
   .invite p { margin: 0; font-size: 14.5px; color: #d6cfc4; }
+  .seg3 { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 6px; background: var(--raised); padding: 4px; border-radius: 12px; margin-top: 12px; }
+  .seg3 button { min-height: 44px; border: 0; border-radius: 9px; background: none; color: var(--muted); font: 600 13.5px/1.1 var(--display); cursor: pointer; }
+  .seg3 button[aria-pressed="true"] { background: var(--surface); color: var(--text); box-shadow: 0 1px 0 var(--line); }
+  .sline { padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .sline .top { display: flex; justify-content: space-between; gap: 10px; font-size: 15px; }
+  .sline .who { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .sline .who button { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 10px; border-radius: 999px; border: 1px solid var(--line); background: none; color: var(--muted); font-size: 13.5px; cursor: pointer; }
+  .sline .who button[aria-pressed="true"] { border-color: var(--amber); color: var(--text); background: rgba(237,157,21,.12); }
+  .parts { list-style: none; margin: 14px 0 0; padding: 0; }
+  .parts li { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 12px; background: var(--raised); margin-bottom: 8px; font-size: 15px; }
+  .parts li.me { box-shadow: inset 0 0 0 1px var(--amber); }
+  .parts li .amt { margin-left: auto; font: 700 17px/1 var(--display); font-variant-numeric: tabular-nums; text-align: right; }
+  .parts li .amt small { display: block; font: 400 12.5px/1.3 var(--body); color: var(--muted); }
+  .parts li.paid { opacity: .6; }
+  .split-err { margin: 10px 0 0; color: var(--err); font-size: 14.5px; }
   .waiter .ok { margin: 6px 0 14px; padding: 16px; border-radius: 16px; background: rgba(76,195,138,.14); border: 1px solid #4CC38A; font: 600 19px/1.35 var(--display); text-align: center; }
   .waiter .wx.note { color: var(--amber-soft); }
   .field input, .field textarea, .field select { width: 100%; min-height: 48px; background: var(--raised); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; font-size: 16px; outline: none; }
@@ -1156,7 +1171,7 @@ function applyMesaView(view, qr) {
   mesaView = view;
   if (mesa && view.table !== mesa.table) setMesa({ ...mesa, table: view.table });
   renderMesaChip();
-  if (!mesaSheet.hidden) renderMesa();
+  if (!mesaSheet.hidden) { if (splitDraft) renderSplit(); else renderMesa(); }
 }
 function mesaClosed() {
   setMesa(null); mesaView = null;
@@ -1219,8 +1234,66 @@ function renderMesa() {
     ${order.map(c => `<div class="mgroup"><h3>${colorDot(c === "_" ? null : c)}${c === "_" ? "Cargado por el mozo" : c === v.me ? "Vos (" + esc(colorName(c)) + ")" : esc(colorName(c))}<span class="sum">${plain(groups[c].reduce((s, l) => s + l.unit * l.n, 0))}</span></h3><ul>${groups[c].map(item).join("")}</ul></div>`).join("") || `<p class="sel-hint">Todavía no hay nada aceptado en la mesa.</p>`}
     <div class="sel-total"><span>Total de la mesa</span>${fmt(v.total)}</div>
     ${mesaQr ? `<div class="invite"><div class="qr" role="img" aria-label="QR para sumarse a la mesa">${mesaQr}</div><p><b>¿Vienen más?</b> Que escaneen este código con la cámara y piden desde su celular, cada uno con su color.</p></div>` : ""}
+    ${v.bill ? billSummary(v) : ""}
     <button class="ar-btn" type="button" id="mesaMore">Pedir algo más</button>
+    ${v.lines.length && !v.bill ? `<button class="sel-btn" type="button" id="splitOpen">Dividir y pedir la cuenta</button>` : ""}
     <button class="sel-clear" type="button" id="mesaLeave">Salir de esta mesa en este celular</button>`;
+}
+function partLabel(p, v) { return p.color ? (p.color === v.me ? "Vos (" + colorName(p.color) + ")" : colorName(p.color)) : "Persona " + p.key.slice(1); }
+function partsHtml(parts, v, withPaid) {
+  return `<ul class="parts">${parts.map(p => `<li class="${p.color === v.me ? "me" : ""}${withPaid && p.paid ? " paid" : ""}">${colorDot(p.color)}<span>${esc(partLabel(p, v))}${withPaid && p.paid ? " · pagado ✓" : ""}</span>
+    <span class="amt">${plain(p.pay)}${p.tip ? `<small>${plain(p.amount)} + propina ${plain(p.tip)}</small>` : ""}</span></li>`).join("")}</ul>`;
+}
+function billSummary(v) {
+  const b = v.bill, how = { consumo: "por consumo", iguales: "en partes iguales", libres: "por montos" }[b.mode];
+  return `<div class="mgroup"><h3>Cuenta pedida · ${how}<span class="sum">${plain(b.grand)}</span></h3>
+    <p class="sel-hint" style="margin:6px 0 0">El mozo ya sabe que pidieron la cuenta. Cada uno paga su parte (efectivo, tarjeta, transferencia o QR).</p>
+    ${partsHtml(b.parts, v, true)}
+    <button class="sel-clear" type="button" id="splitOpen">Cambiar la división</button></div>`;
+}
+
+/* ---------- dividir la cuenta (el cálculo es OrderCore.splitBill, el mismo que usa el Worker) ---------- */
+let splitDraft = null;
+function openSplit() {
+  const v = mesaView, prev = v.bill?.split;
+  splitDraft = prev ? { ...prev, assign: (prev.assign || []).slice(), amounts: { ...(prev.amounts || {}) } } : { mode: "consumo", assign: [], n: Math.max(2, v.colors.length), amounts: {}, tipMode: "0", tipAmount: 0 };
+  renderSplit();
+}
+function renderSplit() {
+  const v = mesaView, d = splitDraft, body = $("#mesaBody");
+  $("#mesaTitle").textContent = `Dividir · Mesa ${mesa.table}`;
+  let res = null, error = "";
+  try { res = C.splitBill(v.lines, v.colors, d); } catch (e) { error = e.message; }
+  const who = (l, i) => { const a = d.assign[i]; return a && a.length ? a : l.diner && v.colors.includes(l.diner) ? [l.diner] : v.colors.slice(); };
+  const modeBody = d.mode === "consumo"
+    ? `<p class="sel-hint" style="margin-top:12px">Cada uno paga lo suyo. Si algo lo compartieron, tocá los colores de quienes lo comieron.</p>
+      ${v.lines.map((l, i) => `<div class="sline"><div class="top"><span><b style="color:var(--amber)">${l.n}×</b> ${esc(l.name)}</span><span>${plain(l.unit * l.n)}</span></div>
+        <div class="who" role="group" aria-label="Quién paga ${esc(l.name)}">${v.colors.map(c => `<button type="button" data-line="${i}" data-color="${c}" aria-pressed="${who(l, i).includes(c)}">${colorDot(c)}${esc(c === v.me ? "Vos" : colorName(c))}</button>`).join("")}</div></div>`).join("")}`
+    : d.mode === "iguales"
+      ? `<div class="field"><label for="splitN">¿Entre cuántos?</label><div class="qty" role="group" aria-label="Personas"><button type="button" data-n="-1" aria-label="Uno menos">−</button><output id="splitN">${d.n}</output><button type="button" data-n="1" aria-label="Uno más">+</button></div></div>`
+      : `<p class="sel-hint" style="margin-top:12px">Cada uno pone cuánto paga. Tiene que sumar ${plain(v.total)}.</p>
+        ${v.colors.map(c => `<div class="field"><label for="amt-${c}">${colorDot(c)} ${esc(c === v.me ? "Vos (" + colorName(c) + ")" : colorName(c))}</label><input id="amt-${c}" data-amount="${c}" inputmode="numeric" value="${d.amounts[c] ? Number(d.amounts[c]).toLocaleString("es-PY") : ""}" placeholder="0"></div>`).join("")}`;
+  body.innerHTML = `
+    <div class="seg3" role="group" aria-label="Cómo dividir">${[["consumo", "Por consumo"], ["iguales", "Partes iguales"], ["libres", "Montos libres"]].map(([k, l]) => `<button type="button" data-mode="${k}" aria-pressed="${d.mode === k}">${l}</button>`).join("")}</div>
+    ${modeBody}
+    <div class="field"><span class="block-label" style="margin:16px 0 0">Propina</span>
+      <div class="seg3" role="group" aria-label="Propina">${[["0", "Sin propina"], ["10", "10 %"], ["monto", "Otro monto"]].map(([k, l]) => `<button type="button" data-tip="${k}" aria-pressed="${d.tipMode === k}">${l}</button>`).join("")}</div>
+      ${d.tipMode === "monto" ? `<input id="tipAmount" inputmode="numeric" placeholder="Monto de la propina" aria-label="Monto de la propina" value="${d.tipAmount ? Number(d.tipAmount).toLocaleString("es-PY") : ""}">` : ""}</div>
+    ${res ? `<div class="sel-total" style="margin-top:18px"><span>Total${res.tip ? " con propina" : ""}</span>${fmt(res.grand)}</div>${partsHtml(res.parts, v, false)}` : ""}
+    <p class="split-err" role="alert"${error ? "" : " hidden"}>${esc(error)}</p>
+    <button class="ar-btn" type="button" id="splitSend"${res ? "" : " disabled"}>Pedir la cuenta</button>
+    <button class="sel-clear" type="button" id="splitBack">Volver a la mesa</button>`;
+}
+async function sendSplit() {
+  const btn = $("#splitSend"); btn.disabled = true;
+  try {
+    const res = await fetch(`/api/${SLUG}/mesa/cuenta`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ token: mesa.token, diner: dinerId(), split: splitDraft }) });
+    const r = await res.json();
+    if (!res.ok) { const p = $(".split-err"); p.hidden = false; p.textContent = r.error || "No se pudo pedir la cuenta."; btn.disabled = false; return; }
+    splitDraft = null;
+    applyMesaView(r.view, r.qr); renderMesa();
+    live.textContent = "Cuenta pedida: el mozo ya lo sabe.";
+  } catch (e) { btn.disabled = false; alert("Sin conexión. Probá de nuevo."); }
 }
 function openMesa() {
   hideSheet(); hideSel(true);
@@ -1232,6 +1305,7 @@ function openMesa() {
 }
 function closeMesa() {
   if (mesaSheet.hidden) return;
+  splitDraft = null;
   mesaSheet.classList.remove("open"); scrim.classList.remove("open");
   document.body.style.overflow = ""; $("main").inert = false; selbar.inert = false;
   setTimeout(() => { if (!mesaSheet.classList.contains("open")) { mesaSheet.hidden = true; if (sheet.hidden && selSheet.hidden) scrim.hidden = true; } }, 260);
@@ -1242,8 +1316,31 @@ swipeToClose(mesaSheet, closeMesa);
 scrim.addEventListener("click", () => { if (!mesaSheet.hidden) closeMesa(); });
 addEventListener("keydown", e => { if (e.key === "Escape" && !mesaSheet.hidden) closeMesa(); });
 mesaSheet.addEventListener("click", e => {
+  const b = e.target.closest("button");
+  if (b && splitDraft) {
+    const d = splitDraft, v = mesaView;
+    if (b.dataset.mode) { d.mode = b.dataset.mode; renderSplit(); return; }
+    if (b.dataset.tip) { d.tipMode = b.dataset.tip; renderSplit(); if (d.tipMode === "monto") $("#tipAmount").focus(); return; }
+    if (b.dataset.n) { d.n = Math.max(1, Math.min(30, d.n + Number(b.dataset.n))); renderSplit(); return; }
+    if (b.dataset.line) {
+      const i = +b.dataset.line, c = b.dataset.color, l = v.lines[i];
+      const cur = d.assign[i] && d.assign[i].length ? d.assign[i] : l.diner && v.colors.includes(l.diner) ? [l.diner] : v.colors.slice();
+      const next = cur.includes(c) ? cur.filter(x => x !== c) : [...cur, c];
+      if (!next.length) { live.textContent = "Alguien tiene que pagarlo."; return; }
+      d.assign[i] = next; renderSplit(); return;
+    }
+    if (b.id === "splitSend") { sendSplit(); return; }
+    if (b.id === "splitBack") { splitDraft = null; renderMesa(); return; }
+  }
+  if (e.target.id === "splitOpen") { openSplit(); return; }
   if (e.target.id === "mesaMore") { closeMesa(); document.getElementById("menu").scrollIntoView(); }
   if (e.target.id === "mesaLeave" && confirm("¿Salir de la mesa en este celular? Tu consumo queda en la cuenta de la mesa.")) { setMesa(null); closeMesa(); }
+});
+mesaSheet.addEventListener("change", e => {
+  if (!splitDraft) return;
+  const el = e.target, n = +el.value.replace(/\D/g, "") || 0;
+  if (el.dataset.amount) { splitDraft.amounts[el.dataset.amount] = n; renderSplit(); }
+  if (el.id === "tipAmount") { splitDraft.tipAmount = n; renderSplit(); }
 });
 // ?unirse=TOKEN: this phone scanned the table QR
 {

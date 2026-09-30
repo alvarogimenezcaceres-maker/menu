@@ -1,7 +1,7 @@
 // node --test site/caja-core.test.mjs
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { buildOrder, applyOp, can, isClosed, newRef, validRef, orderTotal, CajaError, wipePii, openTable, addRound, addDiner, applyTableOp, priceLines, DINER_COLORS, addPending, dinerView } from "./caja-core.js";
+import { buildOrder, applyOp, can, isClosed, newRef, validRef, orderTotal, CajaError, wipePii, openTable, addRound, addDiner, applyTableOp, priceLines, DINER_COLORS, addPending, dinerView, requestBill } from "./caja-core.js";
 
 const catalog = {
   ordering: { orderTypes: ["delivery", "pickup"], paymentMethods: ["efectivo", "transferencia"], deliveryZones: [{ name: "Centro", fee: 10000 }] },
@@ -191,4 +191,35 @@ test("the diner's view hides the join token and other phones' ids", () => {
   assert.deepEqual(v.colors, ["azul", "verde"]);
   assert.equal(v.pending[0].mine, true);
   assert.equal(dinerView(t, "diner-aaaaaaaa").pending[0].mine, false);
+});
+
+/* ---------- dividir y cobrar por persona ---------- */
+test("a diner asks for the bill split by consumption; the cajera charges each part and the table closes", () => {
+  let t = openTable({ ref: "MESA", table: 8, lines: priced([{ slug: "burger", picks: [[0]], n: 1 }]), dinerId: "diner-aaaaaaaa" });
+  t = addPending(t, "diner-bbbbbbbb", priced([{ slug: "papas", picks: [], n: 2 }]), "p1").session;
+  throwsCode(() => requestBill(t, { mode: "consumo" }, "diner-aaaaaaaa"), "state"); // pending first
+  t = applyTableOp(t, "acceptRound", { id: "p1" }, "mozo", catalog).order;
+  t = requestBill(t, { mode: "consumo", tipMode: "10" }, "diner-bbbbbbbb", 7);
+  assert.equal(t.bill.by, "verde");
+  assert.deepEqual(t.bill.parts.map(p => [p.key, p.amount, p.tip, p.pay]), [["azul", 40000, 4000, 44000], ["verde", 30000, 3000, 33000]]);
+  assert.equal(dinerView(t, "diner-aaaaaaaa").bill.parts[0].paid, false);
+  throwsCode(() => applyTableOp(t, "payPart", { key: "azul", method: "efectivo" }, "mozo", catalog), "role");
+  let r = applyTableOp(t, "payPart", { key: "azul", method: "efectivo" }, "cajero", catalog);
+  assert.equal(isClosed(r.order), false);
+  assert.match(r.text, /Pagó Azul · Efectivo · ₲ 44\.000/);
+  throwsCode(() => applyTableOp(r.order, "payPart", { key: "azul", method: "efectivo" }, "cajero", catalog), "state");
+  r = applyTableOp(r.order, "payPart", { key: "verde", method: "tarjeta" }, "cajero", catalog, 9);
+  assert.ok(isClosed(r.order));
+  assert.equal(r.order.payMethod, "mixto");
+  assert.match(r.text, /mesa cerrada/);
+});
+
+test("the split is dropped when the account changes", () => {
+  let t = openTable({ ref: "MESA", table: 9, lines: priced([{ slug: "papas", picks: [], n: 1 }]), dinerId: "diner-aaaaaaaa" });
+  t = requestBill(t, { mode: "iguales", n: 2 }, "diner-aaaaaaaa");
+  assert.ok(t.bill);
+  t = applyTableOp(t, "addItems", { lines: [{ slug: "papas", picks: [], n: 1 }] }, "mozo", catalog).order;
+  assert.equal(t.bill, null);
+  throwsCode(() => applyTableOp(t, "payPart", { key: "p1", method: "efectivo" }, "cajero", catalog), "state");
+  throwsCode(() => requestBill(t, { mode: "libres", amounts: { azul: 1 } }, "diner-aaaaaaaa"), "split");
 });

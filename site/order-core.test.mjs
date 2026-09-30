@@ -90,3 +90,46 @@ test("the WhatsApp message carries options, notes, fee and payment", () => {
   const noFee = C.orderMessage({ restaurant: "G", lines, bySlug, cfg: C.orderingConfig({}), form: { type: "delivery", name: "A", address: "X", payment: "transferencia" } });
   assert.match(noFee, /Envío: a confirmar\n\*Total: ₲ 140\.000 \+ envío\*/);
 });
+
+/* ---------- dividir la cuenta ---------- */
+const tableLines = [
+  { name: "Pizza", n: 1, unit: 60000, diner: "azul" },   // shared by azul and verde below
+  { name: "Cerveza", n: 2, unit: 15000, diner: "verde" },
+  { name: "Agua", n: 1, unit: 10000, diner: null },      // loaded by the waiter: everyone
+];
+const colors = ["azul", "verde", "naranja"];
+const pays = r => Object.fromEntries(r.parts.map(p => [p.key, p.pay]));
+
+test("split by consumption: each pays theirs, shared items and the waiter's lines are divided", () => {
+  const r = C.splitBill(tableLines, colors, { mode: "consumo", assign: [["azul", "verde"]] });
+  // pizza 30.000 + 30.000; cervezas 30.000 verde; agua 10.000 / 3 = 3.334 + 3.333 + 3.333
+  assert.deepEqual(pays(r), { azul: 33334, verde: 63333, naranja: 3333 });
+  assert.equal(r.grand, 100000);
+  assert.equal(r.parts.reduce((a, p) => a + p.pay, 0), r.total);
+  assert.deepEqual(plain(r.parts[0].items.map(i => [i.name, i.shared, i.amount])), [["Pizza", 2, 30000], ["Agua", 3, 3334]]);
+});
+
+test("split in equal parts, with 10 % tip spread by what each pays", () => {
+  const r = C.splitBill(tableLines, colors, { mode: "iguales", n: 3, tipMode: "10" });
+  assert.equal(r.tip, 10000);
+  assert.deepEqual(plain(r.parts.map(p => p.amount)), [33334, 33333, 33333]);
+  assert.deepEqual(plain(r.parts.map(p => p.pay)), [36668, 36666, 36666]);
+  assert.equal(r.parts.reduce((a, p) => a + p.pay, 0), 110000);
+});
+
+test("split by free amounts must add up exactly; a free tip is spread too", () => {
+  assert.throws(() => C.splitBill(tableLines, colors, { mode: "libres", amounts: { azul: 50000, verde: 40000 } }), /Faltan ₲ 10\.000/);
+  assert.throws(() => C.splitBill(tableLines, colors, { mode: "libres", amounts: { azul: 60000, verde: 50000 } }), /Sobran ₲ 10\.000/);
+  const r = C.splitBill(tableLines, colors, { mode: "libres", amounts: { azul: 70000, verde: 30000 }, tipMode: "monto", tipAmount: 5000 });
+  assert.deepEqual(pays(r), { azul: 73500, verde: 31500 });
+});
+
+test("split refuses nonsense", () => {
+  assert.throws(() => C.splitBill([], colors, { mode: "iguales", n: 2 }), /no tiene consumo/);
+  assert.throws(() => C.splitBill(tableLines, colors, { mode: "iguales", n: 0 }), /entre 1 y 30/);
+  assert.throws(() => C.splitBill(tableLines, colors, { mode: "otro" }), /Elegí cómo dividir/);
+  assert.throws(() => C.splitBill([{ name: "Agua", n: 1, unit: 10000, diner: null }], [], { mode: "consumo" }), /quién paga «Agua»/);
+  // unknown colors in the assignment are ignored (back to the default)
+  const r = C.splitBill(tableLines, colors, { mode: "consumo", assign: [["rojo"]] });
+  assert.equal(pays(r).azul, 60000 + 3334);
+});

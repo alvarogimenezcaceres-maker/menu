@@ -12,8 +12,10 @@
 // watch the account; they get their own WebSocket with a filtered view (dinerView), never the staff broadcast.
 import QRCode from "qrcode/lib/core/qrcode.js";
 import QRSvg from "qrcode/lib/renderer/svg-tag.js";
-import { applyOp, applyTableOp, addDiner, addPending, addRound, buildOrder, can, dinerView, isClosed, newRef, openTable, orderTotal, priceLines, PII_DAYS, ROLES, validDiner, validRef, validTable, wipePii, CajaError } from "./caja-core.js";
+import { applyOp, applyTableOp, addDiner, addPending, addRound, buildOrder, can, dinerView, requestBill, isClosed, newRef, openTable, orderTotal, priceLines, PII_DAYS, ROLES, validDiner, validRef, validTable, wipePii, CajaError } from "./caja-core.js";
 import { sameOrigin } from "./events.js";
+
+const C = globalThis.OrderCore; // loaded by caja-core.js
 
 const SLUG = /^[a-z0-9][a-z0-9-]{0,63}$/;
 const DAY = 86400000;
@@ -114,6 +116,7 @@ export class Caja {
         case "POST /mesa": return await this.tableDraft(body, slug, url);
         case "POST /mesa/unirse": return this.dinerJoin(body, slug, url);
         case "POST /mesa/pedir": return await this.dinerOrder(body, slug, url);
+        case "POST /mesa/cuenta": return this.dinerBill(body, slug, url);
         case "POST /vincular": return await this.link(body, slug);
         case "GET /usuarios": return await this.userList(request);
         case "POST /entrar": return await this.login(body, request);
@@ -405,6 +408,15 @@ export class Caja {
     const { session, color } = addPending(t, body.diner, lines, newRef(), now);
     this.save(session, "Menú", `Pedido nuevo desde el celular (${color}): ${lines.map(l => `${l.n} × ${l.name}`).join(", ")}`);
     return this.dinerReply(session, body.diner, url, slug);
+  }
+  dinerBill(body, slug, url) {
+    const t = this.tableByToken(body.token);
+    if (!t) throw new CajaError("mesa", "Esta mesa ya se cerró.");
+    if (!validDiner(body.diner) || !t.diners.some(d => d.id === body.diner)) throw new CajaError("diner", "Tu celular no está en esta mesa. Escaneá el QR de la mesa.");
+    const s = requestBill(t, body.split || {}, body.diner);
+    const how = { consumo: "por consumo", iguales: "en partes iguales", libres: "por montos" }[s.bill.mode];
+    this.save(s, "Menú", `Pidió la cuenta (${s.bill.by || ""}) dividida ${how}: ${s.bill.parts.length} partes, ${C.money(s.bill.grand)}`);
+    return this.dinerReply(s, body.diner, url, slug);
   }
   dinerAccount(url, slug) {
     const t = this.tableByToken(url.searchParams.get("t") || "");

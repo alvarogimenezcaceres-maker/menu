@@ -86,6 +86,8 @@ export const DINER_COLORS = [
   { key: "rosa", name: "Rosa", hex: "#FF7EB6" }, { key: "celeste", name: "Celeste", hex: "#4FD1E0" },
   { key: "amarillo", name: "Amarillo", hex: "#FFD84D" }, { key: "rojo", name: "Rojo", hex: "#FF6B6B" },
 ];
+// at the table the card is charged right there, not «al recibir» as in a delivery
+const TABLE_PAY_LABEL = { ...C.PAYMENT_LABEL, tarjeta: "Tarjeta" };
 const COLOR_NAME = Object.fromEntries(DINER_COLORS.map(c => [c.key, c.name]));
 export const validDiner = id => typeof id === "string" && /^[A-Za-z0-9_-]{8,40}$/.test(id);
 export const validTable = n => Number.isInteger(n) && n >= 1 && n <= 200;
@@ -135,8 +137,21 @@ export function dinerView(session, dinerId) {
     table: session.table, status: session.status, me: me ? me.color : null, colors: session.diners.map(d => d.color),
     lines: session.lines.map(line), total: orderTotal(session),
     pending: (session.pending || []).map(p => ({ id: p.id, color: p.color, mine: p.dinerId === dinerId, lines: p.lines.map(line), at: p.at })),
-    billRequested: !!session.billRequested,
+    billRequested: !!session.bill,
+    bill: session.bill ? { ...session.bill, parts: session.bill.parts.map(p => ({ ...p, paid: !!session.bill.paid[p.key] })) } : null,
   };
+}
+
+// «Pedir la cuenta» from a phone: the split is computed here (same code as the phone's preview) and kept until
+// the account changes. The cajera then registers each part's payment.
+export function requestBill(session, split, dinerId, now = Date.now()) {
+  if (isClosed(session)) fail("closed", "Esta mesa ya está cerrada.");
+  if ((session.pending || []).length) fail("state", "Hay pedidos esperando al mozo: esperá a que los acepte para pedir la cuenta.");
+  const colors = session.diners.map(d => d.color);
+  let bill;
+  try { bill = C.splitBill(session.lines, colors, split); } catch (e) { fail("split", e.message); }
+  const by = session.diners.find(d => d.id === dinerId)?.color || null;
+  return { ...session, updatedAt: now, bill: { ...bill, split: { mode: split.mode, assign: split.assign, n: split.n, amounts: split.amounts, tipMode: split.tipMode, tipAmount: split.tipAmount }, by, at: now, paid: {} } };
 }
 
 export function applyTableOp(session, op, args, role, catalog, now = Date.now()) {
@@ -148,8 +163,28 @@ export function applyTableOp(session, op, args, role, catalog, now = Date.now())
     const rest = session.pending.filter(x => x !== p);
     const label = COLOR_NAME[p.color] || "";
     if (op === "rejectRound") return { order: { ...session, updatedAt: now, pending: rest }, text: `Pedido de ${label} rechazado${args.reason ? ": " + str(args.reason, 120) : ""}` };
-    const s = addRound({ ...session, updatedAt: now, pending: rest }, p.lines, p.dinerId).session;
+    const s = addRound({ ...session, updatedAt: now, pending: rest, bill: null }, p.lines, p.dinerId).session;
     return { order: s, text: `Pedido de ${label} aceptado: ${p.lines.map(l => `${l.n} × ${l.name}`).join(", ")}` };
+  }
+  if (op === "payPart") {
+    if (!can(role, "paid")) fail("role", `Tu rol (${ROLE_LABEL[role] || role}) no puede cobrar.`);
+    if (isClosed(session)) fail("closed", "Esta mesa ya está cerrada.");
+    const bill = session.bill;
+    if (!bill) fail("state", "La mesa no pidió la cuenta dividida.");
+    const part = bill.parts.find(p => p.key === args.key);
+    if (!part) fail("state", "No encontré esa parte de la cuenta.");
+    if (bill.paid[part.key]) fail("state", "Esa parte ya está pagada.");
+    if (!PAY_METHODS.includes(args.method)) fail("state", "Elegí la forma de pago.");
+    const paid = { ...bill.paid, [part.key]: args.method };
+    const s = { ...session, updatedAt: now, bill: { ...bill, paid } };
+    const who = part.color ? COLOR_NAME[part.color] : "Persona " + part.key.slice(1);
+    let text = `Pagó ${who} · ${TABLE_PAY_LABEL[args.method]} · ${C.money(part.pay)}`;
+    if (bill.parts.every(p => paid[p.key])) {
+      const methods = [...new Set(Object.values(paid))];
+      Object.assign(s, { status: "paid", paid: true, payMethod: methods.length === 1 ? methods[0] : "mixto", closedAt: now });
+      text += " · mesa cerrada";
+    }
+    return { order: s, text };
   }
   const opFor = { addItems: "addItems", charge: "paid", cancel: "cancel" }[op];
   if (!opFor) fail("op", "Operación desconocida.");
@@ -158,7 +193,7 @@ export function applyTableOp(session, op, args, role, catalog, now = Date.now())
   let s = { ...session, updatedAt: now }, text;
   if (op === "addItems") {
     const priced = priceLines(args.lines, catalog);
-    s = addRound(s, priced, null).session;
+    s = addRound({ ...s, bill: null }, priced, null).session;
     text = `Agregado: ${priced.map(l => `${l.n} × ${l.name}`).join(", ")}`;
   } else if (op === "charge") {
     if (!s.lines.length) fail("state", "La mesa no tiene consumo. Para liberarla, cancelala.");
@@ -166,7 +201,7 @@ export function applyTableOp(session, op, args, role, catalog, now = Date.now())
     const method = PAY_METHODS.includes(args.method) ? args.method : "";
     if (!method) fail("state", "Elegí la forma de pago.");
     s.status = "paid"; s.paid = true; s.payMethod = method; s.closedAt = now;
-    text = `Cobrada · ${C.PAYMENT_LABEL[method]} · ${C.money(orderTotal(s))}`;
+    text = `Cobrada · ${TABLE_PAY_LABEL[method]} · ${C.money(orderTotal(s))}`;
   } else {
     const reason = str(args.reason, 120);
     if (!reason) fail("state", "Escribí el motivo.");

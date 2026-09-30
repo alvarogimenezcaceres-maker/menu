@@ -158,8 +158,57 @@ const OrderCore = (() => {
     return out.join("\n");
   }
 
+  /* ---------- dividir la cuenta de una mesa (DEC-064) ----------
+     lines: [{ name, n, unit, diner }] accepted at the table; colors: the table's diners in joining order.
+     split: { mode: "consumo", assign: [[color…] per line] } | { mode: "iguales", n } | { mode: "libres", amounts: { color: ₲ } },
+            plus tipMode "0" | "10" | "monto" and tipAmount. Whole guaraníes: leftovers go to the first parts. */
+  const spread = (total, weights) => {
+    const sum = weights.reduce((a, b) => a + b, 0);
+    if (!sum) return weights.map(() => 0);
+    const out = weights.map(w => Math.floor(total * w / sum));
+    let left = total - out.reduce((a, b) => a + b, 0);
+    for (let i = 0; left > 0; i = (i + 1) % out.length) if (weights[i] > 0) { out[i]++; left--; }
+    return out;
+  };
+  const SPLIT_MODES = ["consumo", "iguales", "libres"];
+  function splitBill(lines, colors, split) {
+    const sp = split || {}, total = lines.reduce((a, l) => a + l.unit * l.n, 0);
+    const err = message => { const e = new Error(message); e.code = "split"; throw e; };
+    if (!SPLIT_MODES.includes(sp.mode)) err("Elegí cómo dividir.");
+    if (!total) err("La mesa todavía no tiene consumo.");
+    let parts;
+    if (sp.mode === "consumo") {
+      const assign = Array.isArray(sp.assign) ? sp.assign : [];
+      const byColor = {};
+      lines.forEach((l, i) => {
+        // default: who ordered it; a line of the waiter is shared by everyone
+        let who = Array.isArray(assign[i]) ? [...new Set(assign[i].filter(c => colors.includes(c)))] : [];
+        if (!who.length) who = l.diner && colors.includes(l.diner) ? [l.diner] : colors.slice();
+        if (!who.length) err(`Falta decidir quién paga «${l.name}».`);
+        spread(l.unit * l.n, who.map(() => 1)).forEach((amt, k) => {
+          const b = (byColor[who[k]] ||= { amount: 0, items: [] });
+          b.amount += amt; b.items.push({ name: l.name, n: l.n, shared: who.length, amount: amt });
+        });
+      });
+      parts = colors.filter(c => byColor[c]).map(c => ({ key: c, color: c, amount: byColor[c].amount, items: byColor[c].items }));
+    } else if (sp.mode === "iguales") {
+      const n = Math.round(+sp.n);
+      if (!(n >= 1 && n <= 30)) err("Elegí entre 1 y 30 personas.");
+      parts = spread(total, Array.from({ length: n }, () => 1)).map((amount, i) => ({ key: "p" + (i + 1), color: colors[i] || null, amount, items: [] }));
+    } else {
+      const amounts = sp.amounts || {};
+      parts = colors.map(c => ({ key: c, color: c, amount: Math.max(0, Math.round(+amounts[c] || 0)), items: [] })).filter(p => p.amount > 0);
+      const sum = parts.reduce((a, p) => a + p.amount, 0);
+      if (sum < total) err(`Faltan ${money(total - sum)} para llegar al total.`);
+      if (sum > total) err(`Sobran ${money(sum - total)}: la suma pasa el total.`);
+    }
+    const tip = sp.tipMode === "10" ? Math.round(total * 0.1) : sp.tipMode === "monto" ? Math.max(0, Math.round(+sp.tipAmount || 0)) : 0;
+    spread(tip, parts.map(p => p.amount)).forEach((t, i) => { parts[i].tip = t; parts[i].pay = parts[i].amount + t; });
+    return { mode: sp.mode, tipMode: ["10", "monto"].includes(sp.tipMode) ? sp.tipMode : "0", total, tip, grand: total + tip, parts };
+  }
+
   return { PAYMENT_LABEL, TYPE_LABEL, money, normalizeOptions, cleanPicks, missingGroups, unitPrice, describePicks, lineKey,
-    restoreLines, openState, orderingConfig, deliveryFee, checkoutErrors, orderMessage };
+    restoreLines, openState, orderingConfig, deliveryFee, checkoutErrors, orderMessage, splitBill };
 })();
 // the Worker (an ES module bundle) reads it from here; the page and the tests use the top-level const
 globalThis.OrderCore = OrderCore;

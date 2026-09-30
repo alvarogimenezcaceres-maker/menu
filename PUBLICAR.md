@@ -166,7 +166,13 @@ solo registra cómo se pagó. Diseño y plan: `plan/pos/` (gitignoreado).
   toca «Pedir a la mesa»: el pedido llega a la caja como «Mesa 5 · Verde» y lo acepta el mozo o la cajera. Todos ven la
   cuenta en vivo, cada uno en su color. Al cobrar, los celulares ven «La mesa se cerró» y el QR deja de servir. Un
   celular no puede tener más de 2 pedidos esperando.
-- **Todavía no:** dividir la cuenta (2c), comanda en PDF (3), cierre por turno (4) y precios en vivo (5).
+- **Dividir la cuenta (fase 2c):** en «Mi mesa», cualquiera toca «Dividir y pedir la cuenta»: **por consumo** (cada
+  uno lo suyo; lo compartido se marca con los colores de quienes lo comieron y se reparte; lo que cargó el mozo se
+  reparte entre todos), **partes iguales** o **montos libres** (tienen que sumar justo el total), y propina **10 %** u
+  **otro monto** (repartida según lo que paga cada uno). La caja ve «Pidió la cuenta» con cada parte y la cajera toca
+  «Cobrar» en cada una con su forma de pago; con la última, la mesa se cierra. Si se agrega o acepta algo después, la
+  división se borra. El cálculo es uno solo (`OrderCore.splitBill` en `site/order-core.js`) para el celular y el Worker.
+- **Todavía no:** comanda en PDF (3), cierre por turno (4) y precios en vivo (5).
 
 ## Todo en la nube (desde el 26/09/2026): la notebook ya no hace falta
 
