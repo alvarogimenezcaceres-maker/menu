@@ -309,6 +309,20 @@
   .waiter .qrbox .qr svg { display: block; width: 100%; height: auto; }
   .waiter .qrbox .code { font: 700 34px/1 var(--display); letter-spacing: .18em; color: var(--text); }
   .waiter .qrbox .how { color: var(--muted); font-size: 15px; text-align: center; max-width: 30ch; }
+  .mesa-chip { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 14px 0 10px; border-radius: 999px; border: 1px solid var(--amber); background: rgba(237,157,21,.12); color: var(--text); font: 600 13px/1 var(--display); letter-spacing: .06em; text-transform: uppercase; cursor: pointer; }
+  .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--c, var(--muted)); flex: none; box-shadow: 0 0 0 2px rgba(0,0,0,.35); }
+  .mgroup { margin-top: 14px; }
+  .mgroup h3 { display: flex; align-items: center; gap: 8px; margin: 0 0 4px; font: 700 15px/1.2 var(--display); }
+  .mgroup h3 .sum { margin-left: auto; font-variant-numeric: tabular-nums; }
+  .mgroup ul { list-style: none; margin: 0; padding: 0; }
+  .mgroup li { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 15px; }
+  .mgroup li b { color: var(--amber); font-variant-numeric: tabular-nums; }
+  .mgroup li small { display: block; color: var(--muted); font-size: 13.5px; }
+  .mgroup.wait li { opacity: .75; }
+  .invite { display: grid; grid-template-columns: 116px minmax(0, 1fr); gap: 14px; align-items: center; margin-top: 16px; padding: 12px; border-radius: 14px; background: var(--raised); }
+  .invite .qr { background: #fff; border-radius: 10px; padding: 6px; }
+  .invite .qr svg { display: block; width: 100%; height: auto; }
+  .invite p { margin: 0; font-size: 14.5px; color: #d6cfc4; }
   .waiter .ok { margin: 6px 0 14px; padding: 16px; border-radius: 16px; background: rgba(76,195,138,.14); border: 1px solid #4CC38A; font: 600 19px/1.35 var(--display); text-align: center; }
   .waiter .wx.note { color: var(--amber-soft); }
   .field input, .field textarea, .field select { width: 100%; min-height: 48px; background: var(--raised); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; font-size: 16px; outline: none; }
@@ -353,6 +367,7 @@
         <span id="tableLabel"></span>
       </span>
       <span class="open-chip" id="openChip" hidden><i aria-hidden="true"></i><span></span></span>
+      <button class="mesa-chip" id="mesaChip" type="button" hidden aria-haspopup="dialog"></button>
     </div>
     {{HERO_IMG}}
   </header>
@@ -402,6 +417,12 @@
   <div id="selBody"></div>
 </div>
 <div class="waiter" id="waiter" role="dialog" aria-modal="true" aria-labelledby="waiterTitle" hidden></div>
+<div class="sheet" id="mesaSheet" role="dialog" aria-modal="true" aria-labelledby="mesaTitle" hidden>
+  <div class="grip" aria-hidden="true"></div>
+  <button class="close" id="closeMesa" type="button" aria-label="Cerrar">×</button>
+  <h2 id="mesaTitle" class="sheet-title">Mi mesa</h2>
+  <div id="mesaBody"></div>
+</div>
 <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" hidden>
   <div class="grip" aria-hidden="true"></div>
   <button class="close" id="closeSheet" type="button" aria-label="Cerrar">×</button>
@@ -871,7 +892,7 @@ function lineSub(l) {
 }
 
 /* ---------- Datos del pedido por WhatsApp (delivery o retiro) ---------- */
-const withForm = () => !table && !!WHATSAPP;
+const withForm = () => !table && !mesa && !!WHATSAPP;
 let co = { type: CFG.orderTypes[0], name: "", address: "", reference: "", zone: -1, payment: CFG.paymentMethods[0], cash: "", note: "" };
 try { Object.assign(co, JSON.parse(localStorage.getItem(DATA_KEY) || "{}")); } catch (e) {}
 if (!CFG.orderTypes.includes(co.type)) co.type = CFG.orderTypes[0];
@@ -973,7 +994,7 @@ function renderSelPanel() {
     ${withForm() ? checkoutHtml() : ""}
     <div class="totals" id="coTotals">${totalsHtml()}</div>
     <div class="order">${orderButtons()}</div>
-    <p class="sel-hint">${table ? "Estás en el local: mostrale el pedido al mozo." : WHATSAPP ? "Mandá el pedido por WhatsApp al local, o mostráselo al mozo si estás ahí." : "Mostrale el pedido al mozo."} La lista queda guardada en este celular.</p>
+    <p class="sel-hint">${mesa ? `Estás en la mesa ${esc(mesa.table)}: tu pedido le llega al mozo para que lo acepte.` : table ? "Estás en el local: mostrale el pedido al mozo." : WHATSAPP ? "Mandá el pedido por WhatsApp al local, o mostráselo al mozo si estás ahí." : "Mostrale el pedido al mozo."} La lista queda guardada en este celular.</p>
     <button class="sel-clear" type="button" id="selClear">Vaciar la selección</button>`
     : `<p class="sel-hint">Todavía no agregaste platos. Tocá el corazón de cualquier plato para sumarlo acá.</p>`;
   if (lines.length) refreshCheckout();
@@ -1000,6 +1021,8 @@ function sendToCaja() {
   } catch (e) { /* WhatsApp is the order; the caja copy is a convenience */ }
 }
 function orderButtons() {
+  if (mesa) return `<button class="ar-btn" type="button" id="mesaOrderBtn">${WAITER_ICON}Pedir a la mesa ${esc(mesa.table)}</button>
+    <button class="sel-btn" type="button" id="waiterBtn">${WAITER_ICON}Mostrar al mozo</button>`;
   const wa = WHATSAPP ? `<a class="${table ? "sel-btn" : "ar-btn"}" id="waBtn" href="https://wa.me/${WHATSAPP}" target="_blank" rel="noopener">${WA_ICON}Enviar pedido por WhatsApp</a>` : "";
   const waiter = `<button class="${table || !WHATSAPP ? "ar-btn" : "sel-btn"}" type="button" id="waiterBtn">${WAITER_ICON}Mostrar al mozo</button>`;
   return table ? waiter + wa : wa + waiter;
@@ -1031,8 +1054,10 @@ function waitForWaiter(code) {
       if (st.status === "taken") {
         clearInterval(waiterPoll);
         lines = []; saveSel(); renderSel(true);
+        if (st.token) setMesa({ token: st.token, table: st.table });
         const box = $("#waiterQr");
-        if (box) box.outerHTML = `<p class="ok" role="status">Listo: tu pedido está en la mesa ${esc(st.table)} y ya va para la cocina.</p>`;
+        if (box) box.outerHTML = `<p class="ok" role="status">Listo: tu pedido está en la mesa ${esc(st.table)} y ya va para la cocina.</p>
+          ${st.token ? `<button class="ar-btn" type="button" id="goMesa">Ver mi mesa e invitar a los demás</button>` : ""}`;
         haptic();
       }
       if (st.status === "expired") { clearInterval(waiterPoll); const how = $("#waiterQr .how"); if (how) how.textContent = "Este código venció. Cerrá y tocá «Mostrar al mozo» de nuevo."; }
@@ -1043,7 +1068,7 @@ async function openWaiter() {
   track("waiter_show", { n: selCount(), total: selTotal(), mode: table ? "table" : "" });
   waiterEl.innerHTML = `<span class="who">${esc(RESTAURANT)} · Pedido</span><p class="sel-hint">Preparando el código para el mozo…</p>`;
   waiterEl.hidden = false;
-  const qr = await tableQr();
+  const qr = mesa ? null : await tableQr();
   if (waiterEl.hidden) return;
   waiterEl.innerHTML = `
     <span class="who">${esc(RESTAURANT)} · Pedido</span>
@@ -1058,10 +1083,11 @@ async function openWaiter() {
   if (qr) waitForWaiter(qr.code);
 }
 function closeWaiter() { clearInterval(waiterPoll); waiterEl.hidden = true; $("#waiterBtn")?.focus({ preventScroll: true }); }
-waiterEl.addEventListener("click", e => { if (e.target.id === "waiterDone") closeWaiter(); });
+waiterEl.addEventListener("click", e => { if (e.target.id === "waiterDone") closeWaiter(); if (e.target.closest("#goMesa")) { closeWaiter(); openMesa(); } });
 
 $("#selBody").addEventListener("click", e => {
   if (e.target.closest("#waiterBtn")) { openWaiter(); return; }
+  if (e.target.closest("#mesaOrderBtn")) { orderToTable(); return; }
   if (e.target.closest("#waBtn")) {
     if (withForm()) {
       const st = openNow();
@@ -1094,6 +1120,138 @@ $("#selBody").addEventListener("click", e => {
   else if (o) { hideSel(true); openDish(o.dataset.open); }
   else if (e.target.id === "selClear") { lines = []; saveSel(); renderSel(true); live.textContent = "Selección vacía."; }
 });
+/* ---------- Mi mesa (DEC-064): unirse con el QR de la mesa, pedir, ver la cuenta en vivo ---------- */
+const MESA_KEY = "mesa:" + location.pathname;
+const COLORS = { azul: ["Azul", "#5B9DFF"], verde: ["Verde", "#4CC38A"], naranja: ["Naranja", "#FF9A4D"], violeta: ["Violeta", "#B9A3FF"],
+  rosa: ["Rosa", "#FF7EB6"], celeste: ["Celeste", "#4FD1E0"], amarillo: ["Amarillo", "#FFD84D"], rojo: ["Rojo", "#FF6B6B"] };
+const colorName = c => (COLORS[c] || ["Mozo"])[0];
+const colorDot = c => `<span class="dot" style="--c:${(COLORS[c] || [0, "#8a847b"])[1]}" aria-hidden="true"></span>`;
+let mesa = null, mesaView = null, mesaQr = "", mesaWs = null, mesaTries = 0, mesaTimer = 0, myPending = new Set();
+try { mesa = JSON.parse(localStorage.getItem(MESA_KEY) || "null"); } catch (e) { mesa = null; }
+const mesaSheet = $("#mesaSheet");
+function setMesa(m) {
+  mesa = m;
+  try { m ? localStorage.setItem(MESA_KEY, JSON.stringify(m)) : localStorage.removeItem(MESA_KEY); } catch (e) {}
+  renderMesaChip();
+  if (m) connectMesa(); else { clearTimeout(mesaTimer); if (mesaWs) { mesaWs.onclose = null; mesaWs.close(); mesaWs = null; } }
+  if (!selSheet.hidden) renderSelPanel();
+}
+function renderMesaChip() {
+  const chip = $("#mesaChip");
+  chip.hidden = !mesa;
+  if (mesa) chip.innerHTML = `${colorDot(mesaView?.me)}Mesa ${esc(mesa.table)}${mesaView?.me ? " · " + colorName(mesaView.me) : ""}`;
+  if (mesa) $("#tableChip").hidden = true;
+}
+function applyMesaView(view, qr) {
+  if (qr) mesaQr = qr;
+  // a pending order of mine that disappeared without new lines of my color was rejected
+  const before = mesaView;
+  const nowPending = new Set(view.pending.filter(p => p.mine).map(p => p.id));
+  for (const id of myPending) if (!nowPending.has(id)) {
+    const grew = before && view.lines.filter(l => l.diner === view.me).length > before.lines.filter(l => l.diner === view.me).length;
+    live.textContent = grew ? "El mozo aceptó tu pedido." : "El mozo no aceptó tu pedido. Consultale.";
+    if (!grew) alert("El mozo no aceptó tu pedido. Consultale en la mesa.");
+  }
+  myPending = nowPending;
+  mesaView = view;
+  if (mesa && view.table !== mesa.table) setMesa({ ...mesa, table: view.table });
+  renderMesaChip();
+  if (!mesaSheet.hidden) renderMesa();
+}
+function mesaClosed() {
+  setMesa(null); mesaView = null;
+  if (!mesaSheet.hidden) { $("#mesaBody").innerHTML = `<p class="sel-hint">La mesa se cerró. ¡Gracias por venir!</p>`; }
+}
+function connectMesa() {
+  if (!mesa || (mesaWs && mesaWs.readyState <= 1)) return;
+  clearTimeout(mesaTimer);
+  const proto = location.protocol === "https:" ? "wss:" : "ws:";
+  try { mesaWs = new WebSocket(`${proto}//${location.host}/api/${SLUG}/mesa/ws?t=${encodeURIComponent(mesa.token)}&d=${encodeURIComponent(dinerId())}`); }
+  catch (e) { return; }
+  mesaWs.onopen = () => { mesaTries = 0; refreshMesa(); };
+  mesaWs.onmessage = e => { if (e.data === "pong") return; try { const m = JSON.parse(e.data); if (m.t === "mesa") { if (m.view.status !== "open") mesaClosed(); else applyMesaView(m.view); } } catch (err) {} };
+  mesaWs.onclose = e => { mesaWs = null; if (e.code === 4000) { mesaClosed(); return; } if (mesa && document.visibilityState === "visible") mesaTimer = setTimeout(connectMesa, Math.min(30000, 1000 * 2 ** mesaTries++)); };
+}
+async function refreshMesa() {
+  if (!mesa) return;
+  try {
+    const r = await (await fetch(`/api/${SLUG}/mesa/cuenta?t=${encodeURIComponent(mesa.token)}&d=${encodeURIComponent(dinerId())}`)).json();
+    if (r.closed) mesaClosed(); else applyMesaView(r.view, r.qr);
+  } catch (e) {}
+}
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && mesa) connectMesa(); });
+async function joinMesa(token) {
+  try {
+    const res = await fetch(`/api/${SLUG}/mesa/unirse`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ token, diner: dinerId() }) });
+    const r = await res.json();
+    if (!res.ok) { alert(r.error || "No pude sumarte a la mesa."); return; }
+    setMesa({ token, table: r.view.table });
+    applyMesaView(r.view, r.qr);
+    openMesa();
+  } catch (e) { alert("Sin conexión. Probá de nuevo."); }
+}
+async function orderToTable() {
+  const btn = $("#mesaOrderBtn"); if (btn) btn.disabled = true;
+  try {
+    const res = await fetch(`/api/${SLUG}/mesa/pedir`, { method: "POST", headers: { "content-type": "application/json" },
+      body: JSON.stringify({ token: mesa.token, diner: dinerId(), lines: lines.map(({ slug, picks, note, n }) => ({ slug, picks, note, n })) }) });
+    const r = await res.json();
+    if (!res.ok) { if (res.status === 400 && /cerr/.test(r.error || "")) mesaClosed(); alert(r.error || "No se pudo mandar el pedido."); return; }
+    track("order_tap", { n: selCount(), total: selTotal(), mode: "table" }); flushEvents();
+    lines = []; saveSel(); renderSel(true);
+    applyMesaView(r.view, r.qr);
+    hideSel(true); openMesa();
+    live.textContent = "Pedido enviado: el mozo lo tiene que aceptar.";
+  } catch (e) { alert("Sin conexión. Probá de nuevo."); }
+  finally { if (btn) btn.disabled = false; }
+}
+function renderMesa() {
+  const v = mesaView, body = $("#mesaBody");
+  $("#mesaTitle").textContent = mesa ? `Mesa ${mesa.table}` : "Mi mesa";
+  if (!v) { body.innerHTML = `<p class="sel-hint">Cargando la cuenta…</p>`; return; }
+  const item = l => `<li><b>${l.n}×</b><span>${esc(l.name)}${l.extras.length ? `<small>${esc(l.extras.join(", "))}</small>` : ""}${l.note ? `<small>«${esc(l.note)}»</small>` : ""}</span><span>${plain(l.unit * l.n)}</span></li>`;
+  const groups = {};
+  for (const l of v.lines) (groups[l.diner || "_"] ||= []).push(l);
+  const order = [v.me, ...v.colors.filter(c => c !== v.me), "_"].filter((c, i, a) => c && a.indexOf(c) === i && groups[c]);
+  body.innerHTML = `
+    <p class="sel-hint" style="margin-top:4px">${colorDot(v.me)} Tu color en esta mesa: <b>${esc(colorName(v.me))}</b></p>
+    ${v.pending.length ? `<div class="mgroup wait"><h3>Esperando al mozo</h3><ul>${v.pending.map(p => p.lines.map(l => item(l).replace("<li>", `<li title="${esc(colorName(p.color))}">`)).join("")).join("")}</ul></div>` : ""}
+    ${order.map(c => `<div class="mgroup"><h3>${colorDot(c === "_" ? null : c)}${c === "_" ? "Cargado por el mozo" : c === v.me ? "Vos (" + esc(colorName(c)) + ")" : esc(colorName(c))}<span class="sum">${plain(groups[c].reduce((s, l) => s + l.unit * l.n, 0))}</span></h3><ul>${groups[c].map(item).join("")}</ul></div>`).join("") || `<p class="sel-hint">Todavía no hay nada aceptado en la mesa.</p>`}
+    <div class="sel-total"><span>Total de la mesa</span>${fmt(v.total)}</div>
+    ${mesaQr ? `<div class="invite"><div class="qr" role="img" aria-label="QR para sumarse a la mesa">${mesaQr}</div><p><b>¿Vienen más?</b> Que escaneen este código con la cámara y piden desde su celular, cada uno con su color.</p></div>` : ""}
+    <button class="ar-btn" type="button" id="mesaMore">Pedir algo más</button>
+    <button class="sel-clear" type="button" id="mesaLeave">Salir de esta mesa en este celular</button>`;
+}
+function openMesa() {
+  hideSheet(); hideSel(true);
+  renderMesa(); refreshMesa();
+  scrim.hidden = false; mesaSheet.hidden = false;
+  requestAnimationFrame(() => { scrim.classList.add("open"); mesaSheet.classList.add("open"); });
+  document.body.style.overflow = "hidden"; $("main").inert = true; selbar.inert = true;
+  $("#closeMesa").focus({ preventScroll: true });
+}
+function closeMesa() {
+  if (mesaSheet.hidden) return;
+  mesaSheet.classList.remove("open"); scrim.classList.remove("open");
+  document.body.style.overflow = ""; $("main").inert = false; selbar.inert = false;
+  setTimeout(() => { if (!mesaSheet.classList.contains("open")) { mesaSheet.hidden = true; if (sheet.hidden && selSheet.hidden) scrim.hidden = true; } }, 260);
+}
+$("#closeMesa").addEventListener("click", closeMesa);
+$("#mesaChip").addEventListener("click", openMesa);
+swipeToClose(mesaSheet, closeMesa);
+scrim.addEventListener("click", () => { if (!mesaSheet.hidden) closeMesa(); });
+addEventListener("keydown", e => { if (e.key === "Escape" && !mesaSheet.hidden) closeMesa(); });
+mesaSheet.addEventListener("click", e => {
+  if (e.target.id === "mesaMore") { closeMesa(); document.getElementById("menu").scrollIntoView(); }
+  if (e.target.id === "mesaLeave" && confirm("¿Salir de la mesa en este celular? Tu consumo queda en la cuenta de la mesa.")) { setMesa(null); closeMesa(); }
+});
+// ?unirse=TOKEN: this phone scanned the table QR
+{
+  const token = params.get("unirse");
+  if (token) { history.replaceState(null, "", location.pathname); joinMesa(token); }
+  else if (mesa) { renderMesaChip(); connectMesa(); }
+}
+
 let selLastFocus = null;
 function openSel(mode = "push") {
   hideSheet();

@@ -8,9 +8,11 @@
 //  3. The session token goes in `Authorization: Bearer`; WebSockets use a single-use ticket (tokens never go in URLs).
 // Privacy: the menu's orders are stored only once the restaurant is activated; names and addresses are wiped
 // 30 days after the sale closes (daily alarm).
+// Tables (DEC-064): each open table has a random join token (the table QR). Diners' phones use it to join, order and
+// watch the account; they get their own WebSocket with a filtered view (dinerView), never the staff broadcast.
 import QRCode from "qrcode/lib/core/qrcode.js";
 import QRSvg from "qrcode/lib/renderer/svg-tag.js";
-import { applyOp, applyTableOp, addRound, buildOrder, can, isClosed, newRef, openTable, orderTotal, priceLines, PII_DAYS, ROLES, validDiner, validRef, validTable, wipePii, CajaError } from "./caja-core.js";
+import { applyOp, applyTableOp, addDiner, addPending, addRound, buildOrder, can, dinerView, isClosed, newRef, openTable, orderTotal, priceLines, PII_DAYS, ROLES, validDiner, validRef, validTable, wipePii, CajaError } from "./caja-core.js";
 import { sameOrigin } from "./events.js";
 
 const SLUG = /^[a-z0-9][a-z0-9-]{0,63}$/;
@@ -21,6 +23,8 @@ const MAX_BODY = 32 * 1024;
 const DRAFT_MS = 30 * 60000; // a table order shown to the waiter waits this long
 
 // The QR a diner shows the waiter: it only carries a URL with the 4-letter code, so it stays small and easy to scan.
+// The table QR opens the menu with the join token; `unirse` is not the old `?mesa=N` of the printed table QRs.
+const joinLink = (url, slug, token) => `${url.origin}/${slug}/?unirse=${encodeURIComponent(token)}`;
 const qrSvg = text => QRSvg.render(QRCode.create(text, { errorCorrectionLevel: "M" }), { margin: 1, color: { dark: "#0E1014ff", light: "#ffffffff" } });
 
 const json = (data, status = 200) => new Response(JSON.stringify(data), { status, headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" } });
@@ -96,6 +100,8 @@ export class Caja {
     const route = request.method + " " + url.pathname;
     try {
       if (route === "GET /ws") return await this.upgrade(request, url);
+      if (route === "GET /mesa/ws") return await this.dinerUpgrade(request, url);
+      if (route === "GET /mesa/cuenta") return this.dinerAccount(url, slug);
       if (request.method === "GET" && url.pathname.startsWith("/mesa/")) return this.draftStatus(url);
       let body = {};
       if (request.method === "POST") {
@@ -106,6 +112,8 @@ export class Caja {
       switch (route) {
         case "POST /pedidos": return await this.publicOrder(body, slug);
         case "POST /mesa": return await this.tableDraft(body, slug, url);
+        case "POST /mesa/unirse": return this.dinerJoin(body, slug, url);
+        case "POST /mesa/pedir": return await this.dinerOrder(body, slug, url);
         case "POST /vincular": return await this.link(body, slug);
         case "GET /usuarios": return await this.userList(request);
         case "POST /entrar": return await this.login(body, request);
@@ -220,6 +228,7 @@ export class Caja {
       o.ref, o.createdAt, o.updatedAt, isClosed(o) ? o.closedAt || o.updatedAt : null, JSON.stringify(o));
     if (text) this.sql.exec("INSERT INTO history (ref, at, who, text) VALUES (?, ?, ?, ?)", o.ref, o.updatedAt, who || "", text);
     this.broadcast({ t: "order", order: this.withTotal(o) });
+    if (o.kind === "table") this.pushToDiners(o);
   }
   withTotal(o) { return { ...o, total: orderTotal(o) }; }
   freeRef(wanted) {
@@ -268,12 +277,17 @@ export class Caja {
     }
     if (body.op === "history") return json({ history: this.sql.exec("SELECT at, who, text FROM history WHERE ref = ? ORDER BY id", String(body.ref)).toArray() });
     if (body.op === "draft") return json(this.readDraft(body.code));
+    if (body.op === "tableQr") {
+      const t = this.getOrder(String(body.ref));
+      if (t.kind !== "table" || t.status !== "open") throw new CajaError("state", "La mesa no está abierta.");
+      return json({ qr: qrSvg(joinLink(new URL(request.url), slug, t.joinToken)), table: t.table });
+    }
     if (body.op === "take") return json(this.takeDraft(body.code, body.table, s));
     if (body.op === "openTable") {
       const table = +body.table;
       if (!validTable(table)) throw new CajaError("table", "Elegí el número de mesa.");
       if (this.openTableSession(table)) throw new CajaError("state", `La mesa ${table} ya está abierta.`);
-      const t = openTable({ ref: this.freeRef(newRef()), table, lines: [], by: who });
+      const t = openTable({ ref: this.freeRef(newRef()), table, lines: [], by: who, joinToken: randomToken(18) });
       this.save(t, who, `Mesa ${table} abierta por ${who}`);
       return json({ order: this.withTotal(t) });
     }
@@ -328,7 +342,12 @@ export class Caja {
     if (!r) return json({ status: "expired" });
     const d = JSON.parse(r.data);
     if (!d.diner || d.diner !== url.searchParams.get("d")) return json({ status: "waiting" });
-    if (d.taken) return json({ status: "taken", table: d.taken.table });
+    if (d.taken) {
+      // the diner who showed the order joins that table: their phone gets the table QR token
+      const t = d.taken.ref && this.rows("ref = ?", d.taken.ref)[0];
+      if (!t || t.status !== "open") return json({ status: "taken", table: d.taken.table });
+      return json({ status: "taken", table: d.taken.table, token: t.joinToken, color: t.diners.find(x => x.id === d.diner)?.color || null });
+    }
     return json({ status: Date.now() - r.created > DRAFT_MS ? "expired" : "waiting" });
   }
   readDraft(code) {
@@ -351,12 +370,55 @@ export class Caja {
       session = addRound({ ...existing, updatedAt: Date.now() }, d.lines, d.diner).session;
       text = `Pedido ${draft.code} agregado a la mesa ${table} por ${s.name}`;
     } else {
-      session = openTable({ ref: this.freeRef(newRef()), table, lines: d.lines, dinerId: d.diner, by: s.name });
+      session = openTable({ ref: this.freeRef(newRef()), table, lines: d.lines, dinerId: d.diner, by: s.name, joinToken: randomToken(18) });
       text = `Mesa ${table} abierta por ${s.name} con el pedido ${draft.code}`;
     }
     this.save(session, s.name, text);
-    this.sql.exec("UPDATE drafts SET data = ? WHERE code = ?", JSON.stringify({ ...d, taken: { table, at: Date.now() } }), draft.code);
+    this.sql.exec("UPDATE drafts SET data = ? WHERE code = ?", JSON.stringify({ ...d, taken: { table, ref: session.ref, at: Date.now() } }), draft.code);
     return { order: this.withTotal(session), added: !!existing };
+  }
+
+  /* ---------- mesas: los comensales desde su celular ---------- */
+  tableByToken(token) {
+    if (typeof token !== "string" || token.length < 20) return null;
+    return this.rows("closed IS NULL").find(o => o.kind === "table" && o.status === "open" && o.joinToken && o.joinToken === token) || null;
+  }
+  dinerReply(session, diner, url, slug) {
+    return json({ view: dinerView(session, diner), qr: qrSvg(joinLink(url, slug, session.joinToken)) });
+  }
+  dinerJoin(body, slug, url) {
+    const t = this.tableByToken(body.token);
+    if (!t) throw new CajaError("mesa", "Esta mesa ya se cerró o el código no es válido. Pedile al mozo el QR de la mesa.");
+    if (!validDiner(body.diner)) throw new CajaError("diner", "No pude identificar tu celular.");
+    const { session, color } = addDiner(t, body.diner);
+    if (session !== t) this.save({ ...session, updatedAt: Date.now() }, "Menú", `Se sumó un celular (${color})`);
+    return this.dinerReply(session, body.diner, url, slug);
+  }
+  async dinerOrder(body, slug, url) {
+    const now = Date.now();
+    this.publicHits = this.publicHits.filter(t => now - t < 10 * 60000);
+    if (this.publicHits.length >= 60) throw new CajaError("locked", "Demasiados pedidos seguidos. Llamá al mozo.");
+    const t = this.tableByToken(body.token);
+    if (!t) throw new CajaError("mesa", "Esta mesa ya se cerró. Pedile al mozo que la abra de nuevo.");
+    this.publicHits.push(now);
+    const lines = priceLines(body.lines, await this.loadCatalog(slug));
+    const { session, color } = addPending(t, body.diner, lines, newRef(), now);
+    this.save(session, "Menú", `Pedido nuevo desde el celular (${color}): ${lines.map(l => `${l.n} × ${l.name}`).join(", ")}`);
+    return this.dinerReply(session, body.diner, url, slug);
+  }
+  dinerAccount(url, slug) {
+    const t = this.tableByToken(url.searchParams.get("t") || "");
+    if (!t) return json({ closed: true });
+    return this.dinerReply(t, url.searchParams.get("d") || "", url, slug);
+  }
+  async dinerUpgrade(request, url) {
+    if (request.headers.get("upgrade") !== "websocket") return err(426, "Se espera un WebSocket.");
+    const t = this.tableByToken(url.searchParams.get("t") || "");
+    if (!t) return err(404, "Mesa cerrada.");
+    const pair = new WebSocketPair();
+    this.ctx.acceptWebSocket(pair[1], ["diner", "t:" + t.ref]);
+    pair[1].serializeAttachment({ diner: url.searchParams.get("d") || "" });
+    return new Response(null, { status: 101, webSocket: pair[0] });
   }
 
   /* ---------- equipo (encargado) ---------- */
@@ -430,14 +492,23 @@ export class Caja {
     this.sql.exec("DELETE FROM tickets WHERE hash = ?", hash); // single use
     if (!t) return err(401, "Ticket vencido.");
     const pair = new WebSocketPair();
-    this.ctx.acceptWebSocket(pair[1], [t.session]);
+    this.ctx.acceptWebSocket(pair[1], ["staff", t.session]);
     return new Response(null, { status: 101, webSocket: pair[0] });
   }
   webSocketMessage(ws, message) { if (message === "ping") ws.send("pong"); }
   webSocketClose(ws, code) { try { ws.close(code, "bye"); } catch { /* already closed */ } }
   broadcast(msg) {
     const data = JSON.stringify(msg);
-    for (const ws of this.ctx.getWebSockets()) { try { ws.send(data); } catch { /* gone */ } }
+    for (const ws of this.ctx.getWebSockets("staff")) { try { ws.send(data); } catch { /* gone */ } }
+  }
+  pushToDiners(session) {
+    for (const ws of this.ctx.getWebSockets("t:" + session.ref)) {
+      try {
+        const { diner } = ws.deserializeAttachment() || {};
+        ws.send(JSON.stringify({ t: "mesa", view: dinerView(session, diner) }));
+        if (isClosed(session)) ws.close(4000, "Mesa cerrada");
+      } catch { /* gone */ }
+    }
   }
 
   /* ---------- limpieza diaria ---------- */

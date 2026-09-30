@@ -1,7 +1,7 @@
 // node --test site/caja-core.test.mjs
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { buildOrder, applyOp, can, isClosed, newRef, validRef, orderTotal, CajaError, wipePii, openTable, addRound, addDiner, applyTableOp, priceLines, DINER_COLORS } from "./caja-core.js";
+import { buildOrder, applyOp, can, isClosed, newRef, validRef, orderTotal, CajaError, wipePii, openTable, addRound, addDiner, applyTableOp, priceLines, DINER_COLORS, addPending, dinerView } from "./caja-core.js";
 
 const catalog = {
   ordering: { orderTypes: ["delivery", "pickup"], paymentMethods: ["efectivo", "transferencia"], deliveryZones: [{ name: "Centro", fee: 10000 }] },
@@ -152,4 +152,43 @@ test("table: an empty table can't be charged, only cancelled by the encargado", 
   throwsCode(() => applyTableOp(t, "charge", { method: "efectivo" }, "cajero", catalog), "state");
   throwsCode(() => applyTableOp(t, "cancel", { reason: "se fueron" }, "cajero", catalog), "role");
   assert.equal(applyTableOp(t, "cancel", { reason: "se fueron" }, "encargado", catalog).order.status, "cancelled");
+});
+
+test("diners order from the phone: it waits, then the mozo accepts it into their color", () => {
+  let t = openTable({ ref: "MESA", table: 5, lines: priced([{ slug: "papas", picks: [], n: 1 }]), dinerId: "diner-aaaaaaaa", joinToken: "tok" });
+  const r = addPending(t, "diner-bbbbbbbb", priced([{ slug: "burger", picks: [[0]], n: 2 }]), "p1", 5);
+  t = r.session;
+  assert.equal(r.color, "verde");
+  assert.equal(orderTotal(t), 15000); // pending doesn't count yet
+  throwsCode(() => applyTableOp(t, "charge", { method: "efectivo" }, "cajero", catalog), "state"); // accept or reject first
+  const a = applyTableOp(t, "acceptRound", { id: "p1" }, "mozo", catalog);
+  assert.equal(a.order.pending.length, 0);
+  assert.equal(orderTotal(a.order), 15000 + 80000);
+  assert.deepEqual(a.order.lines.map(l => l.diner), ["azul", "verde"]);
+  assert.match(a.text, /Pedido de Verde aceptado: 2 × Burger/);
+  throwsCode(() => applyTableOp(a.order, "acceptRound", { id: "p1" }, "mozo", catalog), "state"); // already handled
+});
+
+test("rejecting a pending order drops it; a phone can't flood the table", () => {
+  let t = openTable({ ref: "MESA", table: 6, lines: [] });
+  t = addPending(t, "diner-aaaaaaaa", priced([{ slug: "papas", picks: [], n: 1 }]), "p1").session;
+  t = addPending(t, "diner-aaaaaaaa", priced([{ slug: "papas", picks: [], n: 1 }]), "p2").session;
+  throwsCode(() => addPending(t, "diner-aaaaaaaa", priced([{ slug: "papas", picks: [], n: 1 }]), "p3"), "locked");
+  throwsCode(() => addPending(t, "x", priced([{ slug: "papas", picks: [], n: 1 }]), "p4"), "diner");
+  const r = applyTableOp(t, "rejectRound", { id: "p1", reason: "no es de esta mesa" }, "cajero", catalog);
+  assert.equal(r.order.pending.length, 1);
+  assert.equal(r.order.lines.length, 0);
+});
+
+test("the diner's view hides the join token and other phones' ids", () => {
+  let t = openTable({ ref: "MESA", table: 7, lines: priced([{ slug: "papas", picks: [], n: 1 }]), dinerId: "diner-aaaaaaaa", joinToken: "secret-token" });
+  t = addPending(t, "diner-bbbbbbbb", priced([{ slug: "papas", picks: [], n: 1 }]), "p1").session;
+  const v = dinerView(t, "diner-bbbbbbbb");
+  const text = JSON.stringify(v);
+  assert.equal(text.includes("secret-token"), false);
+  assert.equal(text.includes("diner-aaaaaaaa"), false);
+  assert.equal(v.me, "verde");
+  assert.deepEqual(v.colors, ["azul", "verde"]);
+  assert.equal(v.pending[0].mine, true);
+  assert.equal(dinerView(t, "diner-aaaaaaaa").pending[0].mine, false);
 });

@@ -161,8 +161,12 @@ solo registra cómo se pagó. Diseño y plan: `plan/pos/` (gitignoreado).
   «Tomar pedido de mesa» → «Escanear» (Android) o escribiendo las letras, **elige la mesa** y la abre. Si la mesa ya
   está abierta, el pedido se suma. Cada celular aparece con un color (Azul, Verde…). El mozo agrega ítems; el cajero
   cobra el total y la mesa se cierra. El código del pedido dura 30 minutos.
-- **Todavía no:** QR de la mesa para que se sumen los demás y cuenta en vivo en el celular (2b), dividir la cuenta (2c),
-  comanda en PDF (3), cierre por turno (4) y precios en vivo (5).
+- **Comensales (fase 2b):** cuando el mozo abre la mesa, el celular del primero muestra «Mesa 5 · Azul» y un **QR
+  de la mesa** (también en la caja: mesa → «QR para que se sumen»). Quien lo escanea entra con el color siguiente y
+  toca «Pedir a la mesa»: el pedido llega a la caja como «Mesa 5 · Verde» y lo acepta el mozo o la cajera. Todos ven la
+  cuenta en vivo, cada uno en su color. Al cobrar, los celulares ven «La mesa se cerró» y el QR deja de servir. Un
+  celular no puede tener más de 2 pedidos esperando.
+- **Todavía no:** dividir la cuenta (2c), comanda en PDF (3), cierre por turno (4) y precios en vivo (5).
 
 ## Todo en la nube (desde el 26/09/2026): la notebook ya no hace falta
 

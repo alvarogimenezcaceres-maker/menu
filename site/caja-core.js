@@ -21,7 +21,7 @@ const CAN = {
   accept: ROLES, reject: ROLES, ready: ROLES, street: ROLES, deliver: ROLES, addItems: ROLES, create: ROLES,
   paid: ["cajero", "encargado"], rendido: ["cajero", "encargado"],
   cancel: ["encargado"],
-  users: ["encargado"], devices: ["encargado"], code: ["encargado"], take: ROLES,
+  users: ["encargado"], devices: ["encargado"], code: ["encargado"], take: ROLES, acceptRound: ROLES, rejectRound: ROLES,
 };
 export const can = (role, op) => (CAN[op] || []).includes(role);
 
@@ -86,6 +86,7 @@ export const DINER_COLORS = [
   { key: "rosa", name: "Rosa", hex: "#FF7EB6" }, { key: "celeste", name: "Celeste", hex: "#4FD1E0" },
   { key: "amarillo", name: "Amarillo", hex: "#FFD84D" }, { key: "rojo", name: "Rojo", hex: "#FF6B6B" },
 ];
+const COLOR_NAME = Object.fromEntries(DINER_COLORS.map(c => [c.key, c.name]));
 export const validDiner = id => typeof id === "string" && /^[A-Za-z0-9_-]{8,40}$/.test(id);
 export const validTable = n => Number.isInteger(n) && n >= 1 && n <= 200;
 
@@ -100,10 +101,10 @@ export function addDiner(session, dinerId) {
 }
 
 // A table opened by the waiter from the order a diner showed (or empty, when the waiter opens it by hand).
-export function openTable({ ref, table, lines, dinerId, by }, now = Date.now()) {
+export function openTable({ ref, table, lines, dinerId, by, joinToken }, now = Date.now()) {
   if (!validTable(table)) fail("table", "Elegí el número de mesa.");
   let session = { ref, kind: "table", table, status: "open", createdAt: now, updatedAt: now, diners: [], lines: [], rounds: 0,
-    paid: false, payMethod: "", closedAt: null, cancelReason: "", openedBy: by || "" };
+    pending: [], joinToken: joinToken || "", paid: false, payMethod: "", closedAt: null, cancelReason: "", openedBy: by || "" };
   if (lines && lines.length) session = addRound(session, lines, dinerId).session;
   return session;
 }
@@ -114,7 +115,42 @@ export function addRound(session, pricedLines, dinerId) {
   return { session: { ...s, rounds: round + 1, lines: [...s.lines, ...pricedLines.map(l => ({ ...l, round, diner: color }))] }, color };
 }
 
+// A diner at an open table sends an order from the phone: it waits until the mozo or the cajera accepts it (DEC-064).
+export const MAX_PENDING = 6;
+export function addPending(session, dinerId, pricedLines, id, now = Date.now()) {
+  if (isClosed(session)) fail("closed", "Esta mesa ya está cerrada.");
+  if (!validDiner(dinerId)) fail("diner", "No pude identificar tu celular. Volvé a escanear el QR de la mesa.");
+  const mine = (session.pending || []).filter(p => p.dinerId === dinerId);
+  if (mine.length >= 2) fail("locked", "Ya tenés pedidos esperando al mozo. Esperá a que los acepte.");
+  if ((session.pending || []).length >= MAX_PENDING) fail("locked", "La mesa tiene muchos pedidos esperando. Llamá al mozo.");
+  const { session: s, color } = addDiner(session, dinerId);
+  return { session: { ...s, updatedAt: now, pending: [...(s.pending || []), { id, dinerId, color, lines: pricedLines, at: now }] }, color };
+}
+
+// What a diner's phone sees: the table's account by color, never the join token or other phones' ids.
+export function dinerView(session, dinerId) {
+  const me = session.diners.find(d => d.id === dinerId);
+  const line = l => ({ name: l.name, extras: l.extras, note: l.note, n: l.n, unit: l.unit, diner: l.diner || null, round: l.round });
+  return {
+    table: session.table, status: session.status, me: me ? me.color : null, colors: session.diners.map(d => d.color),
+    lines: session.lines.map(line), total: orderTotal(session),
+    pending: (session.pending || []).map(p => ({ id: p.id, color: p.color, mine: p.dinerId === dinerId, lines: p.lines.map(line), at: p.at })),
+    billRequested: !!session.billRequested,
+  };
+}
+
 export function applyTableOp(session, op, args, role, catalog, now = Date.now()) {
+  if (op === "acceptRound" || op === "rejectRound") {
+    if (!can(role, op)) fail("role", `Tu rol (${ROLE_LABEL[role] || role}) no puede hacer esto.`);
+    if (isClosed(session)) fail("closed", "Esta mesa ya está cerrada.");
+    const p = (session.pending || []).find(x => x.id === args.id);
+    if (!p) fail("state", "Ese pedido ya fue atendido.");
+    const rest = session.pending.filter(x => x !== p);
+    const label = COLOR_NAME[p.color] || "";
+    if (op === "rejectRound") return { order: { ...session, updatedAt: now, pending: rest }, text: `Pedido de ${label} rechazado${args.reason ? ": " + str(args.reason, 120) : ""}` };
+    const s = addRound({ ...session, updatedAt: now, pending: rest }, p.lines, p.dinerId).session;
+    return { order: s, text: `Pedido de ${label} aceptado: ${p.lines.map(l => `${l.n} × ${l.name}`).join(", ")}` };
+  }
   const opFor = { addItems: "addItems", charge: "paid", cancel: "cancel" }[op];
   if (!opFor) fail("op", "Operación desconocida.");
   if (!can(role, opFor)) fail("role", `Tu rol (${ROLE_LABEL[role] || role}) no puede hacer esto.`);
@@ -126,6 +162,7 @@ export function applyTableOp(session, op, args, role, catalog, now = Date.now())
     text = `Agregado: ${priced.map(l => `${l.n} × ${l.name}`).join(", ")}`;
   } else if (op === "charge") {
     if (!s.lines.length) fail("state", "La mesa no tiene consumo. Para liberarla, cancelala.");
+    if ((s.pending || []).length) fail("state", "Hay pedidos esperando: aceptalos o rechazalos antes de cobrar.");
     const method = PAY_METHODS.includes(args.method) ? args.method : "";
     if (!method) fail("state", "Elegí la forma de pago.");
     s.status = "paid"; s.paid = true; s.payMethod = method; s.closedAt = now;

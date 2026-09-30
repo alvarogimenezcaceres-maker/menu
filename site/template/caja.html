@@ -166,6 +166,10 @@ table.t tr:last-child td { border-bottom: 0; }
 .tbl.free { background: none; border-style: dashed; color: var(--muted); }
 .tbl.pick[aria-pressed="true"] { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
 .tbl.small { min-height: 72px; }
+.tbl.alert { border-color: var(--st-new); box-shadow: 0 0 0 1px var(--st-new); }
+.pend { border: 1px solid var(--st-new); border-radius: 14px; padding: 10px 12px; margin-bottom: 12px; background: var(--st-new-bg); }
+.qrbig { background: #fff; border-radius: 16px; padding: 12px; width: min(300px, 80vw); margin: 10px auto 0; }
+.qrbig svg { display: block; width: 100%; height: auto; }
 .diner { display: inline-flex; align-items: center; gap: 6px; font: 600 12.5px/1.2 var(--display); color: var(--text-2); white-space: nowrap; }
 .diner i { width: 12px; height: 12px; border-radius: 50%; background: var(--c, var(--muted)); box-shadow: 0 0 0 2px var(--panel); }
 .dgroup { margin-bottom: 14px; }
@@ -271,6 +275,8 @@ const closedO = o => o.kind === "table" ? o.status !== "open" : o.status === "ca
 const open = () => [...orders.values()].filter(o => o.kind !== "table" && !closedO(o));
 const openTables = () => [...orders.values()].filter(o => o.kind === "table" && o.status === "open");
 const tableOf = n => openTables().find(t => t.table === n);
+const pendingRounds = () => openTables().flatMap(t => (t.pending || []).map(p => ({ ...p, table: t.table, ref: t.ref })));
+const pSum = p => p.lines.reduce((s, l) => s + l.unit * l.n, 0);
 
 /* ---------- en vivo ---------- */
 let ws = null, wsTries = 0, wsTimer = 0, pingTimer = 0, online = false;
@@ -294,6 +300,11 @@ function onMessage(msg) {
   const was = orders.get(msg.order.ref);
   orders.set(msg.order.ref, msg.order);
   if (!was && msg.order.status === "new") alertNew(msg.order);
+  if (msg.order.kind === "table") {
+    const before = new Set((was?.pending || []).map(p => p.id));
+    const fresh = (msg.order.pending || []).find(p => !before.has(p.id));
+    if (fresh) alertRound(msg.order, fresh);
+  }
   renderMain();
   if (detailRef === msg.order.ref) (msg.order.kind === "table" ? openTableDrawer(msg.order.table, true) : openDetail(msg.order.ref, true));
 }
@@ -325,6 +336,12 @@ function alertNew(o) {
   say(`Pedido nuevo #MV-${o.ref}${o.name ? " · " + o.name : ""}`);
   clearInterval(titleTimer); let on = false;
   titleTimer = setInterval(() => { document.title = (on = !on) ? `● Pedido nuevo · ${RESTAURANT}` : `${RESTAURANT} · Caja`; }, 1000);
+}
+function alertRound(t, p) {
+  beep(); try { navigator.vibrate && navigator.vibrate([120, 80, 120]); } catch (e) {}
+  say(`Pedido nuevo · Mesa ${t.table} · ${COLORS[p.color]?.[0] || ""}`);
+  clearInterval(titleTimer); let on = false;
+  titleTimer = setInterval(() => { document.title = (on = !on) ? `● Mesa ${t.table} pidió · ${RESTAURANT}` : `${RESTAURANT} · Caja`; }, 1000);
 }
 addEventListener("focus", () => { clearInterval(titleTimer); document.title = `${RESTAURANT} · Caja`; });
 // the browser only plays sound after a tap: unlock it with the first one
@@ -396,14 +413,24 @@ function card(o) {
     <div class="row1"><button class="link" data-act="detail" data-ref="${o.ref}">Ver detalle</button>${o.status === "new" ? `<button class="link" data-act="reject" data-ref="${o.ref}" style="margin-left:auto">Rechazar</button>` : ""}</div>
   </article>`;
 }
+function roundCard(p) {
+  return `<article class="card is-new" aria-label="Pedido de la mesa ${p.table}">
+    <div class="row1"><span class="code">Mesa ${p.table}</span>${dinerChip(p.color)}<span class="ago">${ago(p.at)}</span></div>
+    <ul class="items">${p.lines.map(l => `<li><b>${l.n}×</b><span>${esc(l.name)}${l.extras.length ? " · " + esc(l.extras.join(", ")) : ""}${l.note ? ` · «${esc(l.note)}»` : ""}</span></li>`).join("")}</ul>
+    <div class="foot"><span class="total num">${gs(pSum(p))}</span><span class="st new">${ic("bell")}Desde el celular</span></div>
+    <div class="acts"><button class="btn primary" data-act="acceptRound" data-ref="${p.ref}" data-id="${p.id}">${ic("check")}Aceptar</button></div>
+    <div class="row1"><button class="link" data-tablen="${p.table}">Ver la mesa</button><button class="link" data-act="rejectRound" data-ref="${p.ref}" data-id="${p.id}" style="margin-left:auto">Rechazar</button></div>
+  </article>`;
+}
 function boardHtml() {
-  const list = open().filter(o => filter === "all" || (filter === "pay" ? !o.paid : o.src === filter)).sort((a, b) => a.createdAt - b.createdAt);
+  const list = open().filter(o => filter === "all" || (filter === "pay" ? !o.paid : filter !== "table" && o.src === filter)).sort((a, b) => a.createdAt - b.createdAt);
+  const rounds = filter === "all" || filter === "table" ? pendingRounds().sort((a, b) => a.at - b.at) : [];
   const cols = [["Nuevos", o => o.status === "new", "bell"], ["En cocina", o => o.status === "prep", "flame"], ["Listos y en la calle", o => ["ready", "street", "delivered"].includes(o.status), "bike"]];
   return `<div class="head"><h1>Pedidos</h1>
-      <div class="chips" role="group" aria-label="Filtrar">${[["all", "Todos"], ["wa", "WhatsApp"], ["manual", "A mano"], ["pay", "Por cobrar"]].map(([k, l]) => `<button class="chip" data-filter="${k}" aria-pressed="${filter === k}">${l}</button>`).join("")}</div>
+      <div class="chips" role="group" aria-label="Filtrar">${[["all", "Todos"], ["table", "Mesas"], ["wa", "WhatsApp"], ["manual", "A mano"], ["pay", "Por cobrar"]].map(([k, l]) => `<button class="chip" data-filter="${k}" aria-pressed="${filter === k}">${l}</button>`).join("")}</div>
       <span class="sp"></span><button class="btn" data-act="take">${ic("scan")}Tomar pedido de mesa</button><button class="btn primary" data-act="newOrder">${ic("plus")}Nuevo pedido</button></div>
     ${!catalog ? `<p class="banner">No encontré el menú publicado de este local: «Nuevo pedido» y «Agregar ítems» no funcionan hasta publicar desde el panel.</p>` : ""}
-    <div class="board">${cols.map(([t, f, i]) => { const c = list.filter(f); return `<section class="col" aria-label="${t}"><h2>${ic(i)}${t} <span class="n">${c.length}</span></h2>${c.map(card).join("") || `<p class="empty">Nada por acá.</p>`}</section>`; }).join("")}</div>`;
+    <div class="board">${cols.map(([t, f, i], ci) => { const c = list.filter(f), extra = ci === 0 ? rounds : []; return `<section class="col" aria-label="${t}"><h2>${ic(i)}${t} <span class="n">${c.length + extra.length}</span></h2>${extra.map(roundCard).join("")}${c.map(card).join("") || (extra.length ? "" : `<p class="empty">Nada por acá.</p>`)}</section>`; }).join("")}</div>`;
 }
 
 /* ---------- mesas ---------- */
@@ -413,8 +440,8 @@ function tablesHtml() {
   return `<div class="head"><h1>Mesas</h1><span class="meta">${openT.length} abiertas · ${gs(openT.reduce((s, t) => s + t.total, 0))} en cuentas</span><span class="sp"></span>
       <button class="btn primary" data-act="take">${ic("scan")}Tomar pedido de mesa</button></div>
     <div class="tables">${nums.map(n => { const t = tableOf(n); return t
-      ? `<button class="tbl" data-tablen="${n}" aria-label="Mesa ${n}, ${gs(t.total)}"><span class="t">${n}<small>${ago(t.createdAt).replace("hace ", "")}</small></span><span class="amt num">${gs(t.total)}</span>
-          <span class="row1">${[...new Set(t.lines.map(l => l.diner).filter(Boolean))].map(c => `<span class="diner" style="--c:${COLORS[c][1]}"><i aria-hidden="true"></i></span>`).join("")}<span class="meta">${t.rounds} ${t.rounds === 1 ? "ronda" : "rondas"}</span></span></button>`
+      ? `<button class="tbl${(t.pending || []).length ? " alert" : ""}" data-tablen="${n}" aria-label="Mesa ${n}, ${gs(t.total)}${(t.pending || []).length ? ", pedido nuevo" : ""}"><span class="t">${n}<small>${ago(t.createdAt).replace("hace ", "")}</small></span><span class="amt num">${gs(t.total)}</span>
+          <span class="row1">${[...new Set(t.lines.map(l => l.diner).filter(Boolean))].map(c => `<span class="diner" style="--c:${COLORS[c][1]}"><i aria-hidden="true"></i></span>`).join("")}${(t.pending || []).length ? `<span class="st new">${ic("bell")}${t.pending.length} nuevo${t.pending.length > 1 ? "s" : ""}</span>` : `<span class="meta">${t.rounds} ${t.rounds === 1 ? "ronda" : "rondas"}</span>`}</span></button>`
       : `<button class="tbl free" data-tablen="${n}" aria-label="Mesa ${n}, libre"><span class="t">${n}<small>Libre</small></span></button>`; }).join("")}</div>`;
 }
 function openTableDrawer(n, refresh) {
@@ -431,11 +458,15 @@ function openTableDrawer(n, refresh) {
   const html = `<div class="scrim" data-act="close"></div><aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="tt">
     <header><h2 id="tt">Mesa ${t.table}</h2><span class="st prep">${ago(t.createdAt).replace("hace ", "")}</span><span class="sp"></span><button class="icon-btn" data-act="close" aria-label="Cerrar">${ic("x")}</button></header>
     <div class="body">
+      ${(t.pending || []).map(p => `<div class="pend"><h4 style="display:flex;justify-content:space-between;margin:0 0 6px;font:700 14px/1.2 var(--display)">${dinerChip(p.color)}<span>Pedido nuevo · ${ago(p.at)}</span></h4>
+        <ul class="lines">${p.lines.map(l => `<li><span class="q">${l.n}×</span><span><span class="nm">${esc(l.name)}</span>${l.extras.length ? `<span class="x">${esc(l.extras.join(", "))}</span>` : ""}${l.note ? `<span class="x note">«${esc(l.note)}»</span>` : ""}</span><span class="p num">${gs(l.unit * l.n)}</span></li>`).join("")}</ul>
+        <div class="grid2" style="margin-top:8px"><button class="btn" data-act="rejectRound" data-ref="${t.ref}" data-id="${p.id}">Rechazar</button><button class="btn primary" data-act="acceptRound" data-ref="${t.ref}" data-id="${p.id}">${ic("check")}Aceptar</button></div></div>`).join("")}
       ${Object.entries(groups).map(([c, ls]) => `<div class="dgroup"><h4>${dinerChip(c === "_" ? null : c)}<span class="num">${gs(ls.reduce((s, l) => s + l.unit * l.n, 0))}</span></h4>
         <ul class="lines">${ls.map(l => `<li><span class="q">${l.n}×</span><span><span class="nm">${esc(l.name)}</span>${l.extras.length ? `<span class="x">${esc(l.extras.join(", "))}</span>` : ""}${l.note ? `<span class="x note">«${esc(l.note)}»</span>` : ""}<span class="x">Ronda ${l.round + 1}</span></span><span class="p num">${gs(l.unit * l.n)}</span></li>`).join("")}</ul></div>`).join("") || `<p class="empty">Todavía no hay consumo.</p>`}
       <div class="sum"><div class="grand"><span>Total</span><span class="num">${gs(t.total)}</span></div></div>
     </div>
-    <footer><div class="grid2"><button class="btn" data-act="addItems" data-ref="${t.ref}"${catalog ? "" : " disabled"}>${ic("plus")}Agregar ítems</button>
+    <footer><button class="btn ghost" data-act="tableQr" data-ref="${t.ref}">${ic("scan")}QR para que se sumen a la mesa</button>
+      <div class="grid2"><button class="btn" data-act="addItems" data-ref="${t.ref}"${catalog ? "" : " disabled"}>${ic("plus")}Agregar ítems</button>
       ${CAN_PAY(me.role) ? `<button class="btn primary big" data-act="chargeTable" data-ref="${t.ref}"${t.lines.length ? "" : " disabled"}>${ic("money")}Cobrar ${gs(t.total)}</button>` : `<span class="meta" style="align-self:center">Cobra el cajero</span>`}</div>
       ${me.role === "encargado" ? `<button class="btn ghost danger" data-act="cancelTable" data-ref="${t.ref}">Cancelar mesa…</button>` : ""}</footer>
   </aside>`;
@@ -518,8 +549,10 @@ function renderMain() {
   const scroll = m.scrollTop;
   m.innerHTML = view === "team" ? teamHtml() : view === "tables" ? tablesHtml() : boardHtml();
   m.scrollTop = scroll;
-  const n = open().filter(o => o.status === "new").length;
+  const n = open().filter(o => o.status === "new").length + pendingRounds().length;
   const b = $('[data-view="orders"] .badge'); if (b) { b.textContent = n; b.hidden = !n; }
+  const tn = openTables().filter(t => (t.pending || []).length).length;
+  const tb = $('[data-view="tables"] .badge'); if (tb) { tb.textContent = tn; tb.hidden = !tn; }
 }
 function render() {
   const root = $("#root");
@@ -529,7 +562,7 @@ function render() {
   root.innerHTML = `<div class="app"><header class="top"></header>
     <nav class="rail" aria-label="Secciones">
       <button data-view="orders"${view === "orders" ? ' aria-current="page"' : ""}>${ic("orders")}Pedidos<span class="badge" hidden></span></button>
-      <button data-view="tables"${view === "tables" ? ' aria-current="page"' : ""}>${ic("tables")}Mesas</button>
+      <button data-view="tables"${view === "tables" ? ' aria-current="page"' : ""}>${ic("tables")}Mesas<span class="badge" hidden></span></button>
       ${me.role === "encargado" ? `<button data-view="team"${view === "team" ? ' aria-current="page"' : ""}>${ic("team")}Equipo</button>` : ""}
     </nav><main id="main"></main></div>`;
   renderTop(); renderMain();
@@ -739,6 +772,18 @@ document.addEventListener("click", async e => {
       break;
     }
     case "chargeTable": payModal(ref, false, true); break;
+    case "acceptRound": run(ref, "acceptRound", { id: d.id }, o => `Mesa ${o.table}: pedido aceptado`); if (detailRef === ref) setTimeout(() => openTableDrawer(orders.get(ref).table, true), 300); break;
+    case "rejectRound": if (confirm("¿Rechazar este pedido? Al cliente le aparece que no se aceptó.")) run(ref, "rejectRound", { id: d.id }, o => `Mesa ${o.table}: pedido rechazado`); break;
+    case "tableQr": {
+      try {
+        const r = await api("/op", { method: "POST", body: { op: "tableQr", ref } });
+        showOverlay(`<div class="scrim" data-act="close"></div><div class="modal" role="dialog" aria-modal="true" aria-labelledby="qt" style="text-align:center">
+          <h2 id="qt">Mesa ${r.table}: QR para sumarse</h2><p class="help" style="margin:0">Mostráselo a los de la mesa: lo escanean con la cámara y piden desde su celular, cada uno con su color.</p>
+          <div class="qrbig" role="img" aria-label="QR de la mesa ${r.table}">${r.qr}</div>
+          <button class="btn block" data-act="close" style="margin-top:16px">Cerrar</button></div>`);
+      } catch (err) { say(err.message, true); }
+      break;
+    }
     case "cancelTable": reasonModal(ref, "cancel"); break;
     case "detail": openDetail(ref); break;
     case "accept": run(ref, "accept", {}, o => `#MV-${o.ref} aceptado · a cocina`); break;
