@@ -115,6 +115,11 @@
   footer.foot { color: var(--muted); font-size: 13px; text-align: center; padding: 28px 0 8px; display: grid; gap: 6px; justify-items: center; }
   footer.foot img { width: 90px; opacity: .6; }
   footer.foot .privacy { font-size: 12px; }
+  .remember { display: flex; align-items: center; gap: 10px; min-height: 44px; margin-top: 8px; font-size: 14.5px; cursor: pointer; }
+  .remember input { width: 20px; height: 20px; accent-color: var(--amber); }
+  .review-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 0 18px; border-radius: 14px; border: 1px solid rgba(255,185,67,.45); background: rgba(237,157,21,.08); color: var(--amber-soft); font: 700 14.5px/1 var(--display); letter-spacing: .03em; text-decoration: none; }
+  .review-btn svg { width: 18px; height: 18px; }
+  .review-btn.block { width: 100%; margin-top: 12px; }
 
   .scrim { position: fixed; inset: 0; background: rgba(0,0,0,.62); z-index: 20; opacity: 0; transition: opacity .2s; }
   .scrim.open { opacity: 1; }
@@ -414,7 +419,8 @@
   <footer class="foot">
     <img src="img/{{LOGO}}-360.webp" alt="">
     <span>Precios en guaraníes (₲). Consultá por alérgenos al personal.</span>
-    <span class="privacy">Este menú cuenta visitas y pedidos de forma anónima, sin cookies ni datos personales.</span>
+    <a class="review-btn" id="reviewFoot" hidden target="_blank" rel="noopener"></a>
+    <span class="privacy">Sin cookies. Contamos visitas y clics de forma anónima para mejorar el menú.</span>
   </footer>
 </main>
 
@@ -453,6 +459,7 @@
 const DATA = {{DATA}};
 const RESTAURANT = {{NAME_JSON}};
 const WHATSAPP = "{{WHATSAPP}}"; // solo dígitos, con código de país; vacío = sin botón
+const REVIEW_URL = {{REVIEW_URL}}; // Google review link of the restaurant ("" = no button)
 const CFG = {{ORDERING}}; // tipos de pedido, envío, mínimo, formas de pago y horarios (OrderCore.orderingConfig)
 {{ORDER_CORE}}
 const C = OrderCore;
@@ -475,6 +482,12 @@ const haptic = () => { try { navigator.vibrate && navigator.vibrate(12); } catch
 const plain = n => "₲ " + n.toLocaleString("es-PY");
 const HEART = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.5 8.1 3.6 4.5 7.1 4.5c2 0 3.4 1.1 4.9 2.9 1.5-1.8 2.9-2.9 4.9-2.9 3.5 0 5.6 3.6 4.4 6.8-1.8 4.6-9.3 9.2-9.3 9.2Z"/></svg>';
 const replay = (el, cls) => { if (REDUCED || !el) return; el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); };
+
+/* Google review: footer, «Mi mesa» after asking for the bill and when the table closes */
+const STAR = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9L12 3Z"/></svg>';
+const reviewLink = (cls = "") => REVIEW_URL ? `<a class="review-btn ${cls}" data-review href="${esc(REVIEW_URL)}" target="_blank" rel="noopener">${STAR}Dejanos tu reseña en Google</a>` : "";
+if (REVIEW_URL) { const f = $("#reviewFoot"); f.href = REVIEW_URL; f.dataset.review = "foot"; f.innerHTML = STAR + "¿Te gustó? Dejanos tu reseña en Google"; f.hidden = false; }
+document.addEventListener("click", e => { const a = e.target.closest("[data-review]"); if (a) { track("review_click", { mode: mesa ? "table" : "" }); flushEvents(); } });
 
 /* table from the QR: ?table=8 or ?mesa=8 */
 const params = new URLSearchParams(location.search);
@@ -638,7 +651,9 @@ q.addEventListener("input", () => {
   clearTimeout(searchTimer);
   searchTimer = setTimeout(() => {
     const term = norm(q.value.trim()).replace(/[^a-zñ ]/g, "").slice(0, 40).trim();
-    if (term.length >= 2) track("search", { q: term, n: document.querySelectorAll("section.cat li:not([hidden])").length }, "q:" + term);
+    // the words only when they matched a dish or category: a search with no result could be a person's name
+    const n = document.querySelectorAll("section.cat li:not([hidden])").length;
+    if (term.length >= 2) track("search", { q: n ? term : "", n }, "q:" + term);
   }, 1000);
 });
 clearQ.addEventListener("click", () => { q.value = ""; applySearch(); q.focus(); });
@@ -909,13 +924,18 @@ function lineSub(l) {
 /* ---------- Datos del pedido por WhatsApp (delivery o retiro) ---------- */
 const withForm = () => !table && !mesa && !!WHATSAPP;
 let co = { type: CFG.orderTypes[0], name: "", address: "", reference: "", zone: -1, payment: CFG.paymentMethods[0], cash: "", note: "" };
-try { Object.assign(co, JSON.parse(localStorage.getItem(DATA_KEY) || "{}")); } catch (e) {}
+let remember = false;
+try { const saved = JSON.parse(localStorage.getItem(DATA_KEY) || "null"); if (saved) { Object.assign(co, saved); remember = true; } } catch (e) {}
+// is the caja on for this restaurant? (only changes the privacy sentence)
+let cajaOn = false;
+fetch("/api/" + SLUG + "/activa").then(r => r.ok ? r.json() : {}).then(r => { cajaOn = !!r.caja; if (!selSheet.hidden) renderSelPanel(); }).catch(() => {});
 if (!CFG.orderTypes.includes(co.type)) co.type = CFG.orderTypes[0];
 if (!CFG.paymentMethods.includes(co.payment)) co.payment = CFG.paymentMethods[0];
 if (!CFG.zones[co.zone]) co.zone = -1;
 co.cash = ""; co.note = ""; // those are for one order only
 let coTried = false;
-const saveCo = () => { try { const { type, name, address, reference, zone, payment } = co; localStorage.setItem(DATA_KEY, JSON.stringify({ type, name, address, reference, zone, payment })); } catch (e) {} };
+// name and address stay on this phone only if the diner asks for it (privacidad-menu-y-caja.md §c.3)
+const saveCo = () => { try { if (!remember) { localStorage.removeItem(DATA_KEY); return; } const { type, name, address, reference, zone, payment } = co; localStorage.setItem(DATA_KEY, JSON.stringify({ type, name, address, reference, zone, payment })); } catch (e) {} };
 const chip = (name, value, label, checked, cls = "") => `<label class="choice ${cls}"><input type="radio" name="${name}" value="${value}"${checked ? " checked" : ""}><span>${label}</span></label>`;
 
 function checkoutHtml() {
@@ -946,7 +966,9 @@ function checkoutHtml() {
       ${CFG.transferInfo ? `<p class="pay-info" id="payInfo"${["transferencia", "qr"].includes(co.payment) ? "" : " hidden"}><b>Datos para pagar</b>\n${esc(CFG.transferInfo)}\nMandá el comprobante por WhatsApp.</p>` : ""}
       <div class="field"><label for="f-note">Nota para el local <span class="opt-l">(opcional)</span></label>
         <textarea id="f-note" name="note" rows="2" maxlength="200">${esc(co.note)}</textarea></div>
-      <p class="field help">Tu nombre y dirección le llegan solo a este local, con tu pedido. En este celular quedan guardados para la próxima vez.</p>
+      <p class="field help">${cajaOn ? `Tu nombre, dirección y nota le llegan solo a ${esc(RESTAURANT)} con tu pedido y se borran 30 días después de cerrado el pedido.` : `Tu nombre y dirección le llegan solo a ${esc(RESTAURANT)} por WhatsApp, con tu pedido.`}</p>
+      <label class="remember"><input type="checkbox" id="f-remember"${remember ? " checked" : ""}> Recordar mis datos en este celular</label>
+      ${remember ? `<button class="sel-clear" type="button" id="forgetMe">Olvidar mis datos</button>` : ""}
     </div>`;
 }
 function totalsHtml() {
@@ -985,7 +1007,9 @@ function refreshCheckout() {
   }
 }
 function readCo(e) {
-  const el = e.target; if (!el.name || !(el.name in co)) return;
+  const el = e.target;
+  if (el.id === "f-remember") { remember = el.checked; saveCo(); if (e.type === "change") renderSelPanel(); return; }
+  if (!el.name || !(el.name in co)) return;
   if (el.name === "zone") co.zone = +el.value;
   else if (el.name === "cash") co.cash = el.value.replace(/\D/g, "");
   else co[el.name] = el.value;
@@ -1133,6 +1157,7 @@ $("#selBody").addEventListener("click", e => {
   const q = e.target.closest("[data-q]"), o = e.target.closest("[data-open]");
   if (q) { const l = lines.find(x => x.k === q.dataset.q); if (l) setLineQty(l.k, l.n + Number(q.dataset.d)); }
   else if (o) { hideSel(true); openDish(o.dataset.open); }
+  else if (e.target.id === "forgetMe") { remember = false; saveCo(); co.name = co.address = co.reference = ""; renderSelPanel(); live.textContent = "Listo: este celular ya no guarda tus datos."; }
   else if (e.target.id === "selClear") { lines = []; saveSel(); renderSel(true); live.textContent = "Selección vacía."; }
 });
 /* ---------- Mi mesa (DEC-064): unirse con el QR de la mesa, pedir, ver la cuenta en vivo ---------- */
@@ -1175,7 +1200,7 @@ function applyMesaView(view, qr) {
 }
 function mesaClosed() {
   setMesa(null); mesaView = null;
-  if (!mesaSheet.hidden) { $("#mesaBody").innerHTML = `<p class="sel-hint">La mesa se cerró. ¡Gracias por venir!</p>`; }
+  if (!mesaSheet.hidden) { $("#mesaBody").innerHTML = `<p class="sel-hint">La mesa se cerró. ¡Gracias por venir!</p>${reviewLink("block")}`; }
 }
 function connectMesa() {
   if (!mesa || (mesaWs && mesaWs.readyState <= 1)) return;
@@ -1249,6 +1274,7 @@ function billSummary(v) {
   return `<div class="mgroup"><h3>Cuenta pedida · ${how}<span class="sum">${plain(b.grand)}</span></h3>
     <p class="sel-hint" style="margin:6px 0 0">El mozo ya sabe que pidieron la cuenta. Cada uno paga su parte (efectivo, tarjeta, transferencia o QR).</p>
     ${partsHtml(b.parts, v, true)}
+    ${reviewLink("block")}
     <button class="sel-clear" type="button" id="splitOpen">Cambiar la división</button></div>`;
 }
 

@@ -1,7 +1,7 @@
 // node --test site/caja-core.test.mjs
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { buildOrder, applyOp, can, isClosed, newRef, validRef, orderTotal, CajaError, wipePii, openTable, addRound, addDiner, applyTableOp, priceLines, DINER_COLORS, addPending, dinerView, requestBill } from "./caja-core.js";
+import { buildOrder, applyOp, can, isClosed, newRef, validRef, orderTotal, CajaError, wipePii, openTable, addRound, addDiner, applyTableOp, priceLines, DINER_COLORS, addPending, dinerView, requestBill, shiftSummary } from "./caja-core.js";
 
 const catalog = {
   ordering: { orderTypes: ["delivery", "pickup"], paymentMethods: ["efectivo", "transferencia"], deliveryZones: [{ name: "Centro", fee: 10000 }] },
@@ -222,4 +222,67 @@ test("the split is dropped when the account changes", () => {
   assert.equal(t.bill, null);
   throwsCode(() => applyTableOp(t, "payPart", { key: "p1", method: "efectivo" }, "cajero", catalog), "state");
   throwsCode(() => requestBill(t, { mode: "libres", amounts: { azul: 1 } }, "diner-aaaaaaaa"), "split");
+});
+
+/* ---------- turno ---------- */
+test("shift summary: by payment method with split parts, tips apart, cancellations and what is pending", () => {
+  const cash = { ...applyOp(applyOp(applyOp(order(), "accept", {}, "mozo", catalog).order, "street", { rider: "Hugo" }, "mozo", catalog).order, "rendido", {}, "cajero", catalog, 2000).order };
+  let t = openTable({ ref: "MESA", table: 1, lines: priced([{ slug: "burger", picks: [[0]], n: 1 }]), dinerId: "diner-aaaaaaaa" });
+  t = addPending(t, "diner-bbbbbbbb", priced([{ slug: "papas", picks: [], n: 2 }]), "p1").session;
+  t = applyTableOp(t, "acceptRound", { id: "p1" }, "mozo", catalog).order;
+  t = requestBill(t, { mode: "consumo", tipMode: "10" }, "diner-aaaaaaaa");
+  t = applyTableOp(t, "payPart", { key: "azul", method: "qr" }, "cajero", catalog, 3000).order;
+  t = applyTableOp(t, "payPart", { key: "verde", method: "efectivo" }, "cajero", catalog, 3000).order;
+  const gone = applyOp(order({ ref: "CANC" }), "reject", { reason: "fuera de zona" }, "mozo", catalog, 2500).order;
+  const street = applyOp(applyOp(order({ ref: "CALL" }), "accept", {}, "mozo", catalog).order, "street", { rider: "Luis" }, "mozo", catalog).order;
+  const openT = openTable({ ref: "OPEN", table: 2, lines: priced([{ slug: "papas", picks: [], n: 1 }]) });
+  const old = { ...cash, ref: "OLD1", closedAt: 500 }; // before the shift
+  const s = shiftSummary([cash, t, gone, street, openT, old], 1000, 9000);
+  assert.equal(s.count, 2);
+  assert.deepEqual(s.byMethod, { efectivo: 114000 + 30000, qr: 40000 });
+  assert.equal(s.sales, 114000 + 70000);
+  assert.equal(s.tips, 7000);
+  assert.equal(s.fees, 10000);
+  assert.deepEqual(s.cancelled.map(c => [c.label, c.reason]), [["#MV-CANC", "fuera de zona"]]);
+  assert.deepEqual(s.pending.street, { Luis: 114000 });
+  assert.equal(s.pending.openTables, 1);
+  assert.equal(s.pending.openTablesTotal, 15000);
+});
+
+/* ---------- cocina ---------- */
+test("kitchen: each round is a comanda; Listo, undo, and the waiter serves it", () => {
+  let t = openTable({ ref: "MESA", table: 3, lines: priced([{ slug: "papas", picks: [], n: 1 }]), dinerId: "diner-aaaaaaaa" }, 100);
+  t = applyTableOp(t, "addItems", { lines: [{ slug: "burger", picks: [[0]], n: 1 }] }, "mozo", catalog).order;
+  assert.deepEqual(Object.keys(t.kitchen), ["0", "1"]);
+  assert.equal(t.kitchen[1].status, "pending");
+  throwsCode(() => applyTableOp(t, "served", { round: 1 }, "mozo", catalog), "state"); // not ready yet
+  throwsCode(() => applyTableOp(t, "kitchenReady", { round: 9 }, "cocina", catalog), "state");
+  t = applyTableOp(t, "kitchenReady", { round: 1 }, "cocina", catalog, 500).order;
+  assert.equal(t.kitchen[1].status, "ready");
+  assert.equal(t.kitchen[1].readyAt, 500);
+  t = applyTableOp(t, "kitchenUndo", { round: 1 }, "cocina", catalog).order;
+  assert.equal(t.kitchen[1].status, "pending");
+  t = applyTableOp(t, "kitchenReady", { round: 1 }, "cocina", catalog).order;
+  throwsCode(() => applyTableOp(t, "served", { round: 1 }, "cocina", catalog), "role"); // the kitchen doesn't serve
+  const r = applyTableOp(t, "served", { round: 1 }, "mozo", catalog);
+  assert.equal(r.order.kitchen[1].status, "served");
+  assert.match(r.text, /Ronda 2 entregada/);
+});
+
+test("kitchen role: marks orders ready but can't accept, add, charge or cancel", () => {
+  assert.equal(can("cocina", "accept"), false);
+  assert.equal(can("cocina", "addItems"), false);
+  assert.equal(can("cocina", "paid"), false);
+  assert.equal(can("cocina", "take"), false);
+  assert.ok(can("cocina", "ready"));
+  let o = applyOp(order(), "accept", {}, "mozo", catalog).order;
+  throwsCode(() => applyOp(order(), "accept", {}, "cocina", catalog), "role");
+  o = applyOp(o, "ready", {}, "cocina", catalog, 700).order; // a delivery can be ready in the kitchen
+  assert.equal(o.status, "ready");
+  o = applyOp(o, "kitchenUndo", {}, "cocina", catalog).order;
+  assert.equal(o.status, "prep");
+  o = applyOp(o, "ready", {}, "cocina", catalog).order;
+  o = applyOp(o, "street", { rider: "Hugo" }, "mozo", catalog).order; // then it leaves with the rider
+  assert.equal(o.status, "street");
+  throwsCode(() => applyOp(o, "kitchenUndo", {}, "cocina", catalog), "state");
 });

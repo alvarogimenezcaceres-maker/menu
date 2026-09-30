@@ -172,7 +172,32 @@ solo registra cómo se pagó. Diseño y plan: `plan/pos/` (gitignoreado).
   **otro monto** (repartida según lo que paga cada uno). La caja ve «Pidió la cuenta» con cada parte y la cajera toca
   «Cobrar» en cada una con su forma de pago; con la última, la mesa se cierra. Si se agrega o acepta algo después, la
   división se borra. El cálculo es uno solo (`OrderCore.splitBill` en `site/order-core.js`) para el celular y el Worker.
-- **Todavía no:** comanda en PDF (3), cierre por turno (4) y precios en vivo (5).
+- **Comanda, precuenta y ticket en PDF (fase 3):** el encargado marca en «Equipo» la tablet del mostrador como
+  **Caja**. Esa tablet guarda en Descargas **todos** los PDF, los haga quien los haga: la comanda de cada pedido
+  aceptado, cada mesa tomada, cada ronda y cada agregado (solo lo nuevo), el ticket de cada cobro y el cierre de cada
+  turno. El botón «Caja · guarda los PDF» de arriba lo pone en pausa. En cualquier equipo quedan «Comanda PDF» en cada
+  pedido y «Precuenta PDF» en cada mesa. La primera vez Chrome pregunta si deja descargar varios archivos: «Permitir». Papel de 80 mm, Courier, sin librerías (`site/ticket-core.js`): las mismas líneas van a servir para la
+  impresora térmica.
+- **Caja y turno (fase 4, parte):** sección **Caja** (cajero y encargado): vendido del turno por forma de pago (las
+  mesas divididas cuentan parte por parte), propinas aparte, envíos, cancelados con motivo y lo pendiente (pedidos
+  sin cobrar, efectivo que tiene cada delivery, mesas abiertas). **Cerrar turno** guarda el resumen, lo baja en PDF y
+  arranca el turno siguiente; los anteriores quedan con su PDF.
+- **Cocina:** rol **Cocina** (solo ve la pantalla Cocina). Muestra en vivo, con sonido, cada pedido de delivery o
+  retiro aceptado y cada ronda de mesa (ítems, opciones, aclaraciones, minutos; borde amarillo a los 15 y rojo a los
+  25). **LISTO** le avisa al mozo con sonido: en Pedidos aparece «Mesa 7 · ronda 1 · Lista para llevar» con
+  **Entregado**; un delivery listo pasa a «Salió el delivery». «Deshacer» dura 5 minutos. El encargado también ve
+  Cocina.
+- **Tablet:** la caja se instala como app (Chrome → menú → «Agregar a la pantalla principal»: queda «Caja» con el
+  logo del local) y no deja que la pantalla se apague mientras está abierta.
+- **Reseña en Google:** panel → restaurante → «Enlace para dejar reseña en Google» (el de «Pedir opiniones» del
+  Perfil de Empresa, o `search.google.com/local/writereview?placeid=…`). El menú muestra «Dejanos tu reseña en Google»
+  en el pie, en «Mi mesa» después de pedir la cuenta y cuando la mesa se cierra (evento `review_click`).
+- **Privacidad:** el celular del cliente guarda nombre y dirección solo si tilda «Recordar mis datos en este celular»
+  (hay «Olvidar mis datos»). La caja borra nombre y dirección 30 días después de cerrado el pedido, y también de los
+  pedidos que nunca se cerraron, 30 días después de entrar. La analítica guarda el texto de una búsqueda solo si
+  encontró algo en el menú.
+- **Todavía no:** precios en vivo desde la caja (5), sin internet y respaldo (6), página de privacidad por local (falta
+  la razón social y el RUC de cada local), impresora térmica.
 
 ## Todo en la nube (desde el 26/09/2026): la notebook ya no hace falta
 

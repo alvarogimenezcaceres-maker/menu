@@ -40,7 +40,7 @@ jobs:
         working-directory: site
       - name: Probar el receptor de eventos, el pedido y la caja
         if: env.CLOUDFLARE_API_TOKEN != ''
-        run: node --test site/worker.test.mjs site/order-core.test.mjs site/caja-core.test.mjs
+        run: node --test site/worker.test.mjs site/order-core.test.mjs site/caja-core.test.mjs site/ticket-core.test.mjs
       - name: Armar y publicar
         if: env.CLOUDFLARE_API_TOKEN != ''
         run: node site/deploy-cloudflare.mjs

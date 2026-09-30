@@ -12,7 +12,7 @@
 // watch the account; they get their own WebSocket with a filtered view (dinerView), never the staff broadcast.
 import QRCode from "qrcode/lib/core/qrcode.js";
 import QRSvg from "qrcode/lib/renderer/svg-tag.js";
-import { applyOp, applyTableOp, addDiner, addPending, addRound, buildOrder, can, dinerView, requestBill, isClosed, newRef, openTable, orderTotal, priceLines, PII_DAYS, ROLES, validDiner, validRef, validTable, wipePii, CajaError } from "./caja-core.js";
+import { applyOp, applyTableOp, addDiner, addPending, addRound, buildOrder, can, dinerView, requestBill, shiftSummary, isClosed, newRef, openTable, orderTotal, priceLines, PII_DAYS, ROLES, validDiner, validRef, validTable, wipePii, CajaError } from "./caja-core.js";
 import { sameOrigin } from "./events.js";
 
 const C = globalThis.OrderCore; // loaded by caja-core.js
@@ -79,9 +79,12 @@ export class Caja {
       CREATE TABLE IF NOT EXISTS tickets (hash TEXT PRIMARY KEY, session TEXT NOT NULL, expires INTEGER NOT NULL);
       CREATE TABLE IF NOT EXISTS orders (ref TEXT PRIMARY KEY, created INTEGER NOT NULL, updated INTEGER NOT NULL, closed INTEGER, data TEXT NOT NULL);
       CREATE INDEX IF NOT EXISTS orders_closed ON orders(closed);
+      CREATE TABLE IF NOT EXISTS shifts (id INTEGER PRIMARY KEY AUTOINCREMENT, start INTEGER NOT NULL, end INTEGER NOT NULL, opened_by TEXT, closed_by TEXT, data TEXT NOT NULL);
       CREATE TABLE IF NOT EXISTS drafts (code TEXT PRIMARY KEY, created INTEGER NOT NULL, data TEXT NOT NULL);
       CREATE TABLE IF NOT EXISTS history (id INTEGER PRIMARY KEY AUTOINCREMENT, ref TEXT NOT NULL, at INTEGER NOT NULL, who TEXT, text TEXT);
       CREATE INDEX IF NOT EXISTS history_ref ON history(ref);`);
+    // «caja»: the tablet that keeps every PDF (comandas, tickets, shift closes). Added 2026-09-30.
+    if (!this.sql.exec("PRAGMA table_info(devices)").toArray().some(c => c.name === "kind")) this.sql.exec("ALTER TABLE devices ADD COLUMN kind TEXT DEFAULT ''");
   }
 
   meta(k, fallback = null) { const r = this.sql.exec("SELECT v FROM meta WHERE k = ?", k).toArray()[0]; return r ? r.v : fallback; }
@@ -112,6 +115,7 @@ export class Caja {
         try { body = text ? JSON.parse(text) : {}; } catch { return err(400, "JSON inválido."); }
       }
       switch (route) {
+        case "GET /activa": return json({ caja: this.activated() }); // the menu picks its privacy text
         case "POST /pedidos": return await this.publicOrder(body, slug);
         case "POST /mesa": return await this.tableDraft(body, slug, url);
         case "POST /mesa/unirse": return this.dinerJoin(body, slug, url);
@@ -178,6 +182,7 @@ export class Caja {
       const name = this.checkName(body.name), pin = this.checkPin(body.pin), salt = randomToken(12);
       this.sql.exec("INSERT INTO users (name, role, salt, hash) VALUES (?, 'encargado', ?, ?)", name, salt, await this.pinHash(salt, pin));
       user = this.sql.exec("SELECT id, name, role FROM users ORDER BY id DESC LIMIT 1").one();
+      this.setMeta("shift_start", Date.now()); this.setMeta("shift_by", name);
       await this.ctx.storage.setAlarm(Date.now() + DAY);
     }
     const token = randomToken();
@@ -264,7 +269,8 @@ export class Caja {
     const since = Date.now() - 12 * 3600000;
     let catalog = null;
     try { catalog = await this.loadCatalog(slug); } catch { /* the board still works; pickers show an error */ }
-    return json({ me: { id: s.id, name: s.name, role: s.role }, orders: this.rows("closed IS NULL OR closed > ?", since).map(o => this.withTotal(o)), catalog, tables: catalog?.tables || 20, now: Date.now() });
+    const dev = this.sql.exec("SELECT substr(hash, 1, 8) AS id, name, kind FROM devices WHERE hash = ?", s.device).toArray()[0] || {};
+    return json({ me: { id: s.id, name: s.name, role: s.role }, device: { id: dev.id, name: dev.name, kind: dev.kind || "" }, orders: this.rows("closed IS NULL OR closed > ?", since).map(o => this.withTotal(o)), catalog, tables: catalog?.tables || 20, now: Date.now() });
   }
 
   async op(request, body, slug) {
@@ -276,10 +282,24 @@ export class Caja {
       const o = buildOrder({ ref: this.freeRef(newRef()), lines: body.lines, form: body.form, src: "manual" }, catalog);
       o.status = "prep"; // the staff typed it: it's already accepted
       this.save(o, who, "Cargado a mano por " + who);
+      this.doc("comanda", o, { round: null });
       return json({ order: this.withTotal(o) });
     }
     if (body.op === "history") return json({ history: this.sql.exec("SELECT at, who, text FROM history WHERE ref = ? ORDER BY id", String(body.ref)).toArray() });
     if (body.op === "draft") return json(this.readDraft(body.code));
+    if (body.op === "shift" || body.op === "closeShift" || body.op === "shifts") {
+      if (!can(s.role, "shift")) throw new CajaError("role", "El turno lo ven la cajera y el encargado.");
+      if (body.op === "shifts") return json({ shifts: this.sql.exec("SELECT id, start, end, opened_by AS openedBy, closed_by AS closedBy, data FROM shifts ORDER BY id DESC LIMIT 30").toArray().map(r => ({ ...r, summary: JSON.parse(r.data), data: undefined })) });
+      // the first shift of a restaurant starts when it was activated (or now, for old data)
+      const start = +this.meta("shift_start", 0), openedBy = this.meta("shift_by", "");
+      const now = Date.now(), summary = shiftSummary(this.rows("closed IS NULL OR closed >= ?", start), start, now);
+      if (body.op === "shift") return json({ start, openedBy, summary });
+      this.sql.exec("INSERT INTO shifts (start, end, opened_by, closed_by, data) VALUES (?, ?, ?, ?, ?)", start, now, openedBy, who, JSON.stringify(summary));
+      this.setMeta("shift_start", now); this.setMeta("shift_by", who);
+      this.broadcast({ t: "shift", start: now, by: who });
+      this.doc("cierre", null, { closed: { start, end: now, openedBy, closedBy: who, summary } });
+      return json({ closed: { start, end: now, openedBy, closedBy: who, summary }, start: now });
+    }
     if (body.op === "tableQr") {
       const t = this.getOrder(String(body.ref));
       if (t.kind !== "table" || t.status !== "open") throw new CajaError("state", "La mesa no está abierta.");
@@ -287,6 +307,7 @@ export class Caja {
     }
     if (body.op === "take") return json(this.takeDraft(body.code, body.table, s));
     if (body.op === "openTable") {
+      if (!can(s.role, "create")) throw new CajaError("role", "Tu rol no puede abrir mesas.");
       const table = +body.table;
       if (!validTable(table)) throw new CajaError("table", "Elegí el número de mesa.");
       if (this.openTableSession(table)) throw new CajaError("state", `La mesa ${table} ya está abierta.`);
@@ -299,6 +320,9 @@ export class Caja {
       const catalog = body.op === "addItems" ? await this.loadCatalog(slug) : null;
       const { order, text } = applyTableOp(current, body.op, body.args || {}, s.role, catalog);
       this.save(order, who, `${text} (${who})`);
+      if (body.op === "addItems" || body.op === "acceptRound") this.doc("comanda", order, { round: order.rounds - 1 });
+      if (body.op === "charge") this.doc("ticket", order);
+      if (body.op === "payPart") this.doc("ticket", order, { key: body.args.key });
       return json({ order: this.withTotal(order) });
     }
     if (body.updatedAt && body.updatedAt !== current.updatedAt && ["accept", "reject"].includes(body.op) && current.status !== "new") {
@@ -307,6 +331,9 @@ export class Caja {
     const catalog = body.op === "addItems" ? await this.loadCatalog(slug) : null;
     const { order, text } = applyOp(current, body.op, body.args || {}, s.role, catalog);
     this.save(order, who, `${text} (${who})`);
+    if (body.op === "accept") this.doc("comanda", order, { round: null });
+    if (body.op === "addItems") this.doc("comanda", order, { round: order.rounds - 1 });
+    if (body.op === "paid" || body.op === "rendido") this.doc("ticket", order);
     return json({ order: this.withTotal(order) });
   }
 
@@ -377,6 +404,7 @@ export class Caja {
       text = `Mesa ${table} abierta por ${s.name} con el pedido ${draft.code}`;
     }
     this.save(session, s.name, text);
+    this.doc("comanda", session, { round: session.rounds - 1 });
     this.sql.exec("UPDATE drafts SET data = ? WHERE code = ?", JSON.stringify({ ...d, taken: { table, ref: session.ref, at: Date.now() } }), draft.code);
     return { order: this.withTotal(session), added: !!existing };
   }
@@ -439,7 +467,7 @@ export class Caja {
     if (!can(s.role, "users")) throw new CajaError("role", "Solo el encargado ve el equipo.");
     return json({
       users: this.sql.exec("SELECT id, name, role, locked_until > ? AS locked FROM users WHERE active = 1 ORDER BY name", Date.now()).toArray(),
-      devices: this.sql.exec("SELECT substr(hash, 1, 8) AS id, name, created, seen FROM devices ORDER BY seen DESC").toArray(),
+      devices: this.sql.exec("SELECT substr(hash, 1, 8) AS id, name, created, seen, kind FROM devices ORDER BY seen DESC").toArray(),
     });
   }
   async teamChange(request, body, slug) {
@@ -466,6 +494,12 @@ export class Caja {
         this.sql.exec("UPDATE users SET active = 0 WHERE id = ?", +body.id);
         this.endSessions("user_id = ?", +body.id);
         break;
+      case "deviceKind": {
+        const kind = body.kind === "caja" ? "caja" : "";
+        this.sql.exec("UPDATE devices SET kind = ? WHERE substr(hash, 1, 8) = ?", kind, String(body.id));
+        this.broadcast({ t: "devices" });
+        break;
+      }
       case "unlinkDevice":
         this.endSessions("device IN (SELECT hash FROM devices WHERE substr(hash, 1, 8) = ?)", String(body.id));
         this.sql.exec("DELETE FROM devices WHERE substr(hash, 1, 8) = ?", String(body.id));
@@ -509,6 +543,8 @@ export class Caja {
   }
   webSocketMessage(ws, message) { if (message === "ping") ws.send("pong"); }
   webSocketClose(ws, code) { try { ws.close(code, "bye"); } catch { /* already closed */ } }
+  // The caja tablet saves a PDF of each of these, whoever did the action (plan/pos: «todo registrado en la caja»).
+  doc(kind, order, extra = {}) { this.broadcast({ t: "doc", kind, ref: order && order.ref, ...extra }); }
   broadcast(msg) {
     const data = JSON.stringify(msg);
     for (const ws of this.ctx.getWebSockets("staff")) { try { ws.send(data); } catch { /* gone */ } }
@@ -526,7 +562,8 @@ export class Caja {
   /* ---------- limpieza diaria ---------- */
   async alarm() {
     const limit = Date.now() - PII_DAYS * DAY;
-    for (const r of this.sql.exec("SELECT data FROM orders WHERE closed IS NOT NULL AND closed < ? AND data NOT LIKE '%\"piiWiped\":true%'", limit).toArray()) {
+    // closed sales 30 days after closing; orders that never closed, 30 days after they came in
+    for (const r of this.sql.exec("SELECT data FROM orders WHERE ((closed IS NOT NULL AND closed < ?) OR (closed IS NULL AND created < ?)) AND data NOT LIKE '%\"piiWiped\":true%'", limit, limit).toArray()) {
       const o = { ...wipePii(JSON.parse(r.data)), piiWiped: true };
       this.sql.exec("UPDATE orders SET data = ? WHERE ref = ?", JSON.stringify(o), o.ref);
     }

@@ -5,8 +5,10 @@ import "./order-core.js";
 
 const C = globalThis.OrderCore;
 
-export const ROLES = ["mozo", "cajero", "encargado"];
-export const ROLE_LABEL = { mozo: "Mozo", cajero: "Cajero", encargado: "Encargado" };
+// The kitchen only sees the kitchen screen: it marks comandas ready, nothing else.
+export const STAFF = ["mozo", "cajero", "encargado"];
+export const ROLES = [...STAFF, "cocina"];
+export const ROLE_LABEL = { mozo: "Mozo", cajero: "Cajero", encargado: "Encargado", cocina: "Cocina" };
 export const STATUSES = ["new", "prep", "ready", "street", "delivered", "cancelled"];
 export const PAY_METHODS = ["efectivo", "transferencia", "qr", "tarjeta"];
 const REF_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // no 0/O, 1/I: the code is read aloud and typed
@@ -18,10 +20,12 @@ const fail = (code, message) => { throw new CajaError(code, message); };
 
 // Who may run each operation (DEC-063: mozo, cajero and encargado exist from the pilot).
 const CAN = {
-  accept: ROLES, reject: ROLES, ready: ROLES, street: ROLES, deliver: ROLES, addItems: ROLES, create: ROLES,
+  accept: STAFF, reject: STAFF, ready: ROLES, street: STAFF, deliver: STAFF, addItems: STAFF, create: STAFF,
+  kitchen: ROLES, served: STAFF,
   paid: ["cajero", "encargado"], rendido: ["cajero", "encargado"],
   cancel: ["encargado"],
-  users: ["encargado"], devices: ["encargado"], code: ["encargado"], take: ROLES, acceptRound: ROLES, rejectRound: ROLES,
+  shift: ["cajero", "encargado"],
+  users: ["encargado"], devices: ["encargado"], code: ["encargado"], take: STAFF, acceptRound: STAFF, rejectRound: STAFF,
 };
 export const can = (role, op) => (CAN[op] || []).includes(role);
 
@@ -111,10 +115,12 @@ export function openTable({ ref, table, lines, dinerId, by, joinToken }, now = D
   return session;
 }
 // One accepted batch of items; each line remembers who ordered it (the diner's color, or none for the staff).
-export function addRound(session, pricedLines, dinerId) {
+export function addRound(session, pricedLines, dinerId, now = Date.now()) {
   const { session: s, color } = addDiner(session, dinerId);
   const round = s.rounds;
-  return { session: { ...s, rounds: round + 1, lines: [...s.lines, ...pricedLines.map(l => ({ ...l, round, diner: color }))] }, color };
+  // the kitchen screen shows each round as its own comanda until it's ready, and the waiter until it's served
+  const kitchen = { ...(s.kitchen || {}), [round]: { status: "pending", at: now } };
+  return { session: { ...s, rounds: round + 1, kitchen, lines: [...s.lines, ...pricedLines.map(l => ({ ...l, round, diner: color }))] }, color };
 }
 
 // A diner at an open table sends an order from the phone: it waits until the mozo or the cajera accepts it (DEC-064).
@@ -155,6 +161,17 @@ export function requestBill(session, split, dinerId, now = Date.now()) {
 }
 
 export function applyTableOp(session, op, args, role, catalog, now = Date.now()) {
+  if (op === "kitchenReady" || op === "kitchenUndo" || op === "served") {
+    if (!can(role, op === "served" ? "served" : "kitchen")) fail("role", `Tu rol (${ROLE_LABEL[role] || role}) no puede hacer esto.`);
+    if (isClosed(session)) fail("closed", "Esta mesa ya está cerrada.");
+    const k = (session.kitchen || {})[args.round];
+    if (!k) fail("state", "No encontré esa comanda.");
+    const want = { kitchenReady: "pending", kitchenUndo: "ready", served: "ready" }[op];
+    if (k.status !== want) fail("state", op === "kitchenReady" ? "Esa comanda ya estaba lista." : op === "served" ? "Esa comanda todavía no está lista." : "Esa comanda ya no se puede volver atrás.");
+    const next = { kitchenReady: { ...k, status: "ready", readyAt: now }, kitchenUndo: { ...k, status: "pending", readyAt: null }, served: { ...k, status: "served", servedAt: now } }[op];
+    const text = { kitchenReady: `Ronda ${+args.round + 1} lista en cocina`, kitchenUndo: `Ronda ${+args.round + 1} vuelve a cocina`, served: `Ronda ${+args.round + 1} entregada en la mesa` }[op];
+    return { order: { ...session, updatedAt: now, kitchen: { ...session.kitchen, [args.round]: next } }, text };
+  }
   if (op === "acceptRound" || op === "rejectRound") {
     if (!can(role, op)) fail("role", `Tu rol (${ROLE_LABEL[role] || role}) no puede hacer esto.`);
     if (isClosed(session)) fail("closed", "Esta mesa ya está cerrada.");
@@ -213,7 +230,7 @@ export function applyTableOp(session, op, args, role, catalog, now = Date.now())
 
 // Applies one staff operation. Returns the updated order and a short history text; throws CajaError when not allowed.
 export function applyOp(order, op, args, role, catalog, now = Date.now()) {
-  if (!can(role, op)) fail("role", `Tu rol (${ROLE_LABEL[role] || role}) no puede hacer esto.`);
+  if (!can(role, op === "kitchenUndo" ? "kitchen" : op)) fail("role", `Tu rol (${ROLE_LABEL[role] || role}) no puede hacer esto.`);
   if (isClosed(order)) fail("closed", "Este pedido ya está cerrado.");
   const o = { ...order, lines: order.lines.slice(), updatedAt: now };
   const need = (cond, msg) => { if (!cond) fail("state", msg); };
@@ -226,7 +243,8 @@ export function applyOp(order, op, args, role, catalog, now = Date.now()) {
       need(reason, "Escribí el motivo.");
       o.status = "cancelled"; o.cancelReason = reason; text = (op === "reject" ? "Rechazado: " : "Cancelado: ") + reason; break;
     }
-    case "ready": need(o.status === "prep", "El pedido no está en cocina."); o.status = "ready"; text = "Listo para retirar"; break;
+    case "ready": need(o.status === "prep", "El pedido no está en cocina."); o.status = "ready"; o.readyAt = now; text = o.type === "delivery" ? "Listo en cocina, para el delivery" : "Listo para retirar"; break;
+    case "kitchenUndo": need(o.status === "ready" && !o.paid, "Ese pedido ya no se puede volver atrás."); o.status = "prep"; o.readyAt = null; text = "Vuelve a cocina"; break;
     case "street":
       need(o.status === "prep" || o.status === "ready", "El pedido no está en cocina.");
       need(o.type === "delivery", "Este pedido es para retirar.");
@@ -258,3 +276,39 @@ export function applyOp(order, op, args, role, catalog, now = Date.now()) {
 // Personal data kept only while it is useful to the restaurant (plan: 30 days).
 export const PII_DAYS = 30;
 export const wipePii = o => ({ ...o, name: o.name ? "(borrado)" : "", address: "", reference: "", note: "" });
+
+/* ---------- turno de caja (fase 4, DEC-063: cierre por turno) ---------- */
+// What was sold between `since` and `until`: closed sales by payment method (split tables count part by part),
+// tips apart, delivery fees, cancellations with their reason, and what is still pending right now.
+export function shiftSummary(all, since, until = Date.now()) {
+  const byMethod = {}, add = (m, amt) => { byMethod[m] = (byMethod[m] || 0) + amt; };
+  let sales = 0, count = 0, tips = 0, fees = 0, tables = 0, orders = 0;
+  const cancelled = [];
+  for (const o of all) {
+    if (!o.closedAt || o.closedAt < since || o.closedAt > until) continue;
+    if (o.status === "cancelled") { cancelled.push({ label: o.kind === "table" ? `Mesa ${o.table}` : `#MV-${o.ref}`, reason: o.cancelReason, amount: orderTotal(o) }); continue; }
+    count++;
+    if (o.kind === "table") {
+      tables++;
+      if (o.bill && Object.keys(o.bill.paid || {}).length === o.bill.parts.length) {
+        for (const p of o.bill.parts) { add(o.bill.paid[p.key], p.amount); sales += p.amount; tips += p.tip || 0; }
+      } else { add(o.payMethod, orderTotal(o)); sales += orderTotal(o); }
+    } else {
+      orders++;
+      add(o.payMethod, orderTotal(o)); sales += orderTotal(o); fees += o.fee || 0;
+    }
+  }
+  const open = all.filter(o => !isClosed(o));
+  const street = {};
+  for (const o of open) if (o.kind !== "table" && o.status === "street" && o.payMethod === "efectivo" && !o.paid) street[o.rider || "Sin nombre"] = (street[o.rider || "Sin nombre"] || 0) + orderTotal(o);
+  const openTables = open.filter(o => o.kind === "table");
+  const unpaid = open.filter(o => o.kind !== "table" && !o.paid && o.status !== "new");
+  return {
+    since, until, count, orders, tables, sales, tips, fees, byMethod, cancelled,
+    pending: {
+      unpaid: unpaid.length, unpaidTotal: unpaid.reduce((a, o) => a + orderTotal(o), 0),
+      street, openTables: openTables.length, openTablesTotal: openTables.reduce((a, o) => a + orderTotal(o), 0),
+      waiting: open.filter(o => o.kind !== "table" && o.status === "new").length,
+    },
+  };
+}

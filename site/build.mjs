@@ -16,6 +16,8 @@ const SIZES = [360, 720, 1200];
 // order logic shared with the page: the same file is inlined into every menu
 const ORDER_CORE = await readFile(path.join(ROOT, "site", "order-core.js"), "utf8");
 const OrderCore = vm.runInNewContext(ORDER_CORE + "\nOrderCore;");
+// comanda, precuenta and ticket as PDF, inlined into the caja page
+const TICKET_CORE = await readFile(path.join(ROOT, "site", "ticket-core.js"), "utf8");
 
 const exists = p => access(p).then(() => true, () => false);
 const fill = (tpl, vars) => tpl.replace(/\{\{(\w+)\}\}/g, (_, k) => {
@@ -24,6 +26,12 @@ const fill = (tpl, vars) => tpl.replace(/\{\{(\w+)\}\}/g, (_, k) => {
 });
 const attr = s => String(s).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
 const jsonForScript = v => JSON.stringify(v).replace(/</g, "\\u003c");
+
+// Google review link from the panel: only Google's own review/map URLs reach the page
+const reviewUrl = v => {
+  const u = String(v || "").trim();
+  return /^https:\/\/(search\.google\.com\/local\/writereview\?placeid=[A-Za-z0-9_-]+|g\.page\/r\/[A-Za-z0-9_-]+\/review|www\.google\.com\/maps\/|maps\.app\.goo\.gl\/)/.test(u) ? u : "";
+};
 
 // "+595 976 145 539" or "0976 145 539" → "595976145539" (wa.me format); a local 0 prefix assumes Paraguay
 const whatsappDigits = v => {
@@ -99,13 +107,23 @@ async function buildRestaurant(slug, templates) {
     ...theme, NAME: attr(r.name), NAME_JSON: jsonForScript(r.name), DESCRIPTION: attr(r.description), TAGLINE: attr(r.tagline || ""),
     URL: url, LOGO: r.logo, OG_IMAGE: r.hero || r.logo, JSONLD: jsonLd(m, url), DATA: jsonForScript(menu),
     HERO_IMG: r.hero ? `<img class="dish" src="img/${r.hero}-720.webp" alt="" fetchpriority="high">` : "",
-    WHATSAPP: whatsappDigits(r.whatsapp), ORDERING: jsonForScript(OrderCore.orderingConfig(r.ordering)), ORDER_CORE,
+    WHATSAPP: whatsappDigits(r.whatsapp), REVIEW_URL: jsonForScript(reviewUrl(r.googleReviewUrl)), ORDERING: jsonForScript(OrderCore.orderingConfig(r.ordering)), ORDER_CORE,
   }));
 
   // Mesaverso Caja: the catalog the Worker prices orders with (public data: the same as the menu) and the staff page
   await writeFile(path.join(out, "catalog.json"), JSON.stringify({ name: r.name, ordering: r.ordering || {}, tables: r.tables || 20, categories: menu.categories }));
   await mkdir(path.join(out, "caja"), { recursive: true });
-  await writeFile(path.join(out, "caja", "index.html"), fill(templates.caja, { NAME: attr(r.name), NAME_JSON: jsonForScript(r.name), SLUG: slug, ORDER_CORE }));
+  // the caja installs as an app on the restaurant's tablet (Android: «Agregar a la pantalla principal»)
+  await writeFile(path.join(out, "caja", "manifest.webmanifest"), JSON.stringify({
+    name: `${r.name} · Caja`, short_name: "Caja", start_url: "./", scope: "./", display: "standalone",
+    background_color: "#0E1014", theme_color: "#0E1014", orientation: "any",
+    icons: [192, 512].map(s => ({ src: `icon-${s}.png`, sizes: `${s}x${s}`, type: "image/png", purpose: "any" })),
+  }));
+  for (const size of [192, 512]) {
+    const logo = await sharp(path.join(out, "img", `${r.logo}-360.webp`)).resize({ width: Math.round(size * 0.78), height: Math.round(size * 0.78), fit: "inside" }).toBuffer();
+    await sharp({ create: { width: size, height: size, channels: 4, background: "#0E1014" } }).composite([{ input: logo, gravity: "center" }]).png().toFile(path.join(out, "caja", `icon-${size}.png`));
+  }
+  await writeFile(path.join(out, "caja", "index.html"), fill(templates.caja, { NAME: attr(r.name), NAME_JSON: jsonForScript(r.name), SLUG: slug, ORDER_CORE, TICKET_CORE }));
 
   // QR code: one general QR (?s=qr, so the monthly report can tell QR visits apart). Tables have no QR of their own
   // since 2026-09-29: the diner shows the waiter a QR of the order and the waiter picks the table (plan/pos).

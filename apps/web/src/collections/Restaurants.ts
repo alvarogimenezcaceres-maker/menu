@@ -184,6 +184,18 @@ export const Restaurants: CollectionConfig = {
         },
       ],
     },
+    {
+      name: 'googleReviewUrl',
+      type: 'text',
+      label: 'Enlace para dejar reseña en Google',
+      validate: (value: unknown) =>
+        !value || (typeof value === 'string' && /^https:\/\/(search\.google\.com\/local\/writereview\?placeid=|g\.page\/r\/|www\.google\.com\/maps\/|maps\.app\.goo\.gl\/)/.test(value.trim()))
+          ? true
+          : 'Pegá el enlace de «Pedir opiniones» del Perfil de Empresa de Google (g.page/r/…/review) o search.google.com/local/writereview?placeid=…',
+      admin: {
+        description: 'Aparece en el menú como «Dejanos tu reseña en Google», también cuando se cierra la mesa. Vacío = no se muestra.',
+      },
+    },
     { name: 'cuisine', type: 'text', hasMany: true, label: 'Tipo de cocina', admin: { description: 'Ej.: Pizza, Parrilla. Ayuda en Google.' } },
     {
       name: 'theme',

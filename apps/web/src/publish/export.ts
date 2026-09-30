@@ -70,6 +70,7 @@ export async function exportRestaurant(payload: Payload, restaurantId: number | 
       tables: r.tables ?? 0,
       whatsapp: r.whatsapp || undefined,
       cuisine: r.cuisine ?? [],
+      googleReviewUrl: r.googleReviewUrl?.trim() || undefined,
       ordering: {
         orderTypes: r.orderTypes?.length ? r.orderTypes : undefined,
         paymentMethods: r.paymentMethods?.length ? r.paymentMethods : undefined,

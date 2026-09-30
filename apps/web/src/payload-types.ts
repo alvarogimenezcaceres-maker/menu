@@ -146,7 +146,7 @@ export interface Restaurant {
   logo?: (number | null) | Media;
   hero?: (number | null) | Media;
   /**
-   * Se genera un QR por mesa.
+   * Para el mapa de mesas de la caja. El menú tiene un solo QR general.
    */
   tables?: number | null;
   currency?: ('PYG' | 'USD') | null;
@@ -189,6 +189,10 @@ export interface Restaurant {
         id?: string | null;
       }[]
     | null;
+  /**
+   * Aparece en el menú como «Dejanos tu reseña en Google», también cuando se cierra la mesa. Vacío = no se muestra.
+   */
+  googleReviewUrl?: string | null;
   /**
    * Ej.: Pizza, Parrilla. Ayuda en Google.
    */
@@ -545,6 +549,7 @@ export interface RestaurantsSelect<T extends boolean = true> {
         close?: T;
         id?: T;
       };
+  googleReviewUrl?: T;
   cuisine?: T;
   theme?:
     | T
