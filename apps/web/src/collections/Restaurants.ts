@@ -50,7 +50,7 @@ export const Restaurants: CollectionConfig = {
           min: 0,
           max: 200,
           defaultValue: 10,
-          admin: { description: 'Se genera un QR por mesa.' },
+          admin: { description: 'Para el mapa de mesas de la caja. El menú tiene un solo QR general.' },
         },
         {
           name: 'currency',

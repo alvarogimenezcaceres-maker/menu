@@ -8,7 +8,9 @@
 //  3. The session token goes in `Authorization: Bearer`; WebSockets use a single-use ticket (tokens never go in URLs).
 // Privacy: the menu's orders are stored only once the restaurant is activated; names and addresses are wiped
 // 30 days after the sale closes (daily alarm).
-import { applyOp, buildOrder, can, isClosed, newRef, orderTotal, PII_DAYS, ROLES, validRef, wipePii, CajaError } from "./caja-core.js";
+import QRCode from "qrcode/lib/core/qrcode.js";
+import QRSvg from "qrcode/lib/renderer/svg-tag.js";
+import { applyOp, applyTableOp, addRound, buildOrder, can, isClosed, newRef, openTable, orderTotal, priceLines, PII_DAYS, ROLES, validDiner, validRef, validTable, wipePii, CajaError } from "./caja-core.js";
 import { sameOrigin } from "./events.js";
 
 const SLUG = /^[a-z0-9][a-z0-9-]{0,63}$/;
@@ -16,6 +18,10 @@ const DAY = 86400000;
 const SESSION_MS = 16 * 3600000; // one long shift
 const LOCK_MS = 10 * 60000;
 const MAX_BODY = 32 * 1024;
+const DRAFT_MS = 30 * 60000; // a table order shown to the waiter waits this long
+
+// The QR a diner shows the waiter: it only carries a URL with the 4-letter code, so it stays small and easy to scan.
+const qrSvg = text => QRSvg.render(QRCode.create(text, { errorCorrectionLevel: "M" }), { margin: 1, color: { dark: "#0E1014ff", light: "#ffffffff" } });
 
 const json = (data, status = 200) => new Response(JSON.stringify(data), { status, headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" } });
 const err = (status, message, code = "error") => json({ error: message, code }, status);
@@ -67,6 +73,7 @@ export class Caja {
       CREATE TABLE IF NOT EXISTS tickets (hash TEXT PRIMARY KEY, session TEXT NOT NULL, expires INTEGER NOT NULL);
       CREATE TABLE IF NOT EXISTS orders (ref TEXT PRIMARY KEY, created INTEGER NOT NULL, updated INTEGER NOT NULL, closed INTEGER, data TEXT NOT NULL);
       CREATE INDEX IF NOT EXISTS orders_closed ON orders(closed);
+      CREATE TABLE IF NOT EXISTS drafts (code TEXT PRIMARY KEY, created INTEGER NOT NULL, data TEXT NOT NULL);
       CREATE TABLE IF NOT EXISTS history (id INTEGER PRIMARY KEY AUTOINCREMENT, ref TEXT NOT NULL, at INTEGER NOT NULL, who TEXT, text TEXT);
       CREATE INDEX IF NOT EXISTS history_ref ON history(ref);`);
   }
@@ -89,6 +96,7 @@ export class Caja {
     const route = request.method + " " + url.pathname;
     try {
       if (route === "GET /ws") return await this.upgrade(request, url);
+      if (request.method === "GET" && url.pathname.startsWith("/mesa/")) return this.draftStatus(url);
       let body = {};
       if (request.method === "POST") {
         const text = await request.text();
@@ -97,6 +105,7 @@ export class Caja {
       }
       switch (route) {
         case "POST /pedidos": return await this.publicOrder(body, slug);
+        case "POST /mesa": return await this.tableDraft(body, slug, url);
         case "POST /vincular": return await this.link(body, slug);
         case "GET /usuarios": return await this.userList(request);
         case "POST /entrar": return await this.login(body, request);
@@ -243,7 +252,7 @@ export class Caja {
     const since = Date.now() - 12 * 3600000;
     let catalog = null;
     try { catalog = await this.loadCatalog(slug); } catch { /* the board still works; pickers show an error */ }
-    return json({ me: { id: s.id, name: s.name, role: s.role }, orders: this.rows("closed IS NULL OR closed > ?", since).map(o => this.withTotal(o)), catalog, now: Date.now() });
+    return json({ me: { id: s.id, name: s.name, role: s.role }, orders: this.rows("closed IS NULL OR closed > ?", since).map(o => this.withTotal(o)), catalog, tables: catalog?.tables || 20, now: Date.now() });
   }
 
   async op(request, body, slug) {
@@ -258,7 +267,23 @@ export class Caja {
       return json({ order: this.withTotal(o) });
     }
     if (body.op === "history") return json({ history: this.sql.exec("SELECT at, who, text FROM history WHERE ref = ? ORDER BY id", String(body.ref)).toArray() });
+    if (body.op === "draft") return json(this.readDraft(body.code));
+    if (body.op === "take") return json(this.takeDraft(body.code, body.table, s));
+    if (body.op === "openTable") {
+      const table = +body.table;
+      if (!validTable(table)) throw new CajaError("table", "Elegí el número de mesa.");
+      if (this.openTableSession(table)) throw new CajaError("state", `La mesa ${table} ya está abierta.`);
+      const t = openTable({ ref: this.freeRef(newRef()), table, lines: [], by: who });
+      this.save(t, who, `Mesa ${table} abierta por ${who}`);
+      return json({ order: this.withTotal(t) });
+    }
     const current = this.getOrder(String(body.ref));
+    if (current.kind === "table") {
+      const catalog = body.op === "addItems" ? await this.loadCatalog(slug) : null;
+      const { order, text } = applyTableOp(current, body.op, body.args || {}, s.role, catalog);
+      this.save(order, who, `${text} (${who})`);
+      return json({ order: this.withTotal(order) });
+    }
     if (body.updatedAt && body.updatedAt !== current.updatedAt && ["accept", "reject"].includes(body.op) && current.status !== "new") {
       throw new CajaError("stale", "Otra persona ya atendió este pedido.");
     }
@@ -266,6 +291,72 @@ export class Caja {
     const { order, text } = applyOp(current, body.op, body.args || {}, s.role, catalog);
     this.save(order, who, `${text} (${who})`);
     return json({ order: this.withTotal(order) });
+  }
+
+  /* ---------- mesas: el pedido que el comensal le muestra al mozo ---------- */
+  openTableSession(table) {
+    return this.rows("closed IS NULL").find(o => o.kind === "table" && o.table === table && o.status === "open") || null;
+  }
+  async tableDraft(body, slug, url) {
+    // not activated: the menu falls back to the plain «show the waiter» list
+    if (!this.activated()) return new Response(null, { status: 204 });
+    const now = Date.now();
+    this.publicHits = this.publicHits.filter(t => now - t < 10 * 60000);
+    if (this.publicHits.length >= 40) throw new CajaError("locked", "Demasiados pedidos seguidos. Mostrale la lista al mozo.");
+    this.publicHits.push(now);
+    const lines = priceLines(body.lines, await this.loadCatalog(slug));
+    const diner = validDiner(body.diner) ? body.diner : null;
+    this.sql.exec("DELETE FROM drafts WHERE created < ?", now - DRAFT_MS);
+    // the same phone showing the same order again gets the same code
+    for (const r of this.sql.exec("SELECT code, data FROM drafts").toArray()) {
+      const d = JSON.parse(r.data);
+      if (diner && d.diner === diner && !d.taken && JSON.stringify(d.lines) === JSON.stringify(lines)) return this.draftReply(r.code, url, slug);
+    }
+    let code = newRef();
+    while (this.sql.exec("SELECT 1 FROM drafts WHERE code = ?", code).toArray().length) code = newRef();
+    this.sql.exec("INSERT INTO drafts (code, created, data) VALUES (?, ?, ?)", code, now, JSON.stringify({ lines, diner, taken: null }));
+    return this.draftReply(code, url, slug);
+  }
+  draftReply(code, url, slug) {
+    const link = `${url.origin}/${slug}/caja/?tomar=${code}`;
+    return json({ code, qr: qrSvg(link), expiresIn: DRAFT_MS });
+  }
+  // the diner's phone asks whether the waiter took the order (only that phone knows its diner id)
+  draftStatus(url) {
+    const code = url.pathname.split("/")[2] || "";
+    const r = this.sql.exec("SELECT created, data FROM drafts WHERE code = ?", code).toArray()[0];
+    if (!r) return json({ status: "expired" });
+    const d = JSON.parse(r.data);
+    if (!d.diner || d.diner !== url.searchParams.get("d")) return json({ status: "waiting" });
+    if (d.taken) return json({ status: "taken", table: d.taken.table });
+    return json({ status: Date.now() - r.created > DRAFT_MS ? "expired" : "waiting" });
+  }
+  readDraft(code) {
+    const c = String(code || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+    const r = this.sql.exec("SELECT created, data FROM drafts WHERE code = ?", c).toArray()[0];
+    if (!r || Date.now() - r.created > DRAFT_MS) throw new CajaError("draft", "No encontré ese pedido. Pedile al cliente que toque «Mostrar al mozo» de nuevo.");
+    const d = JSON.parse(r.data);
+    if (d.taken) throw new CajaError("draft", `Ese pedido ya se cargó en la mesa ${d.taken.table}.`);
+    return { code: c, lines: d.lines, total: d.lines.reduce((sum, l) => sum + l.unit * l.n, 0) };
+  }
+  takeDraft(code, tableNo, s) {
+    if (!can(s.role, "take")) throw new CajaError("role", "Tu rol no puede tomar pedidos.");
+    const draft = this.readDraft(code);
+    const table = +tableNo;
+    if (!validTable(table)) throw new CajaError("table", "Elegí el número de mesa.");
+    const d = JSON.parse(this.sql.exec("SELECT data FROM drafts WHERE code = ?", draft.code).one().data);
+    const existing = this.openTableSession(table);
+    let session, text;
+    if (existing) {
+      session = addRound({ ...existing, updatedAt: Date.now() }, d.lines, d.diner).session;
+      text = `Pedido ${draft.code} agregado a la mesa ${table} por ${s.name}`;
+    } else {
+      session = openTable({ ref: this.freeRef(newRef()), table, lines: d.lines, dinerId: d.diner, by: s.name });
+      text = `Mesa ${table} abierta por ${s.name} con el pedido ${draft.code}`;
+    }
+    this.save(session, s.name, text);
+    this.sql.exec("UPDATE drafts SET data = ? WHERE code = ?", JSON.stringify({ ...d, taken: { table, at: Date.now() } }), draft.code);
+    return { order: this.withTotal(session), added: !!existing };
   }
 
   /* ---------- equipo (encargado) ---------- */
@@ -358,6 +449,7 @@ export class Caja {
     }
     this.sql.exec("DELETE FROM sessions WHERE expires < ?", Date.now());
     this.sql.exec("DELETE FROM tickets WHERE expires < ?", Date.now());
+    this.sql.exec("DELETE FROM drafts WHERE created < ?", Date.now() - DAY);
     await this.ctx.storage.setAlarm(Date.now() + DAY);
   }
 }

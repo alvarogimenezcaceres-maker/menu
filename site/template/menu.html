@@ -304,6 +304,12 @@
   .field > label { font: 600 15px/1.2 var(--display); }
   .opt-l, .help { font: 400 13px/1.3 var(--body); color: var(--muted); }
   .waiter .wx { display: block; font: 500 17px/1.3 var(--body); color: var(--muted); }
+  .waiter .qrbox { justify-self: center; display: grid; justify-items: center; gap: 8px; margin: 4px 0 14px; }
+  .waiter .qrbox .qr { width: min(260px, 70vw); background: #fff; border-radius: 16px; padding: 10px; }
+  .waiter .qrbox .qr svg { display: block; width: 100%; height: auto; }
+  .waiter .qrbox .code { font: 700 34px/1 var(--display); letter-spacing: .18em; color: var(--text); }
+  .waiter .qrbox .how { color: var(--muted); font-size: 15px; text-align: center; max-width: 30ch; }
+  .waiter .ok { margin: 6px 0 14px; padding: 16px; border-radius: 16px; background: rgba(76,195,138,.14); border: 1px solid #4CC38A; font: 600 19px/1.35 var(--display); text-align: center; }
   .waiter .wx.note { color: var(--amber-soft); }
   .field input, .field textarea, .field select { width: 100%; min-height: 48px; background: var(--raised); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; font-size: 16px; outline: none; }
   .field textarea { resize: vertical; min-height: 64px; }
@@ -999,18 +1005,59 @@ function orderButtons() {
   return table ? waiter + wa : wa + waiter;
 }
 const waiterEl = $("#waiter");
-function openWaiter() {
+/* Mesaverso Caja (DEC-064): «Mostrar al mozo» shows a QR of the order; the waiter scans it and picks the table.
+   The phone keeps a random diner id (no personal data) so it can tell when the waiter took its order. */
+const DINER_KEY = "comensal:" + location.pathname;
+function dinerId() {
+  try { let d = localStorage.getItem(DINER_KEY); if (!d) { d = "c" + [...crypto.getRandomValues(new Uint8Array(12))].map(b => b.toString(36).padStart(2, "0")).join("").slice(0, 20); localStorage.setItem(DINER_KEY, d); } return d; }
+  catch (e) { return ""; }
+}
+let waiterPoll = 0;
+async function tableQr() {
+  try {
+    const res = await fetch("/api/" + SLUG + "/mesa", { method: "POST", headers: { "content-type": "application/json" },
+      body: JSON.stringify({ diner: dinerId(), lines: lines.map(({ slug, picks, note, n }) => ({ slug, picks, note, n })) }) });
+    return res.status === 200 ? await res.json() : null; // 204: this restaurant doesn't use the caja
+  } catch (e) { return null; }
+}
+function waitForWaiter(code) {
+  clearInterval(waiterPoll);
+  const started = Date.now();
+  waiterPoll = setInterval(async () => {
+    if (waiterEl.hidden || Date.now() - started > 20 * 60000) { clearInterval(waiterPoll); return; }
+    if (document.visibilityState !== "visible") return;
+    try {
+      const st = await (await fetch(`/api/${SLUG}/mesa/${code}?d=${encodeURIComponent(dinerId())}`)).json();
+      if (st.status === "taken") {
+        clearInterval(waiterPoll);
+        lines = []; saveSel(); renderSel(true);
+        const box = $("#waiterQr");
+        if (box) box.outerHTML = `<p class="ok" role="status">Listo: tu pedido está en la mesa ${esc(st.table)} y ya va para la cocina.</p>`;
+        haptic();
+      }
+      if (st.status === "expired") { clearInterval(waiterPoll); const how = $("#waiterQr .how"); if (how) how.textContent = "Este código venció. Cerrá y tocá «Mostrar al mozo» de nuevo."; }
+    } catch (e) { /* try again on the next tick */ }
+  }, 4000);
+}
+async function openWaiter() {
   track("waiter_show", { n: selCount(), total: selTotal(), mode: table ? "table" : "" });
+  waiterEl.innerHTML = `<span class="who">${esc(RESTAURANT)} · Pedido</span><p class="sel-hint">Preparando el código para el mozo…</p>`;
+  waiterEl.hidden = false;
+  const qr = await tableQr();
+  if (waiterEl.hidden) return;
   waiterEl.innerHTML = `
     <span class="who">${esc(RESTAURANT)} · Pedido</span>
-    <h2 class="mesa" id="waiterTitle">${table ? "Mesa " + esc(table) : "Mi pedido"}</h2>
+    <h2 class="mesa" id="waiterTitle">${qr ? "Mostrale esto al mozo" : table ? "Mesa " + esc(table) : "Mi pedido"}</h2>
+    ${qr ? `<div class="qrbox" id="waiterQr"><div class="qr" role="img" aria-label="Código QR del pedido ${esc(qr.code)}">${qr.qr}</div>
+      <span class="code" aria-label="Código ${esc(qr.code.split("").join(" "))}">${esc(qr.code)}</span>
+      <span class="how">El mozo lo escanea y elige tu mesa. Si no puede, dale estas 4 letras.</span></div>` : ""}
     <ul>${lines.map(l => { const x = C.describePicks(bySlug[l.slug], l.picks); return `<li><b>${l.n}×</b><span>${esc(bySlug[l.slug].name)}${x.length ? `<small class="wx">${esc(x.join(", "))}</small>` : ""}${l.note ? `<small class="wx note">«${esc(l.note)}»</small>` : ""}</span></li>`; }).join("")}</ul>
     <div class="tot"><span>Total</span>${fmt(selTotal())}</div>
-    <button class="ar-btn done" type="button" id="waiterDone">Listo</button>`;
-  waiterEl.hidden = false;
+    <button class="ar-btn done" type="button" id="waiterDone">${qr ? "Cerrar" : "Listo"}</button>`;
   $("#waiterDone").focus({ preventScroll: true });
+  if (qr) waitForWaiter(qr.code);
 }
-function closeWaiter() { waiterEl.hidden = true; $("#waiterBtn")?.focus({ preventScroll: true }); }
+function closeWaiter() { clearInterval(waiterPoll); waiterEl.hidden = true; $("#waiterBtn")?.focus({ preventScroll: true }); }
 waiterEl.addEventListener("click", e => { if (e.target.id === "waiterDone") closeWaiter(); });
 
 $("#selBody").addEventListener("click", e => {

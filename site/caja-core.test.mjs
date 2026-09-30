@@ -1,7 +1,7 @@
 // node --test site/caja-core.test.mjs
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { buildOrder, applyOp, can, isClosed, newRef, validRef, orderTotal, CajaError, wipePii } from "./caja-core.js";
+import { buildOrder, applyOp, can, isClosed, newRef, validRef, orderTotal, CajaError, wipePii, openTable, addRound, addDiner, applyTableOp, priceLines, DINER_COLORS } from "./caja-core.js";
 
 const catalog = {
   ordering: { orderTypes: ["delivery", "pickup"], paymentMethods: ["efectivo", "transferencia"], deliveryZones: [{ name: "Centro", fee: 10000 }] },
@@ -106,4 +106,50 @@ test("personal data can be wiped and the order still adds up", () => {
   assert.equal(w.address, "");
   assert.equal(w.name, "(borrado)");
   assert.equal(orderTotal(w), orderTotal(order()));
+});
+
+/* ---------- mesas ---------- */
+const priced = raw => priceLines(raw, catalog);
+
+test("a table opens from the diner's order, with the first color", () => {
+  const t = openTable({ ref: "MESA", table: 5, lines: priced([{ slug: "burger", picks: [[0]], n: 1 }]), dinerId: "diner-aaaaaaaa", by: "Pedro" }, 1000);
+  assert.equal(t.kind, "table");
+  assert.equal(t.status, "open");
+  assert.deepEqual(t.diners, [{ id: "diner-aaaaaaaa", color: "azul" }]);
+  assert.equal(t.lines[0].diner, "azul");
+  assert.equal(t.rounds, 1);
+  assert.equal(orderTotal(t), 40000);
+  throwsCode(() => openTable({ ref: "X", table: 0 }), "table");
+});
+
+test("each new diner gets the next free color; the same phone keeps its color", () => {
+  let t = openTable({ ref: "MESA", table: 2, lines: [], dinerId: null });
+  assert.equal(t.rounds, 0);
+  const a = addRound(t, priced([{ slug: "papas", picks: [], n: 1 }]), "diner-aaaaaaaa"); t = a.session;
+  const b = addRound(t, priced([{ slug: "papas", picks: [], n: 2 }]), "diner-bbbbbbbb"); t = b.session;
+  const again = addRound(t, priced([{ slug: "papas", picks: [], n: 1 }]), "diner-aaaaaaaa"); t = again.session;
+  assert.deepEqual([a.color, b.color, again.color], ["azul", "verde", "azul"]);
+  assert.deepEqual(t.lines.map(l => [l.round, l.diner]), [[0, "azul"], [1, "verde"], [2, "azul"]]);
+  assert.equal(addDiner(t, "bad id").color, null); // invalid ids get no color (staff lines)
+  assert.equal(DINER_COLORS.length, 8);
+});
+
+test("table: the mozo adds items but only the cajero charges; charging closes it", () => {
+  let t = openTable({ ref: "MESA", table: 3, lines: priced([{ slug: "papas", picks: [], n: 2 }]), dinerId: "diner-aaaaaaaa" });
+  t = applyTableOp(t, "addItems", { lines: [{ slug: "burger", picks: [[1]], n: 1 }] }, "mozo", catalog).order;
+  assert.equal(t.lines[1].diner, null);
+  assert.equal(orderTotal(t), 2 * 15000 + 52000);
+  throwsCode(() => applyTableOp(t, "charge", { method: "efectivo" }, "mozo", catalog), "role");
+  throwsCode(() => applyTableOp(t, "charge", {}, "cajero", catalog), "state");
+  const r = applyTableOp(t, "charge", { method: "tarjeta" }, "cajero", catalog, 9000);
+  assert.ok(isClosed(r.order));
+  assert.equal(r.order.closedAt, 9000);
+  throwsCode(() => applyTableOp(r.order, "addItems", { lines: [{ slug: "papas", picks: [], n: 1 }] }, "mozo", catalog), "closed");
+});
+
+test("table: an empty table can't be charged, only cancelled by the encargado", () => {
+  const t = openTable({ ref: "MESA", table: 4, lines: [] });
+  throwsCode(() => applyTableOp(t, "charge", { method: "efectivo" }, "cajero", catalog), "state");
+  throwsCode(() => applyTableOp(t, "cancel", { reason: "se fueron" }, "cajero", catalog), "role");
+  assert.equal(applyTableOp(t, "cancel", { reason: "se fueron" }, "encargado", catalog).order.status, "cancelled");
 });

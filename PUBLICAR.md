@@ -156,7 +156,13 @@ solo registra cómo se pagó. Diseño y plan: `plan/pos/` (gitignoreado).
 - **Probar en la notebook:** `cd site && node build.mjs`, después desde la raíz
   `npx wrangler@4 dev --port 8799 --var CAJA_SECRET:prueba` y abrir `http://127.0.0.1:8799/<slug>/caja/`.
 - **Pruebas:** `node --test site/caja-core.test.mjs` (también en `deploy-menus.yml`).
-- **Todavía no:** mesas con cuenta abierta, comanda en PDF, cierre de caja por turno y precios en vivo (fases 2 a 5).
+- **Mesas (fase 2a):** el menú tiene **un solo QR** (el general). El cliente arma su pedido y toca «Mostrar al mozo»:
+  su celular muestra un QR y 4 letras. El mozo lo lee con la cámara de su celular (vinculado a la caja), o con
+  «Tomar pedido de mesa» → «Escanear» (Android) o escribiendo las letras, **elige la mesa** y la abre. Si la mesa ya
+  está abierta, el pedido se suma. Cada celular aparece con un color (Azul, Verde…). El mozo agrega ítems; el cajero
+  cobra el total y la mesa se cierra. El código del pedido dura 30 minutos.
+- **Todavía no:** QR de la mesa para que se sumen los demás y cuenta en vivo en el celular (2b), dividir la cuenta (2c),
+  comanda en PDF (3), cierre por turno (4) y precios en vivo (5).
 
 ## Todo en la nube (desde el 26/09/2026): la notebook ya no hace falta
 

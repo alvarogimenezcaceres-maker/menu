@@ -21,7 +21,7 @@ const CAN = {
   accept: ROLES, reject: ROLES, ready: ROLES, street: ROLES, deliver: ROLES, addItems: ROLES, create: ROLES,
   paid: ["cajero", "encargado"], rendido: ["cajero", "encargado"],
   cancel: ["encargado"],
-  users: ["encargado"], devices: ["encargado"], code: ["encargado"],
+  users: ["encargado"], devices: ["encargado"], code: ["encargado"], take: ROLES,
 };
 export const can = (role, op) => (CAN[op] || []).includes(role);
 
@@ -75,7 +75,69 @@ export function buildOrder({ ref, lines, form, src }, catalog, now = Date.now())
   };
 }
 export const orderTotal = o => subtotal(o.lines) + (o.fee || 0);
-export const isClosed = o => o.status === "cancelled" || (o.status === "delivered" && o.paid);
+// a table session is closed once it is paid or cancelled; an order, once delivered and paid (or cancelled)
+export const isClosed = o => o.kind === "table" ? o.status !== "open" : o.status === "cancelled" || (o.status === "delivered" && o.paid);
+
+/* ---------- mesas (DEC-064) ---------- */
+// Colors for the diners of a table, in joining order. Always shown with their name, never color alone.
+export const DINER_COLORS = [
+  { key: "azul", name: "Azul", hex: "#5B9DFF" }, { key: "verde", name: "Verde", hex: "#4CC38A" },
+  { key: "naranja", name: "Naranja", hex: "#FF9A4D" }, { key: "violeta", name: "Violeta", hex: "#B9A3FF" },
+  { key: "rosa", name: "Rosa", hex: "#FF7EB6" }, { key: "celeste", name: "Celeste", hex: "#4FD1E0" },
+  { key: "amarillo", name: "Amarillo", hex: "#FFD84D" }, { key: "rojo", name: "Rojo", hex: "#FF6B6B" },
+];
+export const validDiner = id => typeof id === "string" && /^[A-Za-z0-9_-]{8,40}$/.test(id);
+export const validTable = n => Number.isInteger(n) && n >= 1 && n <= 200;
+
+// The diner (a random id kept on their phone) gets the next free color of the table.
+export function addDiner(session, dinerId) {
+  if (!validDiner(dinerId)) return { session, color: null };
+  const found = session.diners.find(d => d.id === dinerId);
+  if (found) return { session, color: found.color };
+  const used = new Set(session.diners.map(d => d.color));
+  const color = (DINER_COLORS.find(c => !used.has(c.key)) || DINER_COLORS[session.diners.length % DINER_COLORS.length]).key;
+  return { session: { ...session, diners: [...session.diners, { id: dinerId, color }] }, color };
+}
+
+// A table opened by the waiter from the order a diner showed (or empty, when the waiter opens it by hand).
+export function openTable({ ref, table, lines, dinerId, by }, now = Date.now()) {
+  if (!validTable(table)) fail("table", "Elegí el número de mesa.");
+  let session = { ref, kind: "table", table, status: "open", createdAt: now, updatedAt: now, diners: [], lines: [], rounds: 0,
+    paid: false, payMethod: "", closedAt: null, cancelReason: "", openedBy: by || "" };
+  if (lines && lines.length) session = addRound(session, lines, dinerId).session;
+  return session;
+}
+// One accepted batch of items; each line remembers who ordered it (the diner's color, or none for the staff).
+export function addRound(session, pricedLines, dinerId) {
+  const { session: s, color } = addDiner(session, dinerId);
+  const round = s.rounds;
+  return { session: { ...s, rounds: round + 1, lines: [...s.lines, ...pricedLines.map(l => ({ ...l, round, diner: color }))] }, color };
+}
+
+export function applyTableOp(session, op, args, role, catalog, now = Date.now()) {
+  const opFor = { addItems: "addItems", charge: "paid", cancel: "cancel" }[op];
+  if (!opFor) fail("op", "Operación desconocida.");
+  if (!can(role, opFor)) fail("role", `Tu rol (${ROLE_LABEL[role] || role}) no puede hacer esto.`);
+  if (isClosed(session)) fail("closed", "Esta mesa ya está cerrada.");
+  let s = { ...session, updatedAt: now }, text;
+  if (op === "addItems") {
+    const priced = priceLines(args.lines, catalog);
+    s = addRound(s, priced, null).session;
+    text = `Agregado: ${priced.map(l => `${l.n} × ${l.name}`).join(", ")}`;
+  } else if (op === "charge") {
+    if (!s.lines.length) fail("state", "La mesa no tiene consumo. Para liberarla, cancelala.");
+    const method = PAY_METHODS.includes(args.method) ? args.method : "";
+    if (!method) fail("state", "Elegí la forma de pago.");
+    s.status = "paid"; s.paid = true; s.payMethod = method; s.closedAt = now;
+    text = `Cobrada · ${C.PAYMENT_LABEL[method]} · ${C.money(orderTotal(s))}`;
+  } else {
+    const reason = str(args.reason, 120);
+    if (!reason) fail("state", "Escribí el motivo.");
+    s.status = "cancelled"; s.cancelReason = reason; s.closedAt = now;
+    text = "Mesa cancelada: " + reason;
+  }
+  return { order: s, text };
+}
 
 // Applies one staff operation. Returns the updated order and a short history text; throws CajaError when not allowed.
 export function applyOp(order, op, args, role, catalog, now = Date.now()) {

@@ -158,6 +158,21 @@ table.t tr:last-child td { border-bottom: 0; }
 .toast { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); z-index: 60; max-width: calc(100% - 24px); background: var(--text); color: var(--bg); padding: 12px 16px; border-radius: 12px; font: 600 14px/1.3 var(--display); box-shadow: var(--shadow); }
 .toast.bad { background: var(--st-pay); color: var(--mv-noche); }
 .banner { margin: 0 0 14px; padding: 12px 14px; border-radius: 12px; background: var(--st-pay-bg); color: var(--text); border: 1px solid var(--st-pay); font-size: 14.5px; }
+.tables { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+.tbl { text-align: left; display: grid; gap: 6px; align-content: start; min-height: 120px; padding: 12px; border-radius: 16px; border: 1px solid var(--line); background: var(--card); }
+.tbl .t { display: flex; align-items: baseline; justify-content: space-between; font: 700 22px/1 var(--display); }
+.tbl .t small { font: 500 13px/1 var(--body); color: var(--muted); }
+.tbl .amt { font: 700 16px/1.1 var(--display); }
+.tbl.free { background: none; border-style: dashed; color: var(--muted); }
+.tbl.pick[aria-pressed="true"] { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+.tbl.small { min-height: 72px; }
+.diner { display: inline-flex; align-items: center; gap: 6px; font: 600 12.5px/1.2 var(--display); color: var(--text-2); white-space: nowrap; }
+.diner i { width: 12px; height: 12px; border-radius: 50%; background: var(--c, var(--muted)); box-shadow: 0 0 0 2px var(--panel); }
+.dgroup { margin-bottom: 14px; }
+.dgroup h4 { display: flex; justify-content: space-between; align-items: center; margin: 0 0 4px; font: 700 14px/1.2 var(--display); }
+.scanbox { position: relative; border-radius: 16px; overflow: hidden; background: #000; aspect-ratio: 4 / 3; margin-top: 12px; }
+.scanbox video { width: 100%; height: 100%; object-fit: cover; }
+.codein { text-transform: uppercase; letter-spacing: .3em; font: 700 26px/1 var(--display) !important; text-align: center; }
 @media (max-width: 760px) {
   .app { grid-template-columns: minmax(0, 1fr); grid-template-rows: 56px minmax(0, 1fr) 68px; }
   .rail { grid-row: 3; flex-direction: row; border-right: 0; border-top: 1px solid var(--line); padding: 4px 6px; }
@@ -192,6 +207,8 @@ const I = {
   bike: '<circle cx="6" cy="16.5" r="3.5"/><circle cx="18" cy="16.5" r="3.5"/><path d="M6 16.5 9.5 9h5l3.5 7.5M12 9 10 5H7.5"/>',
   money: '<rect x="3" y="6" width="18" height="12" rx="2"/><path d="M12 9v6M10 10.5c0-.8.9-1.5 2-1.5s2 .7 2 1.5-.9 1.2-2 1.5-2 .7-2 1.5.9 1.5 2 1.5 2-.7 2-1.5"/>',
   plus: '<path d="M12 5v14M5 12h14"/>', x: '<path d="M6 6l12 12M18 6 6 18"/>',
+  tables: '<path d="M4 9h16M6 9v10M18 9v10M3 5h18"/>',
+  scan: '<path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3M7 12h10"/>',
   wifi: '<path d="M3 9a13 13 0 0 1 18 0M6.5 12.5a8 8 0 0 1 11 0M10 16a3 3 0 0 1 4 0"/><circle cx="12" cy="19" r=".8"/>',
   sound: '<path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4v-5Z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/>',
   user: '<circle cx="12" cy="8" r="3.5"/><path d="M5 20a7 7 0 0 1 14 0"/>',
@@ -242,9 +259,18 @@ function handleAuthLost(code, message) {
 
 /* ---------- estado ---------- */
 let screen = device ? (session ? "board" : "pin") : "link";
-let view = "orders", filter = "all", orders = new Map(), catalog = null, users = [], team = null;
+let view = "orders", filter = "all", orders = new Map(), catalog = null, users = [], team = null, tableCount = 20;
+const COLORS = { azul: ["Azul", "#5B9DFF"], verde: ["Verde", "#4CC38A"], naranja: ["Naranja", "#FF9A4D"], violeta: ["Violeta", "#B9A3FF"],
+  rosa: ["Rosa", "#FF7EB6"], celeste: ["Celeste", "#4FD1E0"], amarillo: ["Amarillo", "#FFD84D"], rojo: ["Rojo", "#FF6B6B"] };
+const dinerChip = c => c && COLORS[c] ? `<span class="diner" style="--c:${COLORS[c][1]}"><i aria-hidden="true"></i>${COLORS[c][0]}</span>` : `<span class="diner"><i aria-hidden="true"></i>Mozo</span>`;
+// ?tomar=CODE: the waiter scanned a diner's QR with the phone camera
+let pendingTake = new URLSearchParams(location.search).get("tomar");
+if (pendingTake) history.replaceState(null, "", location.pathname);
 let pinUser = null, pin = "", soundOn = store.get("sound") !== "off";
-const open = () => [...orders.values()].filter(o => !(o.status === "cancelled" || (o.status === "delivered" && o.paid)));
+const closedO = o => o.kind === "table" ? o.status !== "open" : o.status === "cancelled" || (o.status === "delivered" && o.paid);
+const open = () => [...orders.values()].filter(o => o.kind !== "table" && !closedO(o));
+const openTables = () => [...orders.values()].filter(o => o.kind === "table" && o.status === "open");
+const tableOf = n => openTables().find(t => t.table === n);
 
 /* ---------- en vivo ---------- */
 let ws = null, wsTries = 0, wsTimer = 0, pingTimer = 0, online = false;
@@ -269,13 +295,14 @@ function onMessage(msg) {
   orders.set(msg.order.ref, msg.order);
   if (!was && msg.order.status === "new") alertNew(msg.order);
   renderMain();
-  if (detailRef === msg.order.ref) openDetail(msg.order.ref, true);
+  if (detailRef === msg.order.ref) (msg.order.kind === "table" ? openTableDrawer(msg.order.table, true) : openDetail(msg.order.ref, true));
 }
 async function loadState() {
   const st = await api("/estado");
-  me = st.me; catalog = st.catalog;
+  me = st.me; catalog = st.catalog; tableCount = st.tables || 20;
   orders = new Map(st.orders.map(o => [o.ref, o]));
   render();
+  if (pendingTake) { const c = pendingTake; pendingTake = null; takeModal(c); }
 }
 
 /* ---------- aviso de pedido nuevo: sonido, vibración y título ---------- */
@@ -374,9 +401,88 @@ function boardHtml() {
   const cols = [["Nuevos", o => o.status === "new", "bell"], ["En cocina", o => o.status === "prep", "flame"], ["Listos y en la calle", o => ["ready", "street", "delivered"].includes(o.status), "bike"]];
   return `<div class="head"><h1>Pedidos</h1>
       <div class="chips" role="group" aria-label="Filtrar">${[["all", "Todos"], ["wa", "WhatsApp"], ["manual", "A mano"], ["pay", "Por cobrar"]].map(([k, l]) => `<button class="chip" data-filter="${k}" aria-pressed="${filter === k}">${l}</button>`).join("")}</div>
-      <span class="sp"></span><button class="btn primary" data-act="newOrder">${ic("plus")}Nuevo pedido</button></div>
+      <span class="sp"></span><button class="btn" data-act="take">${ic("scan")}Tomar pedido de mesa</button><button class="btn primary" data-act="newOrder">${ic("plus")}Nuevo pedido</button></div>
     ${!catalog ? `<p class="banner">No encontré el menú publicado de este local: «Nuevo pedido» y «Agregar ítems» no funcionan hasta publicar desde el panel.</p>` : ""}
     <div class="board">${cols.map(([t, f, i]) => { const c = list.filter(f); return `<section class="col" aria-label="${t}"><h2>${ic(i)}${t} <span class="n">${c.length}</span></h2>${c.map(card).join("") || `<p class="empty">Nada por acá.</p>`}</section>`; }).join("")}</div>`;
+}
+
+/* ---------- mesas ---------- */
+function tablesHtml() {
+  const openT = openTables();
+  const nums = Array.from({ length: Math.max(tableCount, ...openT.map(t => t.table)) }, (_, i) => i + 1);
+  return `<div class="head"><h1>Mesas</h1><span class="meta">${openT.length} abiertas · ${gs(openT.reduce((s, t) => s + t.total, 0))} en cuentas</span><span class="sp"></span>
+      <button class="btn primary" data-act="take">${ic("scan")}Tomar pedido de mesa</button></div>
+    <div class="tables">${nums.map(n => { const t = tableOf(n); return t
+      ? `<button class="tbl" data-tablen="${n}" aria-label="Mesa ${n}, ${gs(t.total)}"><span class="t">${n}<small>${ago(t.createdAt).replace("hace ", "")}</small></span><span class="amt num">${gs(t.total)}</span>
+          <span class="row1">${[...new Set(t.lines.map(l => l.diner).filter(Boolean))].map(c => `<span class="diner" style="--c:${COLORS[c][1]}"><i aria-hidden="true"></i></span>`).join("")}<span class="meta">${t.rounds} ${t.rounds === 1 ? "ronda" : "rondas"}</span></span></button>`
+      : `<button class="tbl free" data-tablen="${n}" aria-label="Mesa ${n}, libre"><span class="t">${n}<small>Libre</small></span></button>`; }).join("")}</div>`;
+}
+function openTableDrawer(n, refresh) {
+  const t = tableOf(n);
+  if (!t) {
+    showOverlay(`<div class="scrim" data-act="close"></div><div class="modal" role="dialog" aria-modal="true" aria-labelledby="ot">
+      <h2 id="ot">Mesa ${n}</h2><p class="help" style="margin:0">Está libre. Para abrirla con el pedido de un cliente, usá «Tomar pedido de mesa». Si no tiene celular, abrila vacía y cargá los ítems.</p>
+      <div class="grid2" style="margin-top:16px"><button class="btn" data-act="close">Volver</button><button class="btn primary" data-act="openEmpty" data-n="${n}">${ic("plus")}Abrir mesa ${n}</button></div></div>`);
+    return;
+  }
+  detailRef = t.ref;
+  const groups = {};
+  for (const l of t.lines) (groups[l.diner || "_"] ||= []).push(l);
+  const html = `<div class="scrim" data-act="close"></div><aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="tt">
+    <header><h2 id="tt">Mesa ${t.table}</h2><span class="st prep">${ago(t.createdAt).replace("hace ", "")}</span><span class="sp"></span><button class="icon-btn" data-act="close" aria-label="Cerrar">${ic("x")}</button></header>
+    <div class="body">
+      ${Object.entries(groups).map(([c, ls]) => `<div class="dgroup"><h4>${dinerChip(c === "_" ? null : c)}<span class="num">${gs(ls.reduce((s, l) => s + l.unit * l.n, 0))}</span></h4>
+        <ul class="lines">${ls.map(l => `<li><span class="q">${l.n}×</span><span><span class="nm">${esc(l.name)}</span>${l.extras.length ? `<span class="x">${esc(l.extras.join(", "))}</span>` : ""}${l.note ? `<span class="x note">«${esc(l.note)}»</span>` : ""}<span class="x">Ronda ${l.round + 1}</span></span><span class="p num">${gs(l.unit * l.n)}</span></li>`).join("")}</ul></div>`).join("") || `<p class="empty">Todavía no hay consumo.</p>`}
+      <div class="sum"><div class="grand"><span>Total</span><span class="num">${gs(t.total)}</span></div></div>
+    </div>
+    <footer><div class="grid2"><button class="btn" data-act="addItems" data-ref="${t.ref}"${catalog ? "" : " disabled"}>${ic("plus")}Agregar ítems</button>
+      ${CAN_PAY(me.role) ? `<button class="btn primary big" data-act="chargeTable" data-ref="${t.ref}"${t.lines.length ? "" : " disabled"}>${ic("money")}Cobrar ${gs(t.total)}</button>` : `<span class="meta" style="align-self:center">Cobra el cajero</span>`}</div>
+      ${me.role === "encargado" ? `<button class="btn ghost danger" data-act="cancelTable" data-ref="${t.ref}">Cancelar mesa…</button>` : ""}</footer>
+  </aside>`;
+  showOverlay(html, refresh ? "#none" : null);
+}
+
+/* ---------- tomar el pedido que muestra el comensal ---------- */
+let scanStream = null, scanTimer = 0;
+function stopScan() { clearInterval(scanTimer); if (scanStream) scanStream.getTracks().forEach(t => t.stop()); scanStream = null; }
+function takeModal(code = "") {
+  const canScan = "BarcodeDetector" in window && navigator.mediaDevices?.getUserMedia;
+  showOverlay(`<div class="scrim" data-act="close"></div><form class="modal" id="takeForm" role="dialog" aria-modal="true" aria-labelledby="tk">
+    <h2 id="tk">Tomar pedido de mesa</h2>
+    <p class="help" style="margin:0">Escaneá el QR que muestra el cliente con la cámara del celular, o escribí las 4 letras que aparecen debajo.</p>
+    <div class="field"><label for="tcode">Código del pedido</label><input id="tcode" class="codein" maxlength="4" autocomplete="off" autocapitalize="characters" value="${esc(code)}" aria-describedby="terr"></div>
+    ${canScan ? `<button class="btn block" type="button" data-act="scan" style="margin-top:10px">${ic("scan")}Escanear con esta cámara</button><div class="scanbox" id="scanbox" hidden><video id="scanvid" playsinline muted></video></div>` : ""}
+    <p class="err" id="terr" role="alert" hidden></p>
+    <div class="grid2" style="margin-top:16px"><button class="btn" type="button" data-act="close">Volver</button><button class="btn primary" type="submit">Ver pedido</button></div></form>`, "#tcode");
+  if (code) $("#takeForm").requestSubmit();
+}
+async function startScan() {
+  try {
+    const det = new BarcodeDetector({ formats: ["qr_code"] });
+    scanStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+    const v = $("#scanvid"); v.srcObject = scanStream; $("#scanbox").hidden = false; await v.play();
+    scanTimer = setInterval(async () => {
+      try {
+        const found = (await det.detect(v))[0];
+        const m = found && /[?&]tomar=([A-Z0-9]{4})/i.exec(found.rawValue);
+        if (m) { stopScan(); $("#tcode").value = m[1].toUpperCase(); $("#takeForm").requestSubmit(); }
+      } catch (e) {}
+    }, 300);
+  } catch (e) { say("No pude abrir la cámara. Escribí las 4 letras.", true); }
+}
+let taking = null; // { code, lines, total, table }
+function takePreview() {
+  const t = taking, nums = Array.from({ length: Math.max(tableCount, ...openTables().map(x => x.table)) }, (_, i) => i + 1);
+  const target = t.table ? tableOf(t.table) : null;
+  showOverlay(`<div class="scrim" data-act="close"></div><aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="tp">
+    <header><h2 id="tp">Pedido ${esc(t.code)}</h2><span class="sp"></span><button class="icon-btn" data-act="close" aria-label="Cerrar">${ic("x")}</button></header>
+    <div class="body">
+      <ul class="lines">${t.lines.map(l => `<li><span class="q">${l.n}×</span><span><span class="nm">${esc(l.name)}</span>${l.extras.length ? `<span class="x">${esc(l.extras.join(", "))}</span>` : ""}${l.note ? `<span class="x note">«${esc(l.note)}»</span>` : ""}</span><span class="p num">${gs(l.unit * l.n)}</span></li>`).join("")}</ul>
+      <div class="sum" style="margin:10px 0 18px"><div class="grand"><span>Total</span><span class="num">${gs(t.total)}</span></div></div>
+      <div class="sec"><h3>¿En qué mesa está?</h3><div class="tables" role="group" aria-label="Mesa">${nums.map(n => { const o = tableOf(n); return `<button class="tbl small pick${o ? "" : " free"}" data-pick="${n}" aria-pressed="${t.table === n}"><span class="t">${n}<small>${o ? gs(o.total) : "Libre"}</small></span></button>`; }).join("")}</div></div>
+    </div>
+    <footer><button class="btn primary big block" data-act="takeConfirm"${t.table ? "" : " disabled"}>${ic("check")}${!t.table ? "Elegí la mesa" : target ? `Agregar a la mesa ${t.table} y aceptar` : `Abrir mesa ${t.table} y aceptar`}</button></footer>
+  </aside>`, "#none");
 }
 
 /* ---------- equipo (encargado) ---------- */
@@ -410,7 +516,7 @@ function renderTop() {
 function renderMain() {
   const m = $("#main"); if (!m || !me) return;
   const scroll = m.scrollTop;
-  m.innerHTML = view === "team" ? teamHtml() : boardHtml();
+  m.innerHTML = view === "team" ? teamHtml() : view === "tables" ? tablesHtml() : boardHtml();
   m.scrollTop = scroll;
   const n = open().filter(o => o.status === "new").length;
   const b = $('[data-view="orders"] .badge'); if (b) { b.textContent = n; b.hidden = !n; }
@@ -423,6 +529,7 @@ function render() {
   root.innerHTML = `<div class="app"><header class="top"></header>
     <nav class="rail" aria-label="Secciones">
       <button data-view="orders"${view === "orders" ? ' aria-current="page"' : ""}>${ic("orders")}Pedidos<span class="badge" hidden></span></button>
+      <button data-view="tables"${view === "tables" ? ' aria-current="page"' : ""}>${ic("tables")}Mesas</button>
       ${me.role === "encargado" ? `<button data-view="team"${view === "team" ? ' aria-current="page"' : ""}>${ic("team")}Equipo</button>` : ""}
     </nav><main id="main"></main></div>`;
   renderTop(); renderMain();
@@ -436,7 +543,7 @@ function showOverlay(html, focusSel) {
   $("#root").inert = true;
   setTimeout(() => ($(focusSel || "#overlay input, #overlay .icon-btn, #overlay button") || {}).focus?.(), 0);
 }
-function closeOverlay() { $("#overlay").innerHTML = ""; $("#root").inert = false; detailRef = null; picker = null; }
+function closeOverlay() { stopScan(); $("#overlay").innerHTML = ""; $("#root").inert = false; detailRef = null; picker = null; taking = null; }
 document.addEventListener("keydown", e => { if (e.key === "Escape" && $("#overlay").innerHTML) closeOverlay(); });
 
 async function openDetail(ref, refresh) {
@@ -470,7 +577,7 @@ async function openDetail(ref, refresh) {
 function reasonModal(ref, op) {
   const reasons = op === "reject" ? ["No llegó el WhatsApp", "Fuera de zona", "Sin stock", "Local cerrado"] : ["El cliente no respondió", "El cliente canceló", "Sin stock", "Pedido duplicado"];
   showOverlay(`<div class="scrim" data-act="close"></div><form class="modal" id="reasonForm" data-ref="${ref}" data-op="${op}" role="dialog" aria-modal="true" aria-labelledby="rt">
-    <h2 id="rt">${op === "reject" ? "Rechazar" : "Cancelar"} #MV-${esc(ref)}</h2><p class="help" style="margin:0">Queda anotado con el motivo.</p>
+    <h2 id="rt">${op === "reject" ? "Rechazar" : "Cancelar"} ${orders.get(ref)?.kind === "table" ? "la mesa " + orders.get(ref).table : "#MV-" + esc(ref)}</h2><p class="help" style="margin:0">Queda anotado con el motivo.</p>
     <div class="opts" style="margin-top:12px">${reasons.map(r => `<button type="button" data-reason="${esc(r)}" aria-pressed="false">${esc(r)}</button>`).join("")}</div>
     <div class="field"><label for="rtext">Motivo</label><input id="rtext" maxlength="120" required></div>
     <div class="grid2" style="margin-top:16px"><button class="btn" type="button" data-act="close">Volver</button><button class="btn primary" type="submit">${op === "reject" ? "Rechazar" : "Cancelar pedido"}</button></div></form>`, "#rtext");
@@ -483,14 +590,15 @@ function riderModal(ref) {
     <div class="field"><label for="rname">Delivery <span class="help">(opcional)</span></label><input id="rname" maxlength="40" autocomplete="off"></div>
     <div class="grid2" style="margin-top:16px"><button class="btn" type="button" data-act="close">Volver</button><button class="btn primary" type="submit">${ic("bike")}Salió</button></div></form>`, "#rname");
 }
-function payModal(ref, deliver) {
+function payModal(ref, deliver, isTable) {
   const o = orders.get(ref);
-  showOverlay(`<div class="scrim" data-act="close"></div><form class="modal" id="payForm" data-ref="${ref}" data-deliver="${deliver ? 1 : ""}" role="dialog" aria-modal="true" aria-labelledby="pt">
-    <h2 id="pt">${deliver ? "Cobrar" : "Pago recibido"} · #MV-${esc(ref)}</h2>
+  showOverlay(`<div class="scrim" data-act="close"></div><form class="modal" id="payForm" data-ref="${ref}" data-deliver="${deliver ? 1 : ""}" data-table="${isTable ? 1 : ""}" role="dialog" aria-modal="true" aria-labelledby="pt">
+    <h2 id="pt">${isTable ? "Cobrar la mesa " + o.table : (deliver ? "Cobrar" : "Pago recibido") + " · #MV-" + esc(ref)}</h2>
     <div class="sum" style="margin:6px 0 4px"><div class="grand"><span>Total</span><span class="num">${gs(o.total)}</span></div></div>
     <div class="field"><span class="lbl">¿Cómo pagó?</span><div class="opts" role="group" aria-label="Forma de pago">${["efectivo", "transferencia", "qr", "tarjeta"].map(m => `<button type="button" data-method="${m}" aria-pressed="${o.payMethod === m}">${C.PAYMENT_LABEL[m]}</button>`).join("")}</div></div>
     ${o.cash ? `<p class="help">Dijo que paga con ${gs(o.cash)}: vuelto ${gs(o.cash - o.total)}.</p>` : ""}
-    <div class="grid2" style="margin-top:16px"><button class="btn" type="button" data-act="close">Volver</button><button class="btn primary" type="submit">${ic("check")}${deliver ? "Cobrado y entregado" : "Confirmar pago"}</button></div></form>`, "#payForm button[aria-pressed=true]");
+    ${isTable ? `<p class="help">Dividir la cuenta por persona llega en la fase siguiente: por ahora se registra el total.</p>` : ""}
+    <div class="grid2" style="margin-top:16px"><button class="btn" type="button" data-act="close">Volver</button><button class="btn primary" type="submit">${ic("check")}${isTable ? "Cobrada, cerrar mesa" : deliver ? "Cobrado y entregado" : "Confirmar pago"}</button></div></form>`, "#payForm button[aria-pressed=true]");
 }
 
 /* ---------- elegir productos (nuevo pedido y agregar ítems) ---------- */
@@ -502,7 +610,7 @@ function pickerHtml() {
   const q = (p.q || "").trim().toLowerCase();
   const dishes = q ? cats.flatMap(c => c.dishes).filter(d => d.name.toLowerCase().includes(q)) : cat.dishes;
   return `<div class="scrim" data-act="close"></div><aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="pk">
-    <header><h2 id="pk">${p.mode === "new" ? "Nuevo pedido" : "Agregar a #MV-" + esc(p.ref)}</h2><span class="sp"></span><button class="icon-btn" data-act="close" aria-label="Cerrar">${ic("x")}</button></header>
+    <header><h2 id="pk">${p.mode === "new" ? "Nuevo pedido" : orders.get(p.ref)?.kind === "table" ? "Agregar a la mesa " + orders.get(p.ref).table : "Agregar a #MV-" + esc(p.ref)}</h2><span class="sp"></span><button class="icon-btn" data-act="close" aria-label="Cerrar">${ic("x")}</button></header>
     <div class="body">
       ${p.mode === "new" ? newOrderFields() : ""}
       <h3 style="font:700 12.5px/1 var(--display);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:${p.mode === "new" ? "20px" : "0"} 0 8px">Productos</h3>
@@ -604,6 +712,8 @@ document.addEventListener("click", async e => {
   if (d.rider) { $("#rname").value = d.rider; return; }
   if (d.method) { b.parentElement.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b)); return; }
   if (d.cat && picker) { picker.cat = d.cat; renderPicker(); return; }
+  if (d.tablen) { openTableDrawer(+d.tablen); return; }
+  if (d.pick && taking) { taking.table = +d.pick; takePreview(); return; }
   if (d.dish && picker) { dishModal(d.dish); return; }
   if (d.drop != null && picker) { picker.lines.splice(+d.drop, 1); renderPicker(); return; }
   if (d.ftype && picker) { picker.form.type = d.ftype; renderPicker(); return; }
@@ -611,6 +721,25 @@ document.addEventListener("click", async e => {
   const ref = d.ref;
   switch (d.act) {
     case "close": closeOverlay(); break;
+    case "take": takeModal(); break;
+    case "scan": startScan(); break;
+    case "takeConfirm": {
+      if (busy || !taking?.table) break; busy = true;
+      try {
+        const r = await api("/op", { method: "POST", body: { op: "take", code: taking.code, table: taking.table } });
+        orders.set(r.order.ref, r.order); const n = r.order.table; closeOverlay(); view = "tables"; render();
+        say(r.added ? `Agregado a la mesa ${n}` : `Mesa ${n} abierta · pedido aceptado`);
+      } catch (err) { say(err.message, true); }
+      finally { busy = false; }
+      break;
+    }
+    case "openEmpty": {
+      try { const r = await api("/op", { method: "POST", body: { op: "openTable", table: +d.n } }); orders.set(r.order.ref, r.order); closeOverlay(); renderMain(); openTableDrawer(+d.n); say(`Mesa ${d.n} abierta`); }
+      catch (err) { say(err.message, true); }
+      break;
+    }
+    case "chargeTable": payModal(ref, false, true); break;
+    case "cancelTable": reasonModal(ref, "cancel"); break;
     case "detail": openDetail(ref); break;
     case "accept": run(ref, "accept", {}, o => `#MV-${o.ref} aceptado · a cocina`); break;
     case "reject": case "cancel": reasonModal(ref, d.act); break;
@@ -628,7 +757,7 @@ document.addEventListener("click", async e => {
       renderPicker("#fname"); break;
     }
     case "sendAdd": {
-      try { const { order } = await api("/op", { method: "POST", body: { op: "addItems", ref: picker.ref, args: { lines: picker.lines } } }); orders.set(order.ref, order); closeOverlay(); renderMain(); say(`Agregado a #MV-${order.ref} · total ${gs(order.total)}`); }
+      try { const { order } = await api("/op", { method: "POST", body: { op: "addItems", ref: picker.ref, args: { lines: picker.lines } } }); orders.set(order.ref, order); closeOverlay(); renderMain(); say(`Agregado a ${order.kind === "table" ? "la mesa " + order.table : "#MV-" + order.ref} · total ${gs(order.total)}`); }
       catch (err) { const p = $("#pkErr"); p.hidden = false; p.textContent = err.message; }
       break;
     }
@@ -673,7 +802,14 @@ document.addEventListener("submit", async e => {
     }
     return;
   }
-  if (f.id === "reasonForm") { const reason = $("#rtext").value.trim(); if (!reason) { $("#rtext").focus(); return; } run(f.dataset.ref, f.dataset.op, { reason }, o => `#MV-${o.ref} ${f.dataset.op === "reject" ? "rechazado" : "cancelado"}`); return; }
+  if (f.id === "reasonForm") { const reason = $("#rtext").value.trim(); if (!reason) { $("#rtext").focus(); return; } run(f.dataset.ref, f.dataset.op, { reason }, o => o.kind === "table" ? `Mesa ${o.table} cancelada` : `#MV-${o.ref} ${f.dataset.op === "reject" ? "rechazado" : "cancelado"}`); return; }
+  if (f.id === "takeForm") {
+    const code = $("#tcode").value.trim().toUpperCase(), err = $("#terr");
+    if (!/^[A-Z0-9]{4}$/.test(code)) { err.hidden = false; err.textContent = "El código tiene 4 letras o números."; $("#tcode").focus(); return; }
+    try { const r = await api("/op", { method: "POST", body: { op: "draft", code } }); stopScan(); taking = { ...r, table: null }; takePreview(); }
+    catch (x) { err.hidden = false; err.textContent = x.message; }
+    return;
+  }
   if (f.id === "riderForm") {
     const rider = $("#rname").value.trim();
     if (rider) { const list = [rider, ...JSON.parse(store.get("riders") || "[]").filter(x => x !== rider)].slice(0, 6); store.set("riders", JSON.stringify(list)); }
@@ -681,6 +817,7 @@ document.addEventListener("submit", async e => {
   }
   if (f.id === "payForm") {
     const method = $("#payForm .opts button[aria-pressed=true]")?.dataset.method;
+    if (f.dataset.table) { if (!method) { say("Elegí la forma de pago.", true); return; } run(f.dataset.ref, "charge", { method }, o => `Mesa ${o.table} cobrada · venta cerrada`); return; }
     run(f.dataset.ref, "paid", { method, deliver: !!f.dataset.deliver }, o => `#MV-${o.ref}: ${f.dataset.deliver ? "cobrado y entregado" : "pago recibido"}`); return;
   }
   if (f.id === "userForm") {
@@ -706,7 +843,7 @@ async function teamCall(body, okMsg) {
 
 /* ---------- arranque ---------- */
 render();
-if (screen === "board") api("/estado").then(st => { me = st.me; catalog = st.catalog; orders = new Map(st.orders.map(o => [o.ref, o])); render(); connect(); }).catch(() => {});
+if (screen === "board") loadState().then(connect).catch(() => {});
 </script>
 </body>
 </html>

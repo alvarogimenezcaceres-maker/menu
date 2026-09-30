@@ -103,11 +103,12 @@ async function buildRestaurant(slug, templates) {
   }));
 
   // Mesaverso Caja: the catalog the Worker prices orders with (public data: the same as the menu) and the staff page
-  await writeFile(path.join(out, "catalog.json"), JSON.stringify({ name: r.name, ordering: r.ordering || {}, categories: menu.categories }));
+  await writeFile(path.join(out, "catalog.json"), JSON.stringify({ name: r.name, ordering: r.ordering || {}, tables: r.tables || 20, categories: menu.categories }));
   await mkdir(path.join(out, "caja"), { recursive: true });
   await writeFile(path.join(out, "caja", "index.html"), fill(templates.caja, { NAME: attr(r.name), NAME_JSON: jsonForScript(r.name), SLUG: slug, ORDER_CORE }));
 
-  // QR codes: general (?s=qr, so the monthly report can tell QR visits apart) + one per table (?table=N, counted as QR)
+  // QR code: one general QR (?s=qr, so the monthly report can tell QR visits apart). Tables have no QR of their own
+  // since 2026-09-29: the diner shows the waiter a QR of the order and the waiter picks the table (plan/pos).
   const qrOpts = { margin: 1, errorCorrectionLevel: "M", color: { dark: "#121110", light: "#ffffff" } };
   await writeFile(path.join(out, "qr.svg"), await QRCode.toString(`${url}?s=qr`, { ...qrOpts, type: "svg" }));
   const cards = [];
@@ -121,13 +122,12 @@ async function buildRestaurant(slug, templates) {
       <div class="url">${attr(target)}</div>
     </div>`);
   cards.push(await card(url, "", `${url}?s=qr`));
-  for (let i = 1; i <= (r.tables || 0); i++) cards.push(await card(`${url}?table=${i}`, `Mesa ${i}`));
   await mkdir(path.join(out, "qr"), { recursive: true });
   await writeFile(path.join(out, "qr", "index.html"),
     fill(templates.qr, { NAME: attr(r.name), PRIMARY: theme.PRIMARY, CARDS: cards.join("") }).replaceAll('src="img/', 'src="../img/'));
 
   const count = menu.categories.reduce((n, c) => n + c.dishes.length, 0);
-  console.log(`✓ ${slug}: ${menu.categories.length} categorías, ${count} ítems, ${used.size} imágenes, ${models.length} modelos 3D, ${r.tables || 0} QR de mesa`);
+  console.log(`✓ ${slug}: ${menu.categories.length} categorías, ${count} ítems, ${used.size} imágenes, ${models.length} modelos 3D`);
   return { slug, name: r.name };
 }
 
