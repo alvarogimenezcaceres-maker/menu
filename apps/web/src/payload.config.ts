@@ -26,6 +26,10 @@ export default buildConfig({
   admin: {
     user: Users.slug,
     meta: { titleSuffix: ' · Menú 3D' },
+    components: {
+      // checklist for restaurant staff, approvals waiting for platform admins
+      beforeDashboard: ['/components/StartGuide#StartGuide'],
+    },
     importMap: {
       baseDir: path.resolve(dirname),
     },

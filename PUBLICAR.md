@@ -219,6 +219,8 @@ Cada restaurante tiene un **Plan** (barra lateral). **Gratis** = el local carga 
 
 **Límites del plan Gratis:** hasta 11 productos, de 8 a 11 con precio para publicar, 5 publicaciones por día, sin escaneo 3D, y el menú publicado sin zonas, envío, formas de pago ni horarios (quedan los valores por defecto). Los pilotos y los planes pagos no tienen estos límites. Solo un administrador cambia el plan, la aprobación y los términos.
 
+**Guía en el panel:** al entrar, el personal de un local ve en el Panel de Control un checklist de 5 pasos (datos, categorías, productos, fotos, publicar) con el contador de productos. El administrador ve ahí mismo los menús Gratis que esperan aprobación y cuáles ya están listos para revisar (`apps/web/src/components/StartGuide.tsx`).
+
 **Permisos:** el personal de un local solo ve y edita su restaurante y su propio usuario; no puede crear usuarios ni cambiar a qué restaurante pertenece. Las reglas están en `apps/web/src/plans.ts` y se prueban con `npx vitest run tests/int/`.
 
 **Al desplegar:** la migración `20261005_230910_free_plan` deja a los locales que ya existen sin plan (sin límites) y con la publicación aprobada. Después del push, Render → **Manual Deploy → Deploy latest reference**.

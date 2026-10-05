@@ -31,7 +31,7 @@ export const Restaurants: CollectionConfig = {
       label: 'Plan',
       defaultValue: 'free',
       options: [...PLAN_OPTIONS],
-      admin: { position: 'sidebar', description: 'Vacío = piloto sin límites. Solo lo cambia la plataforma.' },
+      admin: { position: 'sidebar', description: 'Lo cambia la plataforma (vacío = piloto sin límites).' },
       access: { create: ({ req }) => isPlatformAdmin(req.user), update: ({ req }) => isPlatformAdmin(req.user) },
     },
     {
@@ -39,14 +39,22 @@ export const Restaurants: CollectionConfig = {
       type: 'checkbox',
       label: 'Publicación aprobada',
       defaultValue: false,
-      admin: { position: 'sidebar', description: 'Plan Gratis: el local puede publicar recién cuando la plataforma lo aprueba.' },
+      admin: {
+        position: 'sidebar',
+        description: 'Plan Gratis: el local puede publicar recién cuando la plataforma lo aprueba.',
+        condition: (_data, _siblingData, { user }) => isPlatformAdmin(user),
+      },
       access: { create: ({ req }) => isPlatformAdmin(req.user), update: ({ req }) => isPlatformAdmin(req.user) },
     },
     {
       name: 'terms',
       type: 'group',
       label: 'Términos del plan Gratis',
-      admin: { position: 'sidebar', description: 'Constancia de aceptación. Solo la carga la plataforma.' },
+      admin: {
+        position: 'sidebar',
+        description: 'Constancia de aceptación. Solo la carga la plataforma.',
+        condition: (_data, _siblingData, { user }) => isPlatformAdmin(user),
+      },
       access: { create: ({ req }) => isPlatformAdmin(req.user), update: ({ req }) => isPlatformAdmin(req.user) },
       fields: [
         { name: 'version', type: 'text', label: 'Versión', admin: { placeholder: 'G-1' } },

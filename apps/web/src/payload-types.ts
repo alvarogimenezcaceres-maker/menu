@@ -134,7 +134,7 @@ export interface UserAuthOperations {
 export interface Restaurant {
   id: number;
   /**
-   * Vacío = piloto sin límites. Solo lo cambia la plataforma.
+   * Lo cambia la plataforma (vacío = piloto sin límites).
    */
   plan?: ('free' | 'menu' | 'pedidos' | 'salon') | null;
   /**

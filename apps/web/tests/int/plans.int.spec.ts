@@ -59,6 +59,12 @@ describe('publishBlock on the Gratis plan', () => {
     expect(publishBlock({ ...ok, approved: false })?.status).toBe(403)
   })
 
+  it('tells the local what it can fix (too few dishes) before asking it to wait for approval', () => {
+    const block = publishBlock({ ...ok, approved: false, published: 3 })
+    expect(block?.status).toBe(400)
+    expect(block?.message).toContain('al menos 8')
+  })
+
   it('asks for at least 8 dishes with a price', () => {
     const block = publishBlock({ ...ok, published: 7 })
     expect(block?.status).toBe(400)

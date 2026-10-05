@@ -84,9 +84,10 @@ export function publishBlock(args: {
   today: number
 }): { status: number; message: string } | null {
   const { limits, isAdmin, approved, published, today } = args
-  if (limits.needsApproval && !isAdmin && !approved) return { status: 403, message: approvalMessage }
+  // the actionable messages first: what the local can fix itself comes before waiting for approval
   if (published < limits.minToPublish) return { status: 400, message: minToPublishMessage(limits.minToPublish, published) }
   if (limits.maxDishes != null && published > limits.maxDishes) return { status: 400, message: maxToPublishMessage(limits.maxDishes, published) }
+  if (limits.needsApproval && !isAdmin && !approved) return { status: 403, message: approvalMessage }
   if (limits.publishesPerDay != null && !isAdmin && today >= limits.publishesPerDay)
     return { status: 429, message: dailyPublishMessage(limits.publishesPerDay) }
   return null
