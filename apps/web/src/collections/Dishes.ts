@@ -1,5 +1,6 @@
 import type { CollectionConfig } from 'payload'
 
+import { enforceDishCap } from '../hooks/planLimits'
 import { slugField } from '../fields/slug'
 
 export const TAG_OPTIONS = [
@@ -24,6 +25,7 @@ export const Dishes: CollectionConfig = {
     listSearchableFields: ['name', 'description'],
     description: 'Arrastrá las filas para cambiar el orden dentro de cada categoría.',
   },
+  hooks: { beforeChange: [enforceDishCap] },
   fields: [
     {
       type: 'row',

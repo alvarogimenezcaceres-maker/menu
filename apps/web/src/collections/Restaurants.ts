@@ -2,6 +2,7 @@ import type { CollectionConfig } from 'payload'
 
 import { isPlatformAdmin, platformAdminOnly, userRestaurantIds } from '../access/roles'
 import { slugField } from '../fields/slug'
+import { PLAN_OPTIONS } from '../plans'
 import { publishEndpoint } from '../publish/endpoint'
 
 const validateTime = (value: unknown) =>
@@ -24,6 +25,38 @@ export const Restaurants: CollectionConfig = {
   },
   endpoints: [publishEndpoint],
   fields: [
+    {
+      name: 'plan',
+      type: 'select',
+      label: 'Plan',
+      defaultValue: 'free',
+      options: [...PLAN_OPTIONS],
+      admin: { position: 'sidebar', description: 'Vacío = piloto sin límites. Solo lo cambia la plataforma.' },
+      access: { create: ({ req }) => isPlatformAdmin(req.user), update: ({ req }) => isPlatformAdmin(req.user) },
+    },
+    {
+      name: 'publishApproved',
+      type: 'checkbox',
+      label: 'Publicación aprobada',
+      defaultValue: false,
+      admin: { position: 'sidebar', description: 'Plan Gratis: el local puede publicar recién cuando la plataforma lo aprueba.' },
+      access: { create: ({ req }) => isPlatformAdmin(req.user), update: ({ req }) => isPlatformAdmin(req.user) },
+    },
+    {
+      name: 'terms',
+      type: 'group',
+      label: 'Términos del plan Gratis',
+      admin: { position: 'sidebar', description: 'Constancia de aceptación. Solo la carga la plataforma.' },
+      access: { create: ({ req }) => isPlatformAdmin(req.user), update: ({ req }) => isPlatformAdmin(req.user) },
+      fields: [
+        { name: 'version', type: 'text', label: 'Versión', admin: { placeholder: 'G-1' } },
+        { name: 'acceptedAt', type: 'date', label: 'Aceptó el', admin: { date: { pickerAppearance: 'dayAndTime' } } },
+        { name: 'how', type: 'textarea', label: 'Cómo aceptó', admin: { description: 'Ej.: WhatsApp del 05/10 con el texto G-1.' } },
+      ],
+    },
+    // daily publication counter for limited plans; only the publish endpoint writes it
+    { name: 'publishDay', type: 'text', admin: { hidden: true }, access: { create: () => false, update: () => false } },
+    { name: 'publishCount', type: 'number', admin: { hidden: true }, access: { create: () => false, update: () => false } },
     {
       type: 'ui',
       name: 'publish',

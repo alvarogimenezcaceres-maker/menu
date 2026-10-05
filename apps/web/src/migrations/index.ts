@@ -4,6 +4,7 @@ import * as migration_20260926_194704_scan_jobs from './20260926_194704_scan_job
 import * as migration_20260929_183507_ordering_options_prices from './20260929_183507_ordering_options_prices';
 import * as migration_20260930_020833_google_review_url from './20260930_020833_google_review_url';
 import * as migration_20260930_234810_restaurant_legal from './20260930_234810_restaurant_legal';
+import * as migration_20261005_230910_free_plan from './20261005_230910_free_plan';
 
 export const migrations = [
   {
@@ -34,6 +35,11 @@ export const migrations = [
   {
     up: migration_20260930_234810_restaurant_legal.up,
     down: migration_20260930_234810_restaurant_legal.down,
-    name: '20260930_234810_restaurant_legal'
+    name: '20260930_234810_restaurant_legal',
+  },
+  {
+    up: migration_20261005_230910_free_plan.up,
+    down: migration_20261005_230910_free_plan.down,
+    name: '20261005_230910_free_plan'
   },
 ];

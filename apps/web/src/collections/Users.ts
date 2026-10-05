@@ -1,6 +1,6 @@
 import type { CollectionConfig } from 'payload'
 
-import { isPlatformAdmin } from '../access/roles'
+import { isPlatformAdmin, platformAdminOnly } from '../access/roles'
 
 export const Users: CollectionConfig = {
   slug: 'users',
@@ -9,6 +9,14 @@ export const Users: CollectionConfig = {
     useAsTitle: 'email',
     defaultColumns: ['name', 'email', 'role'],
     group: 'Configuración',
+    // staff only need their own account page, not the list of users
+    hidden: ({ user }) => !isPlatformAdmin(user),
+  },
+  access: {
+    create: platformAdminOnly,
+    delete: platformAdminOnly,
+    read: ({ req }) => (isPlatformAdmin(req.user) ? true : req.user ? { id: { equals: req.user.id } } : false),
+    update: ({ req }) => (isPlatformAdmin(req.user) ? true : req.user ? { id: { equals: req.user.id } } : false),
   },
   auth: {
     maxLoginAttempts: 5,

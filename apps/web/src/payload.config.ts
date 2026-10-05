@@ -70,7 +70,13 @@ export default buildConfig({
         'scan-photos': {},
       },
       tenantField: { name: 'tenant', label: 'Restaurante' },
-      tenantsArrayField: { includeDefaultField: true },
+      tenantsArrayField: {
+        includeDefaultField: true,
+        arrayFieldAccess: {
+          create: ({ req }) => isPlatformAdmin(req.user),
+          update: ({ req }) => isPlatformAdmin(req.user),
+        },
+      },
       userHasAccessToAllTenants: (user) => isPlatformAdmin(user),
       i18n: {
         translations: {

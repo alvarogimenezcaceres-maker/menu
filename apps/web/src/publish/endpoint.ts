@@ -1,5 +1,8 @@
 import type { Endpoint } from 'payload'
 
+import { isPlatformAdmin } from '../access/roles'
+import { limitsFor, paraguayDay, publishBlock, publishesToday } from '../plans'
+import type { Restaurant } from '../payload-types'
 import { exportRestaurant } from './export'
 import { commitAndPush } from './git'
 import { commitViaGitHub } from './github'
@@ -20,6 +23,27 @@ export const publishEndpoint: Endpoint = {
     }
     if (busy) return Response.json({ message: 'Ya hay una publicación en curso. Probá de nuevo en unos segundos.' }, { status: 409 })
 
+    // plan limits (Gratis: approval, 8 to 11 dishes, a few publications per day)
+    const restaurant = (await req.payload.findByID({ collection: 'restaurants', id, depth: 0, overrideAccess: true })) as Restaurant
+    const limits = limitsFor(restaurant.plan)
+    const limited = limits.needsApproval || limits.publishesPerDay != null || limits.maxDishes != null || limits.minToPublish > 0
+    const today = paraguayDay()
+    if (limited) {
+      const { totalDocs } = await req.payload.count({
+        collection: 'dishes',
+        where: { and: [{ tenant: { equals: restaurant.id } }, { visible: { not_equals: false } }, { price: { exists: true } }] },
+        overrideAccess: true,
+      })
+      const block = publishBlock({
+        limits,
+        isAdmin: isPlatformAdmin(req.user),
+        approved: Boolean(restaurant.publishApproved),
+        published: totalDocs,
+        today: publishesToday(restaurant, today),
+      })
+      if (block) return Response.json({ message: block.message }, { status: block.status })
+    }
+
     busy = true
     try {
       const out = await exportRestaurant(req.payload, id)
@@ -28,7 +52,17 @@ export const publishEndpoint: Endpoint = {
       // in the cloud there is no git checkout: commit through the GitHub API instead
       const publish = process.env.GITHUB_TOKEN ? commitViaGitHub : commitAndPush
       const result = await publish(out.relDir, out.files, message)
-      await req.payload.update({ collection: 'restaurants', id, data: { lastPublishedAt: new Date().toISOString() }, overrideAccess: true })
+      await req.payload.update({
+        collection: 'restaurants',
+        id,
+        data: {
+          lastPublishedAt: new Date().toISOString(),
+          ...(limits.publishesPerDay != null && result.changed
+            ? { publishDay: today, publishCount: publishesToday(restaurant, today) + 1 }
+            : {}),
+        },
+        overrideAccess: true,
+      })
 
       const base = process.env.MENU_BASE_URL ? process.env.MENU_BASE_URL.replace(/\/?$/, '/') : ''
       return Response.json({

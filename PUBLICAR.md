@@ -208,6 +208,21 @@ solo registra cómo se pagó. Diseño y plan: `plan/pos/` (gitignoreado).
 - **Tarjeta del QR impresa:** «Escaneá y pedí desde tu celular», con cómo se pide, se suma la mesa y se divide.
 - **Todavía no:** cambiar precios y fotos desde la caja (5), sin internet (6), impresora térmica.
 
+### Plan Gratis en el panel (desde el 05/10/2026)
+
+Cada restaurante tiene un **Plan** (barra lateral). **Gratis** = el local carga y publica su menú solo, con límites; **vacío** = piloto sin límites (así quedaron Filigrana y Gringo Bar); Menú, Pedidos y Salón no tienen límites de carga.
+
+**Dar de alta un local Gratis (beta asistida):**
+1. Restaurantes → **Crear nuevo** (el plan sale en *Gratis*). Cargá nombre, WhatsApp y, en *Términos del plan Gratis*, la versión y cómo los aceptó.
+2. Usuarios → **Crear nuevo**: rol *Personal del restaurante*, y en *Restaurante asignado* el local. Pasale el correo y la clave por un canal seguro; que cambie la clave al entrar.
+3. Cuando el menú cumpla el piso de calidad (de 8 a 11 productos con precio, fotos propias), tildá **Publicación aprobada** en el restaurante. Hasta entonces *Publicar ahora* le responde «tu menú está en revisión».
+
+**Límites del plan Gratis:** hasta 11 productos, de 8 a 11 con precio para publicar, 5 publicaciones por día, sin escaneo 3D, y el menú publicado sin zonas, envío, formas de pago ni horarios (quedan los valores por defecto). Los pilotos y los planes pagos no tienen estos límites. Solo un administrador cambia el plan, la aprobación y los términos.
+
+**Permisos:** el personal de un local solo ve y edita su restaurante y su propio usuario; no puede crear usuarios ni cambiar a qué restaurante pertenece. Las reglas están en `apps/web/src/plans.ts` y se prueban con `npx vitest run tests/int/`.
+
+**Al desplegar:** la migración `20261005_230910_free_plan` deja a los locales que ya existen sin plan (sin límites) y con la publicación aprobada. Después del push, Render → **Manual Deploy → Deploy latest reference**.
+
 ## Todo en la nube (desde el 26/09/2026): la notebook ya no hace falta
 
 | Pieza | Dónde | Dirección |

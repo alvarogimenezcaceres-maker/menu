@@ -1,5 +1,6 @@
 import { APIError, type CollectionConfig, type FieldAccess } from 'payload'
 
+import { assertScan3dAllowed } from '../hooks/planLimits'
 import { generateEndpoint, MAX_PHOTOS, MIN_PHOTOS, workerFinishEndpoint, workerStartEndpoint } from '../scans/endpoints'
 
 /** Only the panel itself (local API with overrideAccess) writes the job state. */
@@ -35,6 +36,7 @@ export const Scans: CollectionConfig = {
             .catch(() => null)
           if (!dish) throw new APIError('No tenés acceso a ese plato.', 403)
           data.tenant = typeof dish.tenant === 'object' && dish.tenant ? dish.tenant.id : dish.tenant
+          await assertScan3dAllowed(req, data.tenant)
           data.title = dish.name
         }
         if (req.user && (originalDoc?.status === 'queued' || originalDoc?.status === 'processing')) {

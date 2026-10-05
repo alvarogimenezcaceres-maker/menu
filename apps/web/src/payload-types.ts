@@ -133,6 +133,27 @@ export interface UserAuthOperations {
  */
 export interface Restaurant {
   id: number;
+  /**
+   * Vacío = piloto sin límites. Solo lo cambia la plataforma.
+   */
+  plan?: ('free' | 'menu' | 'pedidos' | 'salon') | null;
+  /**
+   * Plan Gratis: el local puede publicar recién cuando la plataforma lo aprueba.
+   */
+  publishApproved?: boolean | null;
+  /**
+   * Constancia de aceptación. Solo la carga la plataforma.
+   */
+  terms?: {
+    version?: string | null;
+    acceptedAt?: string | null;
+    /**
+     * Ej.: WhatsApp del 05/10 con el texto G-1.
+     */
+    how?: string | null;
+  };
+  publishDay?: string | null;
+  publishCount?: number | null;
   name: string;
   /**
    * Se completa solo a partir del nombre. Solo minúsculas, números y guiones.
@@ -232,6 +253,9 @@ export interface Media {
    * Qué se ve en la imagen (ayuda a personas con lector de pantalla).
    */
   alt?: string | null;
+  _key?: string | null;
+  prefix?: string | null;
+  _objectKey?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -245,6 +269,7 @@ export interface Media {
   focalY?: number | null;
   sizes?: {
     thumbnail?: {
+      _key?: string | null;
       url?: string | null;
       width?: number | null;
       height?: number | null;
@@ -387,6 +412,9 @@ export interface Scan {
 export interface ScanPhoto {
   id: number;
   tenant?: (number | null) | Restaurant;
+  _key?: string | null;
+  prefix?: string | null;
+  _objectKey?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -532,6 +560,17 @@ export interface PayloadMigration {
  * via the `definition` "restaurants_select".
  */
 export interface RestaurantsSelect<T extends boolean = true> {
+  plan?: T;
+  publishApproved?: T;
+  terms?:
+    | T
+    | {
+        version?: T;
+        acceptedAt?: T;
+        how?: T;
+      };
+  publishDay?: T;
+  publishCount?: T;
   name?: T;
   slug?: T;
   tagline?: T;
@@ -643,6 +682,9 @@ export interface DishesSelect<T extends boolean = true> {
 export interface MediaSelect<T extends boolean = true> {
   tenant?: T;
   alt?: T;
+  _key?: T;
+  prefix?: T;
+  _objectKey?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -660,6 +702,7 @@ export interface MediaSelect<T extends boolean = true> {
         thumbnail?:
           | T
           | {
+              _key?: T;
               url?: T;
               width?: T;
               height?: T;
@@ -694,6 +737,9 @@ export interface ScansSelect<T extends boolean = true> {
  */
 export interface ScanPhotosSelect<T extends boolean = true> {
   tenant?: T;
+  _key?: T;
+  prefix?: T;
+  _objectKey?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;

@@ -5,6 +5,7 @@ import type { Payload } from 'payload'
 
 import type { Category, Dish, Media, Restaurant } from '../payload-types'
 import { slugify } from '../fields/slug'
+import { limitsFor } from '../plans'
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 export const REPO_ROOT = path.resolve(dirname, '../../../..')
@@ -34,6 +35,7 @@ async function mediaBytes(doc: Media): Promise<Buffer> {
  */
 export async function exportRestaurant(payload: Payload, restaurantId: number | string) {
   const r = (await payload.findByID({ collection: 'restaurants', id: restaurantId, depth: 1, overrideAccess: true })) as Restaurant
+  const limits = limitsFor(r.plan)
   const where = { tenant: { equals: r.id } }
   const categories = (await payload.find({ collection: 'categories', where, sort: '_order', limit: 500, depth: 1, overrideAccess: true })).docs as Category[]
   const dishes = (await payload.find({ collection: 'dishes', where, sort: '_order', limit: 2000, depth: 1, overrideAccess: true })).docs as Dish[]
@@ -68,13 +70,14 @@ export async function exportRestaurant(payload: Payload, restaurantId: number | 
       logo: image(r.logo),
       hero: image(r.hero),
       tables: r.tables ?? 0,
+      plan: r.plan || undefined,
       whatsapp: r.whatsapp || undefined,
       cuisine: r.cuisine ?? [],
       googleReviewUrl: r.googleReviewUrl?.trim() || undefined,
       legal: r.legal?.legalName?.trim() && r.legal?.ruc?.trim() && r.legal?.privacyContact?.trim()
         ? { legalName: r.legal.legalName.trim(), ruc: r.legal.ruc.trim(), address: r.legal.address?.trim() || '', privacyContact: r.legal.privacyContact.trim() }
         : undefined,
-      ordering: {
+      ordering: limits.basicOrdering ? undefined : {
         orderTypes: r.orderTypes?.length ? r.orderTypes : undefined,
         paymentMethods: r.paymentMethods?.length ? r.paymentMethods : undefined,
         deliveryFee: r.deliveryFee ?? undefined,
@@ -118,8 +121,8 @@ export async function exportRestaurant(payload: Payload, restaurantId: number | 
               }))
             : undefined,
           photo: image(d.photo),
-          model: model(d.model),
-          modelNote: d.modelNote || undefined,
+          model: limits.scan3d ? model(d.model) : undefined,
+          modelNote: limits.scan3d ? d.modelNote || undefined : undefined,
           soldOut: d.soldOut || undefined,
           status: d.visible === false ? 'draft' : undefined,
         })),
