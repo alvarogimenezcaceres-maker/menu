@@ -56,6 +56,8 @@ export const dishCapMessage = (max: number) =>
 
 export const scan3dMessage = 'El 3D es parte de los planes pagos. Escribinos si querés sumarlo.'
 
+export const logoMessage = 'Subí el logo de tu local antes de publicar (en «Logo»). Sin logo el menú no se puede armar.'
+
 export const approvalMessage =
   'Tu menú está en revisión. Cuando lo aprobemos vas a poder publicarlo; te avisamos por WhatsApp.'
 
@@ -82,8 +84,11 @@ export function publishBlock(args: {
   approved: boolean
   published: number
   today: number
+  /** The menu build needs the logo: a restaurant without one would stop every menu from being published. */
+  hasLogo: boolean
 }): { status: number; message: string } | null {
-  const { limits, isAdmin, approved, published, today } = args
+  const { limits, isAdmin, approved, published, today, hasLogo } = args
+  if (!hasLogo) return { status: 400, message: logoMessage }
   // the actionable messages first: what the local can fix itself comes before waiting for approval
   if (published < limits.minToPublish) return { status: 400, message: minToPublishMessage(limits.minToPublish, published) }
   if (limits.maxDishes != null && published > limits.maxDishes) return { status: 400, message: maxToPublishMessage(limits.maxDishes, published) }

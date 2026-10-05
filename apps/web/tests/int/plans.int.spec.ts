@@ -47,7 +47,7 @@ describe('paraguayDay and publishesToday', () => {
 })
 
 describe('publishBlock on the Gratis plan', () => {
-  const ok = { limits: free, isAdmin: false, approved: true, published: 9, today: 0 }
+  const ok = { limits: free, isAdmin: false, approved: true, published: 9, today: 0, hasLogo: true }
 
   it('lets an approved restaurant with 8 to 11 dishes publish', () => {
     expect(publishBlock(ok)).toBeNull()
@@ -89,6 +89,11 @@ describe('publishBlock on the Gratis plan', () => {
 
   it('never blocks a restaurant without a plan', () => {
     const l = limitsFor(null)
-    expect(publishBlock({ limits: l, isAdmin: false, approved: false, published: 40, today: 99 })).toBeNull()
+    expect(publishBlock({ limits: l, isAdmin: false, approved: false, published: 40, today: 99, hasLogo: true })).toBeNull()
+  })
+
+  it('needs the logo on every plan, because a menu without one breaks the build of all menus', () => {
+    expect(publishBlock({ ...ok, hasLogo: false })?.message).toContain('logo')
+    expect(publishBlock({ limits: limitsFor(null), isAdmin: true, approved: true, published: 40, today: 0, hasLogo: false })?.status).toBe(400)
   })
 })

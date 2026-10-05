@@ -28,21 +28,24 @@ export const publishEndpoint: Endpoint = {
     const limits = limitsFor(restaurant.plan)
     const limited = limits.needsApproval || limits.publishesPerDay != null || limits.maxDishes != null || limits.minToPublish > 0
     const today = paraguayDay()
-    if (limited) {
-      const { totalDocs } = await req.payload.count({
-        collection: 'dishes',
-        where: { and: [{ tenant: { equals: restaurant.id } }, { visible: { not_equals: false } }, { price: { exists: true } }] },
-        overrideAccess: true,
-      })
-      const block = publishBlock({
-        limits,
-        isAdmin: isPlatformAdmin(req.user),
-        approved: Boolean(restaurant.publishApproved),
-        published: totalDocs,
-        today: publishesToday(restaurant, today),
-      })
-      if (block) return Response.json({ message: block.message }, { status: block.status })
-    }
+    const published = limited
+      ? (
+          await req.payload.count({
+            collection: 'dishes',
+            where: { and: [{ tenant: { equals: restaurant.id } }, { visible: { not_equals: false } }, { price: { exists: true } }] },
+            overrideAccess: true,
+          })
+        ).totalDocs
+      : 0
+    const block = publishBlock({
+      limits,
+      isAdmin: isPlatformAdmin(req.user),
+      approved: Boolean(restaurant.publishApproved),
+      published,
+      today: publishesToday(restaurant, today),
+      hasLogo: Boolean(restaurant.logo),
+    })
+    if (block) return Response.json({ message: block.message }, { status: block.status })
 
     busy = true
     try {
