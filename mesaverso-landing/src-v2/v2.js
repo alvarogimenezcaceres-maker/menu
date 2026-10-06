@@ -183,3 +183,9 @@ form.addEventListener('submit',async ev=>{
   }catch(e){st.textContent='No pudimos enviar tu solicitud. Escribinos por WhatsApp.';send.disabled=false}
 });
 })();
+// Lazy scenes: load a module with import() only when its section nears the viewport (same origin, covered by script-src 'self').
+document.querySelectorAll('[data-mod]').forEach(sec=>{
+  const stage=sec.querySelector('.noche__stage');
+  const load=()=>import(sec.dataset.mod).then(m=>{stage.innerHTML='';stage.classList.add('is-live');m.default(stage)}).catch(()=>{});
+  if('IntersectionObserver' in window){const io=new IntersectionObserver(es=>{if(es[0].isIntersecting){io.disconnect();load()}},{rootMargin:'600px'});io.observe(sec)}
+});

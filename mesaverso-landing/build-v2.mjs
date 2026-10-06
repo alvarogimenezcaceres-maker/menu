@@ -32,7 +32,10 @@ const css = (await readFile(path.join(SRC2, "v2.css"), "utf8")) + "\n" + (await 
 const js = await readFile(path.join(SRC2, "v2.js"), "utf8");
 await writeFile(path.join(DIST, "v2.css"), css);
 await writeFile(path.join(DIST, "v2.js"), js);
-const hashes = { "v2.css": createHash("sha256").update(css).digest("hex").slice(0, 10), "v2.js": createHash("sha256").update(js).digest("hex").slice(0, 10) };
+await mkdir(path.join(DIST, "m"), { recursive: true });
+const mods = {};
+for (const f of await readdir(path.join(SRC2, "m"))) { const code = await readFile(path.join(SRC2, "m", f), "utf8"); await writeFile(path.join(DIST, "m", f), code); mods["m/" + f] = createHash("sha256").update(code).digest("hex").slice(0, 10); }
+const hashes = { ...mods, "v2.css": createHash("sha256").update(css).digest("hex").slice(0, 10), "v2.js": createHash("sha256").update(js).digest("hex").slice(0, 10) };
 
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 const abs = (p) => SITE_URL + p;
@@ -66,7 +69,7 @@ function headMeta({ title, description, pathname, noindex }) {
 }
 
 function render(template, meta) {
-  const out = template.replace(/\{\{([A-Za-z_0-9]+)(?::([A-Za-z0-9_.]+))?\}\}/g, (m, key, arg) => {
+  const out = template.replace(/\{\{([A-Za-z_0-9]+)(?::([A-Za-z0-9_./]+))?\}\}/g, (m, key, arg) => {
     switch (key) {
       case "HEAD_META": return headMeta(meta);
       case "HASH": if (!hashes[arg]) throw new Error(`Unknown hash ${arg}`); return hashes[arg];
@@ -130,6 +133,8 @@ await write("_headers", `/*
 /v2.css
   Cache-Control: public, max-age=31536000, immutable
 /v2.js
+  Cache-Control: public, max-age=31536000, immutable
+/m/*
   Cache-Control: public, max-age=31536000, immutable
 /fonts/*
   Cache-Control: public, max-age=31536000, immutable

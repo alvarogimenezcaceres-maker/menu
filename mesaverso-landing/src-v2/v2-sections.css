@@ -197,3 +197,32 @@
 [data-theme=dark] .flip .in{background:var(--surface);border-color:var(--ring-soft)}
 
 .plano__fig{margin:0;display:grid;gap:10px}.plano__fig img{width:100%;height:auto;border-radius:14px;border:1px solid var(--line);background:#0E1014}
+
+/* Scene «La noche» (src-v2/m/noche.js) */
+.noche__stage{min-height:340px}
+.noche__stage.is-live{display:grid;gap:28px;align-items:start;min-height:0}
+@media(min-width:900px){.noche__stage.is-live{grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:56px}}
+.noche__dial{position:relative;width:100%;max-width:560px;margin-inline:auto;aspect-ratio:1}
+.noche__dial svg{width:100%;height:100%;display:block;touch-action:pan-y;cursor:pointer}
+.noche__time{position:absolute;inset:0;display:grid;place-content:center;text-align:center;pointer-events:none;gap:4px}
+.noche__time b{font:500 clamp(34px,8vw,56px)/1 var(--mono);letter-spacing:.04em;color:var(--text);font-variant-numeric:tabular-nums}
+.noche__time span{font:400 13px/1.3 var(--mono);color:var(--text-2);letter-spacing:.06em;text-transform:uppercase}
+.n-ring{fill:none;stroke:var(--ring-soft);stroke-width:1.5}.n-ring--soft{stroke:var(--line);stroke-width:1}
+.n-tick{stroke:var(--text-3);stroke-width:1}.n-tick--h{stroke:var(--text);stroke-width:2}
+.n-lab{font:400 13px var(--mono);fill:var(--text-2);letter-spacing:.12em}
+.n-hand{stroke:var(--text-3);stroke-width:1;stroke-dasharray:2 5}
+.n-dot{fill:var(--text-2);opacity:.16;transition:opacity var(--d-micro) var(--ease)}.n-dot.is-on{opacity:.8}
+.n-lead{stroke:var(--accent);stroke-width:1.2;opacity:.7}.n-warm{fill:var(--accent)}.n-warm-ring{fill:none;stroke:var(--accent);stroke-width:1.2;opacity:.8}
+.noche__panel{display:grid;gap:16px;min-width:0}
+.noche__lab{font:500 12px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--text-2)}
+.noche__range{width:100%;height:44px;accent-color:var(--accent);cursor:pointer}
+.noche__range:focus-visible,.noche__chips .chip:focus-visible{outline:2px solid var(--focus);outline-offset:3px}
+.noche__chips{display:flex;flex-wrap:wrap;gap:8px}
+.noche__chips .chip{min-height:44px;padding:0 14px;border:1px solid var(--ring-soft);background:transparent;color:var(--text);border-radius:var(--r-pill);cursor:pointer}
+.noche__chips .chip[aria-pressed=true]{border-color:var(--accent);background:var(--surface)}
+.noche__order{display:grid;gap:10px;padding:18px;border:1px solid var(--line);border-radius:var(--r-card);background:var(--surface)}
+.noche__ord{font:500 17px/1.3 var(--mono);color:var(--text);margin:0}
+.noche__stages{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:6px 14px;font:400 13px var(--mono);color:var(--text-3)}
+.noche__stages li::before{content:"○ "}.noche__stages li.now{color:var(--text)}.noche__stages li.now::before{content:"● ";color:var(--accent)}.noche__stages li.done{color:var(--text-2)}.noche__stages li.done::before{content:"✓ "}
+.noche__say{min-height:3em;margin:0;color:var(--text);font-size:17px}
+@media(prefers-reduced-motion:reduce){.n-dot{transition:none}}
