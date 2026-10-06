@@ -1,6 +1,7 @@
 import { APIError, type CollectionConfig, type FieldAccess } from 'payload'
 
 import { assertScan3dAllowed } from '../hooks/planLimits'
+import { userLimits } from '../plans'
 import { generateEndpoint, MAX_PHOTOS, MIN_PHOTOS, workerFinishEndpoint, workerStartEndpoint } from '../scans/endpoints'
 
 /** Only the panel itself (local API with overrideAccess) writes the job state. */
@@ -21,6 +22,7 @@ export const Scans: CollectionConfig = {
     useAsTitle: 'title',
     defaultColumns: ['title', 'status', 'createdAt'],
     group: 'Menú',
+    hidden: ({ user }) => !userLimits(user).scan3d,
     description: 'Fotos de un plato → modelo 3D. Se empieza desde el plato: «Generar 3D desde fotos».',
   },
   // worker routes first: '/:id/generate' must not swallow '/worker/…'

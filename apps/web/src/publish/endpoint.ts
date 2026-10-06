@@ -1,7 +1,7 @@
 import type { Endpoint } from 'payload'
 
 import { isPlatformAdmin } from '../access/roles'
-import { limitsFor, paraguayDay, publishBlock, publishesToday } from '../plans'
+import { approvalPendingMessage, limitsFor, paraguayDay, publishBlock, publishesToday } from '../plans'
 import type { Restaurant } from '../payload-types'
 import { exportRestaurant } from './export'
 import { commitAndPush } from './git'
@@ -44,7 +44,14 @@ export const publishEndpoint: Endpoint = {
       published,
       today: publishesToday(restaurant, today),
       hasLogo: Boolean(restaurant.logo),
+      hasWhatsapp: Boolean(restaurant.whatsapp?.trim()),
     })
+    if (block?.kind === 'approval') {
+      // not an error: the restaurant is asking to be published and the platform admin will see the request
+      if (!restaurant.publishRequestedAt)
+        await req.payload.update({ collection: 'restaurants', id, data: { publishRequestedAt: new Date().toISOString() }, overrideAccess: true })
+      return Response.json({ message: approvalPendingMessage, pending: true }, { status: 202 })
+    }
     if (block) return Response.json({ message: block.message }, { status: block.status })
 
     busy = true
@@ -73,7 +80,8 @@ export const publishEndpoint: Endpoint = {
         commit: result.changed ? result.commit : undefined,
         published: out.published,
         menuUrl: base ? `${base}${out.slug}/` : undefined,
-        actionsUrl: process.env.GITHUB_REPO ? `https://github.com/${process.env.GITHUB_REPO}/actions` : undefined,
+        // the build log on GitHub is for the platform admin, not for a restaurant
+        actionsUrl: process.env.GITHUB_REPO && isPlatformAdmin(req.user) ? `https://github.com/${process.env.GITHUB_REPO}/actions` : undefined,
         message: result.changed
           ? `Publicado: ${out.published} ítems. El menú en línea se actualiza en 1 a 2 minutos.`
           : 'No había cambios nuevos: el menú en línea ya está al día.',
@@ -82,7 +90,9 @@ export const publishEndpoint: Endpoint = {
       req.payload.logger.error({ err: e }, 'publish failed')
       const detail = e instanceof Error ? e.message.split('\n')[0] : String(e)
       return Response.json(
-        { message: `No se pudo publicar. Revisá la conexión a internet y volvé a intentar. Detalle: ${detail}` },
+        {
+          message: `No se pudo publicar. Esperá un minuto y volvé a intentar; si sigue igual, avisanos.${isPlatformAdmin(req.user) ? ` Detalle: ${detail}` : ''}`,
+        },
         { status: 500 },
       )
     } finally {

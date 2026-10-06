@@ -2,7 +2,7 @@ import type { CollectionConfig } from 'payload'
 
 import { isPlatformAdmin, platformAdminOnly, userRestaurantIds } from '../access/roles'
 import { slugField } from '../fields/slug'
-import { PLAN_OPTIONS } from '../plans'
+import { PLAN_OPTIONS, userLimits } from '../plans'
 import { publishEndpoint } from '../publish/endpoint'
 
 const validateTime = (value: unknown) =>
@@ -65,6 +65,8 @@ export const Restaurants: CollectionConfig = {
     // daily publication counter for limited plans; only the publish endpoint writes it
     { name: 'publishDay', type: 'text', admin: { hidden: true }, access: { create: () => false, update: () => false } },
     { name: 'publishCount', type: 'number', admin: { hidden: true }, access: { create: () => false, update: () => false } },
+    // when a Gratis restaurant first asked to be published; the platform admin sees it on the dashboard
+    { name: 'publishRequestedAt', type: 'date', admin: { hidden: true }, access: { create: () => false, update: () => false } },
     {
       type: 'ui',
       name: 'publish',
@@ -91,7 +93,10 @@ export const Restaurants: CollectionConfig = {
           min: 0,
           max: 200,
           defaultValue: 10,
-          admin: { description: 'Para el mapa de mesas de la caja. El menú tiene un solo QR general.' },
+          admin: {
+            description: 'Para el mapa de mesas de la caja. El menú tiene un solo QR general.',
+            condition: (_data, _siblingData, { user }) => !userLimits(user).basicOrdering,
+          },
         },
         {
           name: 'currency',
@@ -114,7 +119,12 @@ export const Restaurants: CollectionConfig = {
     {
       type: 'collapsible',
       label: 'Pedidos por WhatsApp',
-      admin: { initCollapsed: true, description: 'Lo que el cliente completa antes de mandar el pedido. Vacío = valores comunes.' },
+      admin: {
+        initCollapsed: true,
+        description: 'Lo que el cliente completa antes de mandar el pedido. Vacío = valores comunes.',
+        // the Gratis menu orders by WhatsApp only: these settings are not published
+        condition: (_data, _siblingData, { user }) => !userLimits(user).basicOrdering,
+      },
       fields: [
         {
           type: 'row',

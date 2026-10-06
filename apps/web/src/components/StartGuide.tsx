@@ -57,14 +57,15 @@ export async function StartGuide({ payload, user }: Props) {
   const need = limits.minToPublish || 1
   const p = await progress(payload, r.id)
   const published = Boolean(r.lastPublishedAt)
+  const requested = !published && limits.needsApproval && !r.publishApproved && Boolean(r.publishRequestedAt)
   const restaurantUrl = `/admin/collections/restaurants/${r.id}`
   const menuUrl = process.env.MENU_BASE_URL ? `${process.env.MENU_BASE_URL.replace(/\/?$/, '/')}${r.slug}/` : null
 
   const steps = [
     {
       title: 'Completá los datos de tu local',
-      text: 'Tu nombre, el WhatsApp donde querés recibir los pedidos y tu logo.',
-      done: Boolean(r.whatsapp?.trim()),
+      text: 'Tu nombre, el WhatsApp donde querés recibir los pedidos y tu logo. Sin WhatsApp y sin logo no se puede publicar.',
+      done: Boolean(r.whatsapp?.trim()) && Boolean(r.logo),
       href: restaurantUrl,
       cta: 'Completar datos',
     },
@@ -82,11 +83,13 @@ export async function StartGuide({ payload, user }: Props) {
           ? `Elegí tus ${limits.maxDishes} platos más pedidos: tenés ${p.dishes} de ${limits.maxDishes}. Necesitás al menos ${need} con precio para publicar.`
           : `Necesitás al menos ${need} con precio para publicar. Tenés ${p.withPrice}.`,
       done: p.withPrice >= need,
+      // keep the button while the plan still has room: stopping at 8 would hide the way to add the 9th to the 11th
+      keepCta: limits.maxDishes != null && p.dishes < limits.maxDishes,
       href: '/admin/collections/dishes/create',
       cta: 'Crear producto',
     },
     {
-      title: 'Sumá una foto a cada producto',
+      title: 'Sumá una foto a cada producto (muy recomendado)',
       text: `Fotos reales de tus platos, con buena luz y desde arriba. Tenés ${p.withPhoto} de ${Math.max(need, p.withPrice)} con foto.`,
       done: p.withPhoto >= need,
       href: '/admin/collections/dishes',
@@ -95,13 +98,16 @@ export async function StartGuide({ payload, user }: Props) {
     {
       title: 'Publicá y compartí tu menú',
       text: published
-        ? 'Tu menú ya está en línea. Mandate un pedido de prueba a tu WhatsApp y pegá el link en tu bio de Instagram.'
-        : limits.needsApproval && !r.publishApproved
-          ? 'Cuando tengas todo lo anterior, tocá «Publicar» dentro de tu restaurante: nuestro equipo lo revisa y te avisa por WhatsApp. No pasa nada si todavía no lo aprobamos.'
-          : 'Tocá «Publicar» dentro de tu restaurante. En 1 o 2 minutos tu menú está en línea.',
+        ? 'Tu menú ya está en línea. Hacé un pedido de prueba desde el link de tu menú a tu propio WhatsApp, y pegá el link en tu bio de Instagram.'
+        : requested
+          ? `Pediste la publicación el ${new Date(r.publishRequestedAt as string).toLocaleDateString('es-PY')}. La estamos revisando y te avisamos por WhatsApp; no tenés que hacer nada más.`
+          : limits.needsApproval && !r.publishApproved
+            ? 'Cuando tengas todo lo anterior, tocá «Publicar» dentro de tu restaurante: nuestro equipo lo revisa y te avisa por WhatsApp.'
+            : 'Tocá «Publicar» dentro de tu restaurante. En 1 o 2 minutos tu menú está en línea.',
       done: published,
+      status: requested ? 'En revisión' : undefined,
       href: restaurantUrl,
-      cta: published ? 'Ver mi restaurante' : 'Ir a publicar',
+      cta: published ? 'Ver mi restaurante' : requested ? 'Ver mi restaurante' : 'Ir a publicar',
     },
   ]
   const doneCount = steps.filter((s) => s.done).length
@@ -110,9 +116,9 @@ export async function StartGuide({ payload, user }: Props) {
   return (
     <div style={card}>
       <div style={{ display: 'grid', gap: 4 }}>
-        <strong style={{ fontSize: 18 }}>
+        <h2 style={{ fontSize: 18, margin: 0 }}>
           {next === -1 ? 'Tu menú está listo' : `Bienvenido, ${r.name}: armemos tu menú en 5 pasos`}
-        </strong>
+        </h2>
         <span style={{ color: 'var(--theme-elevation-600)' }}>
           {doneCount} de {steps.length} pasos hechos
           {limits.maxDishes != null ? ` · Plan Gratis: ${p.dishes} de ${limits.maxDishes} productos` : ''}
@@ -161,10 +167,10 @@ export async function StartGuide({ payload, user }: Props) {
               </span>
               <div style={{ display: 'grid', gap: 6, minWidth: 0 }}>
                 <strong>
-                  {s.title} <span style={{ fontWeight: 500, color: 'var(--theme-elevation-600)' }}>· {s.done ? 'Hecho' : isNext ? 'Siguiente paso' : 'Pendiente'}</span>
+                  {s.title} <span style={{ fontWeight: 500, color: 'var(--theme-elevation-600)' }}>· {s.done ? 'Hecho' : (s.status ?? (isNext ? 'Siguiente paso' : 'Pendiente'))}</span>
                 </strong>
                 <span style={{ color: 'var(--theme-elevation-700)' }}>{s.text}</span>
-                {(!s.done || i === steps.length - 1) && (
+                {(!s.done || s.keepCta || i === steps.length - 1) && (
                   <span>
                     <a href={s.href} style={isNext ? primary : link}>
                       {s.cta}
@@ -186,7 +192,7 @@ export async function StartGuide({ payload, user }: Props) {
         </div>
       )}
       <span style={{ color: 'var(--theme-elevation-600)', fontSize: 13 }}>
-        ¿Algo no sale? El panel puede tardar un minuto en responder la primera vez; esperá y probá de nuevo.
+        ¿Algo no sale? El panel puede tardar un minuto en responder la primera vez; esperá y probá de nuevo. Para cambiar tu clave: tocá tu usuario, arriba a la derecha, y elegí «Cuenta».
       </span>
     </div>
   )
@@ -204,7 +210,12 @@ async function PendingApprovals({ payload }: { payload: Payload }) {
     })
   ).docs as Restaurant[]
   if (!pending.length) return null
-  const rows = await Promise.all(pending.map(async (r) => ({ r, p: await progress(payload, r.id) })))
+  const rows = (await Promise.all(pending.map(async (r) => ({ r, p: await progress(payload, r.id) })))).sort((a, b) => {
+    // who asked to be published first, then the rest
+    const da = a.r.publishRequestedAt ? new Date(a.r.publishRequestedAt).getTime() : Infinity
+    const db = b.r.publishRequestedAt ? new Date(b.r.publishRequestedAt).getTime() : Infinity
+    return da - db
+  })
   const min = limitsFor('free').minToPublish
 
   return (
@@ -222,6 +233,7 @@ async function PendingApprovals({ payload }: { payload: Payload }) {
                 {r.name}
               </a>
               <span style={{ color: 'var(--theme-elevation-700)' }}>
+                {r.publishRequestedAt ? `Pidió publicar el ${new Date(r.publishRequestedAt).toLocaleDateString('es-PY')} · ` : ''}
                 {p.withPrice} con precio · {p.withPhoto} con foto · {ready ? 'Listo para revisar' : `Faltan ${min - p.withPrice} para el mínimo`}
               </span>
             </li>

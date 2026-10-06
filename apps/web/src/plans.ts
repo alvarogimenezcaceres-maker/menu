@@ -56,6 +56,11 @@ export const dishCapMessage = (max: number) =>
 
 export const scan3dMessage = 'El 3D es parte de los planes pagos. Escribinos si querés sumarlo.'
 
+export const whatsappMessage = 'Cargá el WhatsApp donde querés recibir los pedidos antes de publicar.'
+
+export const approvalPendingMessage =
+  'Recibimos tu pedido de publicación. Lo revisamos y te avisamos por WhatsApp; no tenés que hacer nada más.'
+
 export const logoMessage = 'Subí el logo de tu local antes de publicar (en «Logo»). Sin logo el menú no se puede armar.'
 
 export const approvalMessage =
@@ -86,14 +91,29 @@ export function publishBlock(args: {
   today: number
   /** The menu build needs the logo: a restaurant without one would stop every menu from being published. */
   hasLogo: boolean
-}): { status: number; message: string } | null {
-  const { limits, isAdmin, approved, published, today, hasLogo } = args
-  if (!hasLogo) return { status: 400, message: logoMessage }
+  hasWhatsapp: boolean
+}): { status: number; message: string; kind: 'fix' | 'approval' | 'limit' } | null {
+  const { limits, isAdmin, approved, published, today, hasLogo, hasWhatsapp } = args
+  if (!hasLogo) return { status: 400, message: logoMessage, kind: 'fix' }
+  // the Gratis menu orders through WhatsApp only, so without the number there is nothing to send to
+  if (limits.basicOrdering && !hasWhatsapp) return { status: 400, message: whatsappMessage, kind: 'fix' }
   // the actionable messages first: what the local can fix itself comes before waiting for approval
-  if (published < limits.minToPublish) return { status: 400, message: minToPublishMessage(limits.minToPublish, published) }
-  if (limits.maxDishes != null && published > limits.maxDishes) return { status: 400, message: maxToPublishMessage(limits.maxDishes, published) }
-  if (limits.needsApproval && !isAdmin && !approved) return { status: 403, message: approvalMessage }
+  if (published < limits.minToPublish) return { status: 400, message: minToPublishMessage(limits.minToPublish, published), kind: 'fix' }
+  if (limits.maxDishes != null && published > limits.maxDishes)
+    return { status: 400, message: maxToPublishMessage(limits.maxDishes, published), kind: 'fix' }
+  if (limits.needsApproval && !isAdmin && !approved) return { status: 403, message: approvalMessage, kind: 'approval' }
   if (limits.publishesPerDay != null && !isAdmin && today >= limits.publishesPerDay)
-    return { status: 429, message: dailyPublishMessage(limits.publishesPerDay) }
+    return { status: 429, message: dailyPublishMessage(limits.publishesPerDay), kind: 'limit' }
   return null
+}
+
+/**
+ * The limits that apply to a signed-in user. Platform admins, and users whose restaurant did not come populated,
+ * are treated as unlimited so that nothing is hidden by mistake. Needs `auth.depth: 1` on the users collection.
+ */
+export function userLimits(user: unknown): PlanLimits {
+  const u = user as { role?: string; tenants?: { tenant?: unknown }[] } | null
+  if (!u || u.role === 'admin') return UNLIMITED
+  const t = u.tenants?.[0]?.tenant
+  return t && typeof t === 'object' ? limitsFor((t as { plan?: string | null }).plan) : UNLIMITED
 }

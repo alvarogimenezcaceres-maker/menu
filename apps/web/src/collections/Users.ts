@@ -21,6 +21,8 @@ export const Users: CollectionConfig = {
   auth: {
     maxLoginAttempts: 5,
     lockTime: 10 * 60 * 1000,
+    // req.user carries its restaurant (with the plan), which the panel uses to hide what a plan does not include
+    depth: 1,
   },
   fields: [
     { name: 'name', type: 'text', label: 'Nombre' },

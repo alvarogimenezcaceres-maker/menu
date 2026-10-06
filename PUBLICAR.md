@@ -215,15 +215,15 @@ Cada restaurante tiene un **Plan** (barra lateral). **Gratis** = el local carga 
 **Dar de alta un local Gratis (beta asistida):**
 1. Restaurantes → **Crear nuevo** (el plan sale en *Gratis*). Cargá nombre, WhatsApp y, en *Términos del plan Gratis*, la versión y cómo los aceptó.
 2. Usuarios → **Crear nuevo**: rol *Personal del restaurante*, y en *Restaurante asignado* el local. Pasale el correo y la clave por un canal seguro; que cambie la clave al entrar.
-3. Cuando el menú cumpla el piso de calidad (de 8 a 11 productos con precio, fotos propias), tildá **Publicación aprobada** en el restaurante. Hasta entonces *Publicar ahora* le responde «tu menú está en revisión».
+3. El local arma su menú con la guía del Panel de Control y toca **Publicar**. Si cumple el piso (logo, WhatsApp y de 8 a 11 productos con precio), queda como **pedido de publicación**: ves «Menús Gratis esperando aprobación» en tu Panel de Control, con la fecha del pedido. Revisá fotos, nombres y precios, tildá **Publicación aprobada** en el restaurante y avisale por WhatsApp (el aviso es manual). Hasta entonces el local ve «En revisión».
 
-**Límites del plan Gratis:** hasta 11 productos, de 8 a 11 con precio para publicar, 5 publicaciones por día, sin escaneo 3D, y el menú publicado sin zonas, envío, formas de pago ni horarios (quedan los valores por defecto). Los pilotos y los planes pagos no tienen estos límites. Solo un administrador cambia el plan, la aprobación y los términos.
+**Límites del plan Gratis:** hasta 11 productos, de 8 a 11 con precio para publicar (más logo y WhatsApp), 5 publicaciones por día, sin escaneo 3D (el panel esconde «Escaneos 3D», los campos de 3D, las zonas, el envío, los pagos y los horarios), y el menú publicado con **pedido básico**: sin formulario ni «Mostrar al mozo», solo los platos y el total por WhatsApp, más la franja «Hecho con Mesaverso» (el link usa `MESAVERSO_URL`; por defecto la landing en workers.dev, hay que apuntarlo al dominio cuando exista). Los pilotos y los planes pagos no tienen estos límites. Solo un administrador cambia el plan, la aprobación y los términos.
 
 **Guía en el panel:** al entrar, el personal de un local ve en el Panel de Control un checklist de 5 pasos (datos, categorías, productos, fotos, publicar) con el contador de productos. El administrador ve ahí mismo los menús Gratis que esperan aprobación y cuáles ya están listos para revisar (`apps/web/src/components/StartGuide.tsx`).
 
 **Permisos:** el personal de un local solo ve y edita su restaurante y su propio usuario; no puede crear usuarios ni cambiar a qué restaurante pertenece. Las reglas están en `apps/web/src/plans.ts` y se prueban con `npx vitest run tests/int/`.
 
-**Al desplegar:** la migración `20261005_230910_free_plan` deja a los locales que ya existen sin plan (sin límites) y con la publicación aprobada. Después del push, Render → **Manual Deploy → Deploy latest reference**.
+**Al desplegar:** las migraciones `20261005_230910_free_plan` y `20261005_235646_free_plan_review_request` agregan columnas; la primera deja a los locales que ya existen sin plan (sin límites) y con la publicación aprobada. Después del push, Render → **Manual Deploy → Deploy latest reference**.
 
 ## Todo en la nube (desde el 26/09/2026): la notebook ya no hace falta
 

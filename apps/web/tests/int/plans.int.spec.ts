@@ -47,7 +47,7 @@ describe('paraguayDay and publishesToday', () => {
 })
 
 describe('publishBlock on the Gratis plan', () => {
-  const ok = { limits: free, isAdmin: false, approved: true, published: 9, today: 0, hasLogo: true }
+  const ok = { limits: free, isAdmin: false, approved: true, published: 9, today: 0, hasLogo: true, hasWhatsapp: true }
 
   it('lets an approved restaurant with 8 to 11 dishes publish', () => {
     expect(publishBlock(ok)).toBeNull()
@@ -55,8 +55,16 @@ describe('publishBlock on the Gratis plan', () => {
     expect(publishBlock({ ...ok, published: FREE_MAX_DISHES })).toBeNull()
   })
 
-  it('waits for approval before the first publication', () => {
-    expect(publishBlock({ ...ok, approved: false })?.status).toBe(403)
+  it('waits for approval before the first publication, as a request and not as an error', () => {
+    const block = publishBlock({ ...ok, approved: false })
+    expect(block?.status).toBe(403)
+    expect(block?.kind).toBe('approval')
+  })
+
+  it('needs the WhatsApp number, because the Gratis menu orders only through it', () => {
+    const block = publishBlock({ ...ok, hasWhatsapp: false })
+    expect(block?.kind).toBe('fix')
+    expect(block?.message).toContain('WhatsApp')
   })
 
   it('tells the local what it can fix (too few dishes) before asking it to wait for approval', () => {
@@ -89,11 +97,11 @@ describe('publishBlock on the Gratis plan', () => {
 
   it('never blocks a restaurant without a plan', () => {
     const l = limitsFor(null)
-    expect(publishBlock({ limits: l, isAdmin: false, approved: false, published: 40, today: 99, hasLogo: true })).toBeNull()
+    expect(publishBlock({ limits: l, isAdmin: false, approved: false, published: 40, today: 99, hasLogo: true, hasWhatsapp: false })).toBeNull()
   })
 
   it('needs the logo on every plan, because a menu without one breaks the build of all menus', () => {
     expect(publishBlock({ ...ok, hasLogo: false })?.message).toContain('logo')
-    expect(publishBlock({ limits: limitsFor(null), isAdmin: true, approved: true, published: 40, today: 0, hasLogo: false })?.status).toBe(400)
+    expect(publishBlock({ limits: limitsFor(null), isAdmin: true, approved: true, published: 40, today: 0, hasLogo: false, hasWhatsapp: true })?.status).toBe(400)
   })
 })

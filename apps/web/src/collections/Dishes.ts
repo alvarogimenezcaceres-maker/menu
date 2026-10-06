@@ -1,6 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
 import { enforceDishCap } from '../hooks/planLimits'
+import { userLimits } from '../plans'
 import { slugField } from '../fields/slug'
 
 export const TAG_OPTIONS = [
@@ -132,6 +133,7 @@ export const Dishes: CollectionConfig = {
           type: 'upload',
           relationTo: 'media',
           label: 'Modelo 3D (.glb)',
+          admin: { condition: (_data, _siblingData, { user }) => userLimits(user).scan3d },
           filterOptions: { mimeType: { in: ['model/gltf-binary', 'application/octet-stream'] } },
         },
       ],
@@ -139,9 +141,17 @@ export const Dishes: CollectionConfig = {
     {
       type: 'ui',
       name: 'scan3d',
-      admin: { components: { Field: '/components/DishScanBox#DishScanBox' } },
+      admin: {
+        components: { Field: '/components/DishScanBox#DishScanBox' },
+        condition: (_data, _siblingData, { user }) => userLimits(user).scan3d,
+      },
     },
-    { name: 'modelNote', type: 'text', label: 'Nota del modelo 3D', admin: { description: 'Ej.: "Modelo de demostración".' } },
+    {
+      name: 'modelNote',
+      type: 'text',
+      label: 'Nota del modelo 3D',
+      admin: { description: 'Ej.: "Modelo de demostración".', condition: (_data, _siblingData, { user }) => userLimits(user).scan3d },
+    },
     slugField(),
     {
       name: 'visible',
