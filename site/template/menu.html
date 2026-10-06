@@ -374,7 +374,7 @@
   .open-chip { display: inline-flex; align-items: center; gap: 6px; font: 600 12.5px/1 var(--display); letter-spacing: .06em; text-transform: uppercase; padding: 7px 10px 6px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); }
   .open-chip i { width: 8px; height: 8px; border-radius: 50%; background: #7bc47f; }
   .open-chip.closed i { background: var(--err); }
-</style>
+{{FREE_CSS}}</style>
 </head>
 <body>
 <a class="skip" href="#menu">Ir al menú</a>
@@ -421,7 +421,7 @@
     <img src="img/{{LOGO}}-360.webp" alt="">
     <span>Precios en guaraníes (₲). Consultá por alérgenos al personal.</span>
     <a class="review-btn" id="reviewFoot" hidden target="_blank" rel="noopener"></a>
-    <span class="privacy">Sin cookies. Contamos visitas y clics de forma anónima para mejorar el menú.{{PRIVACY_LINK}}</span>
+    <span class="privacy">Sin cookies. Contamos visitas y clics de forma anónima para mejorar el menú.{{PRIVACY_LINK}}</span>{{BRAND_STRIP}}
   </footer>
 </main>
 
@@ -488,7 +488,7 @@ const replay = (el, cls) => { if (REDUCED || !el) return; el.classList.remove(cl
 const STAR = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9L12 3Z"/></svg>';
 const reviewLink = (cls = "") => REVIEW_URL ? `<a class="review-btn ${cls}" data-review href="${esc(REVIEW_URL)}" target="_blank" rel="noopener">${STAR}Dejanos tu reseña en Google</a>` : "";
 if (REVIEW_URL) { const f = $("#reviewFoot"); f.href = REVIEW_URL; f.dataset.review = "foot"; f.innerHTML = STAR + "¿Te gustó? Dejanos tu reseña en Google"; f.hidden = false; }
-document.addEventListener("click", e => { const a = e.target.closest("[data-review]"); if (a) { track("review_click", { mode: mesa ? "table" : "" }); flushEvents(); } });
+document.addEventListener("click", e => { const a = e.target.closest("[data-review]"); if (a) { track("review_click", { mode: mesa ? "table" : "" }); flushEvents(); } });{{FREE_G}}
 
 /* table from the QR: ?table=8 or ?mesa=8 */
 const params = new URLSearchParams(location.search);
@@ -923,7 +923,7 @@ function lineSub(l) {
 }
 
 /* ---------- Datos del pedido por WhatsApp (delivery o retiro) ---------- */
-const withForm = () => !table && !mesa && !!WHATSAPP;
+const withForm = () => {{FREE_A}}!table && !mesa && !!WHATSAPP;
 let co = { type: CFG.orderTypes[0], name: "", address: "", reference: "", zone: -1, payment: CFG.paymentMethods[0], cash: "", note: "" };
 let remember = false;
 try { const saved = JSON.parse(localStorage.getItem(DATA_KEY) || "null"); if (saved) { Object.assign(co, saved); remember = true; } } catch (e) {}
@@ -974,7 +974,7 @@ function checkoutHtml() {
 }
 function totalsHtml() {
   const sub = selTotal();
-  if (!withForm()) return `<div class="grand"><span>Total</span>${fmt(sub)}</div>`;
+  if (!withForm()) return `<div class="grand"><span>Total</span>${fmt(sub)}</div>`{{FREE_C}};
   const fee = C.deliveryFee(CFG, co);
   const rows = [`<div><span>Subtotal</span><span>${plain(sub)}</span></div>`];
   if (co.type === "delivery") rows.push(`<div><span>Envío${CFG.zones[co.zone] ? " · " + esc(CFG.zones[co.zone].name) : ""}</span><span>${fee == null ? (CFG.zones.length ? "elegí tu zona" : "a confirmar") : plain(fee)}</span></div>`);
@@ -1034,15 +1034,15 @@ function renderSelPanel() {
     ${withForm() ? checkoutHtml() : ""}
     <div class="totals" id="coTotals">${totalsHtml()}</div>
     <div class="order">${orderButtons()}</div>
-    <p class="sel-hint">${mesa ? `Estás en la mesa ${esc(mesa.table)}: tu pedido le llega al mozo para que lo acepte.` : table ? "Estás en el local: mostrale el pedido al mozo." : WHATSAPP ? "Mandá el pedido por WhatsApp al local, o mostráselo al mozo si estás ahí." : "Mostrale el pedido al mozo."} La lista queda guardada en este celular.</p>
-    <button class="sel-clear" type="button" id="selClear">Vaciar la selección</button>`
+    <p class="sel-hint">${{{FREE_D}}mesa ? `Estás en la mesa ${esc(mesa.table)}: tu pedido le llega al mozo para que lo acepte.` : table ? "Estás en el local: mostrale el pedido al mozo." : WHATSAPP ? "Mandá el pedido por WhatsApp al local, o mostráselo al mozo si estás ahí." : "Mostrale el pedido al mozo."} La lista queda guardada en este celular.</p>
+    <button class="sel-clear" type="button" id="selClear">Vaciar la selección</button>{{FREE_E}}`
     : `<p class="sel-hint">Todavía no agregaste platos. Tocá el corazón de cualquier plato para sumarlo acá.</p>`;
   if (lines.length) refreshCheckout();
 }
 /* ---------- Pedido: por WhatsApp al local o en pantalla para el mozo ---------- */
 const WA_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20.5 11.6a8.5 8.5 0 0 1-12.6 7.5L3.5 20.5l1.4-4.2a8.5 8.5 0 1 1 15.6-4.7Z"/><path d="M9 8.5c0 3.5 2.9 6.5 6.5 6.5l1-1.6-2-1-1 .8a4.5 4.5 0 0 1-2.4-2.4l.8-1-1-2L9.3 8Z" fill="currentColor" stroke="none"/></svg>';
 const WAITER_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="5" y="2.5" width="14" height="19" rx="3"/><path d="M9 7h6M9 11h6M9 15h3"/></svg>';
-const orderText = () => C.orderMessage({ restaurant: RESTAURANT, lines, bySlug, table, cfg: CFG, form: withForm() ? co : null, ref: withForm() ? orderRef() : "" });
+const orderText = () => C.orderMessage({ restaurant: RESTAURANT, lines, bySlug, table, cfg: CFG, form: withForm() ? co : null, ref: withForm() ? orderRef() : ""{{FREE_F}} });
 /* Mesaverso Caja: the order also goes to the restaurant's screen with a short code that travels in the
    WhatsApp message. The code stays the same while the order doesn't change, so sending twice is stored once.
    If the restaurant doesn't use the caja, the Worker stores nothing. */
@@ -1060,7 +1060,7 @@ function sendToCaja() {
         form: { type: co.type, name: co.name, address: co.address, reference: co.reference, zone: co.zone, payment: co.payment, cash: co.cash, note: co.note } }) }).catch(() => {});
   } catch (e) { /* WhatsApp is the order; the caja copy is a convenience */ }
 }
-function orderButtons() {
+function orderButtons() {{{FREE_B}}
   if (mesa) return `<button class="ar-btn" type="button" id="mesaOrderBtn">${WAITER_ICON}Pedir a la mesa ${esc(mesa.table)}</button>
     <button class="sel-btn" type="button" id="waiterBtn">${WAITER_ICON}Mostrar al mozo</button>`;
   const wa = WHATSAPP ? `<a class="${table ? "sel-btn" : "ar-btn"}" id="waBtn" href="https://wa.me/${WHATSAPP}" target="_blank" rel="noopener">${WA_ICON}Enviar pedido por WhatsApp</a>` : "";
@@ -1128,7 +1128,7 @@ waiterEl.addEventListener("click", e => { if (e.target.id === "waiterDone") clos
 $("#selBody").addEventListener("click", e => {
   if (e.target.closest("#waiterBtn")) { openWaiter(); return; }
   if (e.target.closest("#mesaOrderBtn")) { orderToTable(); return; }
-  if (e.target.closest("#waBtn")) {
+  if (e.target.closest("#waBtn")) {{{FREE_H}}
     if (withForm()) {
       const st = openNow();
       coTried = true;

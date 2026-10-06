@@ -1,7 +1,7 @@
 // Validation and parsing for the menu events endpoint (used by worker.js, tested in worker.test.mjs).
 // Kept apart because a Worker's main module may only export handlers.
 
-export const EVENTS = new Set(["menu_view", "dish_view", "model_open", "ar_open", "search", "add_item", "checkout_view", "order_tap", "waiter_show", "review_click"]);
+export const EVENTS = new Set(["menu_view", "dish_view", "model_open", "ar_open", "search", "add_item", "checkout_view", "order_tap", "waiter_show", "review_click", "badge_click"]);
 export const SOURCES = new Set(["qr", "ig", "maps", "wa", "dir", "fb", "web", "direct"]);
 const MODES = new Set(["delivery", "pickup", "table", ""]);
 export const MAX_BODY = 8 * 1024;

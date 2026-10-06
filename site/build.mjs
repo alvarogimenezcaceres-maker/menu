@@ -10,12 +10,17 @@ import sharp from "sharp";
 import QRCode from "qrcode";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const DIST = path.join(ROOT, "dist");
+const DIST = process.env.DIST_DIR ? path.resolve(process.env.DIST_DIR) : path.join(ROOT, "dist"); // DIST_DIR / SEED_DIR: only for build.test.mjs
+const SEED = process.env.SEED_DIR ? path.resolve(process.env.SEED_DIR) : path.join(ROOT, "seed");
 const SITE_URL = (process.env.SITE_URL || "http://localhost:8080/").replace(/\/?$/, "/");
 const SIZES = [360, 720, 1200];
+// public address of the sales landing (the badge on free menus links to it); the own domain arrives later
+const MESAVERSO_URL = (process.env.MESAVERSO_URL || "https://mesaverso-landing.alvarogimenezcaceres.workers.dev").replace(/\/+$/, "");
 // order logic shared with the page: the same file is inlined into every menu
 const ORDER_CORE = await readFile(path.join(ROOT, "site", "order-core.js"), "utf8");
 const OrderCore = vm.runInNewContext(ORDER_CORE + "\nOrderCore;");
+// lines tagged "// free-only" exist only in the copy inlined into free menus: paid menus keep byte-identical output
+const ORDER_CORE_PAID = ORDER_CORE.replace(/^.*\/\/ free-only\r?\n/gm, "");
 // comanda, precuenta and ticket as PDF, inlined into the caja page
 const TICKET_CORE = await readFile(path.join(ROOT, "site", "ticket-core.js"), "utf8");
 
@@ -26,6 +31,41 @@ const fill = (tpl, vars) => tpl.replace(/\{\{(\w+)\}\}/g, (_, k) => {
 });
 const attr = s => String(s).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
 const jsonForScript = v => JSON.stringify(v).replace(/</g, "\\u003c");
+
+// Free plan (restaurant.plan === "free"): "Hecho con Mesaverso" strip + pedido básico. Everything below is injected only for
+// free menus; the placeholders are replaced by "" in the others so pilot menus come out byte-identical.
+const BADGE_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><path d="M7 16V8l5 5 5-5v8"/></svg>';
+const brandHref = slug => `${MESAVERSO_URL}/?ref=${encodeURIComponent(slug)}&amp;utm_source=menu&amp;utm_medium=badge`;
+const brandStrip = slug => `
+    <div class="made"><a href="${brandHref(slug)}" target="_blank" rel="noopener">${BADGE_ICON}<span class="t"><b>Hecho con Mesaverso</b><span class="cta">Creá el tuyo gratis<span class="sr"> (se abre en otra pestaña)</span> →</span></span></a></div>`;
+const FREE_CSS = `
+  .made { margin-top: 10px; padding-top: 14px; border-top: 1px solid var(--line); width: 100%; display: grid; justify-items: center; }
+  .made a { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; max-width: 100%; padding: 8px 14px; border: 1px solid var(--line); border-radius: 12px; color: #d6d9dd; text-decoration: none; font-size: 13.5px; line-height: 1.3; }
+  .made a:hover .cta, .made a:focus-visible .cta { text-decoration-thickness: 2px; }
+  .made svg { width: 22px; height: 22px; flex: none; stroke: #8f949c; }
+  .made .t { display: grid; text-align: left; }
+  .made .t b { font-weight: 700; color: var(--text); }
+  .made .cta { text-decoration: underline; text-underline-offset: 3px; }
+  .made .sr, .made-line .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .made-line { margin: 22px 0 4px; display: flex; justify-content: center; }
+  .made-line a { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 10px; color: var(--muted); font-size: 13px; text-decoration: none; }
+  .made-line .u { text-decoration: underline; text-underline-offset: 3px; }
+  .made-line svg { width: 16px; height: 16px; stroke: var(--muted); flex: none; }
+`;
+// pedido básico: no form, no waiter button, no POST to the caja; WhatsApp only (plain JS strings: no template interpolation here)
+const freeParts = slug => ({
+  FREE_CSS,
+  BRAND_STRIP: brandStrip(slug),
+  FREE_A: "false && ",
+  FREE_B: ' return WHATSAPP ? `<a class="ar-btn" id="waBtn" href="https://wa.me/${WHATSAPP}" target="_blank" rel="noopener">${WA_ICON}Enviar pedido por WhatsApp</a>` : `<p class="sel-hint">Este local todavía no recibe pedidos por WhatsApp.</p>`;',
+  FREE_C: ' + `<p class="sel-hint">El envío, si pedís delivery, lo confirma el local por WhatsApp.</p>`',
+  FREE_D: 'true ? "Se abre WhatsApp con tu pedido ya escrito. Ahí le decís al local si es delivery o retiro, tu dirección y cómo vas a pagar." : ',
+  FREE_E: `<div class="made-line"><a href="${brandHref(slug)}" target="_blank" rel="noopener">${BADGE_ICON}<span>Hecho con Mesaverso · <span class="u">Creá el tuyo gratis</span><span class="sr"> (se abre en otra pestaña)</span></span></a></div>`,
+  FREE_F: ", basic: true",
+  FREE_G: '\ndocument.addEventListener("click", e => { if (e.target.closest(".made a, .made-line a")) { track("badge_click"); flushEvents(); } });',
+  FREE_H: ' $("#waBtn").href = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(orderText())}`;',
+});
+const FREE_KEYS = Object.keys(freeParts("x"));
 
 // Google review link from the panel: only Google's own review/map URLs reach the page
 const reviewUrl = v => {
@@ -50,10 +90,10 @@ function publicMenu(m) {
   return { categories };
 }
 
-function jsonLd(m, url) {
+function jsonLd(m, url, img) {
   const r = m.restaurant;
   return jsonForScript({
-    "@context": "https://schema.org", "@type": "Restaurant", name: r.name, url, image: `${url}img/${r.hero || r.logo}.webp`,
+    "@context": "https://schema.org", "@type": "Restaurant", name: r.name, url, image: `${url}img/${img}.webp`,
     servesCuisine: r.cuisine, currenciesAccepted: r.currency,
     hasMenu: {
       "@type": "Menu", hasMenuSection: publicMenu(m).categories.map(c => ({
@@ -67,34 +107,62 @@ function jsonLd(m, url) {
   });
 }
 
-async function buildImages(seedDir, outDir, names) {
+// Returns the names that were built. A missing image only warns (the menu still builds), except the ones in `critical`.
+async function buildImages(seedDir, outDir, names, critical = []) {
   await mkdir(outDir, { recursive: true });
+  const built = new Set();
   for (const name of names) {
     let src = null;
     for (const ext of [".png", ".webp", ".jpg", ".jpeg"]) {
       const p = path.join(seedDir, "images", name + ext);
       if (await exists(p)) { src = p; break; }
     }
-    if (!src) throw new Error(`Missing image ${name} in ${seedDir}/images`);
+    if (!src) {
+      if (critical.includes(name)) throw new Error(`Missing image ${name} in ${seedDir}/images`);
+      console.warn(`! ${path.basename(seedDir)}: falta la imagen «${name}» en images/ (se omite)`);
+      continue;
+    }
+    built.add(name);
     await sharp(src).webp({ quality: 85 }).toFile(path.join(outDir, `${name}.webp`)); // full size (OG image)
     for (const w of SIZES) {
       await sharp(src).resize({ width: w, height: w, fit: "inside", withoutEnlargement: true })
         .webp({ quality: w <= 360 ? 78 : 82 }).toFile(path.join(outDir, `${name}-${w}.webp`));
     }
   }
+  return built;
+}
+
+// Stand-in for a missing logo so the pages keep valid image links: the restaurant name as text on a transparent 360 px webp
+async function nameLogo(outDir, name, color) {
+  const esc = String(name).replace(/&/g, "&amp;").replace(/</g, "&lt;");
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="360" height="120"><text x="180" y="72" text-anchor="middle" font-family="Georgia, serif" font-size="${esc.length > 18 ? 28 : 40}" fill="${color}">${esc}</text></svg>`;
+  let img;
+  try { img = await sharp(Buffer.from(svg)).webp({ quality: 85 }).toBuffer(); }
+  catch { img = await sharp({ create: { width: 360, height: 120, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } }).webp().toBuffer(); }
+  for (const f of ["nologo", "nologo-360"]) await writeFile(path.join(outDir, `${f}.webp`), img);
 }
 
 async function buildRestaurant(slug, templates) {
-  const seedDir = path.join(ROOT, "seed", slug);
+  const seedDir = path.join(SEED, slug);
   const m = JSON.parse(await readFile(path.join(seedDir, "menu.json"), "utf8"));
   const r = m.restaurant, t = r.theme || {};
   const url = `${SITE_URL}${slug}/`;
   const out = path.join(DIST, slug);
   const menu = publicMenu(m);
+  const free = r.plan === "free";
 
   const used = new Set([r.logo, r.hero].filter(Boolean));
   menu.categories.forEach(c => { if (c.cover) used.add(c.cover); c.dishes.forEach(d => d.photo && used.add(d.photo)); });
-  await buildImages(seedDir, path.join(out, "img"), [...used].filter(Boolean));
+  const builtImgs = await buildImages(seedDir, path.join(out, "img"), [...used].filter(Boolean));
+  // a missing hero, cover or dish photo is not worth breaking the build; a missing logo gets a text stand-in
+  const hasLogo = !!r.logo && builtImgs.has(r.logo);
+  if (!hasLogo) {
+    console.warn(`! ${slug}: el menú no tiene logo (restaurant.logo ${r.logo ? "«" + r.logo + "» no está en images/" : "vacío"}): se usa el nombre como texto`);
+    await nameLogo(path.join(out, "img"), r.name, "#f3ede3");
+  }
+  const logo = hasLogo ? r.logo : "nologo";
+  const hero = r.hero && builtImgs.has(r.hero) ? r.hero : "";
+  menu.categories.forEach(c => { if (c.cover && !builtImgs.has(c.cover)) c.cover = null; c.dishes.forEach(d => { if (d.photo && !builtImgs.has(d.photo)) d.photo = null; }); });
 
   const models = menu.categories.flatMap(c => c.dishes).filter(d => d.model).map(d => d.model);
   if (models.length) {
@@ -105,11 +173,14 @@ async function buildRestaurant(slug, templates) {
   const theme = { BG: t.background || "#181818", PRIMARY: t.primary || "#ED9D15", PRIMARY_LIGHT: t.primaryLight || "#FFB943", WINE: t.accentWine || "#8F1B51" };
   await writeFile(path.join(out, "index.html"), fill(templates.menu, {
     ...theme, NAME: attr(r.name), NAME_JSON: jsonForScript(r.name), DESCRIPTION: attr(r.description), TAGLINE: attr(r.tagline || ""),
-    URL: url, LOGO: r.logo, OG_IMAGE: r.hero || r.logo, JSONLD: jsonLd(m, url), DATA: jsonForScript(menu),
-    HERO_IMG: r.hero ? `<img class="dish" src="img/${r.hero}-720.webp" alt="" fetchpriority="high">` : "",
+    URL: url, LOGO: logo, OG_IMAGE: hero || logo, JSONLD: jsonLd(m, url, hero || logo), DATA: jsonForScript(menu),
+    HERO_IMG: hero ? `<img class="dish" src="img/${hero}-720.webp" alt="" fetchpriority="high">` : "",
     WHATSAPP: whatsappDigits(r.whatsapp),
     PRIVACY_LINK: r.legal && r.legal.legalName && r.legal.ruc && r.legal.privacyContact ? ' · <a href="privacidad/">Privacidad</a>' : "",
-    REVIEW_URL: jsonForScript(reviewUrl(r.googleReviewUrl)), ORDERING: jsonForScript(OrderCore.orderingConfig(r.ordering)), ORDER_CORE,
+    REVIEW_URL: jsonForScript(reviewUrl(r.googleReviewUrl)), ORDERING: jsonForScript(OrderCore.orderingConfig(r.ordering)),
+    ORDER_CORE: free ? ORDER_CORE : ORDER_CORE_PAID,
+    // plan Gratis only; "" elsewhere (see freeParts)
+    ...Object.fromEntries(FREE_KEYS.map(k => [k, free ? freeParts(slug)[k] : ""])),
   }));
 
   // Mesaverso Caja: the catalog the Worker prices orders with (public data: the same as the menu) and the staff page
@@ -122,10 +193,10 @@ async function buildRestaurant(slug, templates) {
     icons: [192, 512].map(s => ({ src: `icon-${s}.png`, sizes: `${s}x${s}`, type: "image/png", purpose: "any" })),
   }));
   for (const size of [192, 512]) {
-    const logo = await sharp(path.join(out, "img", `${r.logo}-360.webp`)).resize({ width: Math.round(size * 0.78), height: Math.round(size * 0.78), fit: "inside" }).toBuffer();
-    await sharp({ create: { width: size, height: size, channels: 4, background: "#0E1014" } }).composite([{ input: logo, gravity: "center" }]).png().toFile(path.join(out, "caja", `icon-${size}.png`));
+    const icon = await sharp(path.join(out, "img", `${logo}-360.webp`)).resize({ width: Math.round(size * 0.78), height: Math.round(size * 0.78), fit: "inside" }).toBuffer();
+    await sharp({ create: { width: size, height: size, channels: 4, background: "#0E1014" } }).composite([{ input: icon, gravity: "center" }]).png().toFile(path.join(out, "caja", `icon-${size}.png`));
   }
-  await writeFile(path.join(out, "caja", "index.html"), fill(templates.caja, { NAME: attr(r.name), NAME_JSON: jsonForScript(r.name), SLUG: slug, ORDER_CORE, TICKET_CORE }));
+  await writeFile(path.join(out, "caja", "index.html"), fill(templates.caja, { NAME: attr(r.name), NAME_JSON: jsonForScript(r.name), SLUG: slug, ORDER_CORE: ORDER_CORE_PAID, TICKET_CORE }));
 
   // Privacy notice for diners (plan/pos/legal): published only when the restaurant's legal data is loaded in the panel
   const legal = r.legal && r.legal.legalName && r.legal.ruc && r.legal.privacyContact ? r.legal : null;
@@ -133,7 +204,7 @@ async function buildRestaurant(slug, templates) {
     const mv = templates.mesaverso, mvParts = [mv.holder, mv.ruc && "RUC " + mv.ruc, mv.email].filter(Boolean);
     await mkdir(path.join(out, "privacidad"), { recursive: true });
     await writeFile(path.join(out, "privacidad", "index.html"), fill(templates.privacidad, {
-      NAME: attr(r.name), BG: theme.BG, PRIMARY: theme.PRIMARY, LOGO: r.logo,
+      NAME: attr(r.name), BG: theme.BG, PRIMARY: theme.PRIMARY, LOGO: logo,
       UPDATED: new Date().toLocaleDateString("es-PY", { day: "numeric", month: "long", year: "numeric", timeZone: "America/Asuncion" }),
       LEGAL_NAME: attr(legal.legalName), RUC: attr(legal.ruc), ADDRESS: legal.address ? ", " + attr(legal.address) : "",
       CONTACT: attr(legal.privacyContact), MESAVERSO: mvParts.length ? " (" + mvParts.map(attr).join(", ") + ")" : "",
@@ -147,7 +218,7 @@ async function buildRestaurant(slug, templates) {
   const cards = [];
   const card = (target, label, encoded = target) => QRCode.toString(encoded, { ...qrOpts, type: "svg" }).then(svg => `
     <div class="card">
-      <img class="logo" src="img/${r.logo}-360.webp" alt="${attr(r.name)}">
+      <img class="logo" src="img/${logo}-360.webp" alt="${attr(r.name)}">
       <div class="qr"><img src="data:image/svg+xml;base64,${Buffer.from(svg).toString("base64")}" alt="QR ${attr(label || r.name)}"></div>
       <strong>Escaneá y pedí desde tu celular</strong>
       <span>Armá tu pedido y mostráselo al mozo. Los de tu mesa se suman desde su celular y al final dividen la cuenta.</span>
@@ -178,8 +249,8 @@ async function main() {
     mesaverso: JSON.parse(await readFile(path.join(ROOT, "site", "mesaverso.json"), "utf8")),
   };
   const slugs = [];
-  for (const e of await readdir(path.join(ROOT, "seed"), { withFileTypes: true })) {
-    if (e.isDirectory() && await exists(path.join(ROOT, "seed", e.name, "menu.json"))) slugs.push(e.name);
+  for (const e of await readdir(SEED, { withFileTypes: true })) {
+    if (e.isDirectory() && await exists(path.join(SEED, e.name, "menu.json"))) slugs.push(e.name);
   }
   const built = [];
   for (const slug of slugs.sort()) built.push(await buildRestaurant(slug, templates));

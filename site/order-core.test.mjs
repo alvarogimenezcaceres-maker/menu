@@ -133,3 +133,12 @@ test("split refuses nonsense", () => {
   const r = C.splitBill(tableLines, colors, { mode: "consumo", assign: [["rojo"]] });
   assert.equal(pays(r).azul, 60000 + 3334);
 });
+
+test("basic order (free plan): only adds the delivery/pickup line, paid messages stay as they were", () => {
+  const args = { restaurant: "Local", lines: [{ slug: "pizza", picks: [], n: 1 }], bySlug, table: "", cfg: C.orderingConfig(undefined), form: null, ref: "" };
+  const base = C.orderMessage(args), basic = C.orderMessage({ ...args, basic: true });
+  assert.ok(!base.includes("Te paso por acá"));
+  assert.ok(basic.includes("Te paso por acá si es delivery o retiro, mi nombre y cómo pago."));
+  assert.equal(basic.replace("Te paso por acá si es delivery o retiro, mi nombre y cómo pago.\n\n", ""), base);
+  assert.ok(!C.orderMessage({ ...args, basic: true, table: "4" }).includes("Te paso por acá"));
+});

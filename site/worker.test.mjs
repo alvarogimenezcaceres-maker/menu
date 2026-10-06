@@ -68,3 +68,9 @@ test("other paths go to the static assets", async () => {
   const r = await worker.fetch(new Request(`${HOST}/filigrana/`), env);
   assert.equal(await r.text(), "menu");
 });
+
+test("badge_click (free-plan strip) is an accepted event", () => {
+  const points = parseBatch(JSON.stringify(batch({ events: [{ ev: "badge_click" }] })));
+  assert.equal(points.length, 1);
+  assert.equal(points[0].blobs[0], "badge_click");
+});

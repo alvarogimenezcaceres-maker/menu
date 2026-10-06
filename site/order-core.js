@@ -154,6 +154,7 @@ const OrderCore = (() => {
       out.push(pay);
       if (String(form.note || "").trim()) out.push(`Nota: ${String(form.note).trim()}`);
     }
+    if (arguments[0].basic && !form && !table) out.push("", "Te paso por acá si es delivery o retiro, mi nombre y cómo pago."); // free-only
     out.push("", ref ? `Pedido #MV-${ref} desde el menú digital` : "Pedido desde el menú digital #MV");
     return out.join("\n");
   }
