@@ -24,16 +24,19 @@ export const WHATSAPP_MESSAGES = {
 // implementation, or annual paid upfront (12 months for the price of `annualMonthsCharged`)
 // with the implementation included. 3D is an optional one-off pack per dish.
 export const PRICES = {
-  planMonthly: 150000,
+  planMonthly: 180000,
   minMonths: 6,
   annualMonthsCharged: 10,
   implementation: 300000,
   pack3dDish: 120000,
+  guaranteeDays: 30,
 };
 PRICES.planAnnual = PRICES.planMonthly * PRICES.annualMonthsCharged;
 // First year on each plan, for the worked example.
 PRICES.firstYearMonthly = PRICES.implementation + PRICES.planMonthly * 12;
 PRICES.annualSaving = PRICES.firstYearMonthly - PRICES.planAnnual;
+// 30-day guarantee: the annual plan refunds everything except the first month at list price.
+PRICES.annualRefund = PRICES.planAnnual - PRICES.planMonthly;
 
 export const waUrl = (key) => {
   const text = WHATSAPP_MESSAGES[key];
