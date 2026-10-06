@@ -119,3 +119,13 @@ No hay ningún proveedor instalado. Cada acción importante dispara un evento (`
   solo cuando alguien toca «Girar en 3D».
 - `npm run images` regenera la imagen para compartir (`og.png`) y el ícono de Apple con Chrome.
 - Las ilustraciones de los platos de la demo son SVG propios. No hay fotos de stock.
+
+## Landing nueva (v2, «La noche sin papelitos»): solo vista previa
+
+Una variante completa de la página, en `src-v2/`, que **no toca la landing en producción** (`src/`, `dist/`). Se arma con `node build-v2.mjs` en `dist-v2/` y se mira en la computadora con `npm run dev:v2` (o con `ver-landing-nueva.cmd` en la raíz del repo): http://127.0.0.1:8789. Usa el mismo Worker y el mismo formulario (`/api/lead`); en local los contactos van a una memoria de prueba, nunca a la real.
+
+- `src-v2/index.html`, `v2.css` + `v2-sections.css`, `v2.js` (demo del pedido, vista previa del menú, calculadora de ejemplo, 3D opcional, formulario), `faq.mjs` (preguntas, una sola fuente para la página y el JSON-LD), `privacidad.body.html`, `terminos.body.html`, `reclamos.body.html`.
+- Los precios, el WhatsApp y las garantías salen de `site.config.mjs`; nada se escribe a mano en el HTML.
+- Los datos del titular (nombre, RUC, domicilio, correos) se completan en `src-v2/owner.config.mjs` o con variables `OWNER_*`. Mientras falten, la vista previa los muestra como «[completar …]» y `PUBLISH=1 node build-v2.mjs` se niega a construir.
+- Pruebas: `node tests/form-v2.mjs` (formulario, vista previa y calculadora contra el Worker local), `node tests/shots-v2.mjs` (capturas y desbordes) y `node tests/perf.mjs` (LCP, CLS y peso en 4G lento).
+- **No se despliega sin el OK del dueño.** Texto legal y precios todavía pendientes de revisión: ver `plan/landing-2026/` (carpeta local, no está en git).

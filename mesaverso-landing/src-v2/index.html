@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="es-PY" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+{{HEAD_META}}
+<meta name="theme-color" content="#0e1014">
+<meta name="color-scheme" content="dark light">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/icon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="preload" href="/fonts/familjen-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" as="image" href="/assets/torta-de-zanahoria-3d-480.webp" imagesrcset="/assets/torta-de-zanahoria-3d-480.webp 480w, /assets/torta-de-zanahoria-3d-800.webp 800w" imagesizes="(min-width:900px) 330px, 216px" fetchpriority="high">
+<link rel="stylesheet" href="/v2.css?v={{HASH:v2.css}}">
+<script src="/v2.js?v={{HASH:v2.js}}" defer></script>
+</head>
+<body>
+<a class="skip" href="#main">Saltar al contenido</a>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-qr" viewBox="0 0 24 24"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h3M20 14v3M14 20h3M20 20h0"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M5 5h14a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H10l-4 3.5V16H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z"/></symbol>
+  <symbol id="i-cube" viewBox="0 0 24 24"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9zM12 12l8-4.5M12 12 4 7.5M12 12v9"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-wa" viewBox="0 0 24 24"><path d="M4 20l1.3-4.2A8 8 0 1 1 8.4 18.8z"/><path d="M9 8.5c.3 2.6 2.4 4.9 5.5 6 .6-.2 1.2-.8 1.2-1.4l-1.7-.9-.9.7c-1-.4-1.9-1.3-2.3-2.3l.7-.9-.9-1.7c-.6 0-1.3.6-1.6 1.1z"/></symbol>
+</defs></svg>
+
+<nav class="nav" aria-label="Principal"><div class="wrap nav__in">
+  <a class="mv-wordmark" href="#top" aria-label="Mesaverso, inicio"><svg viewBox="0 0 100 100" aria-hidden="true"><path class="m" d="M16 80V22L50 60L84 22V80"/><circle class="a" cx="16" cy="82" r="10"/><circle class="b" cx="84" cy="82" r="10"/></svg>ESAVERSO</a>
+  <div class="nav__links"><a href="#como">Cómo funciona</a><a href="#planes">Planes</a><a href="#preguntas">Preguntas</a></div>
+  <div class="nav__end">
+    <a class="btn btn--secondary btn--sm" href="#cierre">Quiero mi menú</a>
+    <button class="theme" id="theme" type="button" aria-label="Cambiar a tema claro"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6 7 7M17 17l1.4 1.4M5.6 18.4 7 17M17 7l1.4-1.4"/></svg></button>
+  </div>
+</div></nav>
+
+<main id="main">
+<!-- ============ HERO ============ -->
+<section class="hero" id="top" aria-labelledby="h1"><div class="wrap hero__in">
+  <div class="hero__copy">
+    <span class="kicker rise">Para restaurantes, bares y lomiterías de Paraguay</span>
+    <h1 id="h1" class="rise" style="animation-delay:60ms">La noche sin papelitos.</h1>
+    <p class="hero__sub rise" style="animation-delay:120ms">Tu cliente pide desde el celular. Tu mozo escanea y elige la mesa. La cocina ve el pedido. La cuenta se divide sola. Con la tablet o la compu que ya tenés.</p>
+    <ul class="hero__bullets rise" style="animation-delay:150ms">
+      <li><svg class="ico" aria-hidden="true"><use href="#i-qr"/></svg><span>Menú con QR y link, con fotos y buscador. Sin app que bajar.</span></li>
+      <li><svg class="ico" aria-hidden="true"><use href="#i-chat"/></svg><span>Pedidos por WhatsApp y pedidos del salón, en orden.</span></li>
+      <li><svg class="ico" aria-hidden="true"><use href="#i-cube"/></svg><span>Platos en 3D: tu cliente los mira en su mesa.</span></li>
+    </ul>
+    <div class="hero__cta rise" style="animation-delay:180ms">
+      <a class="btn btn--primary" href="#cierre">Quiero mi menú</a>
+      <a class="btn btn--secondary" href="#demo">Ver la demo</a>
+    </div>
+    <p class="hero__note rise" style="animation-delay:240ms">0 % de comisión en los pedidos que llegan por tu link o QR. Pagás un plan mensual.</p>
+    <p class="hero__tiny rise" style="animation-delay:260ms">Mesaverso Caja está en prueba con locales piloto. No emite factura: seguís facturando con tu sistema.</p>
+  </div>
+  <div class="hero__stagewrap"><div class="stage" id="stage">
+    <svg class="stage__ring" viewBox="-100 -100 200 200" aria-hidden="true">
+      <g class="bezel">
+        <circle class="ticks" r="92" stroke-width="5" stroke-dasharray="1 6.65"/>
+        <circle class="ticks ticks--major" r="92" stroke-width="9" stroke-dasharray="2 45.1"/>
+      </g>
+      <circle class="rim" r="84"/>
+      <g class="orbit"><circle class="dot" cx="0" cy="-84" r="3.6"/></g>
+    </svg>
+    <div class="stage__base" aria-hidden="true"></div>
+    <div class="dish" id="dish"><div class="dish__float"><div class="dish__tilt" id="tilt">
+      <img id="dishimg" src="/assets/torta-de-zanahoria-3d-480.webp" srcset="/assets/torta-de-zanahoria-3d-480.webp 480w, /assets/torta-de-zanahoria-3d-800.webp 800w" sizes="(min-width:900px) 330px, 216px" width="480" height="480" fetchpriority="high" decoding="async" alt="Torta de zanahoria en 3D, flotando sobre un anillo de precisión">
+    </div></div></div>
+    <span class="chip tag tag--1" aria-hidden="true">Plato 3D</span>
+    <span class="chip tag tag--2" aria-hidden="true">Demo</span>
+    <button class="btn btn--secondary btn--sm stage__ctrl" id="go3d" type="button">Girarlo en 3D</button>
+  </div></div>
+</div></section>
+
+<!-- ============ PROBLEMA ============ -->
+<section class="sec" aria-labelledby="h2p"><div class="wrap">
+  <div class="sec__head">
+    <span class="kicker">Tu noche de hoy</span>
+    <h2 id="h2p">¿Cómo cerrás la noche hoy?</h2>
+    <p>Si tu salón funciona con papelitos, audios y chats, esto te suena.</p>
+  </div>
+  <div class="cards4">
+    <article class="card"><span class="n">01</span><h3>El pedido se pierde.</h3><p>Un papel mal leído y el lomito llega a la mesa equivocada.</p></article>
+    <article class="card"><span class="n">02</span><h3>La cocina adivina.</h3><p>Pedidos de WhatsApp, del salón y del delivery, todos mezclados.</p></article>
+    <article class="card"><span class="n">03</span><h3>La cuenta es una discusión.</h3><p>«Yo no pedí eso.» Y el mozo con la calculadora.</p></article>
+    <article class="card"><span class="n">04</span><h3>Lo agotado se entera tarde.</h3><p>El cliente pide lo que ya no hay.</p></article>
+  </div>
+  <p class="quote">No hace falta otro sistema complicado. Hace falta que cada pedido llegue claro.</p>
+  <div class="sec__cta"><a class="btn btn--secondary" href="#demo">Mirá cómo se arregla</a></div>
+</div></section>
+
+<!-- ============ DEMO: el recorrido de un pedido ============ -->
+<section class="demo" id="demo" aria-labelledby="h2d"><div class="wrap">
+  <div class="demo__head">
+    <span class="kicker">Probalo vos</span>
+    <h2 id="h2d">Un pedido, de punta a punta.</h2>
+    <p>Tocá el celular: el pedido pasa de tu cliente a tu mozo, a tu cocina y a la cuenta. Sin apps en el medio.</p>
+  </div>
+  <div class="demo__grid">
+    <div>
+      <ol class="steps" role="tablist" aria-label="Recorrido del pedido" id="steps" style="--p:0">
+        <span class="steps__track" aria-hidden="true"><span class="steps__fill"></span><span class="steps__dot"></span></span>
+      </ol>
+      <p class="demo__cap" id="cap"></p>
+      <p class="fine" style="margin-top:18px">Es un local de ejemplo, inventado, con pedidos de mentira.</p>
+    </div>
+    <div class="phone"><div class="screen" id="screen" role="tabpanel" aria-live="polite"></div></div>
+  </div>
+</div></section>
+
+<!-- ============ VISTA PREVIA DE TU MENÚ ============ -->
+<section class="sec" id="vista-previa" aria-labelledby="h2v"><div class="wrap">
+  <div class="sec__head">
+    <span class="kicker">Mirá cómo quedaría tu menú</span>
+    <h2 id="h2v">Probalo con tu local. Son 30 segundos.</h2>
+    <p>Escribí el nombre de tu local y tres platos. Te mostramos cómo lo ve tu cliente.</p>
+  </div>
+  <div class="pv">
+    <form id="pvForm" novalidate>
+      <div><label for="pvName">Nombre de tu local</label><input class="in" id="pvName" maxlength="40" autocomplete="off" placeholder="Ej.: Lomitería La Esquina"></div>
+      <div><span class="fine" id="pvChipsL">O empezá con un ejemplo:</span>
+        <div class="chips" role="group" aria-labelledby="pvChipsL" id="pvChips" style="margin-top:8px">
+          <button type="button" data-ex="Restaurante" aria-pressed="false">Restaurante</button>
+          <button type="button" data-ex="Hamburguesería" aria-pressed="false">Hamburguesería</button>
+          <button type="button" data-ex="Cafetería" aria-pressed="false">Cafetería</button>
+          <button type="button" data-ex="Pizzería" aria-pressed="false">Pizzería</button>
+        </div></div>
+      <div><label for="pvD1">Plato 1</label><div class="pv__row"><input class="in" id="pvD1" maxlength="40" autocomplete="off" placeholder="Nombre del plato"><input class="in" id="pvP1" inputmode="numeric" maxlength="9" autocomplete="off" placeholder="Precio ₲" aria-label="Precio del plato 1, opcional"></div></div>
+      <div><label for="pvD2">Plato 2</label><div class="pv__row"><input class="in" id="pvD2" maxlength="40" autocomplete="off" placeholder="Nombre del plato"><input class="in" id="pvP2" inputmode="numeric" maxlength="9" autocomplete="off" placeholder="Precio ₲" aria-label="Precio del plato 2, opcional"></div></div>
+      <div><label for="pvD3">Plato 3</label><div class="pv__row"><input class="in" id="pvD3" maxlength="40" autocomplete="off" placeholder="Nombre del plato"><input class="in" id="pvP3" inputmode="numeric" maxlength="9" autocomplete="off" placeholder="Precio ₲" aria-label="Precio del plato 3, opcional"></div></div>
+      <p class="fine">No guardamos lo que escribís. Es solo una vista previa para que veas cómo queda; no se envía a ningún lado.</p>
+      <div class="pv__ctas">
+        <a class="btn btn--primary" href="#cierre" id="pvCta">Quiero mi menú así</a>
+        <a class="btn btn--secondary" href="https://wa.me/" id="pvShare" target="_blank" rel="noopener">Mandármelo por WhatsApp</a>
+      </div>
+    </form>
+    <div class="phone pvphone"><div class="screen" id="pvScreen" aria-live="polite"></div></div>
+  </div>
+</div></section>
+
+<!-- ============ TODA LA NOCHE, EN ORDEN ============ -->
+<section class="sec" id="como" aria-labelledby="h2c"><div class="wrap">
+  <div class="sec__head">
+    <span class="kicker">Mesaverso Caja · en prueba con locales piloto</span>
+    <h2 id="h2c">Toda la noche, en orden.</h2>
+    <p>No es solo un menú: cubre el salón, la cocina, la cuenta y el delivery.</p>
+  </div>
+  <div class="blocks">
+    <article class="block"><span class="kicker">Salón</span><h3>Del QR de la mesa al pedido anotado.</h3><p>Tu cliente pide desde su celular. Tu mozo escanea el pedido y elige la mesa. Se acabaron los papelitos.</p>
+      <ul><li>Cuenta abierta por mesa</li><li>Sin app para el cliente</li><li>Funciona con la tablet o compu que ya tenés</li></ul></article>
+    <article class="block"><span class="kicker">Cocina</span><h3>La cocina ve lo que hay que hacer.</h3><p>Cada pedido aparece en la pantalla de cocina. Cuando está listo, tocás LISTO y el mozo lo sabe.</p>
+      <ul><li><span>Comanda también impresa, si querés <small>La impresora térmica es opcional y se compra aparte.</small></span></li><li>Marcás agotados y el menú se actualiza en vivo</li><li>Todo en una sola pantalla</li></ul></article>
+    <article class="block"><span class="kicker">Cuenta</span><h3>La cuenta se divide sin pelea.</h3><p>Desde el celular, cada uno elige qué pagó: por consumo, en partes iguales o con montos libres. Con propina.</p>
+      <ul><li>Cierre de turno con PDF y CSV</li><li>Reportes del día</li><li>Registra cómo se pagó; el cobro lo hacés vos, como siempre</li></ul>
+      <small>Mesaverso Caja no emite factura ni cobra pagos online: seguís facturando y cobrando como siempre.</small></article>
+    <article class="block"><span class="kicker">Delivery</span><h3>El delivery, con cuenta clara.</h3><p>Los pedidos por WhatsApp llegan con un código #MV, productos y total. Cuando el repartidor vuelve, marcás «Rendido».</p>
+      <ul><li>Pedido armado, sin tipear nada</li><li>Seguimiento de lo que se rindió</li><li>0 % de comisión en los pedidos que llegan por tu link o QR</li></ul></article>
+  </div>
+  <div class="sec__cta"><a class="btn btn--primary" href="#cierre">Quiero mi menú</a></div>
+</div></section>
+
+<!-- ============ EL PLATO 3D ============ -->
+<section class="sec" id="plato-3d" aria-labelledby="h2t"><div class="wrap d3">
+  <div>
+    <span class="kicker">Demo · 3D y realidad aumentada</span>
+    <h2 id="h2t" style="margin-top:14px">Tu cliente mira el plato en su mesa. Antes de pedirlo.</h2>
+    <p class="lead" style="margin-top:14px">Giralo con el dedo. Y con «Ver en tu mesa», el plato aparece sobre tu mesa, en tamaño real, con la cámara del celular.</p>
+    <ul class="d3__list">
+      <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>Se abre desde el menú, sin instalar nada.</span></li>
+      <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>Hecho a partir de fotos de tu plato.</span></li>
+      <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>Lo elegís por plato: no hace falta tenerlo en toda la carta.</span></li>
+    </ul>
+    <button class="btn btn--primary" id="go3d2" type="button">Mirar el plato en 3D</button>
+    <div class="d3__qr"><div aria-hidden="true">{{QR3D}}</div><p>Escaneá con tu celular y mirá la torta en tu mesa.</p></div>
+    <p class="fine" style="margin-top:18px">La torta es una demo. «Ver en tu mesa» funciona en celulares compatibles. El Pack 3D se paga por plato, aparte del plan.</p>
+  </div>
+  <div class="d3__stage">
+    <svg class="stage__ring" viewBox="-100 -100 200 200" aria-hidden="true"><g class="bezel"><circle class="ticks" r="92" stroke-width="5" stroke-dasharray="1 6.65"/><circle class="ticks ticks--major" r="92" stroke-width="9" stroke-dasharray="2 45.1"/></g><circle class="rim" r="84"/></svg>
+    <div class="d3__view" id="mv3d"><img src="/assets/torta-de-zanahoria-3d-800.webp" width="800" height="800" loading="lazy" decoding="async" alt="Torta de zanahoria en 3D"></div>
+  </div>
+</div></section>
+
+<!-- ============ 0 % DE COMISIÓN (flip) ============ -->
+<section class="sec flip" aria-labelledby="h2m"><div class="wrap">
+  <div class="sec__head">
+    <span class="kicker">Tus pedidos, directo a vos</span>
+    <h2 id="h2m">0 % de comisión en los pedidos que llegan por tu link o QR.</h2>
+    <p>Tu cliente te pide directo. Vos pagás un plan mensual fijo, no un porcentaje de cada pedido.</p>
+  </div>
+  <div class="cols2">
+    <div class="col"><h3>Pedido por tu link o QR</h3><p>El cliente arma el pedido en tu menú. Te llega a tu WhatsApp con todo el detalle. Vos coordinás cobro y entrega como siempre.</p></div>
+    <div class="col"><h3>Lo que sí pagás</h3><p>El plan mensual y, si querés platos en 3D, el Pack 3D. Los bancos, las tarjetas o las apps por las que cobres pueden tener sus propias comisiones.</p></div>
+  </div>
+  <div class="example" aria-live="polite">
+    <b>Calculá un ejemplo.</b> Mové los números y mirá la diferencia.
+    <div class="calc">
+      <div class="fld"><label for="cMonto">Pedidos del mes (₲)</label><input class="in" id="cMonto" inputmode="numeric" value="5.000.000" maxlength="13"></div>
+      <div class="fld"><label for="cPct">Comisión de ejemplo (%)</label><input class="in" id="cPct" inputmode="numeric" value="10" maxlength="2"></div>
+      <div class="fld"><span class="sr" id="cOutL">Resultado del ejemplo</span><output id="cOut" aria-labelledby="cOutL">₲ 500.000</output></div>
+    </div>
+    <p class="fine" id="cNote" style="margin-top:10px">Ejemplo: si pagaras un 10 % de comisión por ₲ 5.000.000 en pedidos, serían ₲ 500.000. Es un ejemplo, no la tarifa de ninguna empresa.</p>
+  </div>
+</div></section>
+
+<!-- ============ LO QUE NO HACEMOS ============ -->
+<section class="sec" aria-labelledby="h2n"><div class="wrap">
+  <div class="sec__head">
+    <span class="kicker">Honestidad</span>
+    <h2 id="h2n">Lo que Mesaverso no hace.</h2>
+    <p>Preferimos que lo sepas hoy.</p>
+  </div>
+  <ul class="nots">
+    <li><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg><div><b>No emite factura electrónica.</b><span>Seguís facturando con tu sistema habitual.</span></div></li>
+    <li><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg><div><b>No cobra pagos online.</b><span>La caja registra cómo se pagó; el cobro lo hacés vos.</span></div></li>
+    <li><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg><div><b>No maneja stock ni insumos.</b><span>Sí marcás lo agotado y el menú se actualiza.</span></div></li>
+  </ul>
+  <p class="lead" style="max-width:62ch">Si hoy necesitás todo eso en un solo sistema, mejor seguí con el tuyo. Si querés ordenar el salón y los pedidos, seguí leyendo.</p>
+</div></section>
+
+<!-- ============ PLANES (flip) ============ -->
+<section class="sec flip" id="planes" aria-labelledby="h2pl"><div class="wrap">
+  <div class="sec__head">
+    <span class="kicker">Planes</span>
+    <h2 id="h2pl">Un precio fijo. 0 % de comisión en los pedidos que llegan por tu link o QR.</h2>
+    <p class="priceNote">Precios en guaraníes, precio final.</p>
+  </div>
+  <div class="plans">
+    <article class="plan" aria-labelledby="pm"><h3 id="pm">Plan mensual</h3>
+      <p class="plan__price">{{PRICE:planMonthly}} <small>/ mes</small></p>
+      <p class="plan__for">Mínimo {{RAW:minMonths}} meses, más la implementación ({{PRICE:implementation}}, un solo pago).</p>
+      <ul><li>Menú digital optimizado para celular</li><li>QR por mesa y link directo al menú</li><li>Búsqueda de productos y categorías</li><li>Lista de pedido, «mostrar al mozo» y pedido por WhatsApp</li><li>Gestión de productos y cambios de precios y platos, según la cantidad incluida en el plan</li></ul>
+      <a class="btn btn--secondary btn--block" href="{{WA:planMonthly}}" target="_blank" rel="noopener">Quiero el plan mensual</a></article>
+    <article class="plan plan--feat" aria-labelledby="pa"><span class="badge">12 meses al precio de {{RAW:annualMonthsCharged}}</span><h3 id="pa">Plan anual</h3>
+      <p class="plan__price">{{PRICE:planAnnual}} <small>/ año</small></p>
+      <p class="plan__for">Todo lo del plan mensual, más:</p>
+      <ul><li><span><b>Implementación incluida:</b> te ahorrás {{PRICE:implementation}}</span></li><li><span><b>Un solo pago por año</b>, por adelantado</span></li></ul>
+      <a class="btn btn--primary btn--block" href="{{WA:planAnnual}}" target="_blank" rel="noopener">Quiero el plan anual</a></article>
+  </div>
+  <div class="extra">
+    <div class="box" id="implementacion"><h3>Implementación</h3><p class="p">{{PRICE:implementation}}</p><p>Se paga una sola vez con el plan mensual. Incluye la configuración inicial de tu menú, la carga y organización de la información de tu negocio (nos mandás tu carta en PDF o fotos) y la puesta en funcionamiento de tu espacio Mesaverso. Los QR impresos se cotizan aparte.</p></div>
+    <div class="box" id="pack-3d"><h3>Pack 3D: tus platos en 3D</h3><p class="p">{{PRICE:pack3dDish}} <small style="font:500 16px var(--body);color:var(--text-2)">por plato, pago único</small></p><p>Sumalo al plan que elijas y pagá solo los platos que quieras en 3D. La sesión de fotos 3D presencial se cotiza aparte.</p>
+      <a class="btn btn--secondary" href="{{WA:pack3d}}" target="_blank" rel="noopener" style="justify-self:start">Consultar</a></div>
+  </div>
+  <p class="guar"><b>Garantía de {{RAW:guaranteeDays}} días:</b> si te das de baja en los primeros {{RAW:guaranteeDays}} días desde que tu menú se publica, te devolvemos la implementación (en el plan anual, todo menos el primer mes).</p>
+  <div class="ex1"><span><b>Con el plan mensual:</b> {{PRICE:implementation}} una sola vez + 12 meses de {{PRICE:planMonthly}} = {{PRICE:firstYearMonthly}}</span><span><b>Con el plan anual:</b> {{PRICE:planAnnual}}, con la implementación incluida. Ahorrás {{PRICE:annualSaving}} el primer año.</span></div>
+  <p class="legalnote">Mesaverso Caja no emite factura ni cobra pagos online. La Caja está en prueba con locales piloto: consultá su disponibilidad.</p>
+  <div class="sec__cta"><a class="btn btn--secondary" href="{{WA:general}}" target="_blank" rel="noopener">¿No sabés cuál te conviene? Hablá por WhatsApp</a></div>
+</div></section>
+
+<!-- ============ CONFIANZA ============ -->
+<section class="sec" aria-labelledby="h2tr"><div class="wrap">
+  <div class="sec__head">
+    <span class="kicker">Con los pies en la tierra</span>
+    <h2 id="h2tr">Hecho en Paraguay, probado en un local de verdad.</h2>
+    <p>Estamos probando Mesaverso Caja en un restaurante real. Todavía no tenemos decenas de clientes, y preferimos decírtelo. Por eso podés escribirnos directo y hablar con quienes lo construimos.</p>
+  </div>
+  <ul class="trust3">
+    <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>Probalo antes de pagar: la demo es abierta.</span></li>
+    <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>Hablás con personas, por WhatsApp.</span></li>
+    <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>Garantía de {{RAW:guaranteeDays}} días, con las condiciones de arriba.</span></li>
+  </ul>
+</div></section>
+
+<!-- ============ PREGUNTAS ============ -->
+<section class="sec" id="preguntas" aria-labelledby="h2q"><div class="wrap">
+  <div class="sec__head"><span class="kicker">Preguntas</span><h2 id="h2q">Lo que nos preguntan los dueños.</h2></div>
+  <div class="faq">{{FAQ}}</div>
+</div></section>
+
+<!-- ============ CIERRE ============ -->
+<section class="sec" id="cierre" aria-labelledby="h2f"><div class="wrap final">
+  <div>
+    <span class="kicker">Empezá</span>
+    <h2 id="h2f" style="margin-top:14px">Armamos tu menú. Vos seguís con tu local.</h2>
+    <p class="lead" style="margin-top:14px">Dejanos tu nombre y tu WhatsApp. Te escribimos para mostrarte tu menú.</p>
+    <ol class="after" aria-label="Qué pasa después">
+      <li>Te escribimos por WhatsApp (nada de llamadas ni mensajes masivos).</li>
+      <li>Te mostramos una muestra de tu menú con tus platos.</li>
+      <li>Si te gusta, elegís plan. Si no, no pasa nada y no te escribimos más.</li>
+    </ol>
+    <p class="fine" style="margin-top:18px">Sin tarjeta. Sin compromiso. Si no te convence, no pasa nada.</p>
+    <div style="margin-top:22px"><a class="btn btn--secondary" href="{{WA:general}}" target="_blank" rel="noopener">Hablar por WhatsApp</a></div>
+  </div>
+  <div>
+    <form class="form" id="lead" action="/api/lead" method="post" novalidate>
+      <div class="fld"><label for="fName">Tu nombre</label><input class="in" id="fName" name="name" autocomplete="name" maxlength="80" required><div class="err" id="eName" role="alert"></div></div>
+      <div class="fld"><label for="fBusiness">Nombre de tu local</label><input class="in" id="fBusiness" name="business" autocomplete="organization" maxlength="100" required><div class="err" id="eBusiness" role="alert"></div></div>
+      <div class="fld"><label for="fPhone">Tu WhatsApp</label><input class="in" id="fPhone" name="phone" type="tel" autocomplete="tel" inputmode="tel" maxlength="24" placeholder="0981 123 456" required><div class="err" id="ePhone" role="alert"></div></div>
+      <div class="fld"><label for="fType">Tipo de negocio</label><select class="in" id="fType" name="type">{{BUSINESS_OPTIONS}}</select><div class="err" id="eType" role="alert"></div></div>
+      <div class="fld"><label for="fHow">¿Cómo te llegan hoy los pedidos? (opcional)</label><select class="in" id="fHow" name="how"><option value="">Prefiero no decirlo</option><option>WhatsApp</option><option>Papel y teléfono</option><option>Apps de delivery</option><option>Todavía no tengo local</option><option>Otro</option></select></div>
+      <div class="hp" aria-hidden="true"><label for="fWeb">No completar este campo</label><input id="fWeb" name="website" tabindex="-1" autocomplete="off"></div>
+      <label class="chk"><input type="checkbox" id="fOk" required><span>Acepto que Mesaverso me escriba por WhatsApp para mostrarme el menú. Puedo pedir que no me escriban más respondiendo BAJA.</span></label>
+      <div class="err" id="eOk" role="alert"></div>
+      <button class="btn btn--primary btn--block" type="submit" id="send">Quiero mi menú</button>
+      <p class="sendstate" id="sendState" role="status"></p>
+      <p class="priv"><b>Qué hacemos con tus datos.</b> Mesaverso, a cargo de {{OWNER:TITULAR}} (RUC {{OWNER:RUC}}, Paraguay), guarda tu nombre, WhatsApp, negocio y mensaje <b>solo para responderte</b> sobre tu consulta. Los guardamos <b>hasta 180 días</b> y después se borran. Para frenar abusos usamos tu dirección IP por <b>1 hora</b>. No los vendemos ni los usamos para otra cosa. Podés pedir ver, corregir o borrar tus datos escribiendo a {{OWNER:CORREO_DATOS}}. <a href="/privacidad/">Más información</a>.</p>
+    </form>
+    <div class="ok" id="okBox" role="status" tabindex="-1">
+      <h3 id="okTitle">¡Listo! Ya te anotamos.</h3>
+      <p>Te escribimos por WhatsApp para mostrarte cómo quedaría tu menú.</p>
+      <div style="display:flex;gap:12px;flex-wrap:wrap"><a class="btn btn--secondary" href="#demo">Probá la demo</a><a class="btn btn--secondary" href="#plato-3d">Mirá el plato 3D</a></div>
+    </div>
+  </div>
+</div></section>
+</main>
+
+<footer class="foot"><div class="wrap foot__in">
+  <span class="brandline">Mesaverso™</span>
+  <p><b>Mesaverso™</b> · Servicio de menú digital y caja para locales gastronómicos. Hecho en Paraguay.</p>
+  <p>Titular: <b>{{OWNER:TITULAR}}</b>, RUC {{OWNER:RUC}}, {{OWNER:DOMICILIO}}, Paraguay.<br>Contacto: {{OWNER:CORREO}} · WhatsApp {{WA_DISPLAY}} · Datos personales: {{OWNER:CORREO_DATOS}}</p>
+  <nav aria-label="Legal"><a href="#planes">Planes</a><a href="#preguntas">Preguntas</a><a href="{{WA:general}}" target="_blank" rel="noopener">WhatsApp</a><a href="/terminos/">Términos</a><a href="/privacidad/">Privacidad</a><a href="/reclamos/">Reclamos y retiro de contenido</a></nav>
+  <p><b>Mesaverso Caja no emite factura.</b> El ticket de la caja dice «NO VÁLIDO COMO FACTURA»: seguís facturando con tu sistema habitual.</p>
+  <p>© {{YEAR}} {{OWNER:TITULAR}}. Mesaverso™ es una marca en uso, aún sin registro. No usamos cookies de seguimiento en esta página.</p>
+</div></footer>
+
+<a class="wa-float" href="{{WA:general}}" target="_blank" rel="noopener" aria-label="Hablar por WhatsApp"><svg aria-hidden="true"><use href="#i-wa"/></svg></a>
+</body>
+</html>

@@ -1,5 +1,7 @@
 node_modules/
 dist/
+dist-v2/
+mesaverso-landing/.shots-v2/
 
 # Source PDFs from restaurants (large; data already extracted to seed/<slug>/)
 *.pdf
