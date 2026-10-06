@@ -10,7 +10,7 @@ const Gs = (n) => "₲ " + String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 const STATUS = ["Enviado a la cocina", "En cocina: lo están preparando", "Listo: el mozo lo lleva a tu mesa"];
 const SAY = [
   "Tocá el + en el celular del cliente y mandá un pedido.",
-  "Mirá la pantalla de cocina: el pedido llegó solo, sin papelito. Tocá «Empezar».",
+  "Mirá la pantalla de cocina: el pedido llegó solo, sin que nadie lo anote. Tocá «Empezar».",
   "El cliente ya ve que lo están preparando. Ahora tocá «Listo».",
   "Listo: el mozo se entera al instante y el pedido suma a la cuenta de la mesa.",
 ];

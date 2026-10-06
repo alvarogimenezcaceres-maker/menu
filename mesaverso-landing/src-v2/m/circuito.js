@@ -35,7 +35,7 @@ const STEPS = {
 };
 const SHORT = { bar: ["Cliente", "Cliente", "Mozo", "Cocina", "Mozo", "Cuenta", "Vos", "Resumen"], casa: ["Cliente", "Cliente", "Vos", "Vos", "Cocina", "Repartidor", "Vos", "Resumen"] };
 const OUT = {
-  bar: ["Sin papelitos", "Sin gritos a cocina", "Cuenta sin pelea"],
+  bar: ["Pedidos que no se pierden", "Cocina informada al instante", "Cuenta sin pelea"],
   casa: ["Pedido armado, sin tipear", "Cada pedido con su código", "Rendición clara"],
 };
 
