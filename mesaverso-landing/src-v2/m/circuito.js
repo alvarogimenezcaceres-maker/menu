@@ -15,22 +15,23 @@ const STEPS = {
   bar: [
     ["Cliente", "Escanea el QR de su mesa", "Abre tu menú con la cámara del celular. Ve fotos, precios y, si querés, el plato en 3D. No baja ninguna app.", "Antes: esperaba la carta y a que pase el mozo."],
     ["Cliente", "Arma su pedido y lo envía", "Elige los platos, agrega una nota («sin cebolla») y toca Enviar. Nadie tiene que anotar nada.", "Antes: el mozo lo anotaba en un papelito."],
-    ["Mozo", "Recibe el pedido y confirma la mesa", "Escanea el pedido con su tablet o celular y elige la mesa. Un toque para aceptarlo.", "Antes: el papelito se perdía o se entendía mal."],
-    ["Cocina", "La comanda aparece en cocina", "En la pantalla de cocina, o impresa si tenés impresora térmica (es opcional). Cocina ve qué hacer y para qué mesa.", "Antes: el mozo gritaba o llevaba el papel."],
-    ["Cocina y mozo", "Listo: el mozo se entera al instante", "Cocina toca LISTO y el mozo lo ve en su pantalla. Lo lleva a la mesa.", "Antes: el mozo iba y volvía a preguntar."],
-    ["Cuenta", "La cuenta se divide sin pelea", "Cada uno elige qué consumió, o se divide en partes iguales. Con propina. La suma siempre cierra.", "Antes: la calculadora y la discusión."],
+    ["Mozo", "El mozo toma el pedido y elige la mesa", "El cliente le muestra en su celular el QR de su pedido. El mozo lo escanea con su celular o tablet, elige la mesa y listo.", "Antes: el papelito se perdía o se entendía mal."],
+    ["Cocina", "La cocina ve qué preparar y para qué mesa", "El pedido le aparece en la pantalla de cocina: una tablet o un celular que ya tengas. Si querés, también sale impreso.", "Antes: el mozo gritaba o llevaba el papel."],
+    ["Cocina y mozo", "Cocina toca «Listo» y el mozo se entera", "Cocina toca LISTO y el mozo lo ve en su pantalla. Lo lleva a la mesa.", "Antes: el mozo iba y volvía a preguntar."],
+    ["Cuenta", "La cuenta se divide sin pelea", "Cada uno ve lo suyo, o se divide en partes iguales, con propina. La suma siempre cierra. El cobro lo hacés vos, como siempre.", "Antes: la calculadora y la discusión."],
     ["Dueño", "Cerrás el turno con todo en orden", "Resumen del día con PDF y CSV: pedidos y cómo se pagó cada cuenta. El cobro lo hacés vos, como siempre.", "Antes: sumar a mano al final de la noche."],
   ],
   casa: [
     ["Cliente", "Abre tu link o tu QR", "Desde tu Instagram, tu WhatsApp o Google. Ve el menú con fotos y precios. No baja ninguna app.", "Antes: te escribía para preguntar qué había."],
-    ["Cliente", "Arma el pedido: delivery o retiro", "Elige los platos, delivery o retiro, y escribe su dirección si es delivery. Ve el total antes de enviar.", "Antes: te escribía todo a mano."],
-    ["Cliente y local", "Se envía por WhatsApp, ya armado", "A tu WhatsApp llega un mensaje con productos, total, dirección y un código #MV. Nadie lo tipea.", "Antes: mensajes sueltos y audios."],
-    ["Local", "Queda anotado en tu caja", "El pedido queda en tu caja con su código #MV, para que no se pierda ninguno.", "Antes: buscar el pedido entre cien mensajes."],
+    ["Cliente", "Arma el pedido: delivery o retiro", "Elige los platos, delivery o retiro, y deja su dirección si es delivery. Ve el total antes de enviar.", "Antes: te escribía todo a mano."],
+    ["Cliente y local", "Te llega por WhatsApp, ya armado", "Recibís en tu WhatsApp un mensaje con los platos, el total, la dirección y un código #MV. Nadie lo tipea.", "Antes: mensajes sueltos y audios."],
+    ["Local", "Queda anotado en Mesaverso Caja", "Cada pedido queda en tu panel de Mesaverso, con su código #MV, para que no se pierda ninguno.", "Antes: buscar el pedido entre cien mensajes."],
     ["Cocina y repartidor", "Se prepara y sale el repartidor", "Cocina prepara el pedido con todos los datos a la vista y el repartidor lo lleva.", "Antes: nadie sabía qué ya había salido."],
-    ["Repartidor", "Vuelve y marcás «Rendido»", "Cuando el repartidor vuelve y entrega lo cobrado, marcás Rendido. Sabés qué falta rendir.", "Antes: cuentas en un cuaderno."],
+    ["Repartidor", "Cuando vuelve el repartidor, marcás que rindió", "Si el cliente pagó en efectivo, el repartidor te entrega la plata y lo marcás «Rendido». Ves de un vistazo cuánto falta rendir.", "Antes: cuentas en un cuaderno."],
     ["Dueño", "Cerrás el turno con todo en orden", "Resumen del día con PDF y CSV: pedidos y cómo se pagó cada cuenta. El cobro lo hacés vos, como siempre.", "Antes: sumar a mano al final de la noche."],
   ],
 };
+const SHORT = { bar: ["Cliente", "Cliente", "Mozo", "Cocina", "Mozo", "Cuenta", "Vos"], casa: ["Cliente", "Cliente", "Vos", "Vos", "Cocina", "Repartidor", "Vos"] };
 const OUT = {
   bar: ["Sin papelitos", "Sin gritos a cocina", "Cuenta sin pelea"],
   casa: ["Pedido armado, sin tipear", "Cada pedido con su código", "Rendición clara"],
@@ -43,9 +44,10 @@ export default function mount(root) {
   let mode = "bar", i = 0, playing = !reduce, timer = 0, visible = false;
 
   root.innerHTML = `
-  <div class="cir__modes" role="group" aria-label="¿Dónde está tu cliente?">
-    <button type="button" class="cir__mode" data-m="bar" aria-pressed="true">Cliente en el local</button>
-    <button type="button" class="cir__mode" data-m="casa" aria-pressed="false">Cliente en su casa</button>
+  <p class="cir__intro">Así viaja un pedido con <b>Mesaverso Caja</b>, desde que el cliente lo hace hasta que cerrás el turno. Vos cobrás como siempre: Mesaverso no cobra online ni emite factura.</p>
+  <div class="cir__modes" role="group" aria-label="¿Cómo piden tus clientes?">
+    <button type="button" class="cir__mode" data-m="bar" aria-pressed="true">Mis clientes comen en el local</button>
+    <button type="button" class="cir__mode" data-m="casa" aria-pressed="false">Mis clientes piden por WhatsApp o delivery</button>
   </div>
   <ol class="cir__steps" id="ciStepsList"></ol>
   <div class="cir__main">
@@ -63,7 +65,7 @@ export default function mount(root) {
     <div class="cir__dev" id="ciDev" aria-hidden="true"></div>
   </div>
   <div class="cir__out"><ul id="ciOut"></ul><p class="cir__zero"><b>0 % de comisión en los pedidos que llegan por tu link o QR.</b></p>
-    <a class="btn btn--primary" href="#cierre" id="ciCta">Quiero mi menú</a></div>
+    <a class="btn btn--primary" href="#cierre" id="ciCta">Quiero esto en mi local</a></div>
   <p class="fine">Es un local de ejemplo con pedidos inventados. Mesaverso Caja está en prueba con locales piloto, no emite factura y no cobra pagos online.</p>`;
   const $ = (s) => root.querySelector(s);
   const list = $("#ciStepsList"), dev = $("#ciDev");
@@ -83,7 +85,7 @@ export default function mount(root) {
     if (m === "bar") {
       if (k === 0) return phone(`${bar(name, "Mesa 4")}<h4 class="ph1">Menú</h4>${rows(null)}<p class="hint">Abrió el QR de la mesa. Sin app.</p>`);
       if (k === 1) return phone(`${bar(name, "Mesa 4")}<h4 class="ph1">Tu pedido</h4>${rows([2, 1, 0])}<p class="hint">Nota: sin cebolla</p><span class="pcta">Enviar pedido · ${tot}</span>`);
-      if (k === 2) return tab("Pantalla del mozo", `<div class="m__card m__card--new"><span class="pill">Nuevo · Mesa 4</span>${lineHtml()}<p class="hint">Entró por el QR. Nadie lo tipeó.</p></div><span class="m__btn m__btn--go">Aceptar pedido</span>`);
+      if (k === 2) return tab("Pantalla del mozo", `<div class="m__card m__card--new"><span class="pill">Nuevo · Mesa 4</span>${lineHtml()}<p class="hint">Lo hizo el cliente desde su celular. Nadie lo tipeó.</p></div><span class="m__btn m__btn--go">Aceptar pedido</span>`);
       if (k === 3) return tab("Cocina", `<div class="m__ticket"><div class="m__ln"><b>MESA 4</b><span>#0042</span></div><hr>${lines().map((l) => `<div>${l[0]} × ${esc(l[1])}</div>`).join("")}<hr><div>Nota: sin cebolla</div></div><span class="m__btn m__btn--go">Empezar</span>`);
       if (k === 4) return tab("Cocina y salón", `<div class="m__card"><div class="m__ln"><b>MESA 4 · #0042</b><span class="pill">Listo</span></div>${lineHtml()}</div><div class="m__toast">Mozo: la mesa 4 está lista para llevar</div>`);
       const d = CATALOG[rubro()], a = d[0][1], b = d[1][1];
@@ -94,12 +96,12 @@ export default function mount(root) {
     if (k === 2) return ["phone", `<div class="panel"><div class="pbar"><span>WhatsApp de ${name}</span><span>ahora</span></div><div class="m__bubble"><b>Pedido de delivery</b>${lines().map((l) => `<div>${l[0]} × ${esc(l[1])}</div>`).join("")}<div>Total: ${tot} + envío</div><div>Dirección: Barrio Centro</div><div class="m__ref">Pedido #MV-0042 desde el menú digital</div></div></div>`];
     if (k === 3) return tab("Caja · Delivery", `<div class="m__card m__card--new"><div class="m__ln"><b>#MV-0042</b><span class="pill">Nuevo</span></div>${lineHtml()}</div><span class="m__btn m__btn--go">Anotado en la caja</span>`);
     if (k === 4) return tab("Caja · Delivery", `<div class="m__card"><div class="m__ln"><b>#MV-0042</b><span class="pill">En camino</span></div>${lineHtml()}<p class="hint">Repartidor: Juan (ejemplo)</p></div>`);
-    return tab("Caja · Delivery", `<div class="m__card"><div class="m__ln"><b>#MV-0042</b><span class="pill">Rendido</span></div>${lineHtml()}</div><div class="m__toast">Falta rendir: nada</div>`);
+    return tab("Caja · Delivery", `<div class="m__card"><div class="m__ln"><b>#MV-0042</b><span class="pill">Rendido</span></div>${lineHtml()}</div><div class="m__card"><div class="m__ln"><b>#MV-0043</b><span class="pill">En la calle</span></div><p class="hint">Falta rendir</p></div>`);
   }
 
   function draw() {
     const S = STEPS[mode], [role, title, text, before] = S[i];
-    list.innerHTML = S.map((s, k) => `<li><button type="button" class="cir__st${k === i ? " is-now" : ""}${k < i ? " is-done" : ""}" data-i="${k}" aria-label="Paso ${k + 1}: ${esc(s[1])}"${k === i ? ' aria-current="step"' : ""}><span class="cir__n">${k + 1}</span><span class="cir__r">${esc(s[0])}</span></button></li>`).join("");
+    list.innerHTML = S.map((s, k) => `<li><button type="button" class="cir__st${k === i ? " is-now" : ""}${k < i ? " is-done" : ""}" data-i="${k}" aria-label="Paso ${k + 1}: ${esc(s[1])}"${k === i ? ' aria-current="step"' : ""}><span class="cir__n">${k + 1}</span><span class="cir__r">${SHORT[mode][k]}</span></button></li>`).join("");
     $("#ciRole").textContent = role; $("#ciTitle").textContent = title; $("#ciText").textContent = text; $("#ciBefore").textContent = before;
     const [device, html] = mock(mode, i);
     dev.className = "cir__dev cir__dev--" + device;
@@ -123,8 +125,8 @@ export default function mount(root) {
     else if (e.target.id === "ciPlay") { playing = !playing; clearTimer(); startTimer(); draw(); }
   });
   const onLocal = () => draw(); document.addEventListener("mv-local", onLocal);
-  const io = new IntersectionObserver((es) => { visible = es[0].isIntersecting; clearTimer(); if (visible) startTimer(); }, { threshold: 0.4 });
+  const io = new IntersectionObserver((es) => { visible = es[0].isIntersecting; document.documentElement.toggleAttribute("data-ci-view", visible); clearTimer(); if (visible) startTimer(); }, { threshold: 0.15 });
   io.observe(root);
   draw();
-  return { destroy() { clearTimer(); io.disconnect(); document.removeEventListener("mv-local", onLocal); } };
+  return { destroy() { clearTimer(); io.disconnect(); document.documentElement.removeAttribute("data-ci-view"); document.removeEventListener("mv-local", onLocal); } };
 }

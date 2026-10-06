@@ -275,8 +275,8 @@
 .cir__st.is-done .cir__n{border-color:var(--text-2)}
 .cir__st.is-now .cir__n{background:var(--accent);color:var(--bg);border-color:var(--accent)}
 .cir__st.is-now{color:var(--text)}
-.cir__r{display:none}.cir__st.is-now .cir__r{display:block}
-@media(min-width:760px){.cir__r{display:block}}
+.cir__r{font-size:9.5px;letter-spacing:0;overflow-wrap:anywhere}
+@media(min-width:760px){.cir__r{font-size:11px;letter-spacing:.04em}}
 .cir__main{display:grid;gap:24px;align-items:center}
 @media(min-width:900px){.cir__main{grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:56px}}
 .cir__text{display:grid;gap:12px;align-content:center}
@@ -308,8 +308,8 @@
 .cir__dev .pcta{display:flex;align-items:center;justify-content:center}
 .cir__dev .panel{position:absolute;inset:0;overflow:hidden}
 .cir__out{display:grid;gap:14px;justify-items:start}
-.cir__out ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
-.cir__out li{border:1px solid var(--ring-soft);border-radius:99px;padding:8px 14px;font-weight:600}
+.cir__out ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:6px 18px}
+.cir__out li{font-weight:600}.cir__out li::before{content:"✓ ";color:var(--text-2)}.cir__intro{margin:0;max-width:62ch;font-size:18px;color:var(--text)}[data-ci-view] .wa-float{display:none}
 .cir__zero{margin:0}
 @media(prefers-reduced-motion:reduce){.cir__steps::after{transition:none}}
 @media(max-width:899px){.cir__dev{order:-1;min-height:0}.cir__dev .screen{height:450px}.tab__screen{min-height:320px}}
