@@ -1,4 +1,4 @@
-// Builds the NEW landing (v2, «Tu menú, tus pedidos, tu cocina») into dist-v2/. It never touches dist/ nor src/, so the live
+// Builds the NEW landing (v2, «Tu local atiende. Mesaverso ordena.») into dist-v2/. It never touches dist/ nor src/, so the live
 // landing and the uncommitted edits in src/ stay as they are. It reuses site.config.mjs (WhatsApp, prices, SITE_URL),
 // src/lead-schema.js (business types), the fonts, brand files and assets of src/, and the same Worker (src/worker.js,
 // POST /api/lead) through wrangler.v2.jsonc.
@@ -46,7 +46,7 @@ const plain = (html) => html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim(
 
 const TITLE = "Menú digital QR para restaurantes en Paraguay | Mesaverso";
 const DESC = "Menú digital con QR, pedidos por WhatsApp y caja para tu local en Paraguay. 0 % de comisión en los pedidos que llegan por tu link o QR.";
-const OG_TITLE = "Mesaverso: tu menú, tus pedidos, tu cocina. Todo en uno.";
+const OG_TITLE = "Tu local atiende. Mesaverso ordena.";
 const OG_DESC = "Menú con QR, pedidos, cocina y cuenta dividida en tu local. Tu cliente mira el plato en 3D. 0 % de comisión en los pedidos por tu link o QR.";
 
 function headMeta({ title, description, pathname, noindex, extra = [] }) {
