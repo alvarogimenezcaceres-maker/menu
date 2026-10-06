@@ -20,7 +20,7 @@ const STEPS = {
     ["Cocina y mozo", "Cocina toca «Listo» y el mozo se entera", "Cocina toca LISTO y el mozo lo ve en su pantalla. Lo lleva a la mesa.", "Antes: el mozo iba y volvía a preguntar."],
     ["Cuenta", "La cuenta se divide sin pelea", "Cada uno ve lo suyo, o se divide en partes iguales, con propina. La suma siempre cierra. El cobro lo hacés vos, como siempre.", "Antes: la calculadora y la discusión."],
     ["Dueño", "Cerrás el turno con todo en orden", "Resumen del día con PDF y CSV: pedidos y cómo se pagó cada cuenta. El cobro lo hacés vos, como siempre.", "Antes: sumar a mano al final de la noche."],
-    ["Resultado", "Tu noche, antes y ahora", "Los mismos pasos de una noche, con papel y con Mesaverso Caja. Es el resumen de todo lo que viste.", "Caja está en prueba con locales piloto."],
+    ["Resultado", "Tu noche, antes y ahora", "Los mismos pasos de una noche, con papel y con Mesaverso Caja. Es el resumen de todo lo que viste.", "Caja está en etapa de prueba."],
   ],
   casa: [
     ["Cliente", "Abre tu link o tu QR", "Desde tu Instagram, tu WhatsApp o Google. Ve el menú con fotos y precios. No baja ninguna app.", "Antes: te escribía para preguntar qué había."],
@@ -30,7 +30,7 @@ const STEPS = {
     ["Cocina y repartidor", "Se prepara y sale el repartidor", "Cocina prepara el pedido con todos los datos a la vista y el repartidor lo lleva.", "Antes: nadie sabía qué ya había salido."],
     ["Repartidor", "Cuando vuelve el repartidor, marcás que rindió", "Si el cliente pagó en efectivo, el repartidor te entrega la plata y lo marcás «Rendido». Ves de un vistazo cuánto falta rendir.", "Antes: cuentas en un cuaderno."],
     ["Dueño", "Cerrás el turno con todo en orden", "Resumen del día con PDF y CSV: pedidos y cómo se pagó cada cuenta. El cobro lo hacés vos, como siempre.", "Antes: sumar a mano al final de la noche."],
-    ["Resultado", "Tu noche, antes y ahora", "Los mismos pasos de una noche, con papel y con Mesaverso Caja. Es el resumen de todo lo que viste.", "Caja está en prueba con locales piloto."],
+    ["Resultado", "Tu noche, antes y ahora", "Los mismos pasos de una noche, con papel y con Mesaverso Caja. Es el resumen de todo lo que viste.", "Caja está en etapa de prueba."],
   ],
 };
 const SHORT = { bar: ["Cliente", "Cliente", "Mozo", "Cocina", "Mozo", "Cuenta", "Vos", "Resumen"], casa: ["Cliente", "Cliente", "Vos", "Vos", "Cocina", "Repartidor", "Vos", "Resumen"] };
@@ -68,7 +68,7 @@ export default function mount(root) {
   </div>
   <div class="cir__out"><ul id="ciOut"></ul><p class="cir__zero"><b>0 % de comisión en los pedidos que llegan por tu link o QR.</b></p>
     <a class="btn btn--primary" href="#cierre" id="ciCta">Quiero esto en mi local</a></div>
-  <p class="fine">Es un local de ejemplo con pedidos inventados. Mesaverso Caja está en prueba con locales piloto, no emite factura y no cobra pagos online.</p>`;
+  <p class="fine">Es un local de ejemplo con pedidos inventados. Mesaverso Caja está en etapa de prueba, no emite factura y no cobra pagos online.</p>`;
   const $ = (s) => root.querySelector(s);
   const list = $("#ciStepsList"), dev = $("#ciDev");
 

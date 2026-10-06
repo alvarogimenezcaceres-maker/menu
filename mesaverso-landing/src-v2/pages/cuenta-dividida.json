@@ -1,9 +1,9 @@
 {
  "slug": "cuenta-dividida",
  "title": "Cuenta dividida en restaurantes de Paraguay | Mesaverso",
- "description": "Dividí la cuenta del salón por consumo o en partes iguales, con propina y sin calculadora. Mesaverso Caja, en prueba con locales piloto.",
+ "description": "Dividí la cuenta del salón por consumo o en partes iguales, con propina y sin calculadora. Mesaverso Caja, en etapa de prueba.",
  "h1": "Cuenta dividida sin pelea en tu salón",
- "lead": "A la hora de pagar, cada uno ve lo suyo y la suma siempre cierra. Es una función de Mesaverso Caja, que está en prueba con locales piloto.",
+ "lead": "A la hora de pagar, cada uno ve lo suyo y la suma siempre cierra. Es una función de Mesaverso Caja, que está en etapa de prueba.",
  "sections": [
   {
    "h2": "El final de la comida que nadie quiere",
@@ -19,7 +19,7 @@
   },
   {
    "h2": "Qué hace y qué no hace la Caja",
-   "html": "<p>La caja <b>registra cómo pagó</b> cada cuenta, pero el cobro lo hacés vos, como siempre: no cobra online. Tampoco emite factura: seguís facturando con tu sistema habitual y el ticket dice «NO VÁLIDO COMO FACTURA».</p><p>Mesaverso Caja está en prueba con locales piloto. Si querés probarla en tu local, escribinos.</p>"
+   "html": "<p>La caja <b>registra cómo pagó</b> cada cuenta, pero el cobro lo hacés vos, como siempre: no cobra online. Tampoco emite factura: seguís facturando con tu sistema habitual y el ticket dice «NO VÁLIDO COMO FACTURA».</p><p>Mesaverso Caja está en etapa de prueba. Si querés probarla en tu local, escribinos.</p>"
   },
   {
    "h2": "Se suma al resto del salón",
@@ -37,7 +37,7 @@
   ],
   [
    "¿Ya la usan locales?",
-   "<p>Está en prueba con locales piloto. Todavía no la ofrecemos como un producto terminado y por eso la probamos de a poco.</p>"
+   "<p>Está en etapa de prueba. Todavía no la ofrecemos como un producto terminado y por eso la probamos de a poco.</p>"
   ]
  ],
  "cta": "Quiero probar la Caja",
@@ -45,7 +45,6 @@
   "plan-seo.md menciona una tercera forma de dividir («montos libres»): no figura en circuito.js ni faq.mjs, por eso la dejé afuera; confirmar con Porã y sumarla si existe.",
   "«propina» en ambas modalidades: circuito.js dice «partes iguales, con propina»; confirmar que también aplica por consumo.",
   "«no sobra ni falta ningún guaraní»: parafrasea «La suma siempre cierra»; confirmar el redondeo.",
-  "Disponibilidad de Caja para nuevos locales (en prueba): confirmar con el dueño si hoy se ofrece a locales fuera del piloto.",
   "Ejemplo Ana/Beto/Cami: tomado de la demo, con precios inventados."
  ]
 }

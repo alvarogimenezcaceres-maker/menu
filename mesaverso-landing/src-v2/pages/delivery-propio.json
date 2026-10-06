@@ -1,7 +1,7 @@
 {
  "slug": "delivery-propio",
  "title": "Delivery propio para tu local en Paraguay | Mesaverso",
- "description": "Armá tu canal de delivery y retiro con tu link o QR: pedido por WhatsApp y seguimiento en Mesaverso Caja (en prueba con locales piloto). Paraguay.",
+ "description": "Armá tu canal de delivery y retiro con tu link o QR: pedido por WhatsApp y seguimiento en Mesaverso Caja (en etapa de prueba). Paraguay.",
  "h1": "Delivery propio para tu local, con tus clientes",
  "lead": "Un link para que tus clientes pidan delivery o retiro directo con vos. Vos seguís el pedido hasta que el repartidor vuelve y rinde.",
  "sections": [
@@ -15,7 +15,7 @@
   },
   {
    "h2": "Seguimiento en Mesaverso Caja",
-   "html": "<p>Cada pedido queda anotado en tu panel con su código. Cocina lo prepara con todos los datos a la vista, el repartidor lo lleva y vos ves el estado: nuevo, en camino o rendido.</p><p>Mesaverso Caja está en prueba con locales piloto. No emite factura y no cobra pagos online: seguís facturando y cobrando como siempre.</p>"
+   "html": "<p>Cada pedido queda anotado en tu panel con su código. Cocina lo prepara con todos los datos a la vista, el repartidor lo lleva y vos ves el estado: nuevo, en camino o rendido.</p><p>Mesaverso Caja está en etapa de prueba. No emite factura y no cobra pagos online: seguís facturando y cobrando como siempre.</p>"
   },
   {
    "h2": "Rendido: cerrar la cuenta del repartidor",

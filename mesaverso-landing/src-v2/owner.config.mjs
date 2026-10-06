@@ -6,9 +6,6 @@
 const e = (k, fallback) => (process.env["OWNER_" + k] || "").trim() || fallback;
 
 export const OWNER = {
-  TITULAR: e("TITULAR", "[completar: nombre y apellido]"),
-  RUC: e("RUC", "[completar: RUC]"),
-  DOMICILIO: e("DOMICILIO", "[completar: domicilio]"),
   CORREO: e("CORREO", "[completar: correo de contacto]"),
   CORREO_DATOS: e("CORREO_DATOS", "[completar: correo para datos personales]"),
   VIGENCIA: e("VIGENCIA", "[completar: fecha de vigencia]"),

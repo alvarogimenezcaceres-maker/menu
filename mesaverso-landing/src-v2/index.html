@@ -56,7 +56,7 @@
       <a class="btn btn--secondary" href="#circuito">Ver el circuito completo</a>
     </div>
     <p class="hero__note rise" style="animation-delay:240ms">0 % de comisión en los pedidos que llegan por tu link o QR. Empezá con el plan Gratis o elegí un plan mensual.</p>
-    <p class="hero__tiny rise" style="animation-delay:260ms">Mesaverso Caja está en prueba con locales piloto. No emite factura: seguís facturando con tu sistema.</p>
+    <p class="hero__tiny rise" style="animation-delay:260ms">Mesaverso Caja está en etapa de prueba. No emite factura: seguís facturando con tu sistema.</p>
   </div>
   <div class="hero__stagewrap"><div class="stage" id="stage">
     <svg class="stage__ring" viewBox="-100 -100 200 200" aria-hidden="true">
@@ -151,7 +151,7 @@
 <!-- ============ TODA LA NOCHE, EN ORDEN ============ -->
 <section class="sec" id="como" aria-labelledby="h2c"><div class="wrap">
   <div class="sec__head">
-    <span class="kicker">Mesaverso Caja · en prueba con locales piloto</span>
+    <span class="kicker">Mesaverso Caja · en etapa de prueba</span>
     <h2 id="h2c">Toda la noche, en orden.</h2>
     <p>No es solo un menú: cubre el salón, la cocina, la cuenta y el delivery.</p>
   </div>
@@ -235,7 +235,7 @@
     <p class="priceNote">Precios en guaraníes, precio final.</p>
   </div>
   <div class="plans">
-    <article class="plan plan--free" aria-labelledby="pg"><span class="badge badge--ghost">Cupo de 20 locales hasta el 31/12/2026</span><h3 id="pg">Plan Gratis «Vidriera»</h3>
+    <article class="plan plan--free" aria-labelledby="pg"><h3 id="pg">Plan Gratis «Vidriera»</h3>
       <p class="plan__price">Gs. 0 <small>/ mes</small></p>
       <p class="plan__for">Tus 11 productos estrella, cargados por vos. Para locales con lugar físico.</p>
       <ul><li>Menú con QR y link, con foto, buscador y «agotado»</li><li>Hasta 11 productos (hay que cargar al menos 8 con precio)</li><li>Pedido por WhatsApp básico: productos y total</li><li>La marca «Hecho con Mesaverso» queda visible en tu menú</li></ul>
@@ -262,7 +262,7 @@
   </div>
   <p class="guar"><b>Garantía de {{RAW:guaranteeDays}} días:</b> si te das de baja en los primeros {{RAW:guaranteeDays}} días desde que tu menú se publica, te devolvemos la implementación (en el plan anual, todo menos el primer mes).</p>
   <div class="ex1"><span><b>Con el plan mensual:</b> {{PRICE:implementation}} una sola vez + 12 meses de {{PRICE:planMonthly}} = {{PRICE:firstYearMonthly}}</span><span><b>Con el plan anual:</b> {{PRICE:planAnnual}}, con la implementación incluida. Ahorrás {{PRICE:annualSaving}} el primer año.</span></div>
-  <p class="legalnote">Mesaverso Caja no emite factura ni cobra pagos online. La Caja está en prueba con locales piloto: consultá su disponibilidad.</p>
+  <p class="legalnote">Mesaverso Caja no emite factura ni cobra pagos online. La Caja está en etapa de prueba: consultá su disponibilidad.</p>
   <div class="sec__cta"><a class="btn btn--secondary" href="{{WA:general}}" target="_blank" rel="noopener">¿No sabés cuál te conviene? Hablá por WhatsApp</a></div>
 </div></section>
 
@@ -312,7 +312,7 @@
       <div class="err" id="eOk" role="alert"></div>
       <button class="btn btn--primary btn--block" type="submit" id="send">Quiero mi menú</button>
       <p class="sendstate" id="sendState" role="status"></p>
-      <p class="priv"><b>Qué hacemos con tus datos.</b> Mesaverso, a cargo de {{OWNER:TITULAR}} (RUC {{OWNER:RUC}}, Paraguay), guarda tu nombre, WhatsApp, negocio y mensaje <b>solo para responderte</b> sobre tu consulta. Los guardamos <b>hasta 180 días</b> y después se borran. Para frenar abusos usamos tu dirección IP por <b>1 hora</b>. No los vendemos ni los usamos para otra cosa. Podés pedir ver, corregir o borrar tus datos escribiendo a {{OWNER:CORREO_DATOS}}. <a href="/privacidad/">Más información</a>.</p>
+      <p class="priv"><b>Qué hacemos con tus datos.</b> Mesaverso, en Paraguay, guarda tu nombre, WhatsApp, negocio y mensaje <b>solo para responderte</b> sobre tu consulta. Los guardamos <b>hasta 180 días</b> y después se borran. Para frenar abusos usamos tu dirección IP por <b>1 hora</b>. No los vendemos ni los usamos para otra cosa. Podés pedir ver, corregir o borrar tus datos escribiendo a {{OWNER:CORREO_DATOS}}. <a href="/privacidad/">Más información</a>.</p>
     </form>
     <div class="ok" id="okBox" role="status" tabindex="-1">
       <h3 id="okTitle">¡Listo! Ya te anotamos.</h3>
@@ -326,11 +326,11 @@
 <footer class="foot"><div class="wrap foot__in">
   <span class="brandline">Mesaverso™</span>
   <p><b>Mesaverso™</b> · Servicio de menú digital y caja para locales gastronómicos. Hecho en Paraguay.</p>
-  <p>Titular: <b>{{OWNER:TITULAR}}</b>, RUC {{OWNER:RUC}}, {{OWNER:DOMICILIO}}, Paraguay.<br>Contacto: {{OWNER:CORREO}} · WhatsApp {{WA_DISPLAY}} · Datos personales: {{OWNER:CORREO_DATOS}}</p>
+  <p>Contacto: {{OWNER:CORREO}} · WhatsApp {{WA_DISPLAY}} · Datos personales: {{OWNER:CORREO_DATOS}}</p>
   <nav aria-label="Funciones" class="foot__nav">{{PAGES_NAV}}</nav>
   <nav aria-label="Legal"><a href="#planes">Planes</a><a href="#preguntas">Preguntas</a><a href="{{WA:general}}" target="_blank" rel="noopener">WhatsApp</a><a href="/terminos/">Términos</a><a href="/privacidad/">Privacidad</a><a href="/reclamos/">Reclamos y retiro de contenido</a></nav>
   <p><b>Mesaverso Caja no emite factura.</b> El ticket de la caja dice «NO VÁLIDO COMO FACTURA»: seguís facturando con tu sistema habitual.</p>
-  <p>© {{YEAR}} {{OWNER:TITULAR}}. Mesaverso™ es una marca en uso, aún sin registro. No usamos cookies de seguimiento en esta página.</p>
+  <p>© {{YEAR}} Mesaverso™ es una marca en uso, aún sin registro. No usamos cookies de seguimiento en esta página.</p>
 </div></footer>
 
 <a class="wa-float" href="{{WA:general}}" target="_blank" rel="noopener" aria-label="Hablar por WhatsApp"><svg aria-hidden="true"><use href="#i-wa"/></svg></a>

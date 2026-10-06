@@ -3,7 +3,7 @@
 // Cada respuesta es HTML simple. Los textos con [PENDIENTE] de Jasy se resolvieron de forma conservadora.
 export const FAQ = [
   ["¿Qué es Mesaverso?",
-    "<p>Es un menú digital con QR para tu local, con fotos, buscador y pedidos por WhatsApp. Si querés, suma Mesaverso Caja para ordenar el salón: pedido desde el celular, mesas, pantalla de cocina, cuenta dividida y cierre de turno. Y tus platos pueden verse en 3D.</p><p>La Caja está en prueba con locales piloto.</p>"],
+    "<p>Es un menú digital con QR para tu local, con fotos, buscador y pedidos por WhatsApp. Si querés, suma Mesaverso Caja para ordenar el salón: pedido desde el celular, mesas, pantalla de cocina, cuenta dividida y cierre de turno. Y tus platos pueden verse en 3D.</p><p>La Caja está en etapa de prueba.</p>"],
   ["¿Mis clientes tienen que bajar una aplicación?",
     "<p>No. Abren tu menú desde la cámara del celular con el QR, o desde un link. No hay nada que instalar.</p>"],
   ["¿Cobran comisión por los pedidos?",
@@ -15,7 +15,7 @@ export const FAQ = [
   ["¿Qué necesito para usarlo?",
     "<p>Una tablet, una computadora o un celular que ya tengas, y conexión a internet. Para empezar no tenés que comprar equipos. La impresora térmica de comandas es opcional y se compra aparte.</p>"],
   ["¿Hay un plan Gratis? ¿Cuáles son las condiciones?",
-    "<p>Sí: el plan Gratis «Vidriera» da un menú con QR y link con hasta 11 productos, con fotos y pedido por WhatsApp básico. Lo cargás vos y revisamos tu primera publicación antes de que salga. Tiene condiciones: el menú lleva la marca «Hecho con Mesaverso», usamos los datos de tu negocio para mejorar el servicio y para estadísticas anónimas que juntan a varios locales, y tu menú es público y puede aparecer en buscadores. No usamos para nuestros propios fines los datos personales de tus clientes. No incluye platos en 3D ni Mesaverso Caja. Cupo de 20 locales hasta el 31/12/2026. Los términos completos se muestran antes de crear la cuenta.</p>"],
+    "<p>Sí: el plan Gratis «Vidriera» da un menú con QR y link con hasta 11 productos, con fotos y pedido por WhatsApp básico. Lo cargás vos y revisamos tu primera publicación antes de que salga. Tiene condiciones: el menú lleva la marca «Hecho con Mesaverso», usamos los datos de tu negocio para mejorar el servicio y para estadísticas anónimas que juntan a varios locales, y tu menú es público y puede aparecer en buscadores. No usamos para nuestros propios fines los datos personales de tus clientes. No incluye platos en 3D ni Mesaverso Caja. Los términos completos se muestran antes de crear la cuenta.</p>"],
   ["¿Quién carga mi carta?",
     "<p>En los planes pagos, nosotros armamos tu menú con tus platos, precios y fotos: nos mandás tu carta en PDF o en fotos. En el plan Gratis lo cargás vos desde el panel. Vos corregís lo que haga falta y lo actualizás cuando quieras.</p>"],
   ["¿Los platos en 3D están incluidos?",
