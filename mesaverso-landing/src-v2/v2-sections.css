@@ -109,13 +109,14 @@
 
 /* plans (flipped section) */
 .plans{display:grid;gap:18px}
-@media(min-width:820px){.plans{grid-template-columns:repeat(2,1fr);gap:24px}}
+@media(min-width:820px){.plans{grid-template-columns:repeat(2,1fr);gap:24px}.plan--free{grid-column:1/-1}}
+@media(min-width:1040px){.plans{grid-template-columns:repeat(3,1fr)}.plan--free{grid-column:auto}}
 .plan{border:1px solid var(--line);border-radius:var(--r-card);padding:28px;display:grid;gap:14px;align-content:start;background:var(--surface);position:relative}
 .plan--feat{border:2px solid var(--text)}
 .plan .badge{position:absolute;top:-13px;left:24px;background:var(--text);color:var(--bg);padding:5px 12px;border-radius:var(--r-pill);font:500 12px var(--mono);letter-spacing:.08em;text-transform:uppercase}
 .plan h3{font-size:24px}
 .plan__price{font:700 clamp(34px,7vw,46px)/1 var(--display);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
-.plan__price small{font:500 16px var(--body);color:var(--text-2);letter-spacing:0}
+.plan__price small{display:block;margin-top:6px;font:500 16px var(--body);color:var(--text-2);letter-spacing:0}
 .plan__for{color:var(--text-2);font-size:16px}
 .plan ul{list-style:none;margin:0;padding:0;display:grid;gap:9px;color:var(--text-2);font-size:15.5px}
 .plan li{display:grid;grid-template-columns:20px 1fr;gap:10px}
@@ -223,6 +224,19 @@
 .noche__order{display:grid;gap:10px;padding:18px;border:1px solid var(--line);border-radius:var(--r-card);background:var(--surface)}
 .noche__ord{font:500 17px/1.3 var(--mono);color:var(--text);margin:0}
 .noche__stages{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:6px 14px;font:400 13px var(--mono);color:var(--text-3)}
-.noche__stages li::before{content:"○ "}.noche__stages li.now{color:var(--text)}.noche__stages li.now::before{content:"● ";color:var(--accent)}.noche__stages li.done{color:var(--text-2)}.noche__stages li.done::before{content:"✓ "}
+.noche__stages li::before{content:"○ "}.noche__stages li{display:block}.noche__stages li.is-now{color:var(--text)}.noche__stages li.is-now::before{content:"● ";color:var(--accent)}.noche__stages li.is-done{color:var(--text-2)}.noche__stages li.is-done::before{content:"✓ "}.noche__mode [hidden]{display:none!important}
 .noche__say{min-height:3em;margin:0;color:var(--text);font-size:17px}
 @media(prefers-reduced-motion:reduce){.n-dot{transition:none}}
+
+/* scroll mode: the track is tall, the stage sticks while the page scrolls under it */
+.noche__track.is-scrolly{height:360vh;position:relative}
+.noche__track.is-scrolly .noche__stage{position:sticky;top:84px;min-height:0;height:calc(100svh - 96px);align-content:center}
+.noche__mode{display:flex;flex-wrap:wrap;gap:8px}
+.noche__stage.is-live.is-story .noche__lab,.noche__stage.is-live.is-story .noche__range,.noche__stage.is-live.is-story .noche__chips{display:none}
+@media(min-width:900px){.noche__stage.is-live.is-story .noche__lab,.noche__stage.is-live.is-story .noche__range,.noche__stage.is-live.is-story .noche__chips{display:revert}.noche__stage.is-live.is-story .noche__chips{display:flex}}
+.noche__track.is-scrolly .noche__dial{max-width:min(560px,100%,calc(100svh - 330px));min-width:220px}
+@media(min-width:900px){.noche__track.is-scrolly .noche__dial{max-width:min(560px,100%,calc(100svh - 140px))}}
+.noche__track.is-scrolly .noche__say{min-height:4.5em}
+.plan--free{border-style:dashed}.badge--ghost{background:transparent!important;color:var(--text)!important;border:1px solid var(--text)}
+.plan__more{font-size:15px;color:var(--text-2)}.plan__more summary{cursor:pointer;color:var(--text);font-weight:500;min-height:44px;display:flex;align-items:center}
+.plan__more p{margin:8px 0 0}

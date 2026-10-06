@@ -17,12 +17,21 @@ for (const [name, viewport, mobile] of [["desktop", { width: 1280, height: 800 }
     await page.goto(BASE + "/", { waitUntil: "load" });
     check(`${tag}: scene module not loaded before scrolling`, !reqs.includes("/m/noche.js"));
     await page.locator("#noche").scrollIntoViewIfNeeded();
-    await page.waitForSelector("#nocheStage.is-live #nRange", { timeout: 5000 });
+    await page.waitForSelector("#nocheStage.is-live #nRange", { state: "attached", timeout: 5000 });
     check(`${tag}: scene loaded on demand`, reqs.includes("/m/noche.js"));
-    const t0 = await page.inputValue("#nRange");
-    await page.waitForTimeout(1200);
-    const t1 = await page.inputValue("#nRange");
-    check(`${tag}: ${reduced ? "clock does not move on its own" : "clock walks on its own"}`, reduced ? t0 === t1 : +t1 > +t0, `${t0} → ${t1}`);
+    if (reduced) {
+      const t0 = await page.inputValue("#nRange"); await page.waitForTimeout(1200);
+      check(`${tag}: reduced motion: no scroll story, clock does not move on its own`, !(await page.$(".is-scrolly")) && t0 === (await page.inputValue("#nRange")));
+    } else {
+      check(`${tag}: scroll story mode is on`, !!(await page.$(".noche__track.is-scrolly")));
+      const say0 = await page.innerText("#nSay");
+      await page.evaluate(() => { const r = document.querySelector(".noche__track"), y = scrollY + r.getBoundingClientRect().top; scrollTo(0, y + (r.offsetHeight - innerHeight) * 0.55); });
+      await page.waitForTimeout(500);
+      const tm = await page.innerText("#nTime"), say1 = await page.innerText("#nSay");
+      check(`${tag}: scrolling moves the night and the story`, tm !== "19:00" && say1 !== say0, `${tm} · ${say1}`);
+      await page.click("#nTake");
+      check(`${tag}: «Manejar el reloj yo» shows the controls`, await page.isVisible("#nRange"));
+    }
     await page.focus("#nRange"); await page.keyboard.press("Home");
     check(`${tag}: keyboard moves the clock`, (await page.inputValue("#nRange")) === "0");
     check(`${tag}: no orders at 00:00`, (await page.innerText("#nCount")).toLowerCase().includes("sin pedidos"));

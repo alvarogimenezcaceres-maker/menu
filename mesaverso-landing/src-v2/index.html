@@ -50,7 +50,7 @@
       <a class="btn btn--primary" href="#cierre">Quiero mi menú</a>
       <a class="btn btn--secondary" href="#demo">Ver la demo</a>
     </div>
-    <p class="hero__note rise" style="animation-delay:240ms">0 % de comisión en los pedidos que llegan por tu link o QR. Pagás un plan mensual.</p>
+    <p class="hero__note rise" style="animation-delay:240ms">0 % de comisión en los pedidos que llegan por tu link o QR. Empezá con el plan Gratis o elegí un plan mensual.</p>
     <p class="hero__tiny rise" style="animation-delay:260ms">Mesaverso Caja está en prueba con locales piloto. No emite factura: seguís facturando con tu sistema.</p>
   </div>
   <div class="hero__stagewrap"><div class="stage" id="stage">
@@ -164,14 +164,14 @@
   <div class="sec__head">
     <span class="kicker">Una noche, vista de arriba</span>
     <h2 id="h2pn">Cada punto es un pedido. Movés el reloj y la noche pasa.</h2>
-    <p>Arrastrá la hora o tocá una hora fija: a medida que avanza la noche, los pedidos aparecen. El punto cálido es el último pedido: probá avanzarlo hasta la cuenta.</p>
+    <p>Bajá despacio y mirá una noche de ejemplo pasar de las 19 a las 24 h. Si preferís, manejá el reloj vos: arrastralo, o tocá una hora.</p>
   </div>
-  <div class="noche__stage" id="nocheStage">
+  <div class="noche__track" id="nocheTrack"><div class="noche__stage" id="nocheStage">
     <figure class="plano__fig">
       <img src="/assets/plano-de-la-noche-900.webp" srcset="/assets/plano-de-la-noche-900.webp 900w, /assets/plano-de-la-noche-1600.webp 1600w" sizes="(min-width:1000px) 1100px, 92vw" width="1600" height="1067" loading="lazy" decoding="async" alt="Reloj de 24 horas con cientos de puntos, uno por pedido, concentrados entre las 18 y las 23. Un punto cálido, a las 21:07, se une con una comanda impresa: mesa 12, dos lomitos árabes, una torta de zanahoria y tres jugos.">
       <figcaption class="fine">Ilustración de ejemplo, no son datos de un local real.</figcaption>
     </figure>
-  </div>
+  </div></div>
 </div></section>
 
 <!-- ============ EL PLATO 3D ============ -->
@@ -236,10 +236,19 @@
 <section class="sec flip" id="planes" aria-labelledby="h2pl"><div class="wrap">
   <div class="sec__head">
     <span class="kicker">Planes</span>
-    <h2 id="h2pl">Un precio fijo. 0 % de comisión en los pedidos que llegan por tu link o QR.</h2>
+    <h2 id="h2pl">Empezá gratis o con un precio fijo. 0 % de comisión en los pedidos que llegan por tu link o QR.</h2>
     <p class="priceNote">Precios en guaraníes, precio final.</p>
   </div>
   <div class="plans">
+    <article class="plan plan--free" aria-labelledby="pg"><span class="badge badge--ghost">Cupo limitado hasta el 31/12</span><h3 id="pg">Plan Gratis «Vidriera»</h3>
+      <p class="plan__price">Gs. 0 <small>/ mes</small></p>
+      <p class="plan__for">Tus 11 productos estrella, cargados por vos. Para locales con lugar físico.</p>
+      <ul><li>Menú con QR y link, con foto, buscador y «agotado»</li><li>Hasta 11 productos (hay que cargar al menos 8 con precio)</li><li>Pedido por WhatsApp básico: productos y total</li><li>La marca «Hecho con Mesaverso» queda visible en tu menú</li></ul>
+      <details class="plan__more"><summary>Qué aceptás a cambio y qué no incluye</summary>
+        <p><b>A cambio:</b> usamos los datos de tu negocio (cómo se usa tu menú, tus platos y precios) para mejorar el producto y para informes anónimos que juntan a varios locales. Nunca usamos datos personales de tus clientes. Tu menú puede aparecer en nuestro directorio. Revisamos tu primera publicación.</p>
+        <p><b>No incluye:</b> platos en 3D, Mesaverso Caja (mesas, cocina, cuenta dividida), QR por mesa, checkout ni soporte personal.</p>
+        <p class="fine">Los términos completos los ves y aceptás antes de empezar.</p></details>
+      <a class="btn btn--secondary btn--block" href="{{WAFREE}}" target="_blank" rel="noopener">Quiero el plan Gratis</a></article>
     <article class="plan" aria-labelledby="pm"><h3 id="pm">Plan mensual</h3>
       <p class="plan__price">{{PRICE:planMonthly}} <small>/ mes</small></p>
       <p class="plan__for">Mínimo {{RAW:minMonths}} meses, más la implementación ({{PRICE:implementation}}, un solo pago).</p>

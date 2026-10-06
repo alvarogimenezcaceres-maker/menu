@@ -9,6 +9,16 @@ const STAGES = [
   ["Listo", "La cocina lo marcó listo y el mozo se enteró al instante."],
   ["En la cuenta", "El pedido ya suma en la cuenta de la mesa, lista para dividir."],
 ];
+// Story beats for the scroll mode: [minute, stage of the latest order (or null), sentence].
+const BEATS = [
+  [1140, null, "Abrís el local. Bajá despacio: la noche se va llenando sola."],
+  [1215, 0, "Entra un pedido. Lo hizo el cliente desde el QR de su mesa, sin papelito."],
+  [1250, 1, "La cocina ve la comanda en su pantalla."],
+  [1290, 2, "Listo: la cocina lo marca y el mozo se entera al instante."],
+  [1330, 3, "El pedido ya suma en la cuenta de la mesa."],
+  [1385, null, "A la hora de pagar, cada uno ve lo suyo y la cuenta se divide sin pelea."],
+  [1425, null, "Cerrás el turno con el resumen del día. 0 % de comisión en los pedidos que llegan por tu link o QR."],
+];
 const RINGS = [232, 214, 196, 178, 160, 142];
 
 // Example night: ~210 orders, busiest around 21 h. Pure function of a fixed seed.
@@ -45,6 +55,7 @@ export default function mount(root) {
       <button type="button" class="btn btn--secondary btn--sm" id="nNext">Avanzar el pedido</button>
     </div>
     <p class="noche__say" id="nSay" aria-live="polite"></p>
+    <div class="noche__mode"><button type="button" class="btn btn--secondary btn--sm" id="nTake">Manejar el reloj yo</button><button type="button" class="btn btn--secondary btn--sm" id="nStory" hidden>Seguir el relato</button></div>
     <p class="fine">Noche de ejemplo con pedidos inventados. Tocá lo que quieras: no se guarda nada.</p>
   </div>`;
   const svg = root.querySelector("#nDial");
@@ -85,7 +96,7 @@ export default function mount(root) {
     for (const [e, a] of [[warm, { cx: x, cy: y }], [ring, { cx: x, cy: y }], [lead, { x1: lx, y1: ly, x2: x, y2: y }]]) { for (const k in a) e.setAttribute(k, (+a[k]).toFixed(1)); e.style.opacity = ""; }
     next.disabled = false; stagesMark(0); sayEl.textContent = STAGES[0][1];
   }
-  function stagesMark(s) { [...stagesEl.children].forEach((li, k) => { li.className = k < s ? "done" : k === s ? "now" : ""; li.setAttribute("aria-current", k === s ? "step" : "false"); }); next.textContent = s >= STAGES.length - 1 ? "Volver al inicio del pedido" : "Avanzar el pedido"; }
+  function stagesMark(s) { [...stagesEl.children].forEach((li, k) => { li.className = k < s ? "is-done" : k === s ? "is-now" : ""; li.setAttribute("aria-current", k === s ? "step" : "false"); }); next.textContent = s >= STAGES.length - 1 ? "Volver al inicio del pedido" : "Avanzar el pedido"; }
   next.addEventListener("click", () => { touched = true; stage = (stage + 1) % STAGES.length; stagesMark(stage); sayEl.textContent = STAGES[stage][1]; });
 
   function setT(m, user) { t = Math.max(0, Math.min(1439, Math.round(m))); if (user) touched = true; paint(); }
@@ -97,13 +108,48 @@ export default function mount(root) {
   svg.addEventListener("pointermove", (e) => { if (drag) setT(fromPoint(e), true); });
   svg.addEventListener("pointerup", () => { drag = false; });
 
+  // Scroll mode: the page scroll drives the night (19 → 24 h) through the story beats until the visitor takes the controls.
+  const track = root.closest(".noche__track");
+  const scrolly = !!track && !reduce;
+  const take = $("#nTake"), story = $("#nStory");
+  let mode = scrolly ? "story" : "free";
+  function setMode(m) {
+    mode = m; touched = m === "free";
+    root.classList.toggle("is-story", m === "story"); take.hidden = m === "free" || !scrolly; story.hidden = m === "story" || !scrolly;
+    if (m === "story") onScroll();
+  }
+  function beatAt(m) { let b = BEATS[0]; for (const x of BEATS) if (m >= x[0]) b = x; return b; }
+  let sraf = 0;
+  function onScroll() {
+    if (mode !== "story") return;
+    sraf = 0;
+    const r = track.getBoundingClientRect(), span = Math.max(1, r.height - innerHeight);
+    const p = Math.max(0, Math.min(1, -r.top / span));
+    setT(1140 + p * (1425 - 1140), false);
+    const b = beatAt(t);
+    if (b[1] !== null) { stage = b[1]; stagesMark(stage); }
+    sayEl.textContent = b[2];
+  }
+  if (scrolly) {
+    track.classList.add("is-scrolly");
+    take.addEventListener("click", () => setMode("free"));
+    story.addEventListener("click", () => setMode("story"));
+    addEventListener("scroll", () => { if (mode === "story" && !sraf) sraf = requestAnimationFrame(onScroll); }, { passive: true });
+    setMode("story");
+  } else { take.hidden = true; story.hidden = true; }
+  // (touching the dial, slider or chips hands control to the visitor)
+  const grab = () => { if (scrolly && mode === "story") setMode("free"); };
+  root.querySelector(".noche__dial").addEventListener("pointerdown", grab);
+  range.addEventListener("input", grab);
+  root.querySelectorAll(".chip").forEach((c) => c.addEventListener("click", grab));
+
   // The clock walks 19 → 24 h on its own until the visitor touches it. Only while visible, never with reduced motion.
   function tick(ts) {
     raf = 0; if (touched || !visible || document.hidden) return;
     if (ts - lastTs > 70) { lastTs = ts; if (t < 1439) setT(t + 4); else { stop(); return; } }
     raf = requestAnimationFrame(tick);
   }
-  const start = () => { if (!raf && !reduce && !touched && visible) raf = requestAnimationFrame(tick); };
+  const start = () => { if (!raf && !reduce && !touched && !scrolly && visible) raf = requestAnimationFrame(tick); };
   const stop = () => { if (raf) cancelAnimationFrame(raf); raf = 0; };
   const io = new IntersectionObserver((es) => { visible = es[0].isIntersecting; visible ? start() : stop(); }, { threshold: 0.35 });
   io.observe(root);

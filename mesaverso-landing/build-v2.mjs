@@ -74,6 +74,7 @@ function render(template, meta) {
       case "HEAD_META": return headMeta(meta);
       case "HASH": if (!hashes[arg]) throw new Error(`Unknown hash ${arg}`); return hashes[arg];
       case "WA": return esc(waUrl(arg));
+      case "WAFREE": return esc(`https://wa.me/${MESAVERSO_WHATSAPP}?text=${encodeURIComponent("Hola, quiero el plan Gratis de Mesaverso para mi local. Mi local se llama: ")}`);
       case "PRICE": if (!(arg in PRICES)) throw new Error(`Unknown price ${arg}`); return formatGs(PRICES[arg]);
       case "RAW": if (!(arg in PRICES)) throw new Error(`Unknown price ${arg}`); return String(PRICES[arg]);
       case "OWNER": if (!(arg in OWNER)) throw new Error(`Unknown owner field ${arg}`); return esc(OWNER[arg]);

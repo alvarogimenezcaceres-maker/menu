@@ -1,5 +1,5 @@
 // Preguntas frecuentes de la landing v2. Una sola fuente: la página las muestra y el JSON-LD (FAQPage) las repite.
-// Reglas (plan/landing-2026/joja.md): nada de cifras ni promesas que el producto no cumple hoy; «gratis» no aparece.
+// Reglas (plan/landing-2026/joja.md): nada de cifras ni promesas que el producto no cumple hoy; el plan Gratis «Vidriera» aparece desde el 05/10/2026 por orden del dueño (revisión legal de Joja pendiente).
 // Cada respuesta es HTML simple. Los textos con [PENDIENTE] de Jasy se resolvieron de forma conservadora.
 export const FAQ = [
   ["¿Qué es Mesaverso?",
@@ -14,8 +14,10 @@ export const FAQ = [
     "<p>No. La caja registra cómo pagó cada cuenta, pero el cobro lo hacés vos, como siempre. No procesamos pagos online.</p>"],
   ["¿Qué necesito para usarlo?",
     "<p>Una tablet, una computadora o un celular que ya tengas, y conexión a internet. Para empezar no tenés que comprar equipos. La impresora térmica de comandas es opcional y se compra aparte.</p>"],
+  ["¿Hay un plan Gratis? ¿Cuál es la condición?",
+    "<p>Sí: el plan Gratis «Vidriera» da un menú con QR y link con hasta 11 productos, con fotos y pedido por WhatsApp básico. Lo cargás vos. A cambio, aceptás que usemos los datos de tu negocio (cómo se usa tu menú, tus platos y precios) para mejorar el producto y para informes anónimos que juntan a varios locales, y que muestre la marca «Hecho con Mesaverso». Nunca usamos datos personales de tus clientes. No incluye platos en 3D ni Mesaverso Caja. El cupo es limitado hasta el 31/12.</p>"],
   ["¿Quién carga mi carta?",
-    "<p>Nosotros armamos tu menú con tus platos, precios y fotos: nos mandás tu carta en PDF o en fotos. Vos corregís lo que haga falta y lo actualizás cuando quieras.</p>"],
+    "<p>En los planes pagos, nosotros armamos tu menú con tus platos, precios y fotos: nos mandás tu carta en PDF o en fotos. En el plan Gratis lo cargás vos desde el panel. Vos corregís lo que haga falta y lo actualizás cuando quieras.</p>"],
   ["¿Los platos en 3D están incluidos?",
     "<p>El 3D es el Pack 3D: se paga por plato, aparte del plan. Elegís cuáles querés mostrar. Mirá la torta de la demo para ver cómo queda. «Ver en tu mesa» funciona en celulares compatibles.</p>"],
   ["¿Y si no me convence? ¿Hay contrato largo?",
