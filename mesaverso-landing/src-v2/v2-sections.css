@@ -195,3 +195,5 @@
 
 /* inputs inside a flipped section follow that section's surface, not the page theme */
 [data-theme=dark] .flip .in{background:var(--surface);border-color:var(--ring-soft)}
+
+.plano__fig{margin:0;display:grid;gap:10px}.plano__fig img{width:100%;height:auto;border-radius:14px;border:1px solid var(--line);background:#0E1014}

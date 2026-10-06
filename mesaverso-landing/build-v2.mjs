@@ -60,7 +60,7 @@ function headMeta({ title, description, pathname, noindex }) {
     noindex || !PUBLISH ? `<meta name="robots" content="noindex, nofollow">` : `<meta name="robots" content="index, follow">`,
     `<meta property="og:type" content="website"><meta property="og:locale" content="es_PY"><meta property="og:site_name" content="Mesaverso">`,
     `<meta property="og:title" content="${esc(pathname === "/" ? OG_TITLE : title)}"><meta property="og:description" content="${esc(pathname === "/" ? OG_DESC : description)}"><meta property="og:url" content="${url}">`,
-    `<meta property="og:image" content="${abs("/assets/og.png")}"><meta name="twitter:card" content="summary_large_image">`,
+    `<meta property="og:image" content="${abs("/assets/og-v2.png")}"><meta name="twitter:card" content="summary_large_image">`,
     `<script type="application/ld+json">${JSON.stringify({ "@context": "https://schema.org", "@graph": graph })}</script>`,
   ].join("\n");
 }
@@ -107,6 +107,7 @@ await write("gracias.html", simple("¡Listo! Recibimos tu solicitud", "Te vamos 
 await write("404.html", simple("No encontramos esta página", "Puede que el enlace haya cambiado."));
 
 await cp(path.join(SRC, "assets"), path.join(DIST, "assets"), { recursive: true });
+await cp(path.join(SRC2, "assets"), path.join(DIST, "assets"), { recursive: true });
 await cp(path.join(SRC, "fonts"), path.join(DIST, "fonts"), { recursive: true });
 await cp(path.join(SRC, "favicon.svg"), path.join(DIST, "favicon.svg"));
 await cp(path.join(SRC, "brand"), path.join(DIST, "brand"), { recursive: true });
