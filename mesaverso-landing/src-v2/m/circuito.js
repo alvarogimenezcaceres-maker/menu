@@ -20,6 +20,7 @@ const STEPS = {
     ["Cocina y mozo", "Cocina toca «Listo» y el mozo se entera", "Cocina toca LISTO y el mozo lo ve en su pantalla. Lo lleva a la mesa.", "Antes: el mozo iba y volvía a preguntar."],
     ["Cuenta", "La cuenta se divide sin pelea", "Cada uno ve lo suyo, o se divide en partes iguales, con propina. La suma siempre cierra. El cobro lo hacés vos, como siempre.", "Antes: la calculadora y la discusión."],
     ["Dueño", "Cerrás el turno con todo en orden", "Resumen del día con PDF y CSV: pedidos y cómo se pagó cada cuenta. El cobro lo hacés vos, como siempre.", "Antes: sumar a mano al final de la noche."],
+    ["Resultado", "Tu noche, antes y ahora", "Los mismos pasos de una noche, con papel y con Mesaverso Caja. Es el resumen de todo lo que viste.", "Caja está en prueba con locales piloto."],
   ],
   casa: [
     ["Cliente", "Abre tu link o tu QR", "Desde tu Instagram, tu WhatsApp o Google. Ve el menú con fotos y precios. No baja ninguna app.", "Antes: te escribía para preguntar qué había."],
@@ -29,9 +30,10 @@ const STEPS = {
     ["Cocina y repartidor", "Se prepara y sale el repartidor", "Cocina prepara el pedido con todos los datos a la vista y el repartidor lo lleva.", "Antes: nadie sabía qué ya había salido."],
     ["Repartidor", "Cuando vuelve el repartidor, marcás que rindió", "Si el cliente pagó en efectivo, el repartidor te entrega la plata y lo marcás «Rendido». Ves de un vistazo cuánto falta rendir.", "Antes: cuentas en un cuaderno."],
     ["Dueño", "Cerrás el turno con todo en orden", "Resumen del día con PDF y CSV: pedidos y cómo se pagó cada cuenta. El cobro lo hacés vos, como siempre.", "Antes: sumar a mano al final de la noche."],
+    ["Resultado", "Tu noche, antes y ahora", "Los mismos pasos de una noche, con papel y con Mesaverso Caja. Es el resumen de todo lo que viste.", "Caja está en prueba con locales piloto."],
   ],
 };
-const SHORT = { bar: ["Cliente", "Cliente", "Mozo", "Cocina", "Mozo", "Cuenta", "Vos"], casa: ["Cliente", "Cliente", "Vos", "Vos", "Cocina", "Repartidor", "Vos"] };
+const SHORT = { bar: ["Cliente", "Cliente", "Mozo", "Cocina", "Mozo", "Cuenta", "Vos", "Resumen"], casa: ["Cliente", "Cliente", "Vos", "Vos", "Cocina", "Repartidor", "Vos", "Resumen"] };
 const OUT = {
   bar: ["Sin papelitos", "Sin gritos a cocina", "Cuenta sin pelea"],
   casa: ["Pedido armado, sin tipear", "Cada pedido con su código", "Rendición clara"],
@@ -81,6 +83,10 @@ export default function mount(root) {
     const phone = (h) => ["phone", `<div class="panel">${h}</div>`];
     const tab = (title, h) => ["tab", `<div class="m__bar"><span>${title}</span><span>${name}</span></div>${h}`];
     const bar = (a, b) => `<div class="pbar"><span>${a}</span><span>${b}</span></div>`;
+    if (k === 7) {
+      const S = STEPS[m].slice(0, 7);
+      return tab("Antes y ahora", `<div class="m__cmp"><b>Antes</b><b>Con Mesaverso Caja</b>${S.map((x) => `<p>${esc(x[3].replace("Antes: ", ""))}</p><p>${esc(x[1])}</p>`).join("")}</div>`);
+    }
     if (k === 6) return tab("Cierre de turno", `<div class="m__card"><b>Resumen del turno</b><div class="m__ln"><span>Pedidos</span><span>1</span></div><div class="m__ln"><span>Ventas de esta demo</span><span>${tot}</span></div><div class="m__ln"><span>Registrado como</span><span>Efectivo</span></div></div><div class="m__btns"><span class="m__btn">Descargar PDF</span><span class="m__btn">Descargar CSV</span></div>`);
     if (m === "bar") {
       if (k === 0) return phone(`${bar(name, "Mesa 4")}<h4 class="ph1">Menú</h4>${rows(null)}<p class="hint">Abrió el QR de la mesa. Sin app.</p>`);

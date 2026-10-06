@@ -49,7 +49,7 @@ for (const [name, viewport, mobile] of [["desktop", { width: 1280, height: 900 }
   await page.goto(BASE + "/", { waitUntil: "load" });
   await page.locator("#circuito").scrollIntoViewIfNeeded(); await page.waitForSelector(".cir__st", { timeout: 5000 }); await page.waitForTimeout(900);
   const t = `circuit ${name}`;
-  check(`${t}: 7 steps`, (await page.locator(".cir__st").count()) === 7);
+  check(`${t}: 8 steps`, (await page.locator(".cir__st").count()) === 8);
   const t0 = await page.innerText("#ciTitle");
   await page.waitForTimeout(7200);
   check(`${t}: it advances on its own while visible`, (await page.innerText("#ciTitle")) !== t0);
@@ -65,7 +65,7 @@ for (const [name, viewport, mobile] of [["desktop", { width: 1280, height: 900 }
   check(`${t}: the WhatsApp message carries the #MV code`, (await page.innerText("#ciDev")).includes("#MV-0042"));
   await page.locator("#cirStage").screenshot({ path: `.shots-v2/cir-${name}-casa3.png` });
   const before = await page.innerText("#ciTitle");
-  for (let k = 0; k < 7; k++) await page.click("#ciNext");
+  for (let k = 0; k < 8; k++) await page.click("#ciNext");
   check(`${t}: Next wraps around`, (await page.innerText("#ciTitle")) === before);
   check(`${t}: no horizontal overflow`, (await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)) <= 0);
   check(`${t}: no errors`, errs.length === 0, errs.join(" | "));
