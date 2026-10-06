@@ -14,8 +14,8 @@ export const FAQ = [
     "<p>No. La caja registra cómo pagó cada cuenta, pero el cobro lo hacés vos, como siempre. No procesamos pagos online.</p>"],
   ["¿Qué necesito para usarlo?",
     "<p>Una tablet, una computadora o un celular que ya tengas, y conexión a internet. Para empezar no tenés que comprar equipos. La impresora térmica de comandas es opcional y se compra aparte.</p>"],
-  ["¿Hay un plan Gratis? ¿Cuál es la condición?",
-    "<p>Sí: el plan Gratis «Vidriera» da un menú con QR y link con hasta 11 productos, con fotos y pedido por WhatsApp básico. Lo cargás vos. A cambio, aceptás que usemos los datos de tu negocio (cómo se usa tu menú, tus platos y precios) para mejorar el producto y para informes anónimos que juntan a varios locales, y que muestre la marca «Hecho con Mesaverso». Nunca usamos datos personales de tus clientes. No incluye platos en 3D ni Mesaverso Caja. El cupo es limitado hasta el 31/12.</p>"],
+  ["¿Hay un plan Gratis? ¿Cuáles son las condiciones?",
+    "<p>Sí: el plan Gratis «Vidriera» da un menú con QR y link con hasta 11 productos, con fotos y pedido por WhatsApp básico. Lo cargás vos y revisamos tu primera publicación antes de que salga. Tiene condiciones: el menú lleva la marca «Hecho con Mesaverso», usamos los datos de tu negocio para mejorar el servicio y para estadísticas anónimas que juntan a varios locales, y tu menú es público y puede aparecer en buscadores. No usamos para nuestros propios fines los datos personales de tus clientes. No incluye platos en 3D ni Mesaverso Caja. Cupo de 20 locales hasta el 31/12/2026. Los términos completos se muestran antes de crear la cuenta.</p>"],
   ["¿Quién carga mi carta?",
     "<p>En los planes pagos, nosotros armamos tu menú con tus platos, precios y fotos: nos mandás tu carta en PDF o en fotos. En el plan Gratis lo cargás vos desde el panel. Vos corregís lo que haga falta y lo actualizás cuando quieras.</p>"],
   ["¿Los platos en 3D están incluidos?",
@@ -24,6 +24,6 @@ export const FAQ = [
     "<p>El plan mensual tiene un mínimo de 6 meses y el anual se paga por adelantado. Hay una garantía de 30 días, con las condiciones que figuran en la sección de planes. Y antes de decidir podés probar la demo y hablar con nosotros por WhatsApp.</p>"],
   ["¿Qué pasa con los datos de mi negocio y de mis clientes?",
     "<p>No usamos cookies de seguimiento en el menú ni en esta página, y no vendemos tus datos. Cada local tiene su caja separada y el PIN del personal se guarda de forma que no podemos leerlo. Si dejás tus datos en el formulario, los usamos solo para responderte; mirá el <a href=\"/privacidad/\">aviso de privacidad</a>.</p>"],
-  ["Ya vendo por PedidosYa u otra app. ¿Tengo que dejarla?",
+  ["Ya vendo por una app de delivery. ¿Tengo que dejarla?",
     "<p>No. Mesaverso no reemplaza a las apps: te da un canal propio para los clientes que ya te conocen, con 0 % de comisión en los pedidos que llegan por tu link o QR.</p>"],
 ];
