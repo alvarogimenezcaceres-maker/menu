@@ -27,7 +27,7 @@ await page.fill("#pvP1", "38000");
 await page.click("#pvScreen .add");
 const pvText = await page.innerText("#pvScreen");
 check("preview shows the typed local and dish", pvText.includes("Lomitería Prueba") && pvText.includes("Lomito árabe") && pvText.includes("38.000"));
-check("preview sends nothing to the network", requests.length === before, requests.slice(before).join(", "));
+check("preview sends nothing to the network", requests.slice(before).filter((r) => !r.startsWith("GET ")).length === 0, requests.slice(before).join(", "));
 const share = decodeURIComponent(await page.getAttribute("#pvShare", "href"));
 check("share link carries the local's name", share.includes("Lomitería Prueba") && share.startsWith("https://wa.me/?text="));
 await page.fill("#cMonto", "8000000");

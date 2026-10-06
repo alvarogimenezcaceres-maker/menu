@@ -41,6 +41,11 @@
     <span class="kicker rise">Para restaurantes, bares y lomiterías de Paraguay</span>
     <h1 id="h1" class="rise" style="animation-delay:60ms">La noche sin papelitos.</h1>
     <p class="hero__sub rise" style="animation-delay:120ms">Tu cliente pide desde el celular. Tu mozo escanea y elige la mesa. La cocina ve el pedido. La cuenta se divide sola. Con la tablet o la compu que ya tenés.</p>
+    <div class="hero__try rise" style="animation-delay:150ms">
+      <label for="heroName">Probá con tu local: escribí cómo se llama</label>
+      <input class="in" id="heroName" maxlength="40" autocomplete="off" placeholder="Ej.: Parrilla Don Pedro">
+      <div class="chips" role="group" aria-label="Tipo de local" id="heroChips"><button type="button" class="chip" data-r="parrilla" aria-pressed="true">Parrilla</button><button type="button" class="chip" data-r="cafe" aria-pressed="false">Cafetería</button><button type="button" class="chip" data-r="lomo" aria-pressed="false">Lomitería</button><button type="button" class="chip" data-r="bar" aria-pressed="false">Bar</button></div>
+    </div>
     <ul class="hero__bullets rise" style="animation-delay:150ms">
       <li><svg class="ico" aria-hidden="true"><use href="#i-qr"/></svg><span>Menú con QR y link, con fotos y buscador. Sin app que bajar.</span></li>
       <li><svg class="ico" aria-hidden="true"><use href="#i-chat"/></svg><span>Pedidos por WhatsApp y pedidos del salón, en orden.</span></li>
@@ -67,9 +72,9 @@
       <img id="dishimg" src="/assets/torta-de-zanahoria-3d-480.webp" srcset="/assets/torta-de-zanahoria-3d-480.webp 480w, /assets/torta-de-zanahoria-3d-800.webp 800w" sizes="(min-width:900px) 330px, 216px" width="480" height="480" fetchpriority="high" decoding="async" alt="Torta de zanahoria en 3D, flotando sobre un anillo de precisión">
     </div></div></div>
     <span class="chip tag tag--1" aria-hidden="true">Plato 3D</span>
-    <span class="chip tag tag--2" aria-hidden="true">Demo</span>
+    
     <button class="btn btn--secondary btn--sm stage__ctrl" id="go3d" type="button">Girarlo en 3D</button>
-  </div></div>
+  </div><div class="stage__menu" id="heroMenu" aria-live="polite"><span class="kicker">Así se vería</span><b id="heroLocal">Tu local</b><ul id="heroRows"></ul><span class="stage__menu__qr"><svg class="ico" aria-hidden="true"><use href="#i-qr"/></svg>QR de tu mesa · ejemplo</span></div></div>
 </div></section>
 
 <!-- ============ PROBLEMA ============ -->
@@ -90,21 +95,14 @@
 </div></section>
 
 <!-- ============ DEMO: el recorrido de un pedido ============ -->
-<section class="demo" id="demo" aria-labelledby="h2d"><div class="wrap">
-  <div class="demo__head">
-    <span class="kicker">Probalo vos</span>
-    <h2 id="h2d">Un pedido, de punta a punta.</h2>
-    <p>Tocá el celular: el pedido pasa de tu cliente a tu mozo, a tu cocina y a la cuenta. Sin apps en el medio.</p>
+<section class="sec" id="demo" aria-labelledby="h2d" data-mod="/m/cocina.js?v={{HASH:m/cocina.js}}"><div class="wrap">
+  <div class="sec__head">
+    <span class="kicker">Probalo vos, en vivo</span>
+    <h2 id="h2d">El cliente pide. La cocina lo ve al instante.</h2>
+    <p>A la izquierda, el celular de tu cliente. A la derecha, la pantalla de tu cocina. Mandá un pedido y mirá cómo llega, sin papelitos de por medio.</p>
   </div>
-  <div class="demo__grid">
-    <div>
-      <ol class="steps" role="tablist" aria-label="Recorrido del pedido" id="steps" style="--p:0">
-        <span class="steps__track" aria-hidden="true"><span class="steps__fill"></span><span class="steps__dot"></span></span>
-      </ol>
-      <p class="demo__cap" id="cap"></p>
-      <p class="fine" style="margin-top:18px">Es un local de ejemplo, inventado, con pedidos de mentira.</p>
-    </div>
-    <div class="phone"><div class="screen" id="screen" role="tabpanel" aria-live="polite"></div></div>
+  <div class="live__stage" id="liveStage" data-stage>
+    <p class="live__fallback">Tu cliente arma el pedido desde el celular, la cocina lo ve en su pantalla y, cuando está listo, el mozo se entera. Con JavaScript activado podés probarlo acá.</p>
   </div>
 </div></section>
 
@@ -166,7 +164,7 @@
     <h2 id="h2pn">Cada punto es un pedido. Movés el reloj y la noche pasa.</h2>
     <p>Bajá despacio y mirá una noche de ejemplo pasar de las 19 a las 24 h. Si preferís, manejá el reloj vos: arrastralo, o tocá una hora.</p>
   </div>
-  <div class="noche__track" id="nocheTrack"><div class="noche__stage" id="nocheStage">
+  <div class="noche__track" id="nocheTrack"><div class="noche__stage" id="nocheStage" data-stage>
     <figure class="plano__fig">
       <img src="/assets/plano-de-la-noche-900.webp" srcset="/assets/plano-de-la-noche-900.webp 900w, /assets/plano-de-la-noche-1600.webp 1600w" sizes="(min-width:1000px) 1100px, 92vw" width="1600" height="1067" loading="lazy" decoding="async" alt="Reloj de 24 horas con cientos de puntos, uno por pedido, concentrados entre las 18 y las 23. Un punto cálido, a las 21:07, se une con una comanda impresa: mesa 12, dos lomitos árabes, una torta de zanahoria y tres jugos.">
       <figcaption class="fine">Ilustración de ejemplo, no son datos de un local real.</figcaption>

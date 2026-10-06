@@ -49,5 +49,43 @@ for (const [name, viewport, mobile] of [["desktop", { width: 1280, height: 800 }
     await ctx.close();
   }
 }
+{
+  const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+  const page = await ctx.newPage(); const reqs = [];
+  page.on("request", (r) => reqs.push(r.method() + " " + new URL(r.url()).pathname));
+  await page.goto(BASE + "/", { waitUntil: "load" });
+  const n0 = reqs.length;
+  await page.fill("#heroName", "Parrilla Don Pedro");
+  check("hero: the card shows the typed local", (await page.innerText("#heroLocal")) === "Parrilla Don Pedro");
+  await page.click('#heroChips [data-r="lomo"]');
+  check("hero: the type of local changes the dishes", (await page.innerText("#heroRows")).includes("Lomito"));
+  check("hero: the name travels to the preview and the form", (await page.inputValue("#pvName")) === "Parrilla Don Pedro" && (await page.inputValue("#fBusiness")) === "Parrilla Don Pedro");
+  check("hero: typing sends nothing to the network", reqs.slice(n0).filter((r) => !/favicon|\.(webp|woff2|png)/.test(r)).length === 0, reqs.slice(n0).join(", "));
+  await page.fill("#heroName", "<img src=x onerror=alert(1)>");
+  check("hero: the name is shown as text, not as HTML", (await page.$("#heroLocal img")) === null);
+  check("hero: no horizontal overflow", (await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)) <= 0);
+  await page.locator("#top").screenshot({ path: ".shots-v2/hero-a-m.png" });
+  await ctx.close();
+}
+{
+  const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+  const page = await ctx.newPage(); const errs = []; page.on("pageerror", (e) => errs.push(String(e))); page.on("console", (m) => { if (m.type() === "error") errs.push(m.text()); });
+  await page.goto(BASE + "/", { waitUntil: "load" });
+  await page.fill("#heroName", "Lomitería Prueba"); await page.click('#heroChips [data-r="lomo"]');
+  await page.locator("#demo").scrollIntoViewIfNeeded(); await page.waitForSelector("#lvPhone .add", { timeout: 5000 }); await page.waitForTimeout(1200);
+  check("live: the phone shows the local and the type of local chosen in the hero", (await page.innerText("#lvPhone")).toLowerCase().includes("lomitería prueba") && (await page.innerText("#lvPhone")).includes("Lomito"));
+  check("live: the kitchen starts empty", (await page.innerText("#lvList")).includes("Todavía no llegó"));
+  await page.click("#lvPhone .add >> nth=0"); await page.click("#lvPhone .add >> nth=2"); await page.click("#lvPhone .pcta");
+  check("live: the order shows up on the kitchen screen", (await page.innerText("#lvList")).includes("Lomito árabe") && (await page.innerText("#lvList")).includes("Papas fritas"));
+  await page.click("#lvList button");
+  check("live: the customer sees it is being prepared", (await page.innerText("#lvPhone")).includes("En cocina"));
+  await page.click("#lvList button");
+  check("live: ready reaches the customer and the sentence", (await page.innerText("#lvPhone")).includes("Listo") && (await page.innerText("#lvSay")).includes("Listo"));
+  await page.click("#lvReset");
+  check("live: reset empties the kitchen", (await page.innerText("#lvList")).includes("Todavía no llegó"));
+  check("live: no errors", errs.length === 0, errs.join(" | "));
+  await page.locator("#demo").screenshot({ path: ".shots-v2/live-d.png" });
+  await ctx.close();
+}
 await browser.close();
 process.exit(bad ? 1 : 0);

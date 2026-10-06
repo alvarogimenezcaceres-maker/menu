@@ -153,6 +153,8 @@ export default function mount(root) {
   const stop = () => { if (raf) cancelAnimationFrame(raf); raf = 0; };
   const io = new IntersectionObserver((es) => { visible = es[0].isIntersecting; visible ? start() : stop(); }, { threshold: 0.35 });
   io.observe(root);
+  const kick = $("#nOrdT"), applyLocal = (n) => { kick.textContent = n ? "Último pedido en " + n : "Último pedido"; };
+  const onLocal = (e) => applyLocal(e.detail); document.addEventListener("mv-local", onLocal); applyLocal(document.documentElement.dataset.local || "");
   paint(); start();
-  return { destroy() { stop(); io.disconnect(); } };
+  return { destroy() { stop(); io.disconnect(); document.removeEventListener("mv-local", onLocal); } };
 }
