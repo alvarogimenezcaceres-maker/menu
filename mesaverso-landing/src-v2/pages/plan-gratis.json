@@ -1,0 +1,42 @@
+{
+  "slug": "plan-gratis",
+  "title": "Menú digital gratis en Paraguay: plan Vidriera | Mesaverso",
+  "description": "El plan Gratis «Vidriera» da menú con QR y link, hasta 11 productos y pedido por WhatsApp básico. Cupo limitado hasta el 31/12. Paraguay.",
+  "h1": "Menú digital gratis para tu local: plan Vidriera",
+  "lead": "Publicá tu menú con QR y link sin pagar un plan. A cambio, aceptás unas condiciones que te contamos acá, sin letra chica.",
+  "sections": [
+    {
+      "h2": "Qué incluye el plan Gratis «Vidriera»",
+      "html": "<ul><li>Menú con QR y link propio.</li><li>Hasta 11 productos, con 1 foto por producto.</li><li>Buscador para encontrar platos.</li><li>Marca de «agotado» cuando algo se termina.</li><li>Pedido por WhatsApp básico: llega con los productos y el total.</li></ul><p>Ideal para un local chico que quiere salir de la carta en PDF: una cafetería con el café con leche, la medialuna y el tostado, o una lomitería con lo mejor de su carta.</p>"
+    },
+    {
+      "h2": "Qué no incluye",
+      "html": "<ul><li>Platos en 3D.</li><li>Mesaverso Caja.</li><li>QR por mesa.</li><li>Checkout o pedido con delivery y dirección.</li><li>Soporte personal.</li></ul><p>Y el menú muestra la marca «Hecho con Mesaverso». Si más adelante querés algo de esto, podés pasar a un plan pago.</p>"
+    },
+    {
+      "h2": "Qué das a cambio",
+      "html": "<p>Aceptás que usemos los <b>datos de tu negocio</b> (cómo se usa tu menú, tus platos y precios) para mejorar el producto y para informes anónimos que juntan a varios locales, y que tu local figure en nuestro directorio. <b>Nunca usamos datos personales de tus clientes.</b></p><p>Los detalles están en el <a href=\"/privacidad/\">aviso de privacidad</a>.</p>"
+    },
+    {
+      "h2": "Cómo se empieza",
+      "html": "<ol><li>Nos escribís por WhatsApp o dejás tus datos en el formulario.</li><li>Cargás tu carta desde el panel: para publicar necesitás al menos 8 productos con precio.</li><li>Revisamos tu primera publicación antes de que salga.</li></ol><p>El cupo es limitado hasta el 31/12.</p>"
+    },
+    {
+      "h2": "Si después querés más",
+      "html": "<p>El plan mensual cuesta Gs. 150.000 por mes (mínimo 6 meses, más implementación de Gs. 300.000). El anual cuesta Gs. 1.500.000 pagado por adelantado e incluye la implementación. En los planes pagos armamos tu menú nosotros. Y los platos en 3D se suman con el Pack 3D, por plato y aparte del plan.</p>"
+    }
+  ],
+  "faq": [
+    ["¿Es realmente gratis?", "<p>Sí, el plan no tiene costo. La condición es que aceptes el uso de los datos de tu negocio en informes anónimos, figurar en el directorio y mostrar la marca «Hecho con Mesaverso».</p>"],
+    ["¿Usan los datos de mis clientes?", "<p>No. Nunca usamos datos personales de tus clientes. Solo datos de tu negocio, como cómo se usa tu menú, tus platos y precios.</p>"],
+    ["¿Puedo pasar a un plan pago más adelante?", "<p>Sí. Si querés sumar 3D, Mesaverso Caja, QR por mesa o más productos, podés pasar a un plan pago.</p>"]
+  ],
+  "cta": "Quiero mi menú gratis",
+  "revisar": [
+    "Revisión legal de Joja pendiente sobre la cláusula de datos y directorio (nota en faq.mjs).",
+    "«Se empieza escribiendo por WhatsApp o formulario» y «cargás desde el panel»: flujo de alta del plan Gratis no verificado en código.",
+    "«Podés pasar a un plan pago»: asumido, no hay detalle del cambio de plan.",
+    "«No tiene costo»: confirmado en el brief; no hay otro cobro verificado.",
+    "Enlace /privacidad/ existe en faq.mjs."
+  ]
+}

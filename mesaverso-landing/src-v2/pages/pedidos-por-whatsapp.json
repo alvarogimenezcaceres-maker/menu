@@ -1,0 +1,41 @@
+{
+  "slug": "pedidos-por-whatsapp",
+  "title": "Pedidos por WhatsApp para tu local en Paraguay | Mesaverso",
+  "description": "Recibí pedidos por WhatsApp ya armados, con platos, total y código, sin audios ni mensajes sueltos. Para locales de comida de Paraguay.",
+  "h1": "Pedidos por WhatsApp ordenados para tu local",
+  "lead": "Dejá de armar el pedido a mano entre audios y mensajes. El cliente elige en tu menú y a tu WhatsApp te llega el pedido completo.",
+  "sections": [
+    {
+      "h2": "El problema de pedir «por mensaje»",
+      "html": "<p>Si tu local vende por WhatsApp, conocés la escena: uno manda un audio, otro pregunta qué hay hoy, otro cambia el pedido a último momento. Después hay que buscar el pedido entre cien mensajes y confiar en que nada se perdió.</p><p>El problema no es WhatsApp, que tus clientes ya usan todos los días. El problema es que el pedido se arma escribiendo.</p>"
+    },
+    {
+      "h2": "Cómo funciona con Mesaverso",
+      "html": "<ol><li>El cliente abre tu link o tu QR y ve el menú con fotos y precios.</li><li>Elige los platos, por ejemplo dos lomitos y una mandioca frita, y ve el total antes de enviar.</li><li>Toca enviar y se abre WhatsApp con el mensaje ya escrito, dirigido a tu número.</li><li>A vos te llega el pedido: no lo tipea nadie.</li></ol>"
+    },
+    {
+      "h2": "Qué trae el mensaje que recibís",
+      "html": "<p>Cada pedido llega con los platos, la cantidad, el total y, en los planes pagos, si es delivery o retiro, la dirección y un código tipo #MV-0042. Ese código sirve para encontrar el pedido después y para que no se pierda ninguno.</p><p>En el plan Gratis el pedido por WhatsApp es básico: lleva los productos y el total.</p>"
+    },
+    {
+      "h2": "Para anotar y seguir cada pedido, Mesaverso Caja",
+      "html": "<p>Con Mesaverso Caja, cada pedido queda también anotado en tu panel con su código, para ver qué está nuevo, qué se prepara y qué ya salió. Caja está en prueba con locales piloto: no emite factura y no cobra pagos online. El cobro lo hacés vos, como siempre.</p>"
+    },
+    {
+      "h2": "Un canal propio que convive con tus otras ventas",
+      "html": "<p>Los pedidos que llegan por tu link o QR son tuyos: hablás directo con tu cliente. Mesaverso cobra un plan fijo, con 0 % de comisión en los pedidos que llegan por tu link o QR. Si seguís vendiendo por otras apps, no tenés que dejarlas.</p><p>Mirá cómo es el plan <a href=\"/plan-gratis/\">Gratis</a> para empezar con un menú chico, o escribinos por WhatsApp.</p>"
+    }
+  ],
+  "faq": [
+    ["¿El cliente tiene que tener una cuenta para pedir?", "<p>No. Abre tu link o QR, arma el pedido y lo envía por WhatsApp. No tiene que registrarse ni instalar nada.</p>"],
+    ["¿Mesaverso cobra el pedido al cliente?", "<p>No. Mesaverso no procesa pagos online: el cobro lo hacés vos, como siempre, en efectivo, transferencia o como ya trabajes.</p>"],
+    ["¿Me sirve si solo uso WhatsApp y no tengo salón?", "<p>Sí. El menú con pedido por WhatsApp funciona para locales que venden solo por delivery o retiro, sin mesas.</p>"]
+  ],
+  "cta": "Quiero recibir pedidos ordenados",
+  "revisar": [
+    "«se abre WhatsApp con el mensaje ya escrito, dirigido a tu número»: confirmar en site/ el comportamiento exacto del botón enviar.",
+    "Que el mensaje del plan pago incluya cantidad, delivery/retiro, dirección y código #MV: tomado de circuito.js (escena de demo), confirmar en el menú real.",
+    "Ejemplo «dos lomitos y una mandioca frita»: ejemplo ilustrativo, no es un pedido real.",
+    "«no tiene que registrarse»: inferido de que el menú es un link público; confirmar."
+  ]
+}

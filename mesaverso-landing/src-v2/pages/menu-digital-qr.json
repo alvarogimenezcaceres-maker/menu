@@ -1,0 +1,41 @@
+{
+  "slug": "menu-digital-qr",
+  "title": "Menú digital QR para restaurantes en Paraguay | Mesaverso",
+  "description": "Menú digital con QR para restaurantes, bares, lomiterías y cafeterías de Paraguay: fotos, buscador y pedido por WhatsApp. Sin app que instalar.",
+  "h1": "Menú digital con QR para tu local en Paraguay",
+  "lead": "Tus clientes escanean el QR con la cámara del celular y ven tu carta con fotos, precios y buscador. Sin bajar ninguna aplicación y con tu carta siempre al día.",
+  "sections": [
+    {
+      "h2": "Qué es un menú digital con QR",
+      "html": "<p>Es tu carta en una página web propia, con su link y su código QR. El cliente apunta la cámara, se abre el menú y listo: no hay nada que instalar. Lo mismo funciona con el link, para compartirlo por Instagram, WhatsApp o Google.</p><p>Sirve para un restaurante, un bar, una lomitería, una cafetería o una parrilla: cada local tiene su propio menú, con sus categorías y su nombre.</p>"
+    },
+    {
+      "h2": "Qué ve el cliente cuando abre tu carta",
+      "html": "<p>Una lista de platos pensada para el celular, con:</p><ul><li>Foto y precio de cada plato, por ejemplo el lomito árabe, la mandioca frita o el chipá guasu.</li><li>Un buscador para encontrar «tereré» o «cerveza» sin recorrer toda la carta.</li><li>La marca de «agotado» cuando algo se terminó, para que nadie pida lo que no hay.</li><li>Un botón para armar el pedido y enviarlo por WhatsApp.</li></ul><p>Si querés, tus platos también pueden verse en 3D, con «Ver en tu mesa» en celulares compatibles. El 3D es el Pack 3D: se paga por plato, aparte del plan.</p>"
+    },
+    {
+      "h2": "Un QR para el salón y un link para todo lo demás",
+      "html": "<p>Con el QR pegado en la mesa, el cliente abre el menú sin esperar la carta impresa. Con el link, el mismo menú sirve en tu perfil de Instagram, en tu estado de WhatsApp o en tu ficha de Google.</p><p>Cuando cambia un precio o se termina un plato, lo actualizás vos y el cambio se ve en el momento. No hay que reimprimir nada.</p>"
+    },
+    {
+      "h2": "Quién carga tu carta y cuánto cuesta empezar",
+      "html": "<p>En los planes pagos, armamos tu menú con tus platos, precios y fotos: nos mandás tu carta en PDF o en fotos. En el plan Gratis la cargás vos desde el panel, hasta 11 productos.</p><p>El plan mensual cuesta Gs. 150.000 por mes, con un mínimo de 6 meses y una implementación de Gs. 300.000. El anual cuesta Gs. 1.500.000 pagado por adelantado e incluye la implementación. Hay garantía de 30 días con las condiciones que figuran en la sección de planes.</p>"
+    },
+    {
+      "h2": "Y si querés ordenar también el salón",
+      "html": "<p>Mesaverso Caja suma pedido desde el celular, mesas, pantalla de cocina, cuenta dividida y cierre de turno. Está en prueba con locales piloto, no emite factura y no cobra pagos online: el cobro lo hacés vos, como siempre. Podés ver cómo viaja un pedido en la <a href=\"/#circuito\">demo del circuito</a>.</p>"
+    }
+  ],
+  "faq": [
+    ["¿Mis clientes tienen que instalar una aplicación para ver el menú?", "<p>No. Abren el menú con la cámara del celular o desde un link. No hay nada que instalar.</p>"],
+    ["¿Puedo cambiar los precios cuando quiera?", "<p>Sí. Actualizás precios y marcás los platos agotados cuando haga falta, y el menú se actualiza para todos los que lo abran.</p>"],
+    ["¿Tengo que dejar mi carta impresa?", "<p>No es obligatorio dejarla ni sacarla: es tu decisión. El menú digital convive con lo que ya usás.</p>"]
+  ],
+  "cta": "Quiero mi menú con QR",
+  "revisar": [
+    "«se actualiza en el momento»: confirmar con Itá que el cambio de precio se ve sin esperar publicación (CLAUDE.md dice que «Publicar ahora» copia a seed/ y puede haber demora).",
+    "«un QR pegado en la mesa»: confirmar que QR por mesa existe en planes pagos (el plan Gratis no lo incluye).",
+    "Enlace /#circuito: confirmar que el ancla existe en la home.",
+    "Marca de «agotado» y buscador en planes pagos: verificado solo por el brief y faq del plan Gratis, no en código."
+  ]
+}

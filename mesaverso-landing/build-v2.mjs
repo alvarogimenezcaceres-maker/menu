@@ -1,4 +1,4 @@
-// Builds the NEW landing (v2, «La noche sin papelitos») into dist-v2/. It never touches dist/ nor src/, so the live
+// Builds the NEW landing (v2, «Tu menú, tus pedidos, tu cocina») into dist-v2/. It never touches dist/ nor src/, so the live
 // landing and the uncommitted edits in src/ stay as they are. It reuses site.config.mjs (WhatsApp, prices, SITE_URL),
 // src/lead-schema.js (business types), the fonts, brand files and assets of src/, and the same Worker (src/worker.js,
 // POST /api/lead) through wrangler.v2.jsonc.
@@ -46,16 +46,17 @@ const plain = (html) => html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim(
 
 const TITLE = "Menú digital QR para restaurantes en Paraguay | Mesaverso";
 const DESC = "Menú digital con QR, pedidos por WhatsApp y caja para tu local en Paraguay. 0 % de comisión en los pedidos que llegan por tu link o QR.";
-const OG_TITLE = "Mesaverso: la noche sin papelitos";
+const OG_TITLE = "Mesaverso: tu menú, tus pedidos, tu cocina. Todo en uno.";
 const OG_DESC = "Menú con QR, pedidos, cocina y cuenta dividida en tu local. Tu cliente mira el plato en 3D. 0 % de comisión en los pedidos por tu link o QR.";
 
-function headMeta({ title, description, pathname, noindex }) {
+function headMeta({ title, description, pathname, noindex, extra = [] }) {
   const url = abs(pathname);
   const graph = [
     { "@type": "Organization", "@id": `${SITE_URL}/#organization`, name: "Mesaverso", url: abs("/"), logo: abs("/assets/icon-512.png") },
     ...(pathname === "/" ? [{ "@type": "SoftwareApplication", "@id": `${SITE_URL}/#software`, name: "Mesaverso", applicationCategory: "BusinessApplication", operatingSystem: "Web", inLanguage: "es-PY", url: abs("/"), publisher: { "@id": `${SITE_URL}/#organization` },
       description: "Menú digital con QR, pedidos por WhatsApp y caja (mesas, cocina, cuenta dividida) para restaurantes, bares y lomiterías de Paraguay.",
       offers: [{ "@type": "Offer", name: "Plan Gratis «Vidriera»", price: 0, priceCurrency: "PYG" }, { "@type": "Offer", name: "Plan mensual", price: PRICES.planMonthly, priceCurrency: "PYG" }, { "@type": "Offer", name: "Plan anual", price: PRICES.planAnnual, priceCurrency: "PYG" }] }] : []),
+    ...extra,
     { "@type": "WebSite", "@id": `${SITE_URL}/#website`, name: "Mesaverso", url: abs("/"), inLanguage: "es-PY", publisher: { "@id": `${SITE_URL}/#organization` } },
     ...(pathname === "/" ? [{ "@type": "FAQPage", mainEntity: FAQ.map(([q, a]) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: plain(a) } })) }] : []),
   ];
@@ -81,6 +82,7 @@ function render(template, meta) {
       case "PRICE": if (!(arg in PRICES)) throw new Error(`Unknown price ${arg}`); return formatGs(PRICES[arg]);
       case "RAW": if (!(arg in PRICES)) throw new Error(`Unknown price ${arg}`); return String(PRICES[arg]);
       case "OWNER": if (!(arg in OWNER)) throw new Error(`Unknown owner field ${arg}`); return esc(OWNER[arg]);
+      case "PAGES_NAV": return productPages.map((p) => `<a href="/${p.slug}/">${esc(p.h1)}</a>`).join("");
       case "WA_DISPLAY": return waDisplay;
       case "YEAR": return String(new Date().getFullYear());
       case "QR3D": return qr3d;
@@ -94,20 +96,35 @@ function render(template, meta) {
 }
 
 const write = async (rel, html) => { const f = path.join(DIST, rel); await mkdir(path.dirname(f), { recursive: true }); await writeFile(f, html); };
+const productPages = [];
+for (const f of (await readdir(path.join(SRC2, "pages"))).filter((x) => x.endsWith(".json")).sort()) productPages.push(JSON.parse(await readFile(path.join(SRC2, "pages", f), "utf8")));
 await write("index.html", render(await readFile(path.join(SRC2, "index.html"), "utf8"), { title: TITLE, description: DESC, pathname: "/" }));
 
 // Legal and small pages share the page shell. They are drafts until a licensed lawyer reviews them.
 const draft = PUBLISH ? "" : `<p class="draft"><b>Borrador para revisión.</b> Este texto lo redactó una asistente de IA y todavía no lo revisó un abogado matriculado. No publicar así.</p>`;
-const shell = (title, body) => `<!doctype html><html lang="es-PY" data-theme="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">{{HEAD_META}}<meta name="theme-color" content="#0e1014"><meta name="color-scheme" content="dark light"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="preload" href="/fonts/familjen-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="/v2.css?v={{HASH:v2.css}}"></head><body><nav class="nav" aria-label="Principal"><div class="wrap nav__in"><a class="mv-wordmark" href="/" aria-label="Mesaverso, volver al inicio"><svg viewBox="0 0 100 100" aria-hidden="true"><path class="m" d="M16 80V22L50 60L84 22V80"/><circle class="a" cx="16" cy="82" r="10"/><circle class="b" cx="84" cy="82" r="10"/></svg>ESAVERSO</a><a class="btn btn--secondary btn--sm" href="/">Volver al inicio</a></div></nav><main class="wrap legal"><h1>${title}</h1>${draft}${body}</main><script>if(matchMedia('(prefers-color-scheme: light)').matches)document.documentElement.dataset.theme='light'</script></body></html>`;
+const shell = (title, body, { legal = true } = {}) => `<!doctype html><html lang="es-PY" data-theme="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">{{HEAD_META}}<meta name="theme-color" content="#0e1014"><meta name="color-scheme" content="dark light"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="preload" href="/fonts/familjen-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="/v2.css?v={{HASH:v2.css}}"></head><body><nav class="nav" aria-label="Principal"><div class="wrap nav__in"><a class="mv-wordmark" href="/" aria-label="Mesaverso, volver al inicio"><svg viewBox="0 0 100 100" aria-hidden="true"><path class="m" d="M16 80V22L50 60L84 22V80"/><circle class="a" cx="16" cy="82" r="10"/><circle class="b" cx="84" cy="82" r="10"/></svg>ESAVERSO</a><a class="btn btn--secondary btn--sm" href="/">Volver al inicio</a></div></nav><main class="wrap legal"><h1>${title}</h1>${legal ? draft : ""}${body}</main><script>if(matchMedia('(prefers-color-scheme: light)').matches)document.documentElement.dataset.theme='light'</script></body></html>`;
 const pages = [
-  ["privacidad", "Aviso de privacidad", "Cómo usamos los datos que dejás en esta página.", "privacidad.body.html"],
-  ["terminos", "Términos del sitio", "Condiciones de uso de la página de Mesaverso.", "terminos.body.html"],
+  ["privacidad", "Aviso de privacidad", "Aviso de privacidad de Mesaverso: cómo usamos y protegemos los datos que dejás en esta página, y cómo ejercer tus derechos.", "privacidad.body.html"],
+  ["terminos", "Términos del sitio", "Términos del sitio de Mesaverso: condiciones de uso de esta página, de sus herramientas de vista previa y del formulario de contacto.", "terminos.body.html"],
   ["reclamos", "Reclamos y retiro de contenido", "Cómo pedir que retiremos un contenido o avisarnos de una suplantación.", "reclamos.body.html"],
 ];
 for (const [slug, title, description, file] of pages) {
   const body = (await readFile(path.join(SRC2, file), "utf8")).replace("{{OWNER:VIGENCIA}}", esc(OWNER.VIGENCIA));
   const intro = slug === "privacidad" ? `<p class="fine">Versión LP-1 · vigente desde ${esc(OWNER.VIGENCIA)}</p>` : "";
   await write(`${slug}/index.html`, render(shell(esc(title), intro + body), { title: `${title} | Mesaverso`, description, pathname: `/${slug}/` }));
+}
+// Product pages (src-v2/pages/*.json): one search intention each, written by Tesa, claims reviewed by Joja.
+for (const pg of productPages) {
+  const rel = productPages.filter((o) => o.slug !== pg.slug).map((o) => `<li><a href="/${o.slug}/">${esc(o.h1)}</a></li>`).join("");
+  const body = `<p class="lead">${esc(pg.lead)}</p>` + pg.sections.map((s) => `<h2>${esc(s.h2)}</h2>${s.html}`).join("") +
+    `<h2>Preguntas frecuentes</h2><div class="faq faq--page">${pg.faq.map(([q, a]) => `<details><summary>${esc(q)}</summary><div>${a}</div></details>`).join("")}</div>` +
+    `<p class="page__cta"><a class="btn btn--primary" href="/#cierre">${esc(pg.cta)}</a> <a class="btn btn--secondary" href="/#circuito">Ver el circuito completo</a></p>` +
+    `<h2>Seguí leyendo</h2><ul>${rel}</ul>`;
+  const extra = [
+    { "@type": "FAQPage", mainEntity: pg.faq.map(([q, a]) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: plain(a) } })) },
+    { "@type": "BreadcrumbList", itemListElement: [{ "@type": "ListItem", position: 1, name: "Mesaverso", item: abs("/") }, { "@type": "ListItem", position: 2, name: pg.h1, item: abs(`/${pg.slug}/`) }] },
+  ];
+  await write(`${pg.slug}/index.html`, render(shell(esc(pg.h1), body, { legal: false }), { title: pg.title, description: pg.description, pathname: `/${pg.slug}/`, extra }));
 }
 const simple = (title, text) => render(shell(esc(title), `<p>${text}</p><p><a class="btn btn--primary" href="/">Volver a Mesaverso</a></p>`), { title: `${title} | Mesaverso`, description: title, pathname: "/", noindex: true });
 await write("gracias.html", simple("¡Listo! Recibimos tu solicitud", "Te vamos a escribir por WhatsApp para mostrarte cómo quedaría tu menú."));
@@ -123,7 +140,7 @@ await cp(path.join(ROOT, "node_modules/@google/model-viewer/dist/model-viewer.mi
 await write("robots.txt", PUBLISH ? `User-agent: *\nAllow: /\nDisallow: /api/\n\nSitemap: ${SITE_URL}/sitemap.xml\n` : "User-agent: *\nDisallow: /\n");
 const today = new Date().toISOString().slice(0, 10);
 const lastmod = (await stat(path.join(SRC2, "index.html"))).mtime.toISOString().slice(0, 10);
-await write("sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${["/", ...pages.map((p) => `/${p[0]}/`)].map((p) => `  <url><loc>${abs(p)}</loc><lastmod>${lastmod}</lastmod></url>`).join("\n")}\n</urlset>\n`);
+await write("sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${["/", ...productPages.map((p) => `/${p.slug}/`), ...pages.map((p) => `/${p[0]}/`)].map((p) => `  <url><loc>${abs(p)}</loc><lastmod>${lastmod}</lastmod></url>`).join("\n")}\n</urlset>\n`);
 
 // Same security headers as the live landing. wa.me links are plain anchors; no third-party script or font.
 const csp = ["default-src 'self'", "script-src 'self' 'wasm-unsafe-eval'", "style-src 'self' 'unsafe-inline'", "font-src 'self'", "img-src 'self' data: blob:", "connect-src 'self' blob: data:", "worker-src 'self' blob:", "base-uri 'self'", "form-action 'self'", "frame-ancestors 'none'", "object-src 'none'"].join("; ");

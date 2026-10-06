@@ -1,0 +1,42 @@
+{
+  "slug": "cuenta-dividida",
+  "title": "Cuenta dividida en restaurantes de Paraguay | Mesaverso",
+  "description": "Dividí la cuenta del salón por consumo o en partes iguales, con propina y sin calculadora. Mesaverso Caja, en prueba con locales piloto.",
+  "h1": "Cuenta dividida sin pelea en tu salón",
+  "lead": "A la hora de pagar, cada uno ve lo suyo y la suma siempre cierra. Es una función de Mesaverso Caja, que está en prueba con locales piloto.",
+  "sections": [
+    {
+      "h2": "El final de la comida que nadie quiere",
+      "html": "<p>La mesa de seis pide una picada, tres cervezas, un tereré y dos lomitos. Cuando llega la hora de pagar, alguien saca la calculadora, otro dice que él no tomó, y el mozo espera parado. Dividir la cuenta a mano lleva tiempo y genera discusiones.</p>"
+    },
+    {
+      "h2": "Cómo se divide con Mesaverso Caja",
+      "html": "<p>La cuenta de la mesa reúne todo lo que se pidió, ya sea que lo cargó el mozo o lo pidió cada cliente desde su celular. Desde ahí se puede dividir de dos maneras:</p><ul><li><b>Por consumo:</b> cada persona ve lo suyo.</li><li><b>En partes iguales:</b> el total se reparte entre todos.</li></ul><p>En los dos casos se puede sumar la propina, y la suma siempre cierra: no sobra ni falta ningún guaraní.</p>"
+    },
+    {
+      "h2": "Un ejemplo, rotulado como ejemplo",
+      "html": "<p>Ejemplo con precios inventados: tres personas, Ana, Beto y Cami. Ana pidió dos asados de tira y Beto y Cami un vacío cada uno. Por consumo, cada uno paga lo que pidió. En partes iguales, el total se divide por tres. Cualquiera de las dos opciones queda registrada en la cuenta.</p>"
+    },
+    {
+      "h2": "Qué hace y qué no hace la Caja",
+      "html": "<p>La caja <b>registra cómo pagó</b> cada cuenta, pero el cobro lo hacés vos, como siempre: no cobra online. Tampoco emite factura: seguís facturando con tu sistema habitual y el ticket dice «NO VÁLIDO COMO FACTURA».</p><p>Mesaverso Caja está en prueba con locales piloto. Si querés probarla en tu local, escribinos.</p>"
+    },
+    {
+      "h2": "Se suma al resto del salón",
+      "html": "<p>La cuenta dividida es el último paso de un circuito: el cliente pide desde el QR de su mesa, el mozo toma el pedido, la cocina lo prepara en una tablet o celular que ya tengas y, al final, cerrás el turno con un resumen en PDF y CSV. Mirá cómo viaja un pedido en la <a href=\"/#circuito\">demo del circuito</a>.</p>"
+    }
+  ],
+  "faq": [
+    ["¿La Caja cobra las cuentas?", "<p>No. La caja registra cómo pagó cada cuenta, pero el cobro lo hacés vos, como siempre. No procesamos pagos online.</p>"],
+    ["¿Emite la factura de cada persona?", "<p>No. Mesaverso Caja no emite factura electrónica: seguís facturando con tu sistema habitual.</p>"],
+    ["¿Ya la usan locales?", "<p>Está en prueba con locales piloto. Todavía no la ofrecemos como un producto terminado y por eso la probamos de a poco.</p>"]
+  ],
+  "cta": "Quiero probar la Caja",
+  "revisar": [
+    "plan-seo.md menciona una tercera forma de dividir («montos libres»): no figura en circuito.js ni faq.mjs, por eso la dejé afuera; confirmar con Porã y sumarla si existe.",
+    "«propina» en ambas modalidades: circuito.js dice «partes iguales, con propina»; confirmar que también aplica por consumo.",
+    "«no sobra ni falta ningún guaraní»: parafrasea «La suma siempre cierra»; confirmar el redondeo.",
+    "Disponibilidad de Caja para nuevos locales (en prueba): confirmar con el dueño si hoy se ofrece a locales fuera del piloto.",
+    "Ejemplo Ana/Beto/Cami: tomado de la demo, con precios inventados."
+  ]
+}
