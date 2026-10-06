@@ -31,7 +31,7 @@ check("preview sends nothing to the network", requests.slice(before).filter((r) 
 const share = decodeURIComponent(await page.getAttribute("#pvShare", "href"));
 check("share link carries the local's name", share.includes("Lomitería Prueba") && share.startsWith("https://wa.me/?text="));
 await page.fill("#cMonto", "8000000");
-check("commission example recalculates", (await page.innerText("#cOut")).includes("800.000"));
+await page.waitForTimeout(300); check("commission example recalculates", (await page.innerText("#cOut")).includes("800.000"), await page.innerText("#cOut"));
 
 // validation
 await page.click("#send");
