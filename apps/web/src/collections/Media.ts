@@ -2,6 +2,8 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 import type { CollectionConfig } from 'payload'
 
+import { compressPlanUploads } from '../hooks/compressUploads'
+
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 
 export const Media: CollectionConfig = {
@@ -14,6 +16,8 @@ export const Media: CollectionConfig = {
   access: {
     read: () => true,
   },
+  // Gratis restaurants upload small WebP photos; other plans keep what they send
+  hooks: { beforeOperation: [compressPlanUploads] },
   fields: [
     {
       name: 'alt',

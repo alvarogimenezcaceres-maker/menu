@@ -29,6 +29,8 @@ export interface PlanLimits {
   needsApproval: boolean
   /** Checkout settings (zones, fees, payment methods, hours) stay out of the published menu. */
   basicOrdering: boolean
+  /** Uploaded photos are shrunk to 1600 px and re-encoded as WebP, and the dish form offers «Sacar foto». */
+  compressUploads: boolean
 }
 
 const UNLIMITED: PlanLimits = {
@@ -38,6 +40,7 @@ const UNLIMITED: PlanLimits = {
   publishesPerDay: null,
   needsApproval: false,
   basicOrdering: false,
+  compressUploads: false,
 }
 
 const FREE: PlanLimits = {
@@ -47,6 +50,7 @@ const FREE: PlanLimits = {
   publishesPerDay: FREE_PUBLISHES_PER_DAY,
   needsApproval: true,
   basicOrdering: true,
+  compressUploads: true,
 }
 
 export const limitsFor = (plan: string | null | undefined): PlanLimits => (plan === 'free' ? FREE : UNLIMITED)

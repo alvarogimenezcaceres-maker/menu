@@ -221,6 +221,8 @@ Cada restaurante tiene un **Plan** (barra lateral). **Gratis** = el local carga 
 
 **Guía en el panel:** al entrar, el personal de un local ve en el Panel de Control un checklist de 5 pasos (datos, categorías, productos, fotos, publicar) con el contador de productos. El administrador ve ahí mismo los menús Gratis que esperan aprobación y cuáles ya están listos para revisar (`apps/web/src/components/StartGuide.tsx`).
 
+**Fotos:** en el plato de un local Gratis aparece primero **«Sacar foto con la cámara»** (en el celular abre la cámara; la foto se achica en el navegador antes de subirla) y debajo el campo «Foto» para elegir de la galería. En los dos casos el panel guarda la foto en **WebP, de hasta 1600 px y sin datos ocultos (ubicación GPS, modelo del celular)**: una foto de celular de 3 a 10 MB queda en unos 100 a 700 KB. Solo vale para los locales Gratis; los pilotos y los planes pagos suben lo que quieran (`apps/web/src/media/compress.ts`, `hooks/compressUploads.ts`). El atributo de cámara es una sugerencia del celular: no impide elegir de la galería.
+
 **Permisos:** el personal de un local solo ve y edita su restaurante y su propio usuario; no puede crear usuarios ni cambiar a qué restaurante pertenece. Las reglas están en `apps/web/src/plans.ts` y se prueban con `npx vitest run tests/int/`.
 
 **Al desplegar:** las migraciones `20261005_230910_free_plan` y `20261005_235646_free_plan_review_request` agregan columnas; la primera deja a los locales que ya existen sin plan (sin límites) y con la publicación aprobada. Después del push, Render → **Manual Deploy → Deploy latest reference**.

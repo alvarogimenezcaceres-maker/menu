@@ -2,6 +2,7 @@ import { PublishButton as PublishButton_111386cb5ab07909d9e2398475065d54 } from 
 import { WatchTenantCollection as WatchTenantCollection_1d0591e3cf4f332c83a86da13a0de59a } from '@payloadcms/plugin-multi-tenant/client'
 import { TenantField as TenantField_1d0591e3cf4f332c83a86da13a0de59a } from '@payloadcms/plugin-multi-tenant/client'
 import { AssignTenantFieldTrigger as AssignTenantFieldTrigger_1d0591e3cf4f332c83a86da13a0de59a } from '@payloadcms/plugin-multi-tenant/client'
+import { PhotoCapture as PhotoCapture_08159fefc63da091d9a4e7cb231a0c58 } from '../../../components/PhotoCapture'
 import { DishScanBox as DishScanBox_75f7d9ad3386bdf64c0f7300e48f3705 } from '../../../components/DishScanBox'
 import { ScanGenerateBox as ScanGenerateBox_fdf4ab523712781d1c917c510a3772f0 } from '../../../components/ScanGenerateBox'
 import { StartGuide as StartGuide_d474d313b8af8dcc031eb8a61a797e9f } from '../../../components/StartGuide'
@@ -16,6 +17,7 @@ export const importMap = {
   "@payloadcms/plugin-multi-tenant/client#WatchTenantCollection": WatchTenantCollection_1d0591e3cf4f332c83a86da13a0de59a,
   "@payloadcms/plugin-multi-tenant/client#TenantField": TenantField_1d0591e3cf4f332c83a86da13a0de59a,
   "@payloadcms/plugin-multi-tenant/client#AssignTenantFieldTrigger": AssignTenantFieldTrigger_1d0591e3cf4f332c83a86da13a0de59a,
+  "/components/PhotoCapture#PhotoCapture": PhotoCapture_08159fefc63da091d9a4e7cb231a0c58,
   "/components/DishScanBox#DishScanBox": DishScanBox_75f7d9ad3386bdf64c0f7300e48f3705,
   "/components/ScanGenerateBox#ScanGenerateBox": ScanGenerateBox_fdf4ab523712781d1c917c510a3772f0,
   "/components/StartGuide#StartGuide": StartGuide_d474d313b8af8dcc031eb8a61a797e9f,

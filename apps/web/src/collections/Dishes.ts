@@ -125,6 +125,15 @@ export const Dishes: CollectionConfig = {
       },
     },
     {
+      // the phone camera, for restaurants whose plan compresses photos; gallery files use the Foto field below
+      type: 'ui',
+      name: 'photoCapture',
+      admin: {
+        components: { Field: '/components/PhotoCapture#PhotoCapture' },
+        condition: (_data, _siblingData, { user }) => userLimits(user).compressUploads,
+      },
+    },
+    {
       type: 'row',
       fields: [
         { name: 'photo', type: 'upload', relationTo: 'media', label: 'Foto' },
