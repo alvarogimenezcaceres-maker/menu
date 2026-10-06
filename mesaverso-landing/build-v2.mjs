@@ -6,7 +6,7 @@
 //   PUBLISH=1 node build-v2.mjs       production build: indexable; refuses to build while owner data is incomplete
 // Preview:  npm run dev:v2   (wrangler on port 8789).  Deploy: only with the owner's OK (see plan/landing-2026/ita.md).
 import { createHash } from "node:crypto";
-import { cp, mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
+import { cp, mkdir, readdir, readFile, rm, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import QRCode from "qrcode";
@@ -44,8 +44,8 @@ const qr3d = await QRCode.toString(abs("/#plato-3d"), { type: "svg", margin: 1, 
 const faqHtml = FAQ.map(([q, a]) => `<details><summary>${esc(q)}</summary><div>${a}</div></details>`).join("\n");
 const plain = (html) => html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
 
-const TITLE = "Menú digital QR, pedidos y caja para restaurantes | Mesaverso";
-const DESC = "Menú con QR, pedidos por WhatsApp y caja para tu salón: cocina, cuenta dividida y platos en 3D. 0 % de comisión en pedidos por tu link o QR. Paraguay.";
+const TITLE = "Menú digital QR para restaurantes en Paraguay | Mesaverso";
+const DESC = "Menú digital con QR, pedidos por WhatsApp y caja para tu local en Paraguay. 0 % de comisión en los pedidos que llegan por tu link o QR.";
 const OG_TITLE = "Mesaverso: la noche sin papelitos";
 const OG_DESC = "Menú con QR, pedidos, cocina y cuenta dividida en tu local. Tu cliente mira el plato en 3D. 0 % de comisión en los pedidos por tu link o QR.";
 
@@ -53,6 +53,9 @@ function headMeta({ title, description, pathname, noindex }) {
   const url = abs(pathname);
   const graph = [
     { "@type": "Organization", "@id": `${SITE_URL}/#organization`, name: "Mesaverso", url: abs("/"), logo: abs("/assets/icon-512.png") },
+    ...(pathname === "/" ? [{ "@type": "SoftwareApplication", "@id": `${SITE_URL}/#software`, name: "Mesaverso", applicationCategory: "BusinessApplication", operatingSystem: "Web", inLanguage: "es-PY", url: abs("/"), publisher: { "@id": `${SITE_URL}/#organization` },
+      description: "Menú digital con QR, pedidos por WhatsApp y caja (mesas, cocina, cuenta dividida) para restaurantes, bares y lomiterías de Paraguay.",
+      offers: [{ "@type": "Offer", name: "Plan Gratis «Vidriera»", price: 0, priceCurrency: "PYG" }, { "@type": "Offer", name: "Plan mensual", price: PRICES.planMonthly, priceCurrency: "PYG" }, { "@type": "Offer", name: "Plan anual", price: PRICES.planAnnual, priceCurrency: "PYG" }] }] : []),
     { "@type": "WebSite", "@id": `${SITE_URL}/#website`, name: "Mesaverso", url: abs("/"), inLanguage: "es-PY", publisher: { "@id": `${SITE_URL}/#organization` } },
     ...(pathname === "/" ? [{ "@type": "FAQPage", mainEntity: FAQ.map(([q, a]) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: plain(a) } })) }] : []),
   ];
@@ -63,7 +66,7 @@ function headMeta({ title, description, pathname, noindex }) {
     noindex || !PUBLISH ? `<meta name="robots" content="noindex, nofollow">` : `<meta name="robots" content="index, follow">`,
     `<meta property="og:type" content="website"><meta property="og:locale" content="es_PY"><meta property="og:site_name" content="Mesaverso">`,
     `<meta property="og:title" content="${esc(pathname === "/" ? OG_TITLE : title)}"><meta property="og:description" content="${esc(pathname === "/" ? OG_DESC : description)}"><meta property="og:url" content="${url}">`,
-    `<meta property="og:image" content="${abs("/assets/og-v2.png")}"><meta name="twitter:card" content="summary_large_image">`,
+    `<meta property="og:image" content="${abs("/assets/og-v2.png")}"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="Mesaverso: menú digital con QR, pedidos y cocina para tu local"><meta name="twitter:card" content="summary_large_image">`,
     `<script type="application/ld+json">${JSON.stringify({ "@context": "https://schema.org", "@graph": graph })}</script>`,
   ].join("\n");
 }
@@ -119,7 +122,8 @@ await cp(path.join(ROOT, "node_modules/@google/model-viewer/dist/model-viewer.mi
 
 await write("robots.txt", PUBLISH ? `User-agent: *\nAllow: /\nDisallow: /api/\n\nSitemap: ${SITE_URL}/sitemap.xml\n` : "User-agent: *\nDisallow: /\n");
 const today = new Date().toISOString().slice(0, 10);
-await write("sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${["/", ...pages.map((p) => `/${p[0]}/`)].map((p) => `  <url><loc>${abs(p)}</loc><lastmod>${today}</lastmod></url>`).join("\n")}\n</urlset>\n`);
+const lastmod = (await stat(path.join(SRC2, "index.html"))).mtime.toISOString().slice(0, 10);
+await write("sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${["/", ...pages.map((p) => `/${p[0]}/`)].map((p) => `  <url><loc>${abs(p)}</loc><lastmod>${lastmod}</lastmod></url>`).join("\n")}\n</urlset>\n`);
 
 // Same security headers as the live landing. wa.me links are plain anchors; no third-party script or font.
 const csp = ["default-src 'self'", "script-src 'self' 'wasm-unsafe-eval'", "style-src 'self' 'unsafe-inline'", "font-src 'self'", "img-src 'self' data: blob:", "connect-src 'self' blob: data:", "worker-src 'self' blob:", "base-uri 'self'", "form-action 'self'", "frame-ancestors 'none'", "object-src 'none'"].join("; ");
