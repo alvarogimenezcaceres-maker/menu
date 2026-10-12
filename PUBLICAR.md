@@ -103,7 +103,7 @@ Los menús se publican en **Cloudflare Workers** (archivos estáticos, plan grat
   ```
   La primera vez en una máquina nueva hay que iniciar sesión con `npx wrangler login`.
 - **Configuración:** `wrangler.jsonc` (proyecto `menu3d-demo`). Los encabezados de respuesta (formato de modelos 3D, permiso de cámara para AR) los genera `site/build.mjs` en `dist/_headers`.
-- **Dominio propio (más adelante):** agregarlo en Cloudflare y correr `CF_SITE_URL=https://menu.tudominio.com/ node site/deploy-cloudflare.mjs`, para regenerar los QR con esa dirección.
+- **Dominio propio (mesaverso.app, comprado el 12/10/2026 en Cloudflare):** landing en `mesaverso.app`, menús en `menu.mesaverso.app`, panel en `panel.mesaverso.app`. Orden del traspaso: (1) en Cloudflare, Workers & Pages → `menu3d-demo` → Settings → Domains & Routes → **Add → Custom domain** `menu.mesaverso.app` (el `workers.dev` viejo sigue andando, así que los QR ya impresos no se rompen); (2) landing: `npm run deploy:prod` desde `mesaverso-landing/` (arma la v2 con `PUBLISH=1` y crea `mesaverso.app` y `www`; pide las variables `OWNER_*`); (3) panel en Render: Settings → Custom Domains → `panel.mesaverso.app` (Render da un CNAME para cargar en Cloudflare DNS, en modo «solo DNS»), y variable `MESAVERSO_URL=https://mesaverso.app`; (4) recién entonces el push de `site/**`: los menús se arman con `https://menu.mesaverso.app/` (por defecto en `deploy-cloudflare.mjs`), así que cambian el canonical, las imágenes para compartir y los QR de `…/qr/`, también en Filigrana y Gringo Bar.
 - **GitHub Pages** sigue publicando en paralelo hasta que decidamos apagarlo.
 
 ### Analítica de los menús (desde el 29/09/2026)

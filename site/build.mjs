@@ -15,7 +15,7 @@ const SEED = process.env.SEED_DIR ? path.resolve(process.env.SEED_DIR) : path.jo
 const SITE_URL = (process.env.SITE_URL || "http://localhost:8080/").replace(/\/?$/, "/");
 const SIZES = [360, 720, 1200];
 // public address of the sales landing (the badge on free menus links to it); the own domain arrives later
-const MESAVERSO_URL = (process.env.MESAVERSO_URL || "https://mesaverso-landing.alvarogimenezcaceres.workers.dev").replace(/\/+$/, "");
+const MESAVERSO_URL = (process.env.MESAVERSO_URL || "https://mesaverso.app").replace(/\/+$/, "");
 // order logic shared with the page: the same file is inlined into every menu
 const ORDER_CORE = await readFile(path.join(ROOT, "site", "order-core.js"), "utf8");
 const OrderCore = vm.runInNewContext(ORDER_CORE + "\nOrderCore;");

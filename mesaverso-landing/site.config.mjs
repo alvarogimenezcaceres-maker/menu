@@ -5,7 +5,7 @@
 // To move to the future domain: set SITE_URL (env var or the default below), rebuild, deploy,
 // and add the custom domain in wrangler.jsonc (`routes`). Nothing else changes.
 
-export const SITE_URL = (process.env.SITE_URL || "https://mesaverso-landing.alvarogimenezcaceres.workers.dev").replace(/\/+$/, "");
+export const SITE_URL = (process.env.SITE_URL || "https://mesaverso.app").replace(/\/+$/, "");
 
 // Commercial WhatsApp, digits only (country code + number), as wa.me expects.
 export const MESAVERSO_WHATSAPP = "595984900323";

@@ -1,0 +1,24 @@
+// Production config for the NEW landing (v2) on the owner's domain. Same Worker and KV as the live landing, but it
+// serves dist-v2/ built with PUBLISH=1. Deploy with:   npm run deploy:prod   (see deploy-prod.mjs; needs the owner's OK).
+// The custom domains are created by this deploy (the zone mesaverso.app is in the owner's Cloudflare account).
+{
+  "name": "mesaverso-landing",
+  "main": "src/worker.js",
+  "compatibility_date": "2026-09-25",
+  "workers_dev": true,
+  "routes": [
+    { "pattern": "mesaverso.app", "custom_domain": true },
+    { "pattern": "www.mesaverso.app", "custom_domain": true }
+  ],
+  "assets": {
+    "directory": "./dist-v2",
+    "binding": "ASSETS",
+    "run_worker_first": ["/api/*"],
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page"
+  },
+  "kv_namespaces": [
+    { "binding": "LEADS", "id": "70aea932f1d24c649e1e70273901a996" }
+  ],
+  "observability": { "enabled": true }
+}

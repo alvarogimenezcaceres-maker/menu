@@ -6,6 +6,7 @@
   "scripts": {
     "build": "node build.mjs",
     "build:v2": "node build-v2.mjs",
+    "deploy:prod": "node deploy-prod.mjs",
     "dev:v2": "node build-v2.mjs && npx -y wrangler@4 dev -c wrangler.v2.jsonc --port 8789",
     "dev": "node build.mjs && npx -y wrangler@4 dev --port 8788",
     "deploy": "node build.mjs && npx -y wrangler@4 deploy",

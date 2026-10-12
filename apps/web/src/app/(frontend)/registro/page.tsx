@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 }
 
 // the legal pages live on the sales site; set MESAVERSO_URL in the panel's environment once the domain exists
-const landing = (process.env.MESAVERSO_URL || 'https://mesaverso-landing.alvarogimenezcaceres.workers.dev').replace(/\/+$/, '')
+const landing = (process.env.MESAVERSO_URL || 'https://mesaverso.app').replace(/\/+$/, '')
 
 export default function RegistroPage() {
   return (

@@ -7,7 +7,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const SITE_URL = process.env.CF_SITE_URL || "https://menu3d-demo.alvarogimenezcaceres.workers.dev/";
+const SITE_URL = process.env.CF_SITE_URL || "https://menu.mesaverso.app/";
 
 const run = (cmd, args, cwd) => {
   const r = spawnSync(cmd, args, { cwd, stdio: "inherit", shell: process.platform === "win32", env: { ...process.env, SITE_URL } });

@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = path.join(ROOT, "dist-redirect");
-const NEW_BASE = (process.env.CF_SITE_URL || "https://menu3d-demo.alvarogimenezcaceres.workers.dev/").replace(/\/?$/, "/");
+const NEW_BASE = (process.env.CF_SITE_URL || "https://menu.mesaverso.app/").replace(/\/?$/, "/");
 const OLD_PREFIX = "/menu"; // GitHub Pages project path: https://<user>.github.io/menu/
 
 // target: a fixed new path, or null to map the old path generically (404 fallback)
