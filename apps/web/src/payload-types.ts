@@ -428,6 +428,13 @@ export interface ScanPhoto {
 export interface User {
   id: number;
   name?: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
+  /**
+   * Formato +595981123456.
+   */
+  phone?: string | null;
+  signupAt?: string | null;
   role: 'admin' | 'staff';
   tenants?:
     | {
@@ -746,6 +753,10 @@ export interface ScanPhotosSelect<T extends boolean = true> {
  */
 export interface UsersSelect<T extends boolean = true> {
   name?: T;
+  firstName?: T;
+  lastName?: T;
+  phone?: T;
+  signupAt?: T;
   role?: T;
   tenants?:
     | T

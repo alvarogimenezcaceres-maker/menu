@@ -17,6 +17,7 @@ import { ScanPhotos } from './collections/ScanPhotos'
 import { Scans } from './collections/Scans'
 import { Users } from './collections/Users'
 import { migrations } from './migrations'
+import { signupEndpoint } from './signup/endpoint'
 import type { Config } from './payload-types'
 
 const filename = fileURLToPath(import.meta.url)
@@ -29,6 +30,8 @@ export default buildConfig({
     components: {
       // checklist for restaurant staff, approvals waiting for platform admins
       beforeDashboard: ['/components/StartGuide#StartGuide'],
+      // «¿No tenés cuenta?» link to the public signup
+      afterLogin: ['/components/SignupLink#SignupLink'],
     },
     importMap: {
       baseDir: path.resolve(dirname),
@@ -38,6 +41,7 @@ export default buildConfig({
     supportedLanguages: { es },
     fallbackLanguage: 'es',
   },
+  endpoints: [signupEndpoint],
   collections: [Restaurants, Categories, Dishes, Media, Scans, ScanPhotos, Users],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',

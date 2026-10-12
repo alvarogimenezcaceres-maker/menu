@@ -6,6 +6,7 @@ import * as migration_20260930_020833_google_review_url from './20260930_020833_
 import * as migration_20260930_234810_restaurant_legal from './20260930_234810_restaurant_legal';
 import * as migration_20261005_230910_free_plan from './20261005_230910_free_plan';
 import * as migration_20261005_235646_free_plan_review_request from './20261005_235646_free_plan_review_request';
+import * as migration_20261012_233406_owner_contact from './20261012_233406_owner_contact';
 
 export const migrations = [
   {
@@ -46,6 +47,11 @@ export const migrations = [
   {
     up: migration_20261005_235646_free_plan_review_request.up,
     down: migration_20261005_235646_free_plan_review_request.down,
-    name: '20261005_235646_free_plan_review_request'
+    name: '20261005_235646_free_plan_review_request',
+  },
+  {
+    up: migration_20261012_233406_owner_contact.up,
+    down: migration_20261012_233406_owner_contact.down,
+    name: '20261012_233406_owner_contact'
   },
 ];

@@ -1,0 +1,23 @@
+.reg { max-width: 460px; margin: 0 auto; padding: 32px 16px 64px; font-family: system-ui, sans-serif; color: #1b1b1b; }
+.reg h1 { font-size: 1.8rem; margin: 0 0 8px; }
+.reg__lead { margin: 0 0 24px; line-height: 1.5; color: #444; }
+.reg__form { display: grid; gap: 16px; }
+.reg__field { display: grid; gap: 4px; font-weight: 600; }
+.reg__field input { min-height: 44px; padding: 0 12px; font: inherit; font-weight: 400; border: 1px solid #aaa; border-radius: 6px; }
+.reg__field input[aria-invalid='true'] { border-color: #b3261e; }
+.reg__field small { font-weight: 400; color: #666; }
+.reg__err { color: #b3261e; font-size: 0.85rem; }
+.reg__trap { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+.reg__check { display: flex; gap: 10px; align-items: flex-start; line-height: 1.4; }
+.reg__check input { width: 22px; height: 22px; margin-top: 2px; flex: none; }
+.reg__note { margin: 0; font-size: 0.85rem; color: #555; line-height: 1.4; }
+.reg__msg { margin: 0; padding: 10px 12px; border-radius: 6px; background: #fdecea; color: #7a1712; }
+.reg__btn { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 20px; font: inherit; font-weight: 700; color: #fff; background: #1b1b1b; border: 0; border-radius: 6px; cursor: pointer; text-decoration: none; }
+.reg__btn:disabled { opacity: 0.6; cursor: wait; }
+.reg__login { margin: 0; text-align: center; }
+.reg__done { padding: 20px; border: 1px solid #ccc; border-radius: 8px; display: grid; gap: 12px; }
+.reg__done h2 { margin: 0; }
+body:has(.reg) { background: #fafaf7; color-scheme: light; }
+.reg__field span, .reg__check span { color: #1b1b1b; }
+.reg a { color: #1b1b1b; text-decoration: underline; }
+.reg .reg__btn { color: #fff; text-decoration: none; }

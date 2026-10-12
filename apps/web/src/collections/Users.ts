@@ -26,6 +26,17 @@ export const Users: CollectionConfig = {
   },
   fields: [
     { name: 'name', type: 'text', label: 'Nombre' },
+    // owner contact data, filled in by the public signup (/registro); platform-created users may leave it empty
+    { name: 'firstName', type: 'text', label: 'Nombre de pila' },
+    { name: 'lastName', type: 'text', label: 'Apellido' },
+    { name: 'phone', type: 'text', label: 'Celular', admin: { description: 'Formato +595981123456.' } },
+    {
+      name: 'signupAt',
+      type: 'date',
+      label: 'Se registró el',
+      admin: { readOnly: true, date: { pickerAppearance: 'dayAndTime' } },
+      access: { create: ({ req }) => isPlatformAdmin(req.user), update: () => false },
+    },
     {
       name: 'role',
       type: 'select',
