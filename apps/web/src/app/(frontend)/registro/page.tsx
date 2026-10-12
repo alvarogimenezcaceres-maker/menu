@@ -20,7 +20,7 @@ export default function RegistroPage() {
       <p className="reg__lead">
         Registrate y armá tu menú con hasta {FREE_MAX_DISHES} productos. Antes de que salga al aire lo revisamos nosotros y te avisamos por WhatsApp.
       </p>
-      <RegistroForm termsUrl={`${landing}/terminos`} privacyUrl={`${landing}/privacidad`} />
+      <RegistroForm termsUrl={`${landing}/terminos-gratis/`} privacyUrl={`${landing}/privacidad/`} />
     </div>
   )
 }

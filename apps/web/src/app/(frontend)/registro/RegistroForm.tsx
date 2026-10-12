@@ -80,7 +80,7 @@ export function RegistroForm({ termsUrl, privacyUrl }: { termsUrl: string; priva
       </label>
       {errors.terms ? <small className="reg__err">{errors.terms}</small> : null}
       <p className="reg__note">
-        Usamos tu nombre, correo y celular para crear tu cuenta, avisarte sobre tu menú y darte soporte. Podés pedirnos que los borremos.
+        Usamos tu nombre, correo y celular para crear tu cuenta, avisarte sobre tu menú y darte soporte. Podés pedirnos que los borremos. Ojo: tu celular también queda cargado como WhatsApp de pedidos de tu local, y cuando publiques tu menú ese número se va a ver en el menú. Podés cambiarlo en el panel antes de publicar.
       </p>
       {message ? (
         <p className="reg__msg" role="alert">

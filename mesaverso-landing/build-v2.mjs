@@ -106,11 +106,12 @@ const shell = (title, body, { legal = true } = {}) => `<!doctype html><html lang
 const pages = [
   ["privacidad", "Aviso de privacidad", "Aviso de privacidad de Mesaverso: cómo usamos y protegemos los datos que dejás en esta página, y cómo ejercer tus derechos.", "privacidad.body.html"],
   ["terminos", "Términos del sitio", "Términos del sitio de Mesaverso: condiciones de uso de esta página, de sus herramientas de vista previa y del formulario de contacto.", "terminos.body.html"],
+  ["terminos-gratis", "Términos del plan Gratis", "Términos del plan Gratis de Mesaverso para locales: qué incluye, uso de los datos del local, baja y cambios.", "terminos-gratis.body.html"],
   ["reclamos", "Reclamos y retiro de contenido", "Cómo pedir que retiremos un contenido o avisarnos de una suplantación.", "reclamos.body.html"],
 ];
 for (const [slug, title, description, file] of pages) {
   const body = (await readFile(path.join(SRC2, file), "utf8")).replace("{{OWNER:VIGENCIA}}", esc(OWNER.VIGENCIA));
-  const intro = slug === "privacidad" ? `<p class="fine">Versión LP-1 · vigente desde ${esc(OWNER.VIGENCIA)}</p>` : "";
+  const intro = "";
   await write(`${slug}/index.html`, render(shell(esc(title), intro + body), { title: `${title} | Mesaverso`, description, pathname: `/${slug}/` }));
 }
 // Product pages (src-v2/pages/*.json): one search intention each, written by Tesa, claims reviewed by Joja.
