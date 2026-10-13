@@ -14,7 +14,6 @@
     "logo": "logo-blanco",
     "tables": 20,
     "whatsapp": "0976 130 444",
-    "googleReviewUrl": "https://search.google.com/local/writereview?placeid=ChIJL_lDRsKvXZQRm5fi4Q5I3H0",
     "cuisine": [
       "Pizza",
       "Parrilla",
@@ -22,6 +21,8 @@
       "Pastas",
       "Cócteles"
     ],
+    "googleReviewUrl": "https://search.google.com/local/writereview?placeid=ChIJL_lDRsKvXZQRm5fi4Q5I3H0",
+    "ordering": {},
     "theme": {
       "primary": "#ED9D15",
       "primaryLight": "#FFB943",
@@ -121,10 +122,20 @@
             {
               "group": "Acompañamiento opcional",
               "multiple": true,
-              "choices": [
-                "Mandioca",
-                "Papas fritas",
-                "Pan tostado"
+              "required": false,
+              "items": [
+                {
+                  "name": "Mandioca",
+                  "price": 0
+                },
+                {
+                  "name": "Papas fritas",
+                  "price": 0
+                },
+                {
+                  "name": "Pan tostado",
+                  "price": 0
+                }
               ]
             }
           ],
@@ -343,18 +354,35 @@
             {
               "group": "Milanesitas de",
               "multiple": false,
-              "choices": [
-                "Carne",
-                "Pollo"
+              "required": true,
+              "items": [
+                {
+                  "name": "Carne",
+                  "price": 0
+                },
+                {
+                  "name": "Pollo",
+                  "price": 0
+                }
               ]
             },
             {
               "group": "Acompañamiento",
               "multiple": false,
-              "choices": [
-                "Papas fritas",
-                "Sopa paraguaya",
-                "Chipa guasu"
+              "required": true,
+              "items": [
+                {
+                  "name": "Papas fritas",
+                  "price": 0
+                },
+                {
+                  "name": "Sopa paraguaya",
+                  "price": 0
+                },
+                {
+                  "name": "Chipa guasu",
+                  "price": 0
+                }
               ]
             }
           ]
@@ -714,10 +742,20 @@
             {
               "group": "Sabor",
               "multiple": false,
-              "choices": [
-                "Durazno",
-                "Frutilla",
-                "Limón"
+              "required": true,
+              "items": [
+                {
+                  "name": "Durazno",
+                  "price": 0
+                },
+                {
+                  "name": "Frutilla",
+                  "price": 0
+                },
+                {
+                  "name": "Limón",
+                  "price": 0
+                }
               ]
             }
           ]
