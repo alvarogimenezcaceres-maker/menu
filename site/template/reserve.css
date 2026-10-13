@@ -1,0 +1,19 @@
+
+  /* Reservas por WhatsApp (solo si el local lo activa) */
+  .reserve-btn { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; margin-top: 12px; padding: 0 18px; border-radius: 14px; border: 1px solid var(--amber); background: transparent; color: var(--amber-soft); font: inherit; font-weight: 600; cursor: pointer; touch-action: manipulation; }
+  .reserve-btn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .reserve-btn:focus-visible, .reserve-go:focus-visible, .reserve-cancel:focus-visible { outline: 2px solid var(--amber-soft); outline-offset: 3px; }
+  dialog.reserve { width: min(92vw, 440px); max-height: 92dvh; overflow: auto; padding: 22px 20px 20px; border: 1px solid var(--line); border-radius: 18px; background: var(--surface); color: var(--text); }
+  dialog.reserve::backdrop { background: rgba(0, 0, 0, .6); }
+  dialog.reserve h2 { margin: 0 0 6px; font-family: var(--display); font-size: 24px; }
+  .reserve-hint { margin: 0 0 14px; color: var(--muted); font-size: 14.5px; line-height: 1.45; }
+  dialog.reserve label { display: grid; gap: 6px; margin: 0 0 12px; color: var(--muted); font-size: 13px; letter-spacing: .04em; }
+  dialog.reserve input, dialog.reserve select, dialog.reserve textarea { width: 100%; min-height: 48px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--raised); color: var(--text); font: inherit; font-size: 16px; }
+  dialog.reserve textarea { min-height: 72px; resize: vertical; }
+  .reserve-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .reserve-row label:first-child { grid-column: 1 / -1; }
+  .reserve-err { min-height: 20px; margin: 0 0 8px; color: var(--err, #ff9d8c); font-size: 14px; }
+  .reserve-actions { display: grid; grid-template-columns: 1fr 1.6fr; gap: 10px; }
+  .reserve-go, .reserve-cancel { min-height: 50px; border-radius: 14px; font: inherit; font-weight: 700; cursor: pointer; touch-action: manipulation; }
+  .reserve-go { border: 0; background: var(--amber); color: #1b1916; }
+  .reserve-cancel { border: 1px solid var(--line); background: transparent; color: var(--text); }

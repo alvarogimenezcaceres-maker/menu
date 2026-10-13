@@ -29,6 +29,8 @@ before(async () => {
   await seedMenu("zz-piloto", menu("Piloto"));
   await seedMenu("zz-menu", menu("Pago", { plan: "menu" }));
   await seedMenu("zz-sinlogo", menu("Sin Logo", { plan: "free" }, null), false);
+  await seedMenu("zz-reserva", menu("Con Reservas", { plan: "menu", reservations: true }));
+  await seedMenu("zz-reserva-sinwa", menu("Reserva sin WhatsApp", { plan: "menu", reservations: true, whatsapp: "" }));
   const r = spawnSync(process.execPath, [path.join(ROOT, "site", "build.mjs")], {
     env: { ...process.env, SEED_DIR: seed, DIST_DIR: dist, SITE_URL: "https://t.test/", MESAVERSO_URL: "https://landing.test" }, encoding: "utf8",
   });
@@ -59,4 +61,16 @@ test("a menu without logo warns but does not stop the build of the others", () =
   for (const slug of ["zz-gratis", "zz-piloto", "zz-menu", "zz-sinlogo"]) assert.ok(existsSync(path.join(dist, slug, "index.html")), slug);
   assert.ok(!page("zz-sinlogo").includes("undefined"));
   assert.ok(existsSync(path.join(dist, "zz-sinlogo", "img", "nologo-360.webp")));
+});
+
+
+test("reservations: the «Reservar mesa» button appears only when the restaurant asks for it and has a WhatsApp number", () => {
+  const on = page("zz-reserva");
+  assert.match(on, /id="reserveBtn"/);
+  assert.match(on, /id="reserveDlg"/);
+  assert.match(on, /track\("reserve_click"\)/);
+  for (const slug of ["zz-piloto", "zz-gratis", "zz-menu", "zz-reserva-sinwa"]) {
+    const html = page(slug);
+    assert.ok(!html.includes("reserveBtn") && !html.includes("reserveDlg") && !html.includes("reserve-btn"), slug + " must not carry the reservation pieces");
+  }
 });

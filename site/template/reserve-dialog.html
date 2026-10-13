@@ -1,0 +1,13 @@
+<dialog class="reserve" id="reserveDlg" aria-labelledby="reserveT"><form id="reserveForm" novalidate>
+  <h2 id="reserveT">Reservar mesa</h2>
+  <p class="reserve-hint">Completá tus datos y se abre WhatsApp con tu reserva ya escrita. Queda confirmada cuando el local te responde.</p>
+  <label>Tu nombre<input id="rvName" autocomplete="name" maxlength="60" required></label>
+  <div class="reserve-row">
+    <label>Personas<select id="rvPeople"><option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option><option value="más de 12">Más de 12</option></select></label>
+    <label>Fecha<input id="rvDate" type="date" required></label>
+    <label>Hora<input id="rvTime" type="time" required></label>
+  </div>
+  <label>Aclaración (opcional)<textarea id="rvNote" maxlength="160" placeholder="Ej.: cumpleaños, silla de bebé, mesa afuera"></textarea></label>
+  <p class="reserve-err" id="rvErr" role="alert"></p>
+  <div class="reserve-actions"><button type="button" class="reserve-cancel" id="rvCancel">Cancelar</button><button type="submit" class="reserve-go">Enviar por WhatsApp</button></div>
+</form></dialog>

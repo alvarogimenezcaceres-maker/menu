@@ -138,6 +138,10 @@ export interface Restaurant {
    */
   plan?: ('free' | 'menu' | 'pedidos' | 'salon') | null;
   /**
+   * Muestra el botón «Reservar mesa» en el menú: el cliente completa fecha, hora y personas y se abre WhatsApp con la reserva escrita. Necesita el WhatsApp del local cargado.
+   */
+  reservationsWhatsapp?: boolean | null;
+  /**
    * El menú manda el pedido por WhatsApp, sin formulario, sin «Mostrar al mozo» y sin franja de Mesaverso. Para locales que no usan la Caja.
    */
   whatsappOnly?: boolean | null;
@@ -566,6 +570,7 @@ export interface PayloadMigration {
  */
 export interface RestaurantsSelect<T extends boolean = true> {
   plan?: T;
+  reservationsWhatsapp?: T;
   whatsappOnly?: T;
   publishApproved?: T;
   terms?:

@@ -35,6 +35,16 @@ export const Restaurants: CollectionConfig = {
       access: { create: ({ req }) => isPlatformAdmin(req.user), update: ({ req }) => isPlatformAdmin(req.user) },
     },
     {
+      name: 'reservationsWhatsapp',
+      type: 'checkbox',
+      label: 'Reservas por WhatsApp',
+      defaultValue: false,
+      admin: {
+        position: 'sidebar',
+        description: 'Muestra el botón «Reservar mesa» en el menú: el cliente completa fecha, hora y personas y se abre WhatsApp con la reserva escrita. Necesita el WhatsApp del local cargado.',
+      },
+    },
+    {
       name: 'whatsappOnly',
       type: 'checkbox',
       label: 'Pedidos solo por WhatsApp',

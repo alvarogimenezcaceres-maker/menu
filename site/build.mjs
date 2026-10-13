@@ -154,6 +154,8 @@ async function buildRestaurant(slug, templates) {
   const free = r.plan === "free";
   // a restaurant that only wants its orders on WhatsApp (no form, no waiter QR, no caja link) gets the basic ordering without the Mesaverso strip
   const basic = free || r.orderingMode === "whatsapp";
+  // «Reservar mesa»: the visitor fills a small form and WhatsApp opens with the booking written; the venue confirms there (no calendar, no server)
+  const reserve = r.reservations === true && !!whatsappDigits(r.whatsapp);
 
   const used = new Set([r.logo, r.hero].filter(Boolean));
   menu.categories.forEach(c => { if (c.cover) used.add(c.cover); c.dishes.forEach(d => d.photo && used.add(d.photo)); });
@@ -183,6 +185,7 @@ async function buildRestaurant(slug, templates) {
     PRIVACY_LINK: r.legal && r.legal.legalName && r.legal.ruc && r.legal.privacyContact ? ' · <a href="privacidad/">Privacidad</a>' : "",
     REVIEW_URL: jsonForScript(reviewUrl(r.googleReviewUrl)), ORDERING: jsonForScript(OrderCore.orderingConfig(r.ordering)),
     ORDER_CORE: basic ? ORDER_CORE : ORDER_CORE_PAID,
+    RESERVE_CSS: reserve ? templates.reserve.CSS : "", RESERVE_BTN: reserve ? templates.reserve.BTN : "", RESERVE_DIALOG: reserve ? templates.reserve.DIALOG : "", RESERVE_JS: reserve ? templates.reserve.JS : "",
     // plan Gratis only; "" elsewhere (see freeParts)
     ...Object.fromEntries(FREE_KEYS.map(k => [k, (free || (basic && !BRAND_KEYS.has(k))) ? freeParts(slug)[k] : ""])),
   }));
@@ -251,6 +254,7 @@ async function main() {
     caja: await readFile(path.join(ROOT, "site", "template", "caja.html"), "utf8"),
     privacidad: await readFile(path.join(ROOT, "site", "template", "privacidad.html"), "utf8"),
     mesaverso: JSON.parse(await readFile(path.join(ROOT, "site", "mesaverso.json"), "utf8")),
+    reserve: Object.fromEntries(await Promise.all([["CSS", "reserve.css"], ["BTN", "reserve-btn.html"], ["DIALOG", "reserve-dialog.html"], ["JS", "reserve.js"]].map(async ([k, f]) => [k, await readFile(path.join(ROOT, "site", "template", f), "utf8")]))),
   };
   const slugs = [];
   for (const e of await readdir(SEED, { withFileTypes: true })) {

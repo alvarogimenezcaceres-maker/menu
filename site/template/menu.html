@@ -374,7 +374,7 @@
   .open-chip { display: inline-flex; align-items: center; gap: 6px; font: 600 12.5px/1 var(--display); letter-spacing: .06em; text-transform: uppercase; padding: 7px 10px 6px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); }
   .open-chip i { width: 8px; height: 8px; border-radius: 50%; background: #7bc47f; }
   .open-chip.closed i { background: var(--err); }
-{{FREE_CSS}}</style>
+{{FREE_CSS}}{{RESERVE_CSS}}</style>
 </head>
 <body>
 <a class="skip" href="#menu">Ir al menú</a>
@@ -388,7 +388,7 @@
         <span id="tableLabel"></span>
       </span>
       <span class="open-chip" id="openChip" hidden><i aria-hidden="true"></i><span></span></span>
-      <button class="mesa-chip" id="mesaChip" type="button" hidden aria-haspopup="dialog"></button>
+      <button class="mesa-chip" id="mesaChip" type="button" hidden aria-haspopup="dialog"></button>{{RESERVE_BTN}}
     </div>
     {{HERO_IMG}}
   </header>
@@ -423,7 +423,7 @@
     <a class="review-btn" id="reviewFoot" hidden target="_blank" rel="noopener"></a>
     <span class="privacy">Sin cookies. Contamos visitas y clics de forma anónima para mejorar el menú.{{PRIVACY_LINK}}</span>{{BRAND_STRIP}}
   </footer>
-</main>
+</main>{{RESERVE_DIALOG}}
 
 <div class="selbar" id="selbar" hidden>
   <div class="info"><span class="t">Mi selección · <span id="selCount">0</span></span><span class="sum" id="selSum"></span></div>
@@ -1338,7 +1338,7 @@ function closeMesa() {
   setTimeout(() => { if (!mesaSheet.classList.contains("open")) { mesaSheet.hidden = true; if (sheet.hidden && selSheet.hidden) scrim.hidden = true; } }, 260);
 }
 $("#closeMesa").addEventListener("click", closeMesa);
-$("#mesaChip").addEventListener("click", openMesa);
+$("#mesaChip").addEventListener("click", openMesa);{{RESERVE_JS}}
 swipeToClose(mesaSheet, closeMesa);
 scrim.addEventListener("click", () => { if (!mesaSheet.hidden) closeMesa(); });
 addEventListener("keydown", e => { if (e.key === "Escape" && !mesaSheet.hidden) closeMesa(); });

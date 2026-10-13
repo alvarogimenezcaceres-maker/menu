@@ -8,6 +8,7 @@ import * as migration_20261005_230910_free_plan from './20261005_230910_free_pla
 import * as migration_20261005_235646_free_plan_review_request from './20261005_235646_free_plan_review_request';
 import * as migration_20261012_233406_owner_contact from './20261012_233406_owner_contact';
 import * as migration_20261013_011407_whatsapp_only from './20261013_011407_whatsapp_only';
+import * as migration_20261013_130504_reservations_whatsapp from './20261013_130504_reservations_whatsapp';
 
 export const migrations = [
   {
@@ -58,6 +59,11 @@ export const migrations = [
   {
     up: migration_20261013_011407_whatsapp_only.up,
     down: migration_20261013_011407_whatsapp_only.down,
-    name: '20261013_011407_whatsapp_only'
+    name: '20261013_011407_whatsapp_only',
+  },
+  {
+    up: migration_20261013_130504_reservations_whatsapp.up,
+    down: migration_20261013_130504_reservations_whatsapp.down,
+    name: '20261013_130504_reservations_whatsapp'
   },
 ];
