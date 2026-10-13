@@ -129,6 +129,25 @@ async function handleLead(request, env, url) {
   return done({ ok: true });
 }
 
+// Anonymous counters of what the page does (views, button clicks, form sent): event name, path, section and the referrer HOST only.
+// No cookie, no IP, no user agent, no identifier. Written to Analytics Engine (kept 3 months); 204 always so nothing can be probed.
+const EVENTS = new Set(["view", "wa_click", "cta_click", "lead_sent", "calc_used"]);
+async function handleEvent(request, env, url) {
+  const done = new Response(null, { status: 204, headers: { "cache-control": "no-store" } });
+  try {
+    if (!env.MV_EVENTS || !sameOrigin(request, url, env)) return done;
+    const text = await request.text();
+    if (text.length > 512) return done;
+    const d = JSON.parse(text);
+    if (!EVENTS.has(d.e)) return done;
+    const path = /^\/[a-z0-9\-\/]{0,90}$/.test(d.p || "") ? d.p : "/";
+    const sec = /^[a-z0-9\-]{0,24}$/.test(d.s || "") ? d.s : "";
+    const ref = /^[a-z0-9.\-]{0,60}$/.test(d.r || "") ? d.r : "";
+    env.MV_EVENTS.writeDataPoint({ indexes: [d.e], blobs: [d.e, path, sec, ref], doubles: [1] });
+  } catch { /* never fail a page because of a counter */ }
+  return done;
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -138,6 +157,7 @@ export default {
       if (url.pathname === "/google33b12de65a1839f2.html") return new Response("google-site-verification: google33b12de65a1839f2.html", { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=3600" } });
       return new Response("Not found", { status: 404, headers: { "content-type": "text/plain; charset=utf-8" } });
     }
+    if (url.pathname === "/api/e" && request.method === "POST") return handleEvent(request, env, url);
     if (url.pathname === "/api/lead") return handleLead(request, env, url);
     if (url.pathname.startsWith("/api/")) return json(404, { ok: false, error: "No encontrado." });
     return env.ASSETS.fetch(request);

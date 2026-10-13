@@ -101,7 +101,7 @@ form.addEventListener('submit',async ev=>{
   try{
     const r=await fetch(form.action,{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify(body)});
     const j=await r.json().catch(()=>({}));
-    if(r.ok&&j.ok){form.hidden=true;$('#okTitle').textContent='¡Listo, '+body.business+'! Ya te anotamos.';const ok=$('#okBox');ok.classList.add('show');ok.focus()}
+    if(r.ok&&j.ok){form.hidden=true;$('#okTitle').textContent='¡Listo, '+body.business+'! Ya te anotamos.';const ok=$('#okBox');ok.classList.add('show');ok.focus();document.dispatchEvent(new Event('mv-lead-sent'))}
     else if(r.status===422&&j.fields){
       if(j.fields.name)say('eName',j.fields.name);if(j.fields.business)say('eBusiness',j.fields.business);
       if(j.fields.phone)say('ePhone',j.fields.phone);if(j.fields.type)say('eType',j.fields.type);

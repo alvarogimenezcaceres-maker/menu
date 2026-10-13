@@ -108,7 +108,8 @@ const kindOf = (p) => p.type || "product";
 const REL = {
   "menu-digital-qr": ["guias/como-armar-menu-digital-qr-paraguay", "guias/carta-digital-o-pdf-con-qr", "guias/como-escribir-la-carta-del-restaurante"],
   "pedidos-por-whatsapp": ["guias/pedidos-por-whatsapp-restaurante"],
-  "delivery-propio": ["guias/comision-apps-delivery-canal-propio"],
+  "delivery-propio": ["guias/comision-apps-delivery-canal-propio", "calculadora-comision-delivery"],
+  "calculadora-comision-delivery": ["guias/comision-apps-delivery-canal-propio", "delivery-propio"],
   "cuenta-dividida": ["guias/dividir-la-cuenta-restaurante"],
   "plan-gratis": ["guias/como-armar-menu-digital-qr-paraguay"],
   "para-parrillas": ["guias/dividir-la-cuenta-restaurante"],
@@ -125,7 +126,7 @@ await write("index.html", render(await readFile(path.join(SRC2, "index.html"), "
 
 // Legal and small pages share the page shell. They are drafts until a licensed lawyer reviews them.
 const draft = PUBLISH ? "" : `<p class="draft"><b>Borrador para revisión.</b> Este texto lo redactó una asistente de IA y todavía no lo revisó un abogado matriculado. No publicar así.</p>`;
-const shell = (title, body, { legal = true } = {}) => `<!doctype html><html lang="es-PY" data-theme="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">{{HEAD_META}}<meta name="theme-color" content="#0e1014"><meta name="color-scheme" content="dark light"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="preload" href="/fonts/familjen-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="/v2.css?v={{HASH:v2.css}}"></head><body><nav class="nav" aria-label="Principal"><div class="wrap nav__in"><a class="mv-wordmark" href="/" aria-label="Mesaverso, volver al inicio"><svg viewBox="0 0 100 100" aria-hidden="true"><path class="m" d="M16 80V22L50 60L84 22V80"/><circle class="a" cx="16" cy="82" r="10"/><circle class="b" cx="84" cy="82" r="10"/></svg>ESAVERSO</a><div class="nav__end"><a class="btn btn--secondary btn--sm" href="/#cierre"><span class="l">Quiero mi menú</span><span class="s">Empezar</span></a><a class="btn btn--secondary btn--sm" href="/"><span class="l">Inicio</span><span class="s">Inicio</span></a></div></div></nav><main class="wrap legal"><h1>${title}</h1>${legal ? draft : ""}${body}</main><footer class="foot"><div class="wrap foot__in"><p class="brandline">Mesaverso</p><nav aria-label="Funciones y guías" class="foot__nav">{{PAGES_NAV}}</nav><nav aria-label="Legal"><a href="/#planes">Planes</a><a href="/terminos/">Términos</a><a href="/privacidad/">Privacidad</a><a href="/reclamos/">Reclamos y retiro de contenido</a></nav></div></footer><script>if(matchMedia('(prefers-color-scheme: light)').matches)document.documentElement.dataset.theme='light'</script></body></html>`;
+const shell = (title, body, { legal = true } = {}) => `<!doctype html><html lang="es-PY" data-theme="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">{{HEAD_META}}<meta name="theme-color" content="#0e1014"><meta name="color-scheme" content="dark light"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="preload" href="/fonts/familjen-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="/v2.css?v={{HASH:v2.css}}"></head><body><nav class="nav" aria-label="Principal"><div class="wrap nav__in"><a class="mv-wordmark" href="/" aria-label="Mesaverso, volver al inicio"><svg viewBox="0 0 100 100" aria-hidden="true"><path class="m" d="M16 80V22L50 60L84 22V80"/><circle class="a" cx="16" cy="82" r="10"/><circle class="b" cx="84" cy="82" r="10"/></svg>ESAVERSO</a><div class="nav__end"><a class="btn btn--secondary btn--sm" href="/#cierre"><span class="l">Quiero mi menú</span><span class="s">Empezar</span></a><a class="btn btn--secondary btn--sm" href="/"><span class="l">Inicio</span><span class="s">Inicio</span></a></div></div></nav><main class="wrap legal"><h1>${title}</h1>${legal ? draft : ""}${body}</main><footer class="foot"><div class="wrap foot__in"><p class="brandline">Mesaverso</p><nav aria-label="Funciones y guías" class="foot__nav">{{PAGES_NAV}}</nav><nav aria-label="Legal"><a href="/#planes">Planes</a><a href="/terminos/">Términos</a><a href="/privacidad/">Privacidad</a><a href="/reclamos/">Reclamos y retiro de contenido</a></nav></div></footer><script src="/m/ev.js?v={{HASH:m/ev.js}}" defer></script><script>if(matchMedia('(prefers-color-scheme: light)').matches)document.documentElement.dataset.theme='light'</script></body></html>`;
 const pages = [
   ["privacidad", "Aviso de privacidad", "Aviso de privacidad de Mesaverso: cómo usamos y protegemos los datos que dejás en esta página, y cómo ejercer tus derechos.", "privacidad.body.html"],
   ["terminos", "Términos del sitio", "Términos del sitio de Mesaverso: condiciones de uso de esta página, de sus herramientas de vista previa y del formulario de contacto.", "terminos.body.html"],
@@ -137,6 +138,28 @@ for (const [slug, title, description, file] of pages) {
   const intro = "";
   await write(`${slug}/index.html`, render(shell(esc(title), intro + body), { title: `${title} | Mesaverso`, description, pathname: `/${slug}/` }));
 }
+// Real screenshots (fictitious «Local de ejemplo» data) shown inside the product, venue and entity pages: { file, w, h, alt, caption }
+const SHOTS = {
+  menuCelular: { file: "menu-celular", w: 390, h: 844, mobile: true, alt: "Menú digital de un local de ejemplo en un celular: categorías, platos con precio en guaraníes y buscador", caption: "El menú en el celular del cliente (local de ejemplo, datos ficticios)." },
+  menuPedido: { file: "menu-pedido", w: 390, h: 844, mobile: true, alt: "Menú digital en un celular con platos seleccionados y el total del pedido listo para enviar por WhatsApp", caption: "El cliente arma su selección y ve el total antes de pedir (ejemplo con datos ficticios)." },
+  cocina: { file: "cocina", w: 1000, h: 695, alt: "Pantalla de cocina de Mesaverso Caja con pedidos de mesa, retiro y delivery y un botón Listo en cada uno", caption: "La pantalla de cocina de Mesaverso Caja, en etapa de prueba (ejemplo con datos ficticios)." },
+  cocinaWa: { file: "cocina-whatsapp", w: 1000, h: 695, alt: "Pantalla de cocina con un pedido que llegó por WhatsApp, identificado con un código MV, productos y nota", caption: "Un pedido de WhatsApp ya aceptado, en la cocina (ejemplo con datos ficticios)." },
+  mesas: { file: "mesas", w: 1000, h: 695, alt: "Mapa de mesas de Mesaverso Caja con mesas libres y mesas con cuenta abierta y su total", caption: "El mapa de mesas con las cuentas abiertas (ejemplo con datos ficticios)." },
+  delivery: { file: "pedido-delivery", w: 1000, h: 695, alt: "Detalle de un pedido de delivery de WhatsApp en Mesaverso Caja con cliente, dirección, productos y total", caption: "El detalle de un pedido por WhatsApp, con productos y total armados (ejemplo con datos ficticios)." },
+};
+const FIGS = {
+  "menu-digital-qr": ["menuCelular", "menuPedido"],
+  "plan-gratis": ["menuPedido"],
+  "pedidos-por-whatsapp": ["cocinaWa", "delivery"],
+  "delivery-propio": ["delivery"],
+  "cuenta-dividida": ["mesas"],
+  "que-es-mesaverso": ["cocina"],
+  "para-parrillas": ["menuCelular"],
+  "para-cafeterias": ["menuPedido"],
+  "para-lomiterias": ["cocinaWa"],
+  "para-hamburgueserias-y-pizzerias": ["cocina"],
+};
+const shotHtml = (k) => { const x = SHOTS[k]; return `<figure class="shot${x.mobile ? " shot--m" : ""}"><img src="/assets/img/${x.file}.webp" width="${x.w}" height="${x.h}" loading="lazy" decoding="async" alt="${esc(x.alt)}"><figcaption>${esc(x.caption)}</figcaption></figure>`; };
 // Product pages (src-v2/pages/*.json): one search intention each, written by Tesa, claims reviewed by Joja.
 for (const pg of productPages) {
   const kind = kindOf(pg);
@@ -145,7 +168,7 @@ for (const pg of productPages) {
   const related = [...new Set([...pinned, ...others.filter((o) => kindOf(o) === kind), ...others.filter((o) => kindOf(o) !== kind)])].slice(0, 6);
   const rel = related.map((o) => `<li><a href="/${o.slug}/">${esc(o.h1)}</a></li>`).join("");
   const dated = kind === "guide" && pg.modified ? `<p class="fine">Actualizado el ${dmy(pg.modified)} · Equipo Mesaverso</p>` : "";
-  const body = `<p class="lead">${esc(pg.lead)}</p>${dated}` + pg.sections.map((s) => `<h2>${esc(s.h2)}</h2>${s.html}`).join("") +
+  const body = `<p class="lead">${esc(pg.lead)}</p>${dated}` + pg.sections.map((s, i) => `<h2>${esc(s.h2)}</h2>${s.html}` + ((FIGS[pg.slug] || []).filter((_, j) => i === (j === 0 ? 0 : 2)).map(shotHtml).join(""))).join("") +
     `<h2>Preguntas frecuentes</h2><div class="faq faq--page">${pg.faq.map(([q, a]) => `<details><summary>${esc(q)}</summary><div>${a}</div></details>`).join("")}</div>` +
     `<p class="page__cta"><a class="btn btn--primary" href="/#cierre">${esc(pg.cta)}</a> <a class="btn btn--secondary" href="/#circuito">Ver el circuito completo</a></p>` +
     `<h2>Seguí leyendo</h2><ul>${rel}</ul>`;
@@ -154,6 +177,7 @@ for (const pg of productPages) {
     { "@type": "FAQPage", mainEntity: pg.faq.map(([q, a]) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: plain(a) } })) },
     { "@type": "BreadcrumbList", itemListElement: crumbs.map((c, i) => ({ "@type": "ListItem", position: i + 1, name: c.name, item: abs(c.path) })) },
   ];
+  for (const k of FIGS[pg.slug] || []) extra.push({ "@type": "ImageObject", contentUrl: abs(`/assets/img/${SHOTS[k].file}.webp`), url: abs(`/assets/img/${SHOTS[k].file}.webp`), width: SHOTS[k].w, height: SHOTS[k].h, caption: SHOTS[k].caption, description: SHOTS[k].alt, inLanguage: "es-PY" });
   if (kind !== "guide") extra.push({ "@type": "Service", name: pg.h1, serviceType: "Menú digital y pedidos para locales gastronómicos", description: pg.description, provider: { "@id": `${SITE_URL}/#organization` }, areaServed: { "@type": "Country", name: "Paraguay" }, audience: { "@type": "BusinessAudience", audienceType: "Restaurantes, bares, lomiterías y cafeterías" }, url: abs(`/${pg.slug}/`) });
   if (kind === "guide") extra.push({ "@type": "Article", headline: pg.h1, description: pg.description, datePublished: pg.published, dateModified: pg.modified || pg.published, inLanguage: "es-PY",
     author: { "@type": "Organization", name: "Equipo Mesaverso" }, publisher: { "@type": "Organization", name: "Mesaverso", url: abs("/") }, mainEntityOfPage: abs(`/${pg.slug}/`), image: abs("/assets/og-v2.png") });

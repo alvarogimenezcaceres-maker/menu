@@ -1,0 +1,57 @@
+{
+  "slug": "calculadora-comision-delivery",
+  "published": "2026-10-13",
+  "modified": "2026-10-13",
+  "title": "Calculadora de comisión de apps de delivery en guaraníes",
+  "description": "Calculá en guaraníes cuánto pagás de comisión a las apps de delivery y cuánto cambiaría si parte de tus pedidos llegara por tu link o QR (ejemplo).",
+  "h1": "Calculadora de comisión de apps de delivery",
+  "lead": "Es una simulación con números de ejemplo: cambiá los valores por los tuyos, el porcentaje de comisión de tu contrato y la parte de pedidos que podría llegar por tu propio link o QR. La cuenta se hace en tu celular y no se guarda nada.",
+  "sections": [
+    {
+      "h2": "Calculá tu comisión mensual",
+      "html": "<p><strong>Ejemplo ilustrativo:</strong> los valores que ves son inventados y el porcentaje no es la tarifa de ninguna empresa. El resultado es una estimación, no una promesa de ahorro.</p><form class=\"calc\" id=\"calcForm\" data-plan=\"{{RAW:planMonthly}}\" novalidate><div class=\"calc__f\"><label for=\"cSales\">Pedidos por mes en apps (₲, ejemplo)</label><input id=\"cSales\" class=\"in\" inputmode=\"numeric\" autocomplete=\"off\" value=\"5.000.000\"></div><div class=\"calc__f\"><label for=\"cPct\">Comisión (%), poné la de tu contrato (ejemplo)</label><input id=\"cPct\" class=\"in\" inputmode=\"decimal\" autocomplete=\"off\" value=\"10\"></div><div class=\"calc__f\"><label for=\"cOwn\">Parte que podría llegar por tu link o QR (%, ejemplo)</label><input id=\"cOwn\" class=\"in\" inputmode=\"decimal\" autocomplete=\"off\" value=\"20\"></div></form><div class=\"calc__out\" id=\"calcOut\" aria-live=\"polite\"></div><p class=\"fine\"><strong>Aviso:</strong> es un ejemplo, no es la tarifa de ninguna empresa. Cada app tiene sus propias condiciones y el porcentaje que pase por tu link o QR depende de tus clientes. El resultado es una estimación y no garantiza ningún ahorro.</p><script src=\"/m/calcpage.js?v={{HASH:m/calcpage.js}}\" defer></script>"
+    },
+    {
+      "h2": "Cómo leer el resultado",
+      "html": "<p>La calculadora hace tres cuentas simples. Primero multiplica lo que vendés por el porcentaje que escribiste: es la comisión mensual con ese porcentaje. Después calcula cuánto de esa comisión no se generaría si una parte de los pedidos llegara por tu propio link o QR, donde hay <strong>0 % de comisión en los pedidos que llegan por tu link o QR</strong>. Por último resta el plan mensual de Mesaverso (Gs. 180.000), para ver una diferencia estimada.</p><p>Si el resultado es negativo, no pasa nada: significa que, con esos números de ejemplo, el plan costaría más que la comisión que dejarías de generar. En ese caso conviene empezar con el <a href=\"/plan-gratis/\">plan Gratis</a> o con el menú, y subir el porcentaje de pedidos propios con el tiempo.</p>"
+    },
+    {
+      "h2": "Qué pasa con los pedidos que ya recibís por una app",
+      "html": "<p>Mesaverso no reemplaza a las apps de delivery: te da un canal propio para los clientes que ya te conocen. Un cliente que ya pidió una vez puede volver a pedir desde tu link, tu QR o tu WhatsApp, sin pasar por una plataforma. Esa parte es la que la calculadora te deja mover.</p><ul><li>Poné el QR y el link en tus mesas, tus bolsas, tus redes y tu estado de WhatsApp.</li><li>Ofrecé el pedido directo a quienes ya te conocen, y no uses datos de clientes obtenidos a través de una app para contactarlos sin su consentimiento.</li><li>Revisá las condiciones de tu contrato con la app antes de hacer promociones que mencionen a la plataforma.</li></ul><p>Para el paso a paso, mirá la guía <a href=\"/guias/comision-apps-delivery-canal-propio/\">cuánto te cuesta una app de delivery y cómo armar tu canal propio</a> y la página de <a href=\"/delivery-propio/\">delivery propio</a>.</p>"
+    },
+    {
+      "h2": "Lo que la calculadora no cuenta",
+      "html": "<p>Para que el resultado sea honesto, tené en cuenta lo que no incluye:</p><ul><li><strong>Otros cargos de las apps</strong>, como costos de envío compartido, promociones o publicidad dentro de la plataforma.</li><li><strong>Los medios de pago:</strong> si cobrás con tarjeta, banco o una app de terceros, esos medios pueden tener sus propias comisiones, igual que antes.</li><li><strong>La implementación</strong> de Mesaverso (Gs. 300.000, pago único; en el plan anual está incluida). Está en la <a href=\"/#planes\">sección de planes</a>.</li><li><strong>El tiempo que lleva</strong> acostumbrar a tus clientes a pedir por tu canal.</li></ul><p>Mesaverso Caja, que ordena pedidos de mesa, cocina y cuenta, está en etapa de prueba y no emite factura ni cobra pagos online. Seguís facturando y cobrando como siempre.</p>"
+    }
+  ],
+  "faq": [
+    [
+      "¿Qué porcentaje cobran las apps de delivery?",
+      "Depende de cada plataforma y de cada contrato, y puede cambiar; no publicamos tarifas de ninguna empresa. Por eso la calculadora usa un porcentaje de ejemplo que podés cambiar por el de tu contrato."
+    ],
+    [
+      "¿La calculadora guarda mis números?",
+      "No. La cuenta se hace en tu celular y no se envía ni se guarda nada."
+    ],
+    [
+      "¿Mesaverso cobra comisión por los pedidos?",
+      "No. Hay 0 % de comisión en los pedidos que llegan por tu link o QR. Pagás un plan fijo, o usás el plan Gratis con sus condiciones; los medios de cobro que uses pueden tener sus propias comisiones."
+    ],
+    [
+      "¿Tengo que dejar las apps de delivery?",
+      "No. Mesaverso te da un canal propio para los clientes que ya te conocen. Podés seguir en las apps."
+    ],
+    [
+      "¿Cuánto cuesta el plan mensual?",
+      "Gs. 180.000 por mes, más una implementación de Gs. 300.000 que se paga una vez; el plan anual cuesta Gs. 1.800.000 e incluye la implementación. Más detalles en la sección de planes. La calculadora resta el valor mensual para estimar la diferencia."
+    ]
+  ],
+  "cta": "Ver planes y precios",
+  "revisar": [
+    "Ejemplo y aviso «no es la tarifa de ninguna empresa» ahora visibles arriba y abajo del formulario; que el abogado confirme que alcanzan frente a publicidad comparativa (Ley 1334) y defensa de la competencia.",
+    "Consejo de revisar el contrato con la app antes de promociones, y de no usar datos de clientes obtenidos vía una app sin consentimiento (Ley 7593/2025): confirmar redacción.",
+    "0 % de comisión siempre con la fórmula completa; la aclaración de que plan y medios de cobro tienen costo está en la página.",
+    "PENDIENTE FUERA DE ESTE JSON (m/calcpage.js): sus filas dicen «Comisión que pagás hoy» y «Diferencia a tu favor»; deberían decir «con ese porcentaje de ejemplo» y «Diferencia estimada» para no leerse como dato real ni promesa de ahorro.",
+    "Valores por defecto del formulario (5.000.000, 10 %, 20 %) no se tocaron; quedan rotulados como ejemplo."
+  ]
+}

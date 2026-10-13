@@ -20,5 +20,6 @@
   "kv_namespaces": [
     { "binding": "LEADS", "id": "70aea932f1d24c649e1e70273901a996" }
   ],
+  "analytics_engine_datasets": [{ "binding": "MV_EVENTS", "dataset": "mesaverso_landing_events" }],
   "observability": { "enabled": true }
 }

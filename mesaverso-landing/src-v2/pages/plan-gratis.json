@@ -7,23 +7,39 @@
  "sections": [
   {
    "h2": "Qué incluye el plan Gratis «Vidriera»",
-   "html": "<ul><li>Menú con QR y link propio.</li><li>Hasta 11 productos, con 1 foto por producto.</li><li>Buscador para encontrar platos.</li><li>Marca de «agotado» cuando algo se termina.</li><li>Pedido por WhatsApp básico: llega con los productos y el total.</li></ul><p>Ideal para un local chico que quiere salir de la carta en PDF: una cafetería con el café con leche, la medialuna y el tostado, o una lomitería con lo mejor de su carta.</p>"
+   "html": "<ul><li>Menú con QR y link propio.</li><li>Hasta 11 productos, con fotos.</li><li>Buscador para encontrar platos.</li><li>Pedido por WhatsApp básico: llega con los productos y el total.</li></ul><p>Ideal para un local chico que quiere salir de la carta en PDF: una cafetería con el café con leche, la medialuna y el tostado, o una lomitería con lo mejor de su carta.</p>"
   },
   {
    "h2": "Qué no incluye",
-   "html": "<ul><li>Platos en 3D.</li><li>Mesaverso Caja.</li><li>QR por mesa.</li><li>Checkout o pedido con delivery y dirección.</li><li>Soporte personal.</li></ul><p>El menú lleva siempre la marca «Hecho con Mesaverso» con un enlace a Mesaverso, y no se puede quitar en este plan. Si más adelante querés algo de esto, podés pasar a un plan pago.</p>"
+   "html": "<ul><li>Platos en 3D.</li><li>Mesaverso Caja (incluida la marca de «agotado», que se maneja desde la Caja).</li><li>Pedido con delivery y dirección.</li></ul><p>El menú lleva siempre la marca «Hecho con Mesaverso» con un enlace a Mesaverso, y no se puede quitar en este plan. Si más adelante querés algo de esto, podés pasar a un plan pago.</p>"
   },
   {
    "h2": "Condiciones del plan",
-   "html": "<p>Con el plan Gratis usamos los <b>datos de tu negocio</b> (cómo se usa tu menú, tus platos y precios publicados) para mejorar el servicio y para estadísticas anónimas que juntan a varios locales y no identifican al tuyo; esas estadísticas anónimas se conservan aunque te des de baja. No usamos para nuestros propios fines los datos personales de tus clientes (nombre, dirección, teléfono) ni los vendemos.</p><p><b>Tu menú es público:</b> cualquiera con el link puede verlo y puede aparecer en buscadores como Google. Al darte de baja deja de publicarse en 7 días. Podemos mostrarlo en nuestro buscador de menús cuando exista.</p><p>Los términos completos del plan Gratis (versión G-1) se muestran antes de crear la cuenta; el aviso de privacidad del sitio está en <a href=\"/privacidad/\">Privacidad</a>.</p>"
+   "html": "<p>En resumen, con el plan Gratis usamos los <b>datos de tu negocio</b> (cómo se usa tu menú, tus platos y precios publicados) para mejorar el servicio y para estadísticas anónimas que juntan a varios locales y no identifican al tuyo; esas estadísticas anónimas se conservan aunque te des de baja. No usamos para nuestros propios fines los datos personales de tus clientes (nombre, dirección, teléfono) ni los vendemos.</p><p><b>Tu menú es público:</b> cualquiera con el link puede verlo y puede aparecer en buscadores como Google. Al darte de baja deja de publicarse en 7 días. Podemos mostrarlo en nuestro buscador de menús cuando exista.</p><p>Los <a href=\"/terminos-gratis/\">términos completos del plan Gratis</a> (versión G-1) se muestran antes de crear la cuenta y prevalecen sobre este resumen; el aviso de privacidad del sitio está en <a href=\"/privacidad/\">Privacidad</a>.</p>"
   },
   {
    "h2": "Cómo se empieza",
-   "html": "<ol><li>Nos escribís por WhatsApp o dejás tus datos en el formulario.</li><li>Cargás tu carta desde el panel: para publicar necesitás al menos 8 productos con precio. Vos sos responsable de que los precios, descripciones y fotos que cargues sean correctos y tuyos (o que tengas permiso para usarlos).</li><li>Revisamos tu primera publicación antes de que salga, y podemos pedirte cambios o no publicarla si el contenido no es tuyo, es engañoso o viola los términos.</li></ol><p></p>"
+   "html": "<ol><li>Nos escribís por WhatsApp desde cualquiera de los botones del sitio.</li><li>Cargás tu carta desde el panel: para publicar necesitás al menos 8 productos con precio. Vos sos responsable de que los precios, descripciones y fotos que cargues sean correctos y tuyos (o que tengas permiso para usarlos).</li><li>Revisamos tu primera publicación antes de que salga, y podemos pedirte cambios o no publicarla si el contenido no es tuyo, es engañoso o viola los términos.</li></ol>"
+  },
+  {
+   "h2": "Un ejemplo de menú de 11 productos (cafetería ficticia)",
+   "html": "<p>Imaginá una cafetería inventada que publica lo esencial. Los precios son de <em>ejemplo</em>:</p><ul><li>Café con leche, Gs. 12.000 (ejemplo).</li><li>Medialuna, Gs. 6.000 (ejemplo).</li><li>Tostado de jamón y queso, Gs. 20.000 (ejemplo).</li><li>Jugo de naranja, Gs. 14.000 (ejemplo).</li><li>Tereré en jarra, Gs. 10.000 (ejemplo).</li></ul><p>Con cinco productos todavía no alcanza: para publicar se necesitan al menos 8 con precio. Con 11 llenás el tope del plan. Ese límite te lleva a elegir qué mostrar, y en una carta chica eso puede ayudar a destacar lo principal.</p>"
+  },
+  {
+   "h2": "Errores comunes al empezar con el plan Gratis",
+   "html": "<ul><li><strong>Querer subir toda la carta.</strong> El tope es de 11 productos; elegí los que más salen o los que querés destacar.</li><li><strong>Cargar fotos ajenas.</strong> Tienen que ser tuyas o con permiso.</li><li><strong>Esperar delivery con dirección o Mesaverso Caja.</strong> El plan Gratis lleva pedido básico, solo productos y total.</li><li><strong>No leer las condiciones.</strong> Mirá los <a href=\"/terminos-gratis/\">términos del plan Gratis</a> antes de crear la cuenta.</li><li><strong>Olvidarse de actualizar precios.</strong> Es tu menú y es público: un precio viejo se ve igual que uno nuevo.</li></ul>"
+  },
+  {
+   "h2": "Plan Gratis frente a un PDF, un álbum de fotos o la carta en papel",
+   "html": "<p>Un PDF o un álbum de fotos no te cuesta nada, pero no tiene buscador, no arma el pedido y se ve mal en el celular. El papel tampoco se puede compartir por WhatsApp. El plan Gratis suma link, QR, buscador y pedido básico por WhatsApp.</p><p>A cambio, hay condiciones: tope de productos, la marca «Hecho con Mesaverso» y el uso de datos del negocio. No es un plan para todos, y lo decimos con claridad. Si querés saber cómo armar un menú digital paso a paso, la guía <a href=\"/guias/como-armar-menu-digital-qr-paraguay/\">cómo armar un menú digital con QR</a> te muestra el camino, y <a href=\"/guias/carta-digital-o-pdf-con-qr/\">carta digital o PDF con QR</a> compara las opciones. Esta página te dice qué incluye exactamente el plan Gratis.</p>"
+  },
+  {
+   "h2": "A quién le sirve y a quién no",
+   "html": "<p>Le sirve a un local chico, a un emprendimiento que recién arranca, a una cafetería o lomitería que quiere salir del PDF, o a quien quiere probar antes de pagar. Para conocer el menú completo, leé <a href=\"/menu-digital-qr/\">menú digital con QR</a>.</p><p>No te sirve si tenés más de 11 productos que querés mostrar, si necesitás delivery con dirección, Mesaverso Caja, 3D o quitar la marca. Para eso están los <a href=\"/#planes\">planes pagos</a>. Hay 0 % de comisión en los pedidos que llegan por tu link o QR.</p>"
   },
   {
    "h2": "Si después querés más",
-   "html": "<p>El plan mensual cuesta Gs. 180.000 por mes (mínimo 6 meses, más implementación de Gs. 300.000). El anual cuesta Gs. 1.800.000 pagado por adelantado e incluye la implementación. En los planes pagos armamos tu menú nosotros. Y los platos en 3D se suman con el Pack 3D, por plato y aparte del plan.</p>"
+   "html": "<p>El plan mensual cuesta Gs. 180.000 por mes, más una implementación de Gs. 300.000 que se paga una vez. El anual cuesta Gs. 1.800.000 e incluye la implementación. En los planes pagos te ayudamos a armar tu menú. Y los platos en 3D se suman con el Pack 3D: Gs. 120.000 por plato, aparte del plan.</p>"
   }
  ],
  "faq": [
@@ -37,15 +53,30 @@
   ],
   [
    "¿Puedo pasar a un plan pago más adelante?",
-   "<p>Sí. Si querés sumar 3D, Mesaverso Caja, QR por mesa o más productos, podés pasar a un plan pago.</p>"
+   "<p>Sí. Si querés sumar 3D, Mesaverso Caja o más productos, podés consultar por un plan pago.</p>"
+  ],
+  [
+   "¿Cuántos productos mínimos necesito para publicar?",
+   "<p>Al menos 8 con precio, y hasta 11 como máximo en el plan Gratis.</p>"
+  ],
+  [
+   "¿Puedo sacar la marca «Hecho con Mesaverso»?",
+   "<p>No en el plan Gratis: es parte de las condiciones del plan.</p>"
+  ],
+  [
+   "¿El pedido por WhatsApp incluye dirección y delivery?",
+   "<p>No. En el plan Gratis el pedido es básico y lleva los productos y el total. El pedido con delivery y dirección es de los planes pagos.</p>"
   ]
  ],
  "cta": "Solicitar mi menú gratis",
  "revisar": [
-  "Revisión legal de Joja pendiente sobre la cláusula de datos y directorio (nota en faq.mjs).",
-  "«Se empieza escribiendo por WhatsApp o formulario» y «cargás desde el panel»: flujo de alta del plan Gratis no verificado en código.",
-  "«Podés pasar a un plan pago»: asumido, no hay detalle del cambio de plan.",
-  "«No tiene costo»: confirmado en el brief; no hay otro cobro verificado.",
-  "Enlace /privacidad/ existe en faq.mjs."
+  "Cláusula de datos y directorio del plan Gratis: la página solo resume /terminos-gratis/ y dice que prevalece el texto completo; el abogado debe verificar que el resumen coincida (estadísticas anónimas que se conservan tras la baja, baja en 7 días, directorio futuro, rol de responsable/encargado de datos de clientes, Ley 7593/2025).",
+  "Quité «1 foto por producto», «QR por mesa», «soporte personal» y la marca de «agotado» del Gratis (no confirmados; «agotado» se maneja desde la Caja).",
+  "Quité el formulario: el contacto es solo por WhatsApp; confirmar el flujo real de alta y de carga desde el panel.",
+  "Quité «mínimo 6 meses»: no está entre los datos confirmados de la oferta.",
+  "«Podés consultar por un plan pago»: el cambio de plan no está detallado en código.",
+  "0 % de comisión mencionado junto a planes pagos; confirmar si también vale para el Gratis.",
+  "Ejemplo de cafetería ficticia con precios rotulados «ejemplo».",
+  "Revisión de primera publicación y facultad de no publicar contenido ajeno o engañoso: que el abogado confirme que está en los términos."
  ]
 }

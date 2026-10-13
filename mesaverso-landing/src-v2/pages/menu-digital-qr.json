@@ -3,7 +3,7 @@
  "title": "Menú digital QR para restaurantes en Paraguay | Mesaverso",
  "description": "Menú digital con QR para restaurantes, bares, lomiterías y cafeterías de Paraguay: fotos, buscador y pedido por WhatsApp. Sin app que instalar.",
  "h1": "Menú digital con QR para tu local en Paraguay",
- "lead": "Tus clientes escanean el QR con la cámara del celular y ven tu carta con fotos, precios y buscador. Sin bajar ninguna aplicación y con tu carta siempre al día.",
+ "lead": "Tus clientes escanean el QR con la cámara del celular y ven tu carta con fotos, precios y buscador. Sin bajar ninguna aplicación, y con una carta que actualizás vos cuando cambia algo.",
  "sections": [
   {
    "h2": "Qué es un menú digital con QR",
@@ -11,19 +11,39 @@
   },
   {
    "h2": "Qué ve el cliente cuando abre tu carta",
-   "html": "<p>Una lista de platos pensada para el celular, con:</p><ul><li>Foto y precio de cada plato, por ejemplo el lomito árabe, la mandioca frita o el chipá guasu.</li><li>Un buscador para encontrar «tereré» o «cerveza» sin recorrer toda la carta.</li><li>La marca de «agotado» cuando algo se terminó, para que nadie pida lo que no hay.</li><li>Un botón para armar el pedido y enviarlo por WhatsApp.</li></ul><p>Si querés, tus platos también pueden verse en 3D, con «Ver en tu mesa» en celulares compatibles. El 3D es el Pack 3D: se paga por plato, aparte del plan.</p>"
+   "html": "<p>Una lista de platos pensada para el celular, con:</p><ul><li>Foto y precio de cada plato, por ejemplo el lomito árabe, la mandioca frita o el chipá guasu.</li><li>Un buscador para encontrar «tereré» o «cerveza» sin recorrer toda la carta.</li><li>La marca de «agotado» cuando algo se terminó (se marca desde Mesaverso Caja), para ayudar a que no se pida lo que no hay.</li><li>Un botón para armar el pedido y enviarlo por WhatsApp.</li></ul><p>Si querés, tus platos también pueden verse en 3D, con «Ver en tu mesa» en celulares compatibles. El 3D es el Pack 3D: se paga por plato, aparte del plan.</p>"
   },
   {
    "h2": "Un QR para el salón y un link para todo lo demás",
-   "html": "<p>Con el QR pegado en la mesa, el cliente abre el menú sin esperar la carta impresa. Con el link, el mismo menú sirve en tu perfil de Instagram, en tu estado de WhatsApp o en tu ficha de Google.</p><p>Cuando cambia un precio o se termina un plato, lo actualizás vos y el cambio se ve en el menú cuando tocás Publicar. No hay que reimprimir nada.</p>"
+   "html": "<p>Con el QR del local pegado en la mesa o en el mostrador, el cliente puede abrir el menú sin esperar la carta impresa. Con el link, el mismo menú sirve en tu perfil de Instagram, en tu estado de WhatsApp o en tu ficha de Google.</p><p>Cuando cambia un precio o se termina un plato, lo actualizás vos y el cambio se ve en el menú cuando publicás. Para esos cambios no hace falta reimprimir.</p>"
   },
   {
    "h2": "Quién carga tu carta y cuánto cuesta empezar",
-   "html": "<p>En los planes pagos, armamos tu menú con tus platos, precios y fotos: nos mandás tu carta en PDF o en fotos. En el plan Gratis la cargás vos desde el panel, hasta 11 productos.</p><p>El plan mensual cuesta Gs. 180.000 por mes, con un mínimo de 6 meses y una implementación de Gs. 300.000. El anual cuesta Gs. 1.800.000 pagado por adelantado e incluye la implementación. Hay garantía de 30 días con las condiciones que figuran en la sección de planes.</p>"
+   "html": "<p>En los planes pagos te ayudamos a armar tu menú con tus platos, precios y fotos: nos mandás tu carta en PDF o en fotos. En el plan Gratis la cargás vos desde el panel, hasta 11 productos.</p><p>El plan mensual cuesta Gs. 180.000 por mes, más una implementación de Gs. 300.000 que se paga una sola vez. El anual cuesta Gs. 1.800.000 e incluye la implementación. El Pack 3D es aparte: Gs. 120.000 por plato. Las condiciones completas están en la sección <a href=\"/#planes\">planes</a>.</p>"
+  },
+  {
+   "h2": "Un ejemplo de carta: una lomitería de ejemplo (local ficticio)",
+   "html": "<p>Para que se entienda cómo queda, imaginá una lomitería inventada. Los precios son de <em>ejemplo</em>, no una recomendación:</p><ul><li>Lomito árabe, Gs. 38.000 (ejemplo), con foto y descripción corta.</li><li>Chipá guasu, Gs. 15.000 (ejemplo), en una categoría aparte, «Para compartir».</li><li>Mandioca frita, Gs. 18.000 (ejemplo), con opción de tamaño: porción chica o grande.</li><li>Hamburguesa completa, Gs. 32.000 (ejemplo), con extras que se suman al pedido, como huevo o panceta, y una elección obligatoria: punto de la carne.</li></ul><p>Cada plato admite una nota en la línea del pedido, por ejemplo «sin cebolla». El cliente la escribe en el momento y el local la lee junto con el plato, sin tener que interpretar un audio.</p>"
+  },
+  {
+   "h2": "El flujo real, de la mesa al pedido",
+   "html": "<ol><li>El cliente escanea el QR con la cámara o toca tu link.</li><li>Recorre las categorías o busca un plato por nombre.</li><li>Elige tamaño, extras y lo obligatorio de cada plato, y suma al pedido.</li><li>Revisa el total y lo envía por WhatsApp; si estás en el salón, también puede mostrárselo al mozo con el QR del pedido.</li></ol><p>Todo ese recorrido es en el navegador del celular. Para ver cómo sigue el pedido del lado del local, mirá <a href=\"/pedidos-por-whatsapp/\">pedidos por WhatsApp</a>.</p>"
+  },
+  {
+   "h2": "Errores comunes al pasar la carta al celular",
+   "html": "<ul><li><strong>Subir un PDF escaneado como si fuera un menú.</strong> Hay que acercar, mover el dedo en todas direcciones y no se puede buscar nada.</li><li><strong>Fotos oscuras o pesadas.</strong> En datos móviles lentos tardan en cargar y el cliente se va.</li><li><strong>Nombres de plato que solo entiende la cocina.</strong> Escribí lo que el cliente diría en voz alta; la guía <a href=\"/guias/como-escribir-la-carta-del-restaurante/\">cómo escribir la carta</a> tiene ejemplos.</li><li><strong>Olvidarse de marcar lo agotado.</strong> Si el menú dice que hay y no hay, el cliente puede perder la confianza.</li><li><strong>Poner el QR chico o en una esquina.</strong> Probalo vos mismo con tu celular antes de imprimirlo.</li></ul>"
+  },
+  {
+   "h2": "Menú digital frente a PDF, WhatsApp suelto o papel",
+   "html": "<p>La carta en papel es cómoda, pero cambiar un precio significa reimprimir. El PDF se actualiza, aunque se ve mal en pantallas chicas y nadie puede buscar «tereré» dentro. Mandar la lista por WhatsApp funciona para pocos clientes, pero cada uno recibe una versión distinta y los precios viejos circulan.</p><p>Un menú digital con QR tiene una sola versión, la que publicaste, con foto, buscador y pedido armado. No es mejor en todo: si tu local tiene diez platos y casi nadie pide por celular, el papel puede alcanzar. La comparación completa, con pros y contras, está en la guía <a href=\"/guias/carta-digital-o-pdf-con-qr/\">carta digital o PDF con QR</a>, y los pasos para armarla en <a href=\"/guias/como-armar-menu-digital-qr-paraguay/\">cómo armar un menú digital con QR</a>. Esta página sirve para decidir si lo querés con Mesaverso; las guías, para decidir cómo hacerlo.</p>"
+  },
+  {
+   "h2": "A quién le sirve y a quién no",
+   "html": "<p>Le sirve a un local que cambia precios o platos seguido, que recibe consultas por WhatsApp o Instagram, o que quiere mostrar fotos. Para empezar sin pagar plan, mirá el <a href=\"/plan-gratis/\">plan Gratis</a>.</p><p>Probablemente no te sirva si tu carta es fija, sin fotos y tu clientela no usa el celular en la mesa. Tampoco es una herramienta de facturación ni de cobro online. Los precios están en <a href=\"/#planes\">planes</a>.</p>"
   },
   {
    "h2": "Y si querés ordenar también el salón",
-   "html": "<p>Mesaverso Caja suma pedido desde el celular, mesas, pantalla de cocina, cuenta dividida y cierre de turno. Está en etapa de prueba, no emite factura y no cobra pagos online: el cobro lo hacés vos, como siempre. Podés ver cómo viaja un pedido en la <a href=\"/#circuito\">demo del circuito</a>.</p>"
+   "html": "<p>Mesaverso Caja suma pedido desde el celular, mesas, pantalla de cocina, cuenta dividida y cierre de turno. Está en etapa de prueba, no emite factura y no cobra pagos online: el cobro lo hacés vos, como siempre.</p>"
   }
  ],
  "faq": [
@@ -33,18 +53,32 @@
   ],
   [
    "¿Puedo cambiar los precios cuando quiera?",
-   "<p>Sí. Actualizás precios y marcás los platos agotados cuando haga falta, y el menú se actualiza para todos los que lo abran.</p>"
+   "<p>Sí. Actualizás precios y marcás los platos agotados cuando haga falta, y el menú muestra los cambios cuando publicás.</p>"
   ],
   [
    "¿Tengo que dejar mi carta impresa?",
    "<p>No es obligatorio dejarla ni sacarla: es tu decisión. El menú digital convive con lo que ya usás.</p>"
+  ],
+  [
+   "¿Cuántos platos puedo cargar?",
+   "<p>En el plan Gratis hasta 11 productos. En los planes pagos te ayudamos a armar tu menú con todos tus platos, a partir de tu carta en PDF o en fotos.</p>"
+  ],
+  [
+   "¿Puedo ofrecer tamaños y extras en un mismo plato?",
+   "<p>Sí. Cada plato puede tener opciones de tamaño, extras y elecciones obligatorias, como el punto de la carne, y el cliente puede dejar una nota en esa línea del pedido.</p>"
+  ],
+  [
+   "¿El menú digital reemplaza a mi página web?",
+   "<p>No necesariamente. Es tu carta con link y QR; podés ponerlo en Instagram, en Google o en tu estado de WhatsApp, junto con lo que ya tengas.</p>"
   ]
  ],
  "cta": "Quiero mi menú con QR",
  "revisar": [
-  "«se actualiza en el momento»: confirmar con Itá que el cambio de precio se ve sin esperar publicación (CLAUDE.md dice que «Publicar ahora» copia a seed/ y puede haber demora).",
-  "«un QR pegado en la mesa»: confirmar que QR por mesa existe en planes pagos (el plan Gratis no lo incluye).",
-  "Enlace /#circuito: confirmar que el ancla existe en la home.",
-  "Marca de «agotado» y buscador en planes pagos: verificado solo por el brief y faq del plan Gratis, no en código."
+  "Confirmar con Itá cuánto tarda en verse un cambio de precio tras publicar (Publicar ahora copia a seed/ y puede haber demora); el texto dice solo «cuando publicás».",
+  "QR por mesa: la página dice «QR del local en la mesa o el mostrador»; confirmar si existe QR por mesa en planes pagos (el Gratis no lo incluye).",
+  "«agotado» se marca desde Mesaverso Caja (según el brief); confirmar si el buscador y la marca se ven en todos los planes.",
+  "Quité «mínimo de 6 meses» y «garantía de 30 días»: no figuran entre los datos confirmados; si se mantienen, que el abogado revise la redacción y el derecho de arrepentimiento (Ley 1334).",
+  "Ejemplo de lomitería ficticia con precios rotulados «ejemplo»; confirmar qué opciones (tamaño, extras, obligatorias, nota, QR del pedido) aplican a cada plan.",
+  "«Te ayudamos a armar tu menú» en planes pagos: confirmar el alcance real del servicio de carga."
  ]
 }

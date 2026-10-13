@@ -1,9 +1,9 @@
 {
  "slug": "cuenta-dividida",
  "title": "Cuenta dividida en restaurantes de Paraguay | Mesaverso",
- "description": "Dividí la cuenta del salón por consumo o en partes iguales, con propina y sin calculadora. Mesaverso Caja, en etapa de prueba.",
- "h1": "Cuenta dividida sin pelea en tu salón",
- "lead": "A la hora de pagar, cada uno ve lo suyo y la suma siempre cierra. Es una función de Mesaverso Caja, que está en etapa de prueba.",
+ "description": "Dividí la cuenta del salón por consumo o en partes, sin calculadora, desde el celular. Es una función de Mesaverso Caja, en etapa de prueba.",
+ "h1": "Cuenta dividida para tu salón",
+ "lead": "A la hora de pagar, la cuenta de la mesa se puede dividir por consumo o en partes, desde el celular. Es una función de Mesaverso Caja, que está en etapa de prueba.",
  "sections": [
   {
    "h2": "El final de la comida que nadie quiere",
@@ -11,19 +11,35 @@
   },
   {
    "h2": "Cómo se divide con Mesaverso Caja",
-   "html": "<p>La cuenta de la mesa reúne todo lo que se pidió, ya sea que lo cargó el mozo o lo pidió cada cliente desde su celular. Desde ahí se puede dividir de dos maneras:</p><ul><li><b>Por consumo:</b> cada persona ve lo suyo.</li><li><b>En partes iguales:</b> el total se reparte entre todos.</li></ul><p>En los dos casos se puede sumar la propina, y la suma de las partes coincide con el total de la cuenta.</p>"
+   "html": "<p>La cuenta de la mesa reúne todo lo que se pidió, ya sea que lo cargó el mozo o lo pidió cada cliente desde su celular. Desde ahí se puede dividir de dos maneras:</p><ul><li><strong>Por consumo:</strong> se separa lo que pidió cada persona.</li><li><strong>En partes:</strong> el total se reparte entre las personas de la mesa.</li></ul><p>La división está pensada para que la suma de las partes coincida con el total de la cuenta. La propina puede sumarse a las partes; durante la prueba confirmamos con cada local cómo queda en su caso.</p>"
   },
   {
    "h2": "Un ejemplo, rotulado como ejemplo",
-   "html": "<p>Ejemplo con precios inventados: tres personas, Ana, Beto y Cami. Ana pidió dos asados de tira y Beto y Cami un vacío cada uno. Por consumo, cada uno paga lo que pidió. En partes iguales, el total se divide por tres. Cualquiera de las dos opciones queda registrada en la cuenta.</p>"
+   "html": "<p>Ejemplo ficticio, sin precios: una mesa de tres personas. Una pidió dos asados de tira y las otras dos, un vacío cada una. Por consumo, cada parte corresponde a lo que pidió cada persona. En partes, el total se divide por tres. Lo que se decide queda anotado en la cuenta.</p><p>Un detalle útil: como la cuenta de la mesa guarda cada línea con sus extras y notas, es más fácil saber quién pidió qué. Si el mozo cargó las bebidas y los clientes pidieron la comida desde su celular, todo queda junto en la misma mesa.</p>"
   },
   {
    "h2": "Qué hace y qué no hace la Caja",
-   "html": "<p>La caja <b>registra cómo pagó</b> cada cuenta, pero el cobro lo hacés vos, como siempre: no cobra online. Tampoco emite factura: seguís facturando con tu sistema habitual y el ticket dice «NO VÁLIDO COMO FACTURA».</p><p>Mesaverso Caja está en etapa de prueba. Si querés probarla en tu local, escribinos.</p>"
+   "html": "<p>La caja <strong>registra cómo pagó</strong> cada cuenta, pero el cobro lo hacés vos, como siempre: no cobra online. Tampoco emite factura: seguís facturando con tu sistema habitual y el ticket dice «NO VÁLIDO COMO FACTURA».</p><p>Mesaverso Caja está en etapa de prueba. Si querés probarla en tu local, escribinos.</p>"
+  },
+  {
+   "h2": "El flujo real, paso a paso",
+   "html": "<ol><li>La mesa pide: el mozo carga o cada cliente pide desde su celular.</li><li>Todo cae en la cuenta de la mesa, con cada línea y su nota.</li><li>Al pedir la cuenta, se elige dividir por consumo o en partes.</li><li>La división se muestra desde el celular; mientras la Caja esté en prueba, ajustamos con cada local quién la ve (el mozo o cada comensal).</li><li>Cada uno paga como quiera y la Caja registra cómo se pagó.</li></ol><p>El paso 5 es importante: Mesaverso no cobra. Anota el medio de pago, por ejemplo efectivo o transferencia, para ayudarte con el cierre de turno.</p>"
+  },
+  {
+   "h2": "Errores comunes al dividir una cuenta",
+   "html": "<ul><li><strong>Dividir por partes iguales cuando consumieron distinto.</strong> Es rápido, pero alguien paga de más y se nota. Usá consumo si la diferencia es grande.</li><li><strong>Repartir la propina aparte.</strong> Si se suma a cada parte, hay una cuenta menos que hacer a mano.</li><li><strong>Perder lo que cada uno pidió.</strong> Si se carga todo en una sola cuenta de mesa, después se puede separar.</li><li><strong>Olvidar quién pagó con qué.</strong> Registrar el medio de pago ayuda a evitar sorpresas al cerrar el turno.</li><li><strong>Dar por sentado que es una factura.</strong> El ticket no es válido como factura; si el cliente pide una, la emitís con tu sistema.</li></ul>"
+  },
+  {
+   "h2": "Cuenta dividida a mano o en el celular",
+   "html": "<p>A mano, con calculadora o servilleta, funciona en una mesa de dos. Cuando son seis y cada uno pidió cosas distintas, el mozo se queda parado, el error aparece y alguien paga de más.</p><p>Con la cuenta en el celular, la división se muestra clara y la suma de las partes coincide con el total. No es mágico: hay que cargar bien los pedidos y exige que la mesa use el celular. La guía <a href=\"/guias/dividir-la-cuenta-restaurante/\">dividir la cuenta en un restaurante</a> repasa las reglas generales, con o sin sistema, y sirve para decidir una política propia. Esta página te conviene cuando ya sabés que querés resolverlo con una herramienta. Para el pedido que alimenta esa cuenta, mirá <a href=\"/pedidos-por-whatsapp/\">pedidos por WhatsApp</a>.</p>"
+  },
+  {
+   "h2": "A quién le sirve y a quién no",
+   "html": "<p>Le sirve a un local con salón y mesas grandes: parrilla, bar, cervecería, restaurante de grupos. También a quien está harto de la calculadora.</p><p>No te sirve si solo vendés para llevar o por delivery, si tu salón tiene mesas de una o dos personas o si buscás cobrar la cuenta online: Mesaverso Caja no cobra. Y recordá que está en etapa de prueba, así que la probamos con cada local de a poco. Los planes están en <a href=\"/#planes\">planes</a>.</p>"
   },
   {
    "h2": "Se suma al resto del salón",
-   "html": "<p>La cuenta dividida es el último paso de un circuito: el cliente pide desde el QR de su mesa, el mozo toma el pedido, la cocina lo prepara en una tablet o celular que ya tengas y, al final, cerrás el turno con un resumen en PDF y CSV. Mirá cómo viaja un pedido en la <a href=\"/#circuito\">demo del circuito</a>.</p>"
+   "html": "<p>La cuenta dividida es el último paso de un circuito: el cliente puede pedir desde su celular, el mozo toma el pedido, la cocina lo ve en una pantalla (una tablet o un celular que ya tengas) y, al final, cerrás el turno con un resumen en PDF y CSV. Para ver el panorama completo, leé <a href=\"/que-es-mesaverso/\">qué es Mesaverso</a>.</p>"
   }
  ],
  "faq": [
@@ -38,13 +54,28 @@
   [
    "¿Ya la usan locales?",
    "<p>Está en etapa de prueba. Todavía no la ofrecemos como un producto terminado y por eso la probamos de a poco.</p>"
+  ],
+  [
+   "¿Se puede dividir una cuenta que tiene notas o extras?",
+   "<p>Sí. La cuenta de la mesa reúne cada línea con sus opciones, extras y notas, y desde ahí se divide por consumo o en partes iguales.</p>"
+  ],
+  [
+   "¿La propina se suma a cada parte?",
+   "<p>Se puede sumar la propina a las partes. Mientras la Caja está en prueba, confirmamos con cada local cómo queda.</p>"
+  ],
+  [
+   "¿Sirve para locales sin salón?",
+   "<p>No es lo más útil: está pensada para mesas. Si solo vendés por delivery o retiro, mirá delivery propio o pedidos por WhatsApp.</p>"
   ]
  ],
  "cta": "Quiero probar la Caja",
  "revisar": [
-  "plan-seo.md menciona una tercera forma de dividir («montos libres»): no figura en circuito.js ni faq.mjs, por eso la dejé afuera; confirmar con Porã y sumarla si existe.",
-  "«propina» en ambas modalidades: circuito.js dice «partes iguales, con propina»; confirmar que también aplica por consumo.",
-  "«no sobra ni falta ningún guaraní»: parafrasea «La suma siempre cierra»; confirmar el redondeo.",
-  "Ejemplo Ana/Beto/Cami: tomado de la demo, con precios inventados."
+  "Quién ve la división (mozo o cada comensal desde su celular): redactado sin afirmarlo; confirmar con Porã antes de prometer que cada comensal ve su parte.",
+  "«La Caja registra cómo se pagó»: confirmar si es por parte o solo por cuenta; hoy dice solo «cómo se pagó».",
+  "Propina: la demo indica partes iguales con propina; confirmar si aplica también por consumo.",
+  "Tercera forma de dividir («montos libres») del plan SEO: no incluida; sumar solo si existe.",
+  "Ejemplo de mesa ficticia, sin nombres de personas ni precios.",
+  "Medios de pago «efectivo o transferencia»: confirmar qué medios registra la Caja.",
+  "Mencioné cervecería/parrilla/bar como tipos de local, no como clientes."
  ]
 }

@@ -3,7 +3,7 @@
  "title": "Pedidos por WhatsApp para tu local en Paraguay | Mesaverso",
  "description": "Recibí pedidos por WhatsApp ya armados, con platos, total y código, sin audios ni mensajes sueltos. Para locales de comida de Paraguay.",
  "h1": "Pedidos por WhatsApp ordenados para tu local",
- "lead": "Dejá de armar el pedido a mano entre audios y mensajes. El cliente elige en tu menú y a tu WhatsApp te llega el pedido completo.",
+ "lead": "En vez de armar el pedido a mano entre audios y mensajes, el cliente elige en tu menú y a tu WhatsApp te llega el pedido armado.",
  "sections": [
   {
    "h2": "El problema de pedir «por mensaje»",
@@ -15,11 +15,27 @@
   },
   {
    "h2": "Qué trae el mensaje que recibís",
-   "html": "<p>Cada pedido llega con los platos, la cantidad, el total y, en los planes pagos, si es delivery o retiro, la dirección y un código tipo #MV-0042. Ese código sirve para encontrar el pedido después y para que no se pierda ninguno.</p><p>En el plan Gratis el pedido por WhatsApp es básico: lleva los productos y el total.</p>"
+   "html": "<p>Cada pedido llega con los platos, la cantidad, el total y, en los planes pagos, si es delivery o retiro, la dirección y un código tipo #MV-0042. Ese código sirve para identificar y encontrar el pedido después.</p><p>En el plan Gratis el pedido por WhatsApp es básico: lleva los productos y el total.</p>"
   },
   {
    "h2": "Para anotar y seguir cada pedido, Mesaverso Caja",
-   "html": "<p>Con Mesaverso Caja, cada pedido queda también anotado en tu panel con su código, para ver qué está nuevo, qué se prepara y qué ya salió. Caja está en etapa de prueba: no emite factura y no cobra pagos online. El cobro lo hacés vos, como siempre.</p>"
+   "html": "<p>Con Mesaverso Caja, cada pedido queda también anotado en tu panel con su código, para verlo también en la pantalla de cocina. Caja está en etapa de prueba: no emite factura y no cobra pagos online. El cobro lo hacés vos, como siempre.</p>"
+  },
+  {
+   "h2": "Un pedido de ejemplo, de punta a punta",
+   "html": "<p>Imaginá una hamburguesería ficticia. Una clienta elige dos hamburguesas completas a Gs. 32.000 (ejemplo) cada una y una porción grande de mandioca frita a Gs. 18.000 (ejemplo). En la primera hamburguesa elige el punto de la carne, que es obligatorio, y suma huevo como extra. En la segunda escribe la nota «sin cebolla». Antes de enviar, ve el total.</p><p>Cuando toca enviar, se abre WhatsApp con el mensaje armado: cada línea con su cantidad, sus opciones y su nota, el total y un código con formato #MV. Vos lo leés una vez, sin audios que escuchar dos veces.</p>"
+  },
+  {
+   "h2": "Errores comunes cuando se vende por WhatsApp",
+   "html": "<ul><li><strong>Pasar la carta como imagen.</strong> El cliente la mira y después te escribe el pedido de memoria, con los precios que recuerda.</li><li><strong>Aceptar cambios sin dejar rastro.</strong> «Mejor sacale el queso» llega tres mensajes después y nadie sabe cuál es la versión final.</li><li><strong>No tener un código por pedido.</strong> Al reclamar, el cliente y vos discuten cuál era.</li><li><strong>Seguir vendiendo platos agotados.</strong> Marcarlos como agotado ayuda a evitar pedidos de lo que ya no hay.</li><li><strong>Depender de una sola persona que contesta.</strong> Si el pedido llega armado, cualquiera del equipo lo puede leer y prepararlo.</li></ul>"
+  },
+  {
+   "h2": "Pedido armado frente a pedido escrito a mano",
+   "html": "<p>Pedir por mensaje libre tiene una ventaja real: es flexible y el cliente conversa como con cualquier persona. A cambio, cada pedido es un texto distinto que hay que interpretar, sumar y confirmar.</p><p>Con el pedido armado desde el menú, es menos probable que el cliente se olvide de algo y el precio sale del menú, no de su memoria. Perdés algo de conversación y podés ganar orden. Si querés seguir hablando con el cliente, WhatsApp sigue ahí: el pedido llega al mismo chat. La guía <a href=\"/guias/pedidos-por-whatsapp-restaurante/\">pedidos por WhatsApp en un restaurante</a> compara los dos modos con más calma, y <a href=\"/menu-digital-qr/\">el menú digital con QR</a> explica cómo se ve el lado del cliente. Esta página te conviene si ya decidiste ordenar el canal y querés saber qué recibís.</p>"
+  },
+  {
+   "h2": "A quién le sirve y a quién no",
+   "html": "<p>Le sirve a quien ya vende por WhatsApp y se pierde entre mensajes, a quien tiene delivery o retiro, y a quien quiere un canal propio sin armar un sistema complicado. Para delivery en particular, mirá <a href=\"/delivery-propio/\">delivery propio</a>.</p><p>No te sirve si querés que el cliente pague dentro del pedido, porque Mesaverso no cobra online, ni si necesitás avisos automáticos al cliente o tiempos de entrega calculados: eso no lo hace. Tampoco reparte, y la factura la seguís emitiendo vos.</p>"
   },
   {
    "h2": "Un canal propio que convive con tus otras ventas",
@@ -38,13 +54,27 @@
   [
    "¿Me sirve si solo uso WhatsApp y no tengo salón?",
    "<p>Sí. El menú con pedido por WhatsApp funciona para locales que venden solo por delivery o retiro, sin mesas.</p>"
+  ],
+  [
+   "¿El cliente puede dejar una nota en su pedido?",
+   "<p>Sí. Cada línea del pedido admite una nota, como «sin cebolla», y llega escrita junto al plato en el mensaje.</p>"
+  ],
+  [
+   "¿Qué pasa con un plato agotado?",
+   "<p>Se marca como agotado desde Mesaverso Caja y el menú deja de ofrecerlo, así ayudás a evitar pedidos que no podés cumplir.</p>"
+  ],
+  [
+   "¿Recibo avisos automáticos o tiempos de entrega calculados?",
+   "<p>No. El pedido llega a tu WhatsApp y respondés vos al cliente, con tus propios tiempos y tu propio mensaje.</p>"
   ]
  ],
  "cta": "Quiero recibir pedidos ordenados",
  "revisar": [
-  "«se abre WhatsApp con el mensaje ya escrito, dirigido a tu número»: confirmar en site/ el comportamiento exacto del botón enviar.",
-  "Que el mensaje del plan pago incluya cantidad, delivery/retiro, dirección y código #MV: tomado de circuito.js (escena de demo), confirmar en el menú real.",
-  "Ejemplo «dos lomitos y una mandioca frita»: ejemplo ilustrativo, no es un pedido real.",
-  "«no tiene que registrarse»: inferido de que el menú es un link público; confirmar."
+  "Confirmar en site/ el comportamiento exacto del botón enviar (abre WhatsApp con el mensaje armado hacia el número del local).",
+  "Que el mensaje de planes pagos incluya cantidad, delivery/retiro, dirección y código #MV: tomado de la demo; confirmar en el menú real.",
+  "«no tiene que registrarse»: inferido de que el menú es un link público; confirmar.",
+  "Ejemplo de hamburguesería ficticia con precios rotulados «ejemplo»; confirmar que el mensaje real incluye opciones y nota por línea.",
+  "Plan Gratis y «agotado»: se marca desde Mesaverso Caja, que el Gratis no incluye; confirmar cómo se maneja en Gratis.",
+  "Frase de 0 % limitada a pedidos por link o QR, con aclaración de plan y medios de cobro; que el abogado confirme que no se lee como «sin costos»."
  ]
 }

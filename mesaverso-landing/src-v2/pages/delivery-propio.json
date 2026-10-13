@@ -1,29 +1,45 @@
 {
  "slug": "delivery-propio",
  "title": "Delivery propio para tu local en Paraguay | Mesaverso",
- "description": "Armá tu canal de delivery y retiro con tu link o QR: pedido por WhatsApp y seguimiento en Mesaverso Caja (en etapa de prueba). Paraguay.",
+ "description": "Armá tu canal de delivery y retiro con tu link o QR: pedido por WhatsApp y registro en Mesaverso Caja (en etapa de prueba). Paraguay.",
  "h1": "Delivery propio para tu local, con tus clientes",
- "lead": "Un link para que tus clientes pidan delivery o retiro directo con vos. Vos seguís el pedido hasta que el repartidor vuelve y rinde.",
+ "lead": "Un link para que tus clientes pidan delivery o retiro directo con vos. El pedido te llega armado a tu WhatsApp; el reparto lo hacés vos o tu equipo.",
  "sections": [
   {
    "h2": "Un canal tuyo para los clientes que ya te conocen",
-   "html": "<p>Muchos de tus clientes ya te siguen en Instagram, te escriben por WhatsApp o te encuentran en Google. Con Mesaverso, esos clientes llegan a tu menú con un link y piden directo a tu local.</p><p>No reemplaza a las apps de delivery: si ya vendés por una, no tenés que dejarla. Es un canal propio para sumar. Y hay 0 % de comisión en los pedidos que llegan por tu link o QR. Pagás el plan mensual (más implementación y Pack 3D si los contratás); los medios de cobro que uses pueden tener sus propias comisiones.</p>"
+   "html": "<p>Probablemente parte de tus clientes ya te sigue en Instagram, te escribe por WhatsApp o te encuentra en Google. Con Mesaverso, esos clientes llegan a tu menú con un link y piden directo a tu local.</p><p>No reemplaza a las apps de delivery: si ya vendés por una, no tenés que dejarla. Es un canal propio para sumar. Y hay 0 % de comisión en los pedidos que llegan por tu link o QR. Pagás el plan mensual (más implementación y Pack 3D si los contratás); los medios de cobro que uses pueden tener sus propias comisiones.</p>"
   },
   {
    "h2": "El pedido, de la pantalla del cliente a tu WhatsApp",
    "html": "<p>El cliente abre tu link y ve el menú con fotos y precios. Elige los platos, marca delivery o retiro y, si es delivery, deja su dirección. Antes de enviar ve el total, y el envío figura «a confirmar».</p><p>A tu WhatsApp te llega el mensaje con los platos, el total, la dirección y un código #MV. Nadie lo tipea.</p>"
   },
   {
-   "h2": "Seguimiento en Mesaverso Caja",
-   "html": "<p>Cada pedido queda anotado en tu panel con su código. Cocina lo prepara con todos los datos a la vista, el repartidor lo lleva y vos ves el estado: nuevo, en camino o rendido.</p><p>Mesaverso Caja está en etapa de prueba. No emite factura y no cobra pagos online: seguís facturando y cobrando como siempre.</p>"
+   "h2": "Registro en Mesaverso Caja",
+   "html": "<p>Con Mesaverso Caja, el pedido queda anotado en tu panel con su código y puede verse en la pantalla de cocina, con todos sus datos. El reparto lo hacés vos: Mesaverso no reparte ni gestiona repartidores.</p><p>Mesaverso Caja está en etapa de prueba. No emite factura y no cobra pagos online: seguís facturando y cobrando como siempre.</p>"
   },
   {
-   "h2": "Rendido: cerrar la cuenta del repartidor",
-   "html": "<p>Cuando el cliente paga en efectivo, el repartidor te entrega la plata al volver y vos marcás el pedido como «Rendido». Ves de un vistazo cuánto falta rendir, sin cuaderno de por medio.</p><p>El estado «Rendido» es solo para delivery en efectivo.</p>"
+   "h2": "El efectivo del delivery",
+   "html": "<p>Si el cliente paga en efectivo, el cobro y la rendición con tu repartidor los llevás vos, con tu propio método. La Caja registra cómo se pagó cada cuenta, pero no cobra ni gestiona repartidores.</p>"
+  },
+  {
+   "h2": "Un ejemplo de pedido con delivery (local ficticio)",
+   "html": "<p>Una pizzería inventada recibe un pedido: una pizza grande de muzzarella a Gs. 55.000 (ejemplo) con extra de aceitunas y una gaseosa. El cliente marca delivery, escribe su dirección y ve que el envío figura «a confirmar». Llega a tu WhatsApp con el código #MV y todo lo anterior armado.</p><p>Vos confirmás el costo del envío en el mismo chat, el cliente acepta y el pedido pasa a cocina. Ese «a confirmar» es una decisión de diseño: el envío depende de la zona y de vos, y Mesaverso no calcula tiempos ni tarifas.</p>"
+  },
+  {
+   "h2": "Errores comunes con el delivery propio",
+   "html": "<ul><li><strong>No acordar el costo del envío antes de preparar.</strong> Se confirma en el chat y recién ahí se arranca.</li><li><strong>Direcciones incompletas.</strong> Un campo de dirección en el pedido evita preguntar «¿entre qué calles?» después.</li><li><strong>No llevar la cuenta del repartidor.</strong> Con efectivo y sin registro, es fácil que las cuentas no cierren. Llevá un control propio, aunque sea simple, de lo que entrega cada repartidor.</li><li><strong>Prometer lo que el sistema no hace.</strong> No hay avisos automáticos al cliente: si querés avisar que salió el pedido, lo escribís vos.</li><li><strong>Abandonar tus otras ventas de golpe.</strong> Sumá el canal propio de a poco y dejá las otras apps mientras te sirvan.</li></ul>"
+  },
+  {
+   "h2": "Canal propio frente a depender solo de apps",
+   "html": "<p>Una app de delivery puede acercarte clientes que no te conocen, y eso tiene valor. A cambio, según las condiciones de cada contrato, suele haber una comisión por pedido y la relación con el cliente pasa por la plataforma. El canal propio atiende a quienes ya te conocen: no trae gente nueva por sí solo, y hay 0 % de comisión en los pedidos que llegan por tu link o QR.</p><p>No es una cuenta mágica: pagás tu plan y los medios de cobro tienen lo suyo. La guía <a href=\"/guias/comision-apps-delivery-canal-propio/\">comisión de apps de delivery y canal propio</a> hace la cuenta con tus números; esta página te dice cómo se arma el canal. Para el pedido en sí, mirá <a href=\"/pedidos-por-whatsapp/\">pedidos por WhatsApp</a>.</p>"
+  },
+  {
+   "h2": "A quién le sirve y a quién no",
+   "html": "<p>Le sirve a un local con clientela fiel, con repartidor propio o que entrega con su gente, y que ya atiende por WhatsApp. También a quien hace retiro en el local.</p><p>No te sirve si buscás que alguien reparta por vos, que cobre online o que te traiga clientes nuevos desde una plataforma: Mesaverso no hace nada de eso. Si dudás, contanos tu caso desde el botón de WhatsApp o mirá <a href=\"/#planes\">los planes</a>.</p>"
   },
   {
    "h2": "Al final de la noche",
-   "html": "<p>El cierre de turno te da un resumen del día en PDF y CSV, con los pedidos y cómo se pagó cada cuenta. Si querés ver los números de tu caso, la calculadora de la página principal te deja probar con una comisión de ejemplo que vos elegís.</p><p>Mirá los <a href=\"/#planes\">planes</a> o empezá con un menú chico en el plan <a href=\"/plan-gratis/\">Gratis</a>.</p>"
+   "html": "<p>El cierre de turno te da un resumen del día en PDF y CSV, con los pedidos y cómo se pagó cada cuenta. Si querés ver los números de tu caso, la <a href=\"/calculadora-comision-delivery/\">calculadora de comisión</a> te deja probar con un porcentaje de ejemplo que vos elegís; no es la tarifa de ninguna empresa ni una promesa de ahorro.</p><p>Mirá los <a href=\"/#planes\">planes</a> o empezá con un menú chico en el plan <a href=\"/plan-gratis/\">Gratis</a>.</p>"
   }
  ],
  "faq": [
@@ -37,15 +53,28 @@
   ],
   [
    "¿Mesaverso me da repartidores?",
-   "<p>No. El repartidor es tuyo. Mesaverso te ayuda a ordenar el pedido, seguirlo y cerrar la rendición.</p>"
+   "<p>No. El repartidor es tuyo. Mesaverso te ayuda a ordenar el pedido; el reparto y la rendición de efectivo los llevás vos.</p>"
+  ],
+  [
+   "¿Mesaverso calcula el costo o el tiempo del envío?",
+   "<p>No. El envío figura «a confirmar» y lo acordás vos con el cliente por WhatsApp; no hay tiempos calculados.</p>"
+  ],
+  [
+   "¿Puedo usarlo solo para retiro en el local?",
+   "<p>Sí. El cliente marca retiro, no deja dirección y el pedido llega igual armado con su código.</p>"
+  ],
+  [
+   "¿Avisa al cliente cuando sale su pedido?",
+   "<p>No. No hay avisos automáticos: si querés avisarle, le escribís vos por el mismo chat.</p>"
   ]
  ],
  "cta": "Quiero mi delivery propio",
  "revisar": [
-  "Ancla /#planes: confirmar que existe en la home.",
-  "«la calculadora de la página principal»: verificar que la comisión se muestra rotulada como ejemplo; mencionada en plan-seo.md, no vista en código.",
-  "«Mesaverso no da repartidores»: inferido, no hay función de reparto en circuito.js; confirmar con Porã.",
-  "Estados «nuevo, en camino, rendido»: tomados de la demo (circuito.js); confirmar nombres exactos en la Caja real.",
-  "Que Mesaverso no recorte el 0 % en pedidos de otros canales: la frase de comisión se limita a link/QR."
+  "Quité los estados «nuevo / en camino / rendido» y la rendición del repartidor: vienen de la demo y no están confirmados; reponer solo si Porã los confirma en la Caja real.",
+  "«Mesaverso no reparte ni gestiona repartidores»: confirmar con Porã que no hay función de reparto.",
+  "Retiro sin dirección y envío «a confirmar»: confirmar en el menú real de planes pagos.",
+  "Comparación con apps de delivery redactada en genérico, sin marcas ni porcentajes; que el abogado confirme que no infringe defensa de la competencia.",
+  "Frase de 0 % limitada a pedidos por link o QR, con aclaración de plan y medios de cobro.",
+  "Ejemplo de pizzería ficticia con precio rotulado «ejemplo»."
  ]
 }
