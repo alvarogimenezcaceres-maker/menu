@@ -6,6 +6,9 @@
 {
   "name": "menu3d-demo",
   "main": "site/worker.js",
+  "routes": [{ "pattern": "menu.mesaverso.app", "custom_domain": true }],
+  // keep the old address alive: QR codes printed before the domain point to it
+  "workers_dev": true,
   "compatibility_date": "2026-09-25",
   "assets": {
     "directory": "./dist",
