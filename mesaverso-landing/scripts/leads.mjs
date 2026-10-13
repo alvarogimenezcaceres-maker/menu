@@ -18,5 +18,6 @@ const keys = JSON.parse(wrangler("kv", "key", "list", "--binding", "LEADS", "--r
 if (!keys.length) console.log("Todavía no hay solicitudes.");
 for (const k of keys) {
   const l = JSON.parse(wrangler("kv", "key", "get", "--binding", "LEADS", "--remote", k));
-  console.log(`\n${l.at}  ${l.business} (${l.type})\n  ${l.name} · WhatsApp ${l.phone}${l.message ? `\n  «${l.message}»` : ""}`);
+  const extra = [l.email && `correo ${l.email}`, l.city, l.place, l.products && `${l.products} productos`, l.how && `pedidos hoy: ${l.how}`, l.interest && `interés: ${l.interest}`, l.social].filter(Boolean).join(" · ");
+  console.log(`\n${l.at}  ${l.business} (${l.type})\n  ${l.name} · WhatsApp ${l.phone}${extra ? `\n  ${extra}` : ""}${l.message ? `\n  «${l.message}»` : ""}`);
 }

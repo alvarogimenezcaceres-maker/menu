@@ -43,6 +43,24 @@ await page.fill("#fPhone", "0981 123 456");
 await page.click("#send");
 check("consent is required", (await page.innerText("#eOk")).length > 0);
 
+// optional fields: a wrong email is flagged, a right one passes; the server refuses values that are not on the lists
+await page.fill("#fEmail", "no-es-un-correo");
+await page.click("#send");
+check("bad email is flagged", (await page.innerText("#eEmail")).length > 0);
+const direct = await page.evaluate(async () => {
+  const post = (extra) => fetch("/api/lead", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: "Ana Prueba", business: "Local", phone: "0981 123 456", type: "Restaurante", consent: true, t: Date.now() - 5000, ...extra }) }).then((r) => r.status);
+  return { badCity: await post({ city: "Marte" }), badEmail: await post({ email: "x" }), noConsent: await post({ consent: false }) };
+});
+check("server rejects an unknown city, a bad email and a missing consent", direct.badCity === 422 && direct.badEmail === 422 && direct.noConsent === 422, JSON.stringify(direct));
+await page.fill("#fEmail", "ana@example.com");
+await page.selectOption("#fCity", "Luque");
+await page.selectOption("#fPlace", "Tengo un local abierto");
+await page.selectOption("#fProducts", "31 a 60");
+await page.selectOption("#fHow", "WhatsApp");
+await page.selectOption("#fInterest", "Plan mensual");
+await page.fill("#fSocial", "@lomiteria.prueba");
+await page.fill("#fMsg", "Quiero ver la demo");
+
 // real submit to the local Worker
 await page.check("#fOk");
 const resp = page.waitForResponse((r) => r.url().endsWith("/api/lead"));
@@ -53,7 +71,9 @@ check("Worker accepts the lead", r.status() === 200 && body.ok === true, `${r.st
 await page.waitForSelector("#okBox.show", { timeout: 5000 }).catch(() => {});
 check("thank-you box appears with the local's name", (await page.innerText("#okTitle")).includes("Lomitería Prueba"));
 check("the form is hidden after sending", await page.$eval("#lead", (f) => f.hidden));
-check("no console errors", errors.length === 0, errors.join(" | "));
+// the three 422 responses above are deliberate (invalid data sent on purpose)
+const realErrors = errors.filter((e) => !e.includes("status of 422"));
+check("no console errors", realErrors.length === 0, realErrors.join(" | "));
 await browser.close();
 const bad = results.filter((x) => !x[1]);
 console.log(`\n${results.length - bad.length}/${results.length} checks passed`);

@@ -447,3 +447,15 @@ a,button,summary,label,select{touch-action:manipulation;-webkit-tap-highlight-co
 .calc__row.is-strong{background:var(--bg);color:var(--text);font-weight:600}
 .calc__row.is-strong b{font-size:20px}
 @media(min-width:700px){.calc{grid-template-columns:repeat(3,1fr)}}
+
+/* closing form: grouped, with the optional part in a section */
+.form__h{margin:6px 0 -4px;font:600 13px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--text-2)}
+.form__more{border:1px solid var(--line);border-radius:var(--r-card);padding:0 14px}
+.form__more summary{display:flex;align-items:center;min-height:48px;cursor:pointer;font-weight:600;color:var(--text);list-style:none}
+.form__more summary::-webkit-details-marker{display:none}
+.form__more summary::after{content:"+";margin-left:auto;font-size:22px;color:var(--text-2)}
+.form__more[open] summary::after{content:"–"}
+.form__grid{display:grid;gap:14px;padding:4px 0 16px}
+@media(min-width:620px){.form__grid{grid-template-columns:1fr 1fr}.fld--wide{grid-column:1/-1}}
+textarea.in{min-height:84px;padding-top:12px;resize:vertical}
+[data-in-form] .wa-float{opacity:0;pointer-events:none}

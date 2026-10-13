@@ -11,7 +11,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import QRCode from "qrcode";
 import { MESAVERSO_WHATSAPP, PRICES, SITE_URL, formatGs, waUrl } from "./site.config.mjs";
-import { BUSINESS_TYPES } from "./src/lead-schema.js";
+import { BUSINESS_TYPES, CITIES, PRODUCT_RANGES, PLACES, INTERESTS, HOWS } from "./src/lead-schema.js";
 import { FAQ } from "./src-v2/faq.mjs";
 import { OWNER, ownerPending } from "./src-v2/owner.config.mjs";
 
@@ -39,6 +39,7 @@ const hashes = { ...mods, "v2.css": createHash("sha256").update(css).digest("hex
 
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 const abs = (p) => SITE_URL + p;
+const opts = (list) => `<option value="">Elegí una opción</option>` + list.map((t) => `<option>${esc(t)}</option>`).join("");
 const waDisplay = `+${MESAVERSO_WHATSAPP.slice(0, 3)} ${MESAVERSO_WHATSAPP.slice(3, 6)} ${MESAVERSO_WHATSAPP.slice(6, 9)} ${MESAVERSO_WHATSAPP.slice(9)}`;
 const qr3d = await QRCode.toString(abs("/#plato-3d"), { type: "svg", margin: 1, errorCorrectionLevel: "M", color: { dark: "#0e1014", light: "#ffffff" } });
 const faqHtml = FAQ.map(([q, a]) => `<details><summary>${esc(q)}</summary><div>${a}</div></details>`).join("\n");
@@ -92,6 +93,11 @@ function render(template, meta) {
       case "YEAR": return String(new Date().getFullYear());
       case "QR3D": return qr3d;
       case "FAQ": return faqHtml;
+      case "CITY_OPTIONS": return opts(CITIES);
+      case "PLACE_OPTIONS": return opts(PLACES);
+      case "PRODUCT_OPTIONS": return opts(PRODUCT_RANGES);
+      case "INTEREST_OPTIONS": return opts(INTERESTS);
+      case "HOW_OPTIONS": return opts(HOWS);
       case "BUSINESS_OPTIONS": return BUSINESS_TYPES.map((t) => `<option${t === "Restaurante" ? " selected" : ""}>${esc(t)}</option>`).join("");
       default: throw new Error(`Unknown placeholder ${m}`);
     }

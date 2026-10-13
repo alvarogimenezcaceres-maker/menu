@@ -86,25 +86,25 @@ cP.addEventListener('input',()=>{cP.value=cP.value.replace(/\D/g,'').slice(0,2);
 const form=$('#lead'),t0=Date.now();
 const val=id=>$('#'+id).value.trim(),say=(id,m)=>{$('#'+id).textContent=m||''};
 form.addEventListener('submit',async ev=>{
-  ev.preventDefault();['eName','eBusiness','ePhone','eType','eOk'].forEach(i=>say(i,''));
+  ev.preventDefault();['eName','eBusiness','ePhone','eType','eEmail','eOk'].forEach(i=>say(i,''));
   let first=null;const bad=(id,msg,field)=>{say(id,msg);first=first||$('#'+field)};
   if(val('fName').length<2)bad('eName','Escribí tu nombre.','fName');
   if(val('fBusiness').length<2)bad('eBusiness','Escribí el nombre de tu local.','fBusiness');
   const dg=val('fPhone').replace(/\D/g,'');
   if(dg.length<6||dg.length>15||!/^[+\d\s().-]+$/.test(val('fPhone')))bad('ePhone','Revisá el número: solo números, por ejemplo 0981 123 456.','fPhone');
+  if(val('fEmail')&&!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(val('fEmail')))bad('eEmail','Revisá el correo o dejalo vacío.','fEmail');
   if(!$('#fOk').checked)bad('eOk','Marcá la casilla para que podamos escribirte.','fOk');
   if(first){first.focus();return}
   const send=$('#send'),st=$('#sendState');send.disabled=true;st.textContent='Enviando…';
-  const how=val('fHow');
-  const body={name:val('fName'),business:val('fBusiness'),phone:val('fPhone'),type:$('#fType').value,
-    message:'Pedidos hoy: '+(how||'sin responder')+' | Acepta que le escribamos por WhatsApp | Origen: landing nueva',website:$('#fWeb').value,t:t0};
+  const body={name:val('fName'),business:val('fBusiness'),phone:val('fPhone'),type:$('#fType').value,email:val('fEmail'),city:$('#fCity').value,place:$('#fPlace').value,products:$('#fProducts').value,how:$('#fHow').value,interest:$('#fInterest').value,social:val('fSocial'),
+    message:val('fMsg'),consent:true,website:$('#fWeb').value,t:t0};
   try{
     const r=await fetch(form.action,{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify(body)});
     const j=await r.json().catch(()=>({}));
     if(r.ok&&j.ok){form.hidden=true;$('#okTitle').textContent='¡Listo, '+body.business+'! Ya te anotamos.';const ok=$('#okBox');ok.classList.add('show');ok.focus();document.dispatchEvent(new Event('mv-lead-sent'))}
     else if(r.status===422&&j.fields){
       if(j.fields.name)say('eName',j.fields.name);if(j.fields.business)say('eBusiness',j.fields.business);
-      if(j.fields.phone)say('ePhone',j.fields.phone);if(j.fields.type)say('eType',j.fields.type);
+      if(j.fields.phone)say('ePhone',j.fields.phone);if(j.fields.type)say('eType',j.fields.type);if(j.fields.email)say('eEmail',j.fields.email);if(j.fields.consent)say('eOk',j.fields.consent);
       st.textContent='Revisá los datos marcados.';send.disabled=false}
     else{st.textContent=j.error||'No pudimos enviar tu solicitud. Escribinos por WhatsApp.';send.disabled=false}
   }catch(e){st.textContent='No pudimos enviar tu solicitud. Escribinos por WhatsApp.';send.disabled=false}
@@ -180,4 +180,12 @@ document.querySelectorAll('[data-mod]').forEach(sec=>{
   menu.addEventListener("click", (e) => { if (e.target.closest("a")) set(false); });
   document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !menu.hidden) { set(false); btn.focus(); } });
   matchMedia("(min-width: 900px)").addEventListener("change", (m) => { if (m.matches) set(false); });
+})();
+
+// Same for the closing form: the floating WhatsApp button hides while the form is on screen.
+(() => {
+  const sec = document.getElementById("cierre");
+  if (!sec || !("IntersectionObserver" in window)) return;
+  const root = document.documentElement;
+  new IntersectionObserver(([e]) => { if (e.isIntersecting) root.dataset.inForm = "1"; else delete root.dataset.inForm; }).observe(sec);
 })();

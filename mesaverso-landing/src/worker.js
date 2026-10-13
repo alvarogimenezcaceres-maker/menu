@@ -59,8 +59,15 @@ async function sendEmail(env, lead, id) {
     ["Negocio", lead.business],
     ["WhatsApp", lead.phone],
     ["Tipo de negocio", lead.type],
+    ["Correo", lead.email],
+    ["Ciudad", lead.city],
+    ["Situación", lead.place],
+    ["Cantidad de productos", lead.products],
+    ["Cómo le llegan hoy los pedidos", lead.how],
+    ["Plan que le interesa", lead.interest],
+    ["Instagram o web", lead.social],
     ["Mensaje", lead.message || "(sin mensaje)"],
-  ];
+  ].filter(([, v]) => v);
   const text = `Nueva solicitud de demo de Mesaverso\n\n${rows.map(([k, v]) => `${k}: ${v}`).join("\n")}\n\nEscribirle: https://wa.me/${wa}\nID: ${id}`;
   const html = `<h2 style="font-family:sans-serif">Nueva solicitud de demo</h2><table style="font-family:sans-serif;font-size:15px;border-collapse:collapse">${rows
     .map(([k, v]) => `<tr><td style="padding:6px 14px 6px 0;color:#666;vertical-align:top">${k}</td><td style="padding:6px 0;white-space:pre-wrap">${escapeHtml(v)}</td></tr>`)
@@ -110,7 +117,7 @@ async function handleLead(request, env, url) {
 
   const now = new Date();
   const id = `${now.toISOString()}-${crypto.randomUUID().slice(0, 8)}`;
-  const record = { ...lead, at: now.toISOString(), country: request.cf?.country || null };
+  const record = { ...lead, at: now.toISOString(), country: request.cf?.country || null, consentAt: now.toISOString(), consentNotice: "LP-3" };
 
   let stored = false;
   if (env.LEADS) {

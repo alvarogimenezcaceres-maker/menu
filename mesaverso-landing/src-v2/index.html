@@ -327,17 +327,31 @@
   </div>
   <div>
     <form class="form" id="lead" action="/api/lead" method="post" novalidate>
+      <p class="form__h">1. Tus datos</p>
       <div class="fld"><label for="fName">Tu nombre</label><input class="in" id="fName" name="name" autocomplete="name" maxlength="80" required><div class="err" id="eName" role="alert"></div></div>
-      <div class="fld"><label for="fBusiness">Nombre de tu local</label><input class="in" id="fBusiness" name="business" autocomplete="organization" maxlength="100" required><div class="err" id="eBusiness" role="alert"></div></div>
       <div class="fld"><label for="fPhone">Tu WhatsApp</label><input class="in" id="fPhone" name="phone" type="tel" autocomplete="tel" inputmode="tel" maxlength="24" placeholder="0981 123 456" required><div class="err" id="ePhone" role="alert"></div></div>
+      <div class="fld"><label for="fEmail">Tu correo (opcional)</label><input class="in" id="fEmail" name="email" type="email" autocomplete="email" inputmode="email" maxlength="120" placeholder="nombre@correo.com"><div class="err" id="eEmail" role="alert"></div></div>
+      <p class="form__h">2. Tu local</p>
+      <div class="fld"><label for="fBusiness">Nombre de tu local</label><input class="in" id="fBusiness" name="business" autocomplete="organization" maxlength="100" required><div class="err" id="eBusiness" role="alert"></div></div>
       <div class="fld"><label for="fType">Tipo de negocio</label><select class="in" id="fType" name="type">{{BUSINESS_OPTIONS}}</select><div class="err" id="eType" role="alert"></div></div>
-      <div class="fld"><label for="fHow">¿Cómo te llegan hoy los pedidos? (opcional)</label><select class="in" id="fHow" name="how"><option value="">Prefiero no decirlo</option><option>WhatsApp</option><option>Papel y teléfono</option><option>Apps de delivery</option><option>Todavía no tengo local</option><option>Otro</option></select></div>
+      <div class="fld"><label for="fCity">Ciudad</label><select class="in" id="fCity" name="city">{{CITY_OPTIONS}}</select></div>
+      <details class="form__more" open>
+        <summary>Contanos más (opcional): nos sirve para prepararte la demo</summary>
+        <div class="form__grid">
+          <div class="fld"><label for="fPlace">Tu situación</label><select class="in" id="fPlace" name="place">{{PLACE_OPTIONS}}</select></div>
+          <div class="fld"><label for="fProducts">¿Cuántos productos tiene tu carta?</label><select class="in" id="fProducts" name="products">{{PRODUCT_OPTIONS}}</select></div>
+          <div class="fld"><label for="fHow">¿Cómo te llegan hoy los pedidos?</label><select class="in" id="fHow" name="how">{{HOW_OPTIONS}}</select></div>
+          <div class="fld"><label for="fInterest">¿Qué plan te interesa?</label><select class="in" id="fInterest" name="interest">{{INTEREST_OPTIONS}}</select></div>
+          <div class="fld fld--wide"><label for="fSocial">Instagram o página web</label><input class="in" id="fSocial" name="social" maxlength="100" autocomplete="off" placeholder="@tulocal o tulocal.com.py"></div>
+          <div class="fld fld--wide"><label for="fMsg">¿Algo más que quieras contarnos?</label><textarea class="in" id="fMsg" name="message" maxlength="600" rows="3" placeholder="Ej.: tengo dos sucursales, quiero reservas, uso una tablet en caja"></textarea></div>
+        </div>
+      </details>
       <div class="hp" aria-hidden="true"><label for="fWeb">No completar este campo</label><input id="fWeb" name="website" tabindex="-1" autocomplete="off"></div>
-      <label class="chk"><input type="checkbox" id="fOk" required><span>Acepto que Mesaverso me escriba por WhatsApp para mostrarme el menú. Puedo pedir que no me escriban más respondiendo BAJA.</span></label>
+      <label class="chk"><input type="checkbox" id="fOk" required><span>Acepto que Mesaverso me escriba por WhatsApp o por correo para mostrarme el menú. Puedo pedir que no me escriban más respondiendo BAJA.</span></label>
       <div class="err" id="eOk" role="alert"></div>
       <button class="btn btn--primary btn--block" type="submit" id="send">Quiero mi menú</button>
       <p class="sendstate" id="sendState" role="status"></p>
-      <p class="priv"><b>Qué hacemos con tus datos.</b> Mesaverso, en Paraguay, guarda tu nombre, WhatsApp, negocio y mensaje <b>solo para responderte</b> sobre tu consulta. Los guardamos <b>hasta 180 días</b> y después se borran. Para frenar abusos usamos tu dirección IP por <b>1 hora</b>. No los vendemos ni los usamos para otra cosa. Podés pedir ver, corregir o borrar tus datos escribiéndonos por WhatsApp. <a href="/privacidad/">Más información</a>.</p>
+      <p class="priv"><b>Qué hacemos con tus datos.</b> Mesaverso guarda lo que completes (tu nombre, WhatsApp, correo, local, ciudad y lo demás que contés) <b>solo para responderte</b> sobre tu consulta y prepararte la demo. Los guardamos <b>hasta 180 días</b> y después se borran. Para frenar abusos usamos tu dirección IP por <b>1 hora</b>. No los vendemos ni los usamos para otra cosa. Podés pedir verlos, corregirlos o borrarlos escribiéndonos por WhatsApp. <a href="/privacidad/">Más información</a>.</p>
     </form>
     <div class="ok" id="okBox" role="status" tabindex="-1">
       <h3 id="okTitle">¡Listo! Ya te anotamos.</h3>

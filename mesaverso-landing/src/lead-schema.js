@@ -15,6 +15,12 @@ export const BUSINESS_TYPES = [
   "Otro",
 ];
 
+export const CITIES = ["Asunción", "Luque", "San Lorenzo", "Lambaré", "Fernando de la Mora", "Capiatá", "Ñemby", "Villa Elisa", "Encarnación", "Ciudad del Este", "Pedro Juan Caballero", "Otra ciudad"];
+export const PRODUCT_RANGES = ["Hasta 11", "12 a 30", "31 a 60", "Más de 60", "Todavía no sé"];
+export const PLACES = ["Tengo un local abierto", "Vendo solo por delivery o redes", "Estoy por abrir"];
+export const INTERESTS = ["Plan Gratis", "Plan mensual", "Plan anual", "Todavía no sé"];
+export const HOWS = ["WhatsApp", "Papel y teléfono", "Apps de delivery", "Todavía no tengo local", "Otro"];
+
 // Collapse whitespace, drop control characters. Output is later HTML-escaped where rendered.
 export const clean = (v, max) =>
   String(v ?? "")
@@ -30,6 +36,14 @@ export function validateLead(input) {
     phone: clean(input.phone, 24),
     type: clean(input.type, 60),
     message: clean(input.message, 1000),
+    // optional: they help us prepare the demo; each one must be one of the offered values (or empty)
+    email: clean(input.email, 120).toLowerCase(),
+    city: clean(input.city, 40),
+    place: clean(input.place, 60),
+    products: clean(input.products, 30),
+    how: clean(input.how, 40),
+    interest: clean(input.interest, 30),
+    social: clean(input.social, 100),
   };
   const fields = {};
   if (lead.name.length < 2) fields.name = "Escribí tu nombre.";
@@ -40,6 +54,14 @@ export function validateLead(input) {
   if (!/^[+\d\s().-]+$/.test(lead.phone) || digits.length < 6 || digits.length > 15)
     fields.phone = "Revisá el número: solo números, por ejemplo 0981 123 456.";
   if (!BUSINESS_TYPES.includes(lead.type)) fields.type = "Elegí el tipo de negocio.";
+  if (lead.email && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(lead.email)) fields.email = "Revisá el correo o dejalo vacío.";
+  else if (lead.email.length > 120) fields.email = "El correo es demasiado largo.";
+  for (const [k, list] of [["city", CITIES], ["place", PLACES], ["products", PRODUCT_RANGES], ["how", HOWS], ["interest", INTERESTS]])
+    if (lead[k] && !list.includes(lead[k])) fields[k] = "Elegí una de las opciones.";
+  if (lead.social.length > 100) fields.social = "Es demasiado largo.";
+  // consent to be contacted: required, and stored with the date and the notice version (no IP, no user agent)
+  lead.consent = input.consent === true;
+  if (!lead.consent) fields.consent = "Marcá la casilla para que podamos escribirte.";
   if (lead.message.length > 1000) fields.message = "El mensaje puede tener hasta 1000 caracteres.";
   return { lead, fields, ok: Object.keys(fields).length === 0 };
 }
