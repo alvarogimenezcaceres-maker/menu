@@ -44,18 +44,19 @@ const qr3d = await QRCode.toString(abs("/#plato-3d"), { type: "svg", margin: 1, 
 const faqHtml = FAQ.map(([q, a]) => `<details><summary>${esc(q)}</summary><div>${a}</div></details>`).join("\n");
 const plain = (html) => html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
 
-const TITLE = "Menú digital QR para restaurantes en Paraguay | Mesaverso";
+const TITLE = "Mesaverso: menú QR, pedidos y cocina para locales en Paraguay";
 const DESC = "Menú digital con QR, pedidos por WhatsApp y caja para tu local en Paraguay. 0 % de comisión en los pedidos que llegan por tu link o QR.";
 const OG_TITLE = "Tu local atiende. Mesaverso ordena.";
 const OG_DESC = "Menú con QR, pedidos, cocina y cuenta dividida en tu local. Tu cliente mira el plato en 3D. 0 % de comisión en los pedidos por tu link o QR.";
 
-function headMeta({ title, description, pathname, noindex, extra = [] }) {
+function headMeta({ title, description, pathname, noindex, extra = [], pageType = "WebPage" }) {
   const url = abs(pathname);
   const graph = [
-    { "@type": "Organization", "@id": `${SITE_URL}/#organization`, name: "Mesaverso", url: abs("/"), logo: abs("/assets/icon-512.png"), areaServed: { "@type": "Country", name: "Paraguay" }, contactPoint: { "@type": "ContactPoint", contactType: "sales", telephone: `+${MESAVERSO_WHATSAPP}`, availableLanguage: ["es"], areaServed: "PY" } },
+    { "@type": "Organization", "@id": `${SITE_URL}/#organization`, name: "Mesaverso", url: abs("/"), logo: abs("/assets/icon-512.png"), slogan: "Tu local atiende. Mesaverso ordena.", description: "Mesaverso es un servicio de menú digital con QR, pedidos por WhatsApp, cocina en pantalla y cuenta dividida para restaurantes, bares, lomiterías y cafeterías de Paraguay.", disambiguatingDescription: "Servicio paraguayo para locales gastronómicos. No es un metaverso ni una app de delivery.", knowsAbout: ["menú digital con QR", "pedidos por WhatsApp", "comanda de cocina", "cuenta dividida", "delivery propio"], areaServed: { "@type": "Country", name: "Paraguay" }, contactPoint: { "@type": "ContactPoint", contactType: "sales", telephone: `+${MESAVERSO_WHATSAPP}`, availableLanguage: ["es"], areaServed: "PY" } },
     ...(pathname === "/" ? [{ "@type": "SoftwareApplication", "@id": `${SITE_URL}/#software`, name: "Mesaverso", applicationCategory: "BusinessApplication", operatingSystem: "Web", inLanguage: "es-PY", url: abs("/"), publisher: { "@id": `${SITE_URL}/#organization` },
       description: "Menú digital con QR, pedidos por WhatsApp y caja (mesas, cocina, cuenta dividida) para restaurantes, bares y lomiterías de Paraguay.",
       offers: [{ "@type": "Offer", name: "Plan Gratis «Vidriera»", price: 0, priceCurrency: "PYG" }, { "@type": "Offer", name: "Plan mensual", price: PRICES.planMonthly, priceCurrency: "PYG" }, { "@type": "Offer", name: "Plan anual", price: PRICES.planAnnual, priceCurrency: "PYG" }] }] : []),
+    { "@type": pageType, "@id": `${url}#webpage`, url, name: title, description, inLanguage: "es-PY", isPartOf: { "@id": `${SITE_URL}/#website` }, about: { "@id": `${SITE_URL}/#organization` }, primaryImageOfPage: abs("/assets/og-v2.png") },
     ...extra,
     { "@type": "WebSite", "@id": `${SITE_URL}/#website`, name: "Mesaverso", url: abs("/"), inLanguage: "es-PY", publisher: { "@id": `${SITE_URL}/#organization` } },
     ...(pathname === "/" ? [{ "@type": "FAQPage", mainEntity: FAQ.map(([q, a]) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: plain(a) } })) }] : []),
@@ -85,6 +86,7 @@ function render(template, meta) {
       case "PRICE": if (!(arg in PRICES)) throw new Error(`Unknown price ${arg}`); return formatGs(PRICES[arg]);
       case "RAW": if (!(arg in PRICES)) throw new Error(`Unknown price ${arg}`); return String(PRICES[arg]);
       case "OWNER": if (!(arg in OWNER)) throw new Error(`Unknown owner field ${arg}`); return esc(OWNER[arg]);
+      case "GUIDES_LIST": return guides.map((g) => `<li class="gl"><a href="/${g.slug}/"><b>${esc(g.h1)}</b></a><p>${esc(g.description)}</p></li>`).join("");
       case "PAGES_NAV": return [...products, ...rubros].map((p) => `<a href="/${p.slug}/">${esc(p.h1)}</a>`).join("") + (guides.length ? `<a href="/guias/">Guías para dueños de locales</a>` : "");
       case "WA_DISPLAY": return waDisplay;
       case "YEAR": return String(new Date().getFullYear());
@@ -102,6 +104,19 @@ const write = async (rel, html) => { const f = path.join(DIST, rel); await mkdir
 const productPages = [];
 for (const f of (await readdir(path.join(SRC2, "pages"))).filter((x) => x.endsWith(".json")).sort()) productPages.push(JSON.parse(await readFile(path.join(SRC2, "pages", f), "utf8")));
 const kindOf = (p) => p.type || "product";
+// topical pairs: each product page links to its guides and each guide back to its product page
+const REL = {
+  "menu-digital-qr": ["guias/como-armar-menu-digital-qr-paraguay", "guias/carta-digital-o-pdf-con-qr", "guias/como-escribir-la-carta-del-restaurante"],
+  "pedidos-por-whatsapp": ["guias/pedidos-por-whatsapp-restaurante"],
+  "delivery-propio": ["guias/comision-apps-delivery-canal-propio"],
+  "cuenta-dividida": ["guias/dividir-la-cuenta-restaurante"],
+  "plan-gratis": ["guias/como-armar-menu-digital-qr-paraguay"],
+  "para-parrillas": ["guias/dividir-la-cuenta-restaurante"],
+  "para-cafeterias": ["guias/como-escribir-la-carta-del-restaurante"],
+  "para-lomiterias": ["guias/pedidos-por-whatsapp-restaurante"],
+  "para-hamburgueserias-y-pizzerias": ["guias/pedidos-por-whatsapp-restaurante", "guias/comision-apps-delivery-canal-propio"],
+};
+const relatedSlugs = (slug) => [...new Set([...(REL[slug] || []), ...Object.entries(REL).filter(([, v]) => v.includes(slug)).map(([k]) => k)])];
 const products = productPages.filter((p) => kindOf(p) === "product");
 const rubros = productPages.filter((p) => kindOf(p) === "rubro");
 const guides = productPages.filter((p) => kindOf(p) === "guide");
@@ -126,7 +141,8 @@ for (const [slug, title, description, file] of pages) {
 for (const pg of productPages) {
   const kind = kindOf(pg);
   const others = productPages.filter((o) => o.slug !== pg.slug);
-  const related = [...others.filter((o) => kindOf(o) === kind).slice(0, 3), ...others.filter((o) => kindOf(o) !== kind).slice(0, 3)].slice(0, 6);
+  const pinned = relatedSlugs(pg.slug).map((sl) => others.find((o) => o.slug === sl)).filter(Boolean);
+  const related = [...new Set([...pinned, ...others.filter((o) => kindOf(o) === kind), ...others.filter((o) => kindOf(o) !== kind)])].slice(0, 6);
   const rel = related.map((o) => `<li><a href="/${o.slug}/">${esc(o.h1)}</a></li>`).join("");
   const dated = kind === "guide" && pg.modified ? `<p class="fine">Actualizado el ${dmy(pg.modified)} · Equipo Mesaverso</p>` : "";
   const body = `<p class="lead">${esc(pg.lead)}</p>${dated}` + pg.sections.map((s) => `<h2>${esc(s.h2)}</h2>${s.html}`).join("") +
@@ -138,9 +154,10 @@ for (const pg of productPages) {
     { "@type": "FAQPage", mainEntity: pg.faq.map(([q, a]) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: plain(a) } })) },
     { "@type": "BreadcrumbList", itemListElement: crumbs.map((c, i) => ({ "@type": "ListItem", position: i + 1, name: c.name, item: abs(c.path) })) },
   ];
+  if (kind !== "guide") extra.push({ "@type": "Service", name: pg.h1, serviceType: "Menú digital y pedidos para locales gastronómicos", description: pg.description, provider: { "@id": `${SITE_URL}/#organization` }, areaServed: { "@type": "Country", name: "Paraguay" }, audience: { "@type": "BusinessAudience", audienceType: "Restaurantes, bares, lomiterías y cafeterías" }, url: abs(`/${pg.slug}/`) });
   if (kind === "guide") extra.push({ "@type": "Article", headline: pg.h1, description: pg.description, datePublished: pg.published, dateModified: pg.modified || pg.published, inLanguage: "es-PY",
     author: { "@type": "Organization", name: "Equipo Mesaverso" }, publisher: { "@type": "Organization", name: "Mesaverso", url: abs("/") }, mainEntityOfPage: abs(`/${pg.slug}/`), image: abs("/assets/og-v2.png") });
-  await write(`${pg.slug}/index.html`, render(shell(esc(pg.h1), body, { legal: false }), { title: pg.title, description: pg.description, pathname: `/${pg.slug}/`, extra }));
+  await write(`${pg.slug}/index.html`, render(shell(esc(pg.h1), body, { legal: false }), { title: pg.title, description: pg.description, pathname: `/${pg.slug}/`, extra, pageType: pg.schema || "WebPage" }));
 }
 // Hub of the guides: one crawlable list with a short description of each
 if (guides.length) {

@@ -426,3 +426,6 @@ a,button,summary,label,select{touch-action:manipulation;-webkit-tap-highlight-co
 .gl a:hover b{text-decoration:underline}
 .gl p{margin:6px 0 0;color:var(--text-2);font-size:15.5px}
 .legal+.foot{padding-top:40px}
+
+/* LCP: the headline block paints at once (an opacity-0 animation delays the largest paint); the rest keeps its staggered entrance */
+.hero__copy>.kicker.rise,.hero__copy>h1.rise,.hero__copy>.hero__sub.rise{animation:none;opacity:1;transform:none}

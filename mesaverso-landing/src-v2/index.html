@@ -26,14 +26,14 @@
 
 <nav class="nav" aria-label="Principal"><div class="wrap nav__in">
   <a class="mv-wordmark" href="#top" aria-label="Mesaverso, inicio"><svg viewBox="0 0 100 100" aria-hidden="true"><path class="m" d="M16 80V22L50 60L84 22V80"/><circle class="a" cx="16" cy="82" r="10"/><circle class="b" cx="84" cy="82" r="10"/></svg>ESAVERSO</a>
-  <div class="nav__links"><a href="#funciones">Funciones</a><a href="#como">Cómo funciona</a><a href="#planes">Planes</a><a href="#preguntas">Preguntas</a></div>
+  <div class="nav__links"><a href="#funciones">Funciones</a><a href="#como">Cómo funciona</a><a href="#planes">Planes</a><a href="#guias-home">Guías</a><a href="#preguntas">Preguntas</a></div>
   <div class="nav__end">
     <a class="btn btn--secondary btn--sm" href="#cierre"><span class="l">Quiero mi menú</span><span class="s">Empezar</span></a>
     <button class="theme" id="theme" type="button" aria-label="Cambiar a tema claro"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6 7 7M17 17l1.4 1.4M5.6 18.4 7 17M17 7l1.4-1.4"/></svg></button>
     <button class="navbtn" id="navbtn" type="button" aria-expanded="false" aria-controls="navmenu" aria-label="Abrir el menú"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
   </div>
 </div>
-<div class="navmenu" id="navmenu" hidden><a href="#funciones">Funciones</a><a href="#como">Cómo funciona</a><a href="#planes">Planes</a><a href="#preguntas">Preguntas</a><a href="{{WA:general}}" target="_blank" rel="noopener">Hablar por WhatsApp</a></div></nav>
+<div class="navmenu" id="navmenu" hidden><a href="#funciones">Funciones</a><a href="#como">Cómo funciona</a><a href="#planes">Planes</a><a href="#guias-home">Guías</a><a href="#preguntas">Preguntas</a><a href="{{WA:general}}" target="_blank" rel="noopener">Hablar por WhatsApp</a></div></nav>
 
 <main id="main">
 <!-- ============ HERO ============ -->
@@ -295,6 +295,17 @@
 </div></section>
 
 <!-- ============ PREGUNTAS ============ -->
+<!-- ============ GUIAS ============ -->
+<section class="sec" id="guias-home" aria-labelledby="h2g"><div class="wrap">
+  <div class="sec__head">
+    <span class="kicker">Guías para dueños</span>
+    <h2 id="h2g">Aprendé a ordenar tu local, paso a paso.</h2>
+    <p>Guías prácticas, escritas para restaurantes, bares, lomiterías y cafeterías de Paraguay. Útiles aunque todavía no uses Mesaverso.</p>
+  </div>
+  <ul class="gl-list">{{GUIDES_LIST}}</ul>
+  <div class="sec__cta"><a class="btn btn--secondary" href="/guias/">Ver todas las guías</a> <a class="btn btn--secondary" href="/que-es-mesaverso/">Qué es Mesaverso</a></div>
+</div></section>
+
 <section class="sec" id="preguntas" aria-labelledby="h2q"><div class="wrap">
   <div class="sec__head"><span class="kicker">Preguntas</span><h2 id="h2q">Lo que nos preguntan los dueños.</h2></div>
   <div class="faq">{{FAQ}}</div>
