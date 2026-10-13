@@ -260,6 +260,12 @@ async function main() {
     ? `<!doctype html><meta charset="utf-8"><meta http-equiv="refresh" content="0;url=${built[0].slug}/"><link rel="canonical" href="${SITE_URL}${built[0].slug}/"><title>${attr(built[0].name)}</title><a href="${built[0].slug}/">Ver el menú</a>`
     : `<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Menús</title><ul>${built.map(b => `<li><a href="${b.slug}/">${attr(b.name)}</a></li>`).join("")}</ul>`;
   await writeFile(path.join(DIST, "index.html"), index);
+  // search engines: the menus are public pages; the caja, the QR sheet and the API are not
+  const base = SITE_URL.replace(/\/$/, "");
+  await writeFile(path.join(DIST, "robots.txt"), ["User-agent: *", "Allow: /", "Disallow: /*/caja/", "Disallow: /*/qr/", "Disallow: /api/", "Disallow: /e", "", `Sitemap: ${base}/sitemap.xml`, ""].join("\n"));
+  const today = new Date().toISOString().slice(0, 10);
+  const urls = built.map(b => `  <url><loc>${base}/${b.slug}/</loc><lastmod>${today}</lastmod></url>`).join("\n");
+  await writeFile(path.join(DIST, "sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`);
   await writeFile(path.join(DIST, ".nojekyll"), "");
   // Cloudflare response headers (GitHub Pages ignores this file). One `*` per rule: use :slug for the folder. File names aren't hashed,
   // so caches stay short: an edited photo shows up within the hour.
