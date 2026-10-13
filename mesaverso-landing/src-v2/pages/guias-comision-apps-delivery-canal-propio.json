@@ -1,0 +1,65 @@
+{
+ "slug": "guias/comision-apps-delivery-canal-propio",
+ "type": "guide",
+ "published": "2026-10-13",
+ "modified": "2026-10-13",
+ "title": "Comisión de apps de delivery y cómo vender por canal propio",
+ "description": "Cómo calcular cuánto te cuesta vender por una app de delivery y cómo armar tu propio canal de pedidos con link y QR, sin dejarlas. Con cuenta de ejemplo.",
+ "h1": "Cuánto te cuesta una app de delivery y cómo armar tu canal propio de pedidos",
+ "lead": "Las apps de delivery pueden traer clientes, pero suelen cobrar un porcentaje por cada pedido. Esta guía te enseña a calcular lo que te cuestan en tu caso y a armar un canal propio con tu link y tu QR, sin tener que dejar las apps si no querés.",
+ "sections": [
+  {
+   "h2": "Primero: por qué no te damos una tarifa",
+   "html": "<p>Cada app de delivery tiene sus propias condiciones, que además pueden cambiar según el contrato, el tipo de servicio (si reparte la app o repartís vos) y la zona. Por eso en esta guía no vas a encontrar «la tarifa» de ninguna empresa: te la tiene que dar tu contrato o tu panel.</p><p>Lo que sí podemos darte es el método para saber cuánto te cuesta realmente, con tus números.</p>"
+  },
+  {
+   "h2": "Paso 1: calculá cuánto pagás en comisión por mes",
+   "html": "<p>La fórmula es simple: <strong>pedidos que entran por la app en el mes × porcentaje de comisión = lo que se queda la app</strong>.</p><p><em>Ejemplo con números inventados, no es la tarifa de ninguna empresa:</em> si en un mes una lomitería vende 5.000.000 de Gs. en pedidos por una app y el porcentaje de comisión fuera del 10 %, la comisión sería de 500.000 Gs. Con otro porcentaje, el resultado cambia: la cuenta siempre es la misma, solo cambian los números.</p><p>Hacé esta cuenta con tus datos reales de los últimos tres meses. Sacá los totales de tu panel o del resumen que te manda la app, y buscá el porcentaje en tu contrato. Anotá también si hay otros cargos (por pago con tarjeta, por publicidad dentro de la app, por reparto), porque suman.</p>"
+  },
+  {
+   "h2": "Paso 2: mirá lo que queda, no lo que entra",
+   "html": "<p>Vender más no siempre es ganar más. Para cada plato que sale por una app, calculá:</p><ol><li>Precio de venta en la app.</li><li>Menos la comisión y los otros cargos.</li><li>Menos el costo de los ingredientes y del empaque.</li><li>Igual a lo que te queda.</li></ol><p>Hacelo con tus tres platos más vendidos, por ejemplo la milanesa, la hamburguesa y la pizza. Si el margen es muy chico, tenés tres caminos: ajustar el precio dentro de la app, ofrecer en ella solo los platos con mejor margen, o llevar a tus clientes habituales a pedir por un canal propio.</p>"
+  },
+  {
+   "h2": "Qué es un canal propio de pedidos",
+   "html": "<p>Es una forma de recibir pedidos que no depende de una app de terceros: tu menú digital con su link y su QR, y el pedido que llega directo a tu WhatsApp. El cliente elige en tu menú, ve el total y envía el pedido; vos lo recibís, lo confirmás y lo preparás.</p><p>Con Mesaverso, hay 0 % de comisión en los pedidos que llegan por tu link o QR. Lo que pagás es el plan mensual (o nada, en el plan <a href=\"/plan-gratis/\">Gratis</a>, con sus límites). Los medios de cobro que uses, como un banco o una tarjeta, pueden tener sus propias comisiones. Mesaverso no cobra pagos online y no hace el reparto: el delivery lo resolvés vos o con quien trabajes. Los detalles están en <a href=\"/delivery-propio/\">delivery propio con Mesaverso</a>.</p>"
+  },
+  {
+   "h2": "Cómo llevar clientes a tu canal propio sin pelearte con las apps",
+   "html": "<p>No hace falta dejar las apps. Podés usar las dos cosas: la app para que te descubran y el canal propio para los que ya te conocen. Algunas ideas concretas:</p><ul><li><strong>Poné el QR en tu mostrador y en tu propio material</strong> con una frase como «Pedí directo por WhatsApp». Antes de usar bolsas o cajas de pedidos de una app, revisá lo que dice tu contrato sobre cómo comunicarte con sus clientes.</li><li><strong>Compartí el link</strong> en tu perfil de Instagram, en tu estado de WhatsApp y en tu ficha de Google.</li><li><strong>Usá el QR en el salón</strong>, para el cliente que quiere pedir a domicilio la próxima vez.</li><li><strong>Ofrecé algo propio</strong> por pedir directo: una bebida chica, un postre o un descuento que vos puedas sostener, con condiciones claras y un plazo definido.</li></ul><p>Para armar el menú que va a recibir esos pedidos, mirá <a href=\"/guias/como-armar-menu-digital-qr-paraguay/\">cómo armar un menú digital QR</a>, y para ordenar los mensajes que llegan, <a href=\"/guias/pedidos-por-whatsapp-restaurante/\">cómo recibir pedidos por WhatsApp sin perder ninguno</a>.</p>"
+  },
+  {
+   "h2": "Lo que tenés que resolver vos en un canal propio",
+   "html": "<p>Ser honestos también es parte de esta guía. Con un canal propio podés ganar margen y relación con el cliente, pero ya no hay quien traiga tráfico, reparta ni cobre:</p><ul><li><strong>Difusión.</strong> Los clientes tienen que enterarse de que existe tu link.</li><li><strong>Reparto.</strong> Tu moto, un delivery de terceros o retiro en el local.</li><li><strong>Cobro.</strong> Efectivo, transferencia o el medio que ya uses.</li><li><strong>Atención.</strong> Alguien que confirme y responda en hora pico.</li></ul><p>Por eso conviene empezar de a poco: llevá primero a tus clientes frecuentes y medí cuántos pedidos entran por mes. Los planes de Mesaverso están en <a href=\"/#planes\">la sección de planes</a>.</p>"
+  },
+  {
+   "h2": "Un plan de cuatro semanas para empezar",
+   "html": "<ol><li><strong>Semana 1:</strong> hacé la cuenta de comisión con tus tres últimos meses y elegí los platos con mejor margen.</li><li><strong>Semana 2:</strong> armá tu menú digital con esos platos, con foto y precio, y probalo con tu celular.</li><li><strong>Semana 3:</strong> compartí el link con tus clientes frecuentes por WhatsApp y en tus redes, y poné el QR en el local.</li><li><strong>Semana 4:</strong> contá cuántos pedidos entraron por el canal propio, comparalo con la app y decidí si seguís ampliando.</li></ol><p>No necesitás prometer nada espectacular: alcanza con que el canal propio sea cómodo y claro. Lo que ganás en margen por cada pedido propio lo podés reinvertir en mejor empaque, en una promo o en una moto más.</p>"
+  }
+ ],
+ "faq": [
+  [
+   "¿Cuánto cobra una app de delivery?",
+   "<p>Depende de cada empresa, del contrato y del servicio. Tu contrato o tu panel tienen el porcentaje exacto; con él podés hacer la cuenta de esta guía.</p>"
+  ],
+  [
+   "¿Tengo que dejar las apps de delivery para tener un canal propio?",
+   "<p>No. Podés usar las dos y, con el tiempo, llevar a tus clientes habituales a pedir directo.</p>"
+  ],
+  [
+   "¿Es verdad que no pago comisión por los pedidos de mi link?",
+   "<p>Mesaverso aplica 0 % de comisión en los pedidos que llegan por tu link o QR. Los medios de cobro que uses pueden tener sus propias comisiones.</p>"
+  ],
+  [
+   "¿Mesaverso hace el reparto?",
+   "<p>No. El reparto lo resolvés vos o con quien trabajes; Mesaverso ordena el pedido y no cobra pagos online.</p>"
+  ]
+ ],
+ "cta": "Armá tu canal propio",
+ "revisar": [
+  "Cuenta de ejemplo 5.000.000 × 10 % = 500.000, rotulada «ejemplo, no es la tarifa de ninguna empresa»; no se nombran empresas.",
+  "Captar clientes de apps con material propio: se advierte revisar el contrato con la app; validar con abogado (competencia, contrato).",
+  "Descuento por pedir directo: la promoción debe tener condiciones y plazo claros (Ley 1334); validar con abogado.",
+  "«Mesaverso no hace el reparto» y «no cobra pagos online»: coincide con el producto actual."
+ ]
+}

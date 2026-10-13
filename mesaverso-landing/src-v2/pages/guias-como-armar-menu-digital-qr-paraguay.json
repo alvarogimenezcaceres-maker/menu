@@ -1,0 +1,65 @@
+{
+ "slug": "guias/como-armar-menu-digital-qr-paraguay",
+ "type": "guide",
+ "published": "2026-10-13",
+ "modified": "2026-10-13",
+ "title": "Cómo armar un menú digital QR gratis para tu local",
+ "description": "Paso a paso para armar la carta digital de tu restaurante, lomitería o cafetería: qué cargar, cómo hacer el QR y mantenerla al día, sin gastar.",
+ "h1": "Cómo hacer un menú QR gratis para tu restaurante en Paraguay",
+ "lead": "Una carta digital no es un PDF pegado a un código: es una página que el cliente abre con la cámara del celular, busca un plato y, si querés, te hace el pedido. Esta guía te cuenta qué necesitás, en qué orden armarla y qué errores evitar, la hagas con Mesaverso o con otra herramienta.",
+ "sections": [
+  {
+   "h2": "Antes de armar nada: qué tiene que resolver tu carta digital",
+   "html": "<p>Ponete en el lugar del cliente que está en la mesa o en el sofá de su casa, con el celular en una mano. Quiere saber tres cosas: qué hay, cuánto cuesta y cómo pide. Todo lo demás es decoración.</p><p>Por eso, antes de elegir herramienta, definí qué querés lograr con la carta digital. Las respuestas típicas en un local de comida son estas:</p><ul><li><strong>Que no haya que reimprimir</strong> cada vez que sube un precio o sale un plato nuevo.</li><li><strong>Que el cliente encuentre rápido</strong> lo que busca: «milanesa», «tereré», «sin picante».</li><li><strong>Que el pedido llegue ordenado</strong>, en vez de audios y mensajes sueltos.</li><li><strong>Que la misma carta sirva</strong> en el salón, en Instagram, en tu estado de WhatsApp y en tu ficha de Google.</li></ul><p>Si tu único objetivo es «tener un QR», una imagen puede alcanzar. Si querés que la carta trabaje para vos, necesitás una página real. Si dudás entre las dos, leé antes carta digital o PDF con QR: qué conviene a tu local.</p>"
+  },
+  {
+   "h2": "Paso 1: juntá lo que vas a cargar",
+   "html": "<p>El trabajo pesado no es la tecnología, es ordenar la información. Dedicale una tarde tranquila, no la hora pico. Necesitás:</p><ol><li><strong>La lista de platos y bebidas</strong> que realmente vendés hoy. Si un plato no sale hace meses, no lo cargues.</li><li><strong>El precio actual de cada uno</strong>, en guaraníes y sin decimales: 38.000, no «38 mil y pico».</li><li><strong>Una foto por plato</strong>, al menos de los diez que más vendés. Luz de ventana, plato limpio, desde arriba o en un ángulo de 45 grados. No hace falta cámara profesional.</li><li><strong>Una descripción corta</strong> donde haga falta: qué lleva, el tamaño, si es para compartir.</li><li><strong>Tu número de WhatsApp</strong> para recibir pedidos, el de atención y no el personal.</li></ol><p>Un consejo práctico: empezá por el menú corto. Elegí tus platos fuertes, la bebida que más se pide y un postre. Es mejor una carta chica y verdadera que una enorme con la mitad desactualizada. Cuando la chica ande, ampliás. Más detalles sobre cómo ordenar y redactar en cómo escribir la carta para vender desde el celular.</p>"
+  },
+  {
+   "h2": "Paso 2: elegí cómo publicarla",
+   "html": "<p>Tenés tres caminos, de menor a mayor esfuerzo:</p><ul><li><strong>Una imagen o un PDF con un QR.</strong> Es lo más rápido y suele ser gratis. Sirve para salir del paso, pero no se busca, no marca agotados y no arma pedidos.</li><li><strong>Una página propia que armás vos.</strong> Tenés control total, pero te encargás del dominio, del diseño para celular y de actualizarla.</li><li><strong>Un servicio de menú digital.</strong> Cargás tus platos en un panel y te dan la página lista, con su link y su QR.</li></ul><p>Con Mesaverso, el plan <a href=\"/plan-gratis/\">Gratis</a> sigue el tercer camino: cargás hasta 11 productos desde el panel (hace falta un mínimo de 8 con precio para publicar), el cliente pide por WhatsApp con un pedido básico y el menú muestra la marca «Hecho con Mesaverso». Es para locales con lugar físico y las condiciones completas están en <a href=\"/terminos-gratis/\">los términos del plan Gratis</a>. Si necesitás más productos u otras funciones, los planes pagos están en <a href=\"/#planes\">la sección de planes</a>.</p><p>Elijas lo que elijas, fijate que el resultado cumpla estas condiciones: abre rápido con datos móviles, se lee bien sin hacer zoom y no pide instalar nada.</p>"
+  },
+  {
+   "h2": "Paso 3: cargá la carta con criterio",
+   "html": "<p>Cargar es copiar y pegar, pero hay decisiones que cambian cómo se vende:</p><ol><li><strong>Categorías cortas y con el nombre que usa tu cliente.</strong> «Lomitos», «Pizzas», «Para picar», «Bebidas». Evitá nombres creativos que obliguen a pensar.</li><li><strong>Los más pedidos arriba.</strong> Si tu lomito árabe es el que más sale, que sea lo primero que se vea.</li><li><strong>Nombre claro, descripción de una línea.</strong> «Milanesa a la napolitana: carne de ternera, jamón, queso y salsa, con puré o papas fritas».</li><li><strong>Precio visible en cada plato</strong> y sin sorpresas: si la guarnición se cobra aparte, decilo.</li><li><strong>Fotos del mismo estilo.</strong> Mejor diez fotos parecidas que veinte desparejas.</li></ol><p>Si vendés por delivery o retiro, aclará en algún lugar visible el horario de pedidos y la zona de entrega. Ahorra preguntas por mensaje.</p>"
+  },
+  {
+   "h2": "Paso 4: el QR, dónde ponerlo y cómo probarlo",
+   "html": "<p>El QR es solo la puerta de entrada al link. Lo importante es dónde lo ponés:</p><ul><li><strong>En cada mesa</strong>, impreso en un soporte o pegado, con una frase corta: «Escaneá y mirá la carta».</li><li><strong>En la puerta o la vidriera</strong>, para quien pasa y quiere ver precios antes de entrar.</li><li><strong>En tu perfil de Instagram, el estado de WhatsApp y Google</strong>, pero ahí usás el link, no el QR.</li><li><strong>En el mostrador</strong>, para quienes piden para llevar.</li></ul><p>Tamaño mínimo: que se escanee a 30 centímetros sin esfuerzo, unos 3 a 4 centímetros de lado como mínimo. Evitá ponerlo sobre superficies brillantes que reflejan la luz, y dejá un margen blanco alrededor.</p><p>Antes de imprimir, probalo con dos o tres celulares distintos, uno de gama baja y con datos móviles, no con el wifi del local. Si tarda en abrir o se ve apretado, corregilo antes de pegarlo en veinte mesas.</p>"
+  },
+  {
+   "h2": "Paso 5: mantenela viva",
+   "html": "<p>Una carta digital desactualizada es peor que una impresa, porque el cliente confía en lo que ve. Creá tres hábitos simples:</p><ul><li><strong>Marcá agotado</strong> apenas se termina algo (en Mesaverso se hace desde Caja, en etapa de prueba), sobre todo en los fines de semana de más movimiento.</li><li><strong>Revisá precios una vez por mes.</strong> Poné una alarma el primer lunes.</li><li><strong>Mirá la carta desde tu propio celular</strong> cada tanto, como si fueras un cliente nuevo.</li></ul><p>Cuando la carta ande bien, el siguiente paso natural es recibir los pedidos ordenados. Lo explicamos en <a href=\"/guias/pedidos-por-whatsapp-restaurante/\">cómo recibir pedidos por WhatsApp sin perder ninguno</a>. Y si querés ver qué incluye cada opción, la página de <a href=\"/menu-digital-qr/\">menú digital con QR</a> lo resume.</p>"
+  },
+  {
+   "h2": "Errores comunes al armar la primera carta digital",
+   "html": "<ul><li><strong>Subir el PDF de la carta impresa tal cual.</strong> Ese PDF fue pensado para una hoja, no para una pantalla de seis pulgadas.</li><li><strong>Cargar todo de una vez.</strong> Mejor empezar con lo que vendés y sumar después.</li><li><strong>Fotos oscuras o con el plato a medio comer.</strong> Una foto mala puede restarle atractivo al plato.</li><li><strong>No probar con datos móviles.</strong> El wifi del local engaña.</li><li><strong>Olvidarte del agotado.</strong> Puede generar pedidos que después hay que cancelar.</li></ul>"
+  }
+ ],
+ "faq": [
+  [
+   "¿Puedo tener un menú QR gratis de verdad?",
+   "<p>Sí, hay herramientas gratuitas, incluido el plan Gratis de Mesaverso: hasta 11 productos (mínimo 8 con precio para publicar), pedido básico por WhatsApp y la marca «Hecho con Mesaverso» visible. Mirá las condiciones en los <a href=\"/terminos-gratis/\">términos del plan Gratis</a>.</p>"
+  ],
+  [
+   "¿Mis clientes tienen que instalar algo para ver la carta?",
+   "<p>No. Escanean el QR con la cámara del celular y se abre una página web, sin aplicaciones.</p>"
+  ],
+  [
+   "¿Cuánto tiempo lleva armarla?",
+   "<p>Depende de cuántos platos y fotos tengas listos. Con la lista de precios en mano y unas pocas fotos, una carta corta se arma en una tarde.</p>"
+  ],
+  [
+   "¿Tengo que sacar mi carta impresa?",
+   "<p>No. Podés dejar las dos al principio y ver cuál usa más tu cliente.</p>"
+  ]
+ ],
+ "cta": "Armá tu menú gratis",
+ "revisar": [
+  "Plan Gratis: 11 productos, mínimo 8 con precio, WhatsApp básico, marca visible, locales con lugar físico; confirmar con /terminos-gratis/.",
+  "Que el plan Gratis incluya QR: confirmar.",
+  "Tamaño del QR y tiempo de armado: orientación práctica, sin estudio.",
+  "«Marcar agotado» desde Caja (etapa de prueba)."
+ ]
+}

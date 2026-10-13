@@ -419,3 +419,10 @@ a,button,summary,label,select{touch-action:manipulation;-webkit-tap-highlight-co
   .plan--free{grid-column:auto}
 }
 .feat:last-child{grid-column:1/-1}
+/* guides hub + inner-page footer */
+.gl-list{list-style:none;margin:24px 0;padding:0;display:grid;gap:14px}
+.gl{border:1px solid var(--line);border-radius:var(--r-card);padding:18px 18px 16px;background:var(--surface)}
+.gl a{color:var(--text);text-decoration:none;font-size:19px;line-height:1.3;display:block;min-height:44px}
+.gl a:hover b{text-decoration:underline}
+.gl p{margin:6px 0 0;color:var(--text-2);font-size:15.5px}
+.legal+.foot{padding-top:40px}

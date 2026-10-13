@@ -1,0 +1,69 @@
+{
+ "slug": "guias/pedidos-por-whatsapp-restaurante",
+ "type": "guide",
+ "published": "2026-10-13",
+ "modified": "2026-10-13",
+ "title": "Cómo recibir pedidos por WhatsApp sin perder ninguno",
+ "description": "Guía para locales de comida: cómo ordenar los pedidos de WhatsApp, qué datos pedir, cómo evitar errores y cuándo pasar a un menú con pedido armado.",
+ "h1": "Cómo recibir pedidos por WhatsApp en tu restaurante sin perder ninguno",
+ "lead": "WhatsApp ya es el canal de pedidos de muchos locales: lomiterías, pizzerías, cafeterías y parrillas. El problema no es el canal, es que el pedido se arma escribiendo, entre audios y cambios de último momento. Acá van los hábitos y las herramientas para que ninguno se pierda.",
+ "sections": [
+  {
+   "h2": "Por qué se pierden pedidos por WhatsApp",
+   "html": "<p>Casi nunca se pierde un pedido por mala voluntad. Se pierde por cosas muy concretas:</p><ul><li><strong>Audios largos</strong> que hay que escuchar entero para saber si eran dos milanesas o tres.</li><li><strong>Mensajes cortados</strong>: «una pizza», después «mitad muzzarella, mitad calabresa», después «ah, y una coca».</li><li><strong>Cambios a último momento</strong> que quedan enterrados más arriba en la conversación.</li><li><strong>Varios chats a la vez</strong> en hora pico, con una sola persona respondiendo.</li><li><strong>Datos que faltan</strong>: la dirección, si es delivery o retiro, a nombre de quién va.</li></ul><p>Cada uno de estos problemas tiene arreglo, y la mayoría no cuesta nada.</p>"
+  },
+  {
+   "h2": "Paso 1: usá un número exclusivo del local",
+   "html": "<p>Si los pedidos entran al mismo número donde hablás con proveedores, familia y amigos, vas a mezclar todo. Tené un número solo para el local. WhatsApp Business es una versión de WhatsApp pensada para negocios; revisá en la app qué herramientas ofrece (por ejemplo, respuestas rápidas).</p><p>Con ese número solo, quien atiende sabe que cada mensaje es un pedido o una consulta del negocio, y si cambia el turno, el chat pasa de mano sin perder el hilo.</p>"
+  },
+  {
+   "h2": "Paso 2: definí qué datos necesitás y pedilos siempre igual",
+   "html": "<p>Un pedido completo tiene siempre lo mismo. Armá una plantilla y mandala como respuesta rápida:</p><ol><li>Qué quiere y cuántos (por ejemplo, dos lomitos completos y una mandioca frita).</li><li>Si es delivery o retiro.</li><li>Dirección y una referencia, si es delivery.</li><li>Nombre y, si hace falta, el número de contacto.</li><li>Cómo va a pagar: efectivo, transferencia u otro medio que vos aceptes.</li><li>Si paga en efectivo, con cuánto, para llevar el cambio.</li></ol><p>Cuando el cliente ya conoce la plantilla, la completa solo. Y cuando falta algo, no tenés que adivinar.</p>"
+  },
+  {
+   "h2": "Paso 3: confirmá siempre antes de cocinar",
+   "html": "<p>La regla que más errores evita es esta: <strong>repetí el pedido y el total antes de prepararlo</strong>. Algo así:</p><p><em>«Perfecto: 2 lomitos completos, 1 mandioca frita y 1 tereré. Total 96.000 Gs. Delivery a Barrio X, llegamos en unos 40 minutos. ¿Confirmás?»</em></p><p>(Ejemplo ilustrativo; precios y tiempos inventados.) Ese mensaje te protege de dos problemas: que entendiste mal y que el cliente después diga que pidió otra cosa. Si el cliente confirma, anotás y empezás.</p><p>Dale a cada pedido un número correlativo, aunque sea a mano: «pedido 14». Ese número viaja con el pedido a la cocina, al delivery y a la caja.</p>"
+  },
+  {
+   "h2": "Paso 4: anotá en un solo lugar",
+   "html": "<p>El chat no es un sistema de pedidos: se desordena y se borra. Elegí un único lugar donde cada pedido queda anotado con su estado: nuevo, en preparación, listo, entregado. Puede ser:</p><ul><li>Una libreta o un pizarrón, si el volumen es chico.</li><li>Una planilla compartida, con una fila por pedido.</li><li>Una herramienta de pedidos, si ya manejás muchos por día. Con <a href=\"/pedidos-por-whatsapp/\">pedidos por WhatsApp con Mesaverso</a>, el pedido sale armado y con un código #MV; Mesaverso Caja (para llevar mesas y pedidos) está en etapa de prueba, no emite factura y no cobra pagos online.</li></ul><p>Lo que importa es que, a las diez de la noche, puedas responder «¿entró el pedido de la señora de la calle tal?» sin bucear en los mensajes.</p>"
+  },
+  {
+   "h2": "Paso 5: que el cliente arme el pedido en vez de escribirlo",
+   "html": "<p>El mayor salto de orden viene de sacar la escritura. Si el cliente abre tu menú con fotos y precios, elige los platos, ve el total y toca enviar, a tu WhatsApp llega un mensaje ya armado. Nadie tipea, nadie malinterpreta un audio y el total ya está calculado.</p><p>Eso es lo que hace el menú de Mesaverso: el pedido sale del menú hacia tu número. En el plan Gratis es un pedido básico (productos y total); en los planes pagos se suman más datos, como se ve en <a href=\"/#planes\">la sección de planes</a>. Para armar la carta desde cero, mirá <a href=\"/guias/como-armar-menu-digital-qr-paraguay/\">cómo armar un menú digital QR</a>.</p><p>En los pedidos que llegan por tu link o QR hablás directo con tu cliente y hay 0 % de comisión en los pedidos que llegan por tu link o QR. Los medios de cobro que uses pueden tener sus propias comisiones.</p>"
+  },
+  {
+   "h2": "Hábitos para hora pico",
+   "html": "<ul><li><strong>Mensaje automático de bienvenida</strong> con horario, zona de delivery y el link de tu menú.</li><li><strong>Respuesta rápida para «¿qué hay hoy?»</strong>: mandá el link de la carta en vez de escribir la lista.</li><li><strong>Una persona dedicada al teléfono</strong> en los horarios fuertes, si te lo podés permitir.</li><li><strong>Avisá los tiempos reales</strong>: es mejor prometer 50 minutos y llegar a los 40 que al revés.</li><li><strong>Marcá agotado</strong> apenas se termina un plato (en Mesaverso, desde Caja, en etapa de prueba), para no tener que cancelar después.</li></ul>"
+  },
+  {
+   "h2": "Cómo medir si tu sistema de pedidos funciona",
+   "html": "<p>No hace falta un tablero complicado. Con una planilla simple podés mirar, una vez por semana, cuatro cosas: cuántos pedidos entraron, cuántos tuviste que corregir o cancelar, cuánto tardaron en salir y de qué canal vinieron. Si los cancelados suben, revisá si el agotado está actualizado. Si los tiempos se alargan en ciertos horarios, reforzá la atención en esas horas. Con eso ya sabés dónde mejorar sin gastar de más.</p>"
+  }
+ ],
+ "faq": [
+  [
+   "¿Necesito una app para recibir pedidos por WhatsApp?",
+   "<p>No. Podés empezar con un número exclusivo y una plantilla de datos. Una herramienta de menú con pedido arma el mensaje por vos cuando el volumen crece.</p>"
+  ],
+  [
+   "¿El cliente tiene que registrarse para pedir?",
+   "<p>Con el menú de Mesaverso no hace falta registrarse ni instalar una app: abre el link o el QR, arma el pedido y lo envía por WhatsApp.</p>"
+  ],
+  [
+   "¿Cómo evito que se me mezclen los pedidos?",
+   "<p>Numerá cada pedido, repetí el total antes de cocinar y anotalo en un solo lugar con su estado.</p>"
+  ],
+  [
+   "¿Mesaverso cobra el pedido al cliente?",
+   "<p>No. Mesaverso no procesa pagos online: el cobro lo hacés vos, como siempre.</p>"
+  ]
+ ],
+ "cta": "Recibí pedidos ordenados",
+ "revisar": [
+  "WhatsApp Business mencionado sin listar funciones.",
+  "Ejemplo de mensaje de confirmación: ilustrativo, precios y tiempos inventados.",
+  "Código #MV y Caja en etapa de prueba: validar redacción con producto.",
+  "«No hace falta registrarse»: inferido de que el menú es un link público."
+ ]
+}

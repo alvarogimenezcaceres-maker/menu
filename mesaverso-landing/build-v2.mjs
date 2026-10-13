@@ -52,7 +52,7 @@ const OG_DESC = "Menú con QR, pedidos, cocina y cuenta dividida en tu local. Tu
 function headMeta({ title, description, pathname, noindex, extra = [] }) {
   const url = abs(pathname);
   const graph = [
-    { "@type": "Organization", "@id": `${SITE_URL}/#organization`, name: "Mesaverso", url: abs("/"), logo: abs("/assets/icon-512.png") },
+    { "@type": "Organization", "@id": `${SITE_URL}/#organization`, name: "Mesaverso", url: abs("/"), logo: abs("/assets/icon-512.png"), areaServed: { "@type": "Country", name: "Paraguay" }, contactPoint: { "@type": "ContactPoint", contactType: "sales", telephone: `+${MESAVERSO_WHATSAPP}`, availableLanguage: ["es"], areaServed: "PY" } },
     ...(pathname === "/" ? [{ "@type": "SoftwareApplication", "@id": `${SITE_URL}/#software`, name: "Mesaverso", applicationCategory: "BusinessApplication", operatingSystem: "Web", inLanguage: "es-PY", url: abs("/"), publisher: { "@id": `${SITE_URL}/#organization` },
       description: "Menú digital con QR, pedidos por WhatsApp y caja (mesas, cocina, cuenta dividida) para restaurantes, bares y lomiterías de Paraguay.",
       offers: [{ "@type": "Offer", name: "Plan Gratis «Vidriera»", price: 0, priceCurrency: "PYG" }, { "@type": "Offer", name: "Plan mensual", price: PRICES.planMonthly, priceCurrency: "PYG" }, { "@type": "Offer", name: "Plan anual", price: PRICES.planAnnual, priceCurrency: "PYG" }] }] : []),
@@ -64,10 +64,13 @@ function headMeta({ title, description, pathname, noindex, extra = [] }) {
     `<title>${esc(title)}</title>`,
     `<meta name="description" content="${esc(description)}">`,
     `<link rel="canonical" href="${url}">`,
-    noindex || !PUBLISH ? `<meta name="robots" content="noindex, nofollow">` : `<meta name="robots" content="index, follow">`,
+    noindex || !PUBLISH ? `<meta name="robots" content="noindex, nofollow">` : `<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">`,
+    `<link rel="alternate" hreflang="es-PY" href="${url}"><link rel="alternate" hreflang="x-default" href="${url}">`,
     `<meta property="og:type" content="website"><meta property="og:locale" content="es_PY"><meta property="og:site_name" content="Mesaverso">`,
     `<meta property="og:title" content="${esc(pathname === "/" ? OG_TITLE : title)}"><meta property="og:description" content="${esc(pathname === "/" ? OG_DESC : description)}"><meta property="og:url" content="${url}">`,
-    `<meta property="og:image" content="${abs("/assets/og-v2.png")}"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="Mesaverso: menú digital con QR, pedidos y cocina para tu local"><meta name="twitter:card" content="summary_large_image">`,
+    `<meta property="og:image" content="${abs("/assets/og-v2.png")}"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="Mesaverso: menú digital con QR, pedidos y cocina para tu local"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${esc(pathname === "/" ? OG_TITLE : title)}"><meta name="twitter:description" content="${esc(pathname === "/" ? OG_DESC : description)}">`,
+    ...(process.env.GOOGLE_SITE_VERIFICATION ? [`<meta name="google-site-verification" content="${esc(process.env.GOOGLE_SITE_VERIFICATION)}">`] : []),
+    ...(process.env.BING_SITE_VERIFICATION ? [`<meta name="msvalidate.01" content="${esc(process.env.BING_SITE_VERIFICATION)}">`] : []),
     `<script type="application/ld+json">${JSON.stringify({ "@context": "https://schema.org", "@graph": graph })}</script>`,
   ].join("\n");
 }
@@ -82,7 +85,7 @@ function render(template, meta) {
       case "PRICE": if (!(arg in PRICES)) throw new Error(`Unknown price ${arg}`); return formatGs(PRICES[arg]);
       case "RAW": if (!(arg in PRICES)) throw new Error(`Unknown price ${arg}`); return String(PRICES[arg]);
       case "OWNER": if (!(arg in OWNER)) throw new Error(`Unknown owner field ${arg}`); return esc(OWNER[arg]);
-      case "PAGES_NAV": return productPages.map((p) => `<a href="/${p.slug}/">${esc(p.h1)}</a>`).join("");
+      case "PAGES_NAV": return [...products, ...rubros].map((p) => `<a href="/${p.slug}/">${esc(p.h1)}</a>`).join("") + (guides.length ? `<a href="/guias/">Guías para dueños de locales</a>` : "");
       case "WA_DISPLAY": return waDisplay;
       case "YEAR": return String(new Date().getFullYear());
       case "QR3D": return qr3d;
@@ -98,11 +101,16 @@ function render(template, meta) {
 const write = async (rel, html) => { const f = path.join(DIST, rel); await mkdir(path.dirname(f), { recursive: true }); await writeFile(f, html); };
 const productPages = [];
 for (const f of (await readdir(path.join(SRC2, "pages"))).filter((x) => x.endsWith(".json")).sort()) productPages.push(JSON.parse(await readFile(path.join(SRC2, "pages", f), "utf8")));
+const kindOf = (p) => p.type || "product";
+const products = productPages.filter((p) => kindOf(p) === "product");
+const rubros = productPages.filter((p) => kindOf(p) === "rubro");
+const guides = productPages.filter((p) => kindOf(p) === "guide");
+const dmy = (iso) => iso.split("-").reverse().join("/");
 await write("index.html", render(await readFile(path.join(SRC2, "index.html"), "utf8"), { title: TITLE, description: DESC, pathname: "/" }));
 
 // Legal and small pages share the page shell. They are drafts until a licensed lawyer reviews them.
 const draft = PUBLISH ? "" : `<p class="draft"><b>Borrador para revisión.</b> Este texto lo redactó una asistente de IA y todavía no lo revisó un abogado matriculado. No publicar así.</p>`;
-const shell = (title, body, { legal = true } = {}) => `<!doctype html><html lang="es-PY" data-theme="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">{{HEAD_META}}<meta name="theme-color" content="#0e1014"><meta name="color-scheme" content="dark light"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="preload" href="/fonts/familjen-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="/v2.css?v={{HASH:v2.css}}"></head><body><nav class="nav" aria-label="Principal"><div class="wrap nav__in"><a class="mv-wordmark" href="/" aria-label="Mesaverso, volver al inicio"><svg viewBox="0 0 100 100" aria-hidden="true"><path class="m" d="M16 80V22L50 60L84 22V80"/><circle class="a" cx="16" cy="82" r="10"/><circle class="b" cx="84" cy="82" r="10"/></svg>ESAVERSO</a><a class="btn btn--secondary btn--sm" href="/">Volver al inicio</a></div></nav><main class="wrap legal"><h1>${title}</h1>${legal ? draft : ""}${body}</main><script>if(matchMedia('(prefers-color-scheme: light)').matches)document.documentElement.dataset.theme='light'</script></body></html>`;
+const shell = (title, body, { legal = true } = {}) => `<!doctype html><html lang="es-PY" data-theme="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">{{HEAD_META}}<meta name="theme-color" content="#0e1014"><meta name="color-scheme" content="dark light"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="preload" href="/fonts/familjen-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="/v2.css?v={{HASH:v2.css}}"></head><body><nav class="nav" aria-label="Principal"><div class="wrap nav__in"><a class="mv-wordmark" href="/" aria-label="Mesaverso, volver al inicio"><svg viewBox="0 0 100 100" aria-hidden="true"><path class="m" d="M16 80V22L50 60L84 22V80"/><circle class="a" cx="16" cy="82" r="10"/><circle class="b" cx="84" cy="82" r="10"/></svg>ESAVERSO</a><div class="nav__end"><a class="btn btn--secondary btn--sm" href="/#cierre"><span class="l">Quiero mi menú</span><span class="s">Empezar</span></a><a class="btn btn--secondary btn--sm" href="/"><span class="l">Inicio</span><span class="s">Inicio</span></a></div></div></nav><main class="wrap legal"><h1>${title}</h1>${legal ? draft : ""}${body}</main><footer class="foot"><div class="wrap foot__in"><p class="brandline">Mesaverso</p><nav aria-label="Funciones y guías" class="foot__nav">{{PAGES_NAV}}</nav><nav aria-label="Legal"><a href="/#planes">Planes</a><a href="/terminos/">Términos</a><a href="/privacidad/">Privacidad</a><a href="/reclamos/">Reclamos y retiro de contenido</a></nav></div></footer><script>if(matchMedia('(prefers-color-scheme: light)').matches)document.documentElement.dataset.theme='light'</script></body></html>`;
 const pages = [
   ["privacidad", "Aviso de privacidad", "Aviso de privacidad de Mesaverso: cómo usamos y protegemos los datos que dejás en esta página, y cómo ejercer tus derechos.", "privacidad.body.html"],
   ["terminos", "Términos del sitio", "Términos del sitio de Mesaverso: condiciones de uso de esta página, de sus herramientas de vista previa y del formulario de contacto.", "terminos.body.html"],
@@ -116,16 +124,35 @@ for (const [slug, title, description, file] of pages) {
 }
 // Product pages (src-v2/pages/*.json): one search intention each, written by Tesa, claims reviewed by Joja.
 for (const pg of productPages) {
-  const rel = productPages.filter((o) => o.slug !== pg.slug).map((o) => `<li><a href="/${o.slug}/">${esc(o.h1)}</a></li>`).join("");
-  const body = `<p class="lead">${esc(pg.lead)}</p>` + pg.sections.map((s) => `<h2>${esc(s.h2)}</h2>${s.html}`).join("") +
+  const kind = kindOf(pg);
+  const others = productPages.filter((o) => o.slug !== pg.slug);
+  const related = [...others.filter((o) => kindOf(o) === kind).slice(0, 3), ...others.filter((o) => kindOf(o) !== kind).slice(0, 3)].slice(0, 6);
+  const rel = related.map((o) => `<li><a href="/${o.slug}/">${esc(o.h1)}</a></li>`).join("");
+  const dated = kind === "guide" && pg.modified ? `<p class="fine">Actualizado el ${dmy(pg.modified)} · Equipo Mesaverso</p>` : "";
+  const body = `<p class="lead">${esc(pg.lead)}</p>${dated}` + pg.sections.map((s) => `<h2>${esc(s.h2)}</h2>${s.html}`).join("") +
     `<h2>Preguntas frecuentes</h2><div class="faq faq--page">${pg.faq.map(([q, a]) => `<details><summary>${esc(q)}</summary><div>${a}</div></details>`).join("")}</div>` +
     `<p class="page__cta"><a class="btn btn--primary" href="/#cierre">${esc(pg.cta)}</a> <a class="btn btn--secondary" href="/#circuito">Ver el circuito completo</a></p>` +
     `<h2>Seguí leyendo</h2><ul>${rel}</ul>`;
+  const crumbs = [{ name: "Mesaverso", path: "/" }, ...(kind === "guide" ? [{ name: "Guías", path: "/guias/" }] : []), { name: pg.h1, path: `/${pg.slug}/` }];
   const extra = [
     { "@type": "FAQPage", mainEntity: pg.faq.map(([q, a]) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: plain(a) } })) },
-    { "@type": "BreadcrumbList", itemListElement: [{ "@type": "ListItem", position: 1, name: "Mesaverso", item: abs("/") }, { "@type": "ListItem", position: 2, name: pg.h1, item: abs(`/${pg.slug}/`) }] },
+    { "@type": "BreadcrumbList", itemListElement: crumbs.map((c, i) => ({ "@type": "ListItem", position: i + 1, name: c.name, item: abs(c.path) })) },
   ];
+  if (kind === "guide") extra.push({ "@type": "Article", headline: pg.h1, description: pg.description, datePublished: pg.published, dateModified: pg.modified || pg.published, inLanguage: "es-PY",
+    author: { "@type": "Organization", name: "Equipo Mesaverso" }, publisher: { "@type": "Organization", name: "Mesaverso", url: abs("/") }, mainEntityOfPage: abs(`/${pg.slug}/`), image: abs("/assets/og-v2.png") });
   await write(`${pg.slug}/index.html`, render(shell(esc(pg.h1), body, { legal: false }), { title: pg.title, description: pg.description, pathname: `/${pg.slug}/`, extra }));
+}
+// Hub of the guides: one crawlable list with a short description of each
+if (guides.length) {
+  const list = guides.map((g) => `<li class="gl"><a href="/${g.slug}/"><b>${esc(g.h1)}</b></a><p>${esc(g.description)}</p></li>`).join("");
+  const body = `<p class="lead">Guías prácticas para dueños de restaurantes, bares, lomiterías y cafeterías de Paraguay: menú con QR, pedidos por WhatsApp, delivery propio y cuenta dividida.</p><ul class="gl-list">${list}</ul>` +
+    `<p class="page__cta"><a class="btn btn--primary" href="/plan-gratis/">Armá tu menú gratis</a> <a class="btn btn--secondary" href="/#planes">Ver planes</a></p>`;
+  const extra = [
+    { "@type": "CollectionPage", name: "Guías para dueños de locales gastronómicos", url: abs("/guias/"), inLanguage: "es-PY" },
+    { "@type": "ItemList", itemListElement: guides.map((g, i) => ({ "@type": "ListItem", position: i + 1, url: abs(`/${g.slug}/`), name: g.h1 })) },
+    { "@type": "BreadcrumbList", itemListElement: [{ "@type": "ListItem", position: 1, name: "Mesaverso", item: abs("/") }, { "@type": "ListItem", position: 2, name: "Guías", item: abs("/guias/") }] },
+  ];
+  await write("guias/index.html", render(shell("Guías para dueños de locales gastronómicos", body, { legal: false }), { title: "Guías para restaurantes en Paraguay | Mesaverso", description: "Guías prácticas para dueños de restaurantes y bares de Paraguay: menú con QR, pedidos por WhatsApp, delivery propio y cuenta dividida.", pathname: "/guias/", extra }));
 }
 const simple = (title, text) => render(shell(esc(title), `<p>${text}</p><p><a class="btn btn--primary" href="/">Volver a Mesaverso</a></p>`), { title: `${title} | Mesaverso`, description: title, pathname: "/", noindex: true });
 await write("gracias.html", simple("¡Listo! Recibimos tu solicitud", "Te vamos a escribir por WhatsApp para mostrarte cómo quedaría tu menú."));
@@ -141,7 +168,27 @@ await cp(path.join(ROOT, "node_modules/@google/model-viewer/dist/model-viewer.mi
 await write("robots.txt", PUBLISH ? `User-agent: *\nAllow: /\nDisallow: /api/\n\nSitemap: ${SITE_URL}/sitemap.xml\n` : "User-agent: *\nDisallow: /\n");
 const today = new Date().toISOString().slice(0, 10);
 const lastmod = (await stat(path.join(SRC2, "index.html"))).mtime.toISOString().slice(0, 10);
-await write("sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${["/", ...productPages.map((p) => `/${p.slug}/`), ...pages.map((p) => `/${p[0]}/`)].map((p) => `  <url><loc>${abs(p)}</loc><lastmod>${lastmod}</lastmod></url>`).join("\n")}\n</urlset>\n`);
+const smap = [["/", lastmod], ...(guides.length ? [["/guias/", guides.map((g) => g.modified || g.published).sort().pop()]] : []), ...productPages.map((p) => [`/${p.slug}/`, p.modified || lastmod]), ...pages.map((p) => [`/${p[0]}/`, lastmod])];
+await write("sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${smap.map(([p, d]) => `  <url><loc>${abs(p)}</loc><lastmod>${d}</lastmod></url>`).join("\n")}\n</urlset>\n`);
+// IndexNow (Bing, Yandex and others): the public key file proves the site is ours; ping-indexnow.mjs tells them about new or changed URLs
+try { const k = (await readFile(path.join(SRC2, "indexnow.key"), "utf8")).trim(); if (k) await write(`${k}.txt`, k); } catch {}
+// llms.txt: a plain summary for AI assistants and answer engines (what Mesaverso is, who it is for, where the facts are)
+await write("llms.txt", [
+  "# Mesaverso",
+  "",
+  "> Menú digital con QR, pedidos por WhatsApp, cocina en pantalla y cuenta dividida para restaurantes, bares, lomiterías y cafeterías de Paraguay. 0 % de comisión en los pedidos que llegan por el link o QR del local. Plan Gratis disponible (hasta 11 productos). Mesaverso Caja está en etapa de prueba y no emite factura ni cobra pagos online.",
+  "",
+  "## Funciones",
+  ...products.map((p) => `- [${p.h1}](${abs(`/${p.slug}/`)}): ${p.description}`),
+  "",
+  ...(rubros.length ? ["## Para cada tipo de local", ...rubros.map((p) => `- [${p.h1}](${abs(`/${p.slug}/`)}): ${p.description}`), ""] : []),
+  ...(guides.length ? ["## Guías", ...guides.map((p) => `- [${p.h1}](${abs(`/${p.slug}/`)}): ${p.description}`), ""] : []),
+  "## Contacto y condiciones",
+  `- [Planes y precios](${abs("/#planes")})`,
+  `- [Términos del plan Gratis](${abs("/terminos-gratis/")})`,
+  `- [Aviso de privacidad](${abs("/privacidad/")})`,
+  "",
+].join("\n"));
 
 // Same security headers as the live landing. wa.me links are plain anchors; no third-party script or font.
 const csp = ["default-src 'self'", "script-src 'self' 'wasm-unsafe-eval'", "style-src 'self' 'unsafe-inline'", "font-src 'self'", "img-src 'self' data: blob:", "connect-src 'self' blob: data:", "worker-src 'self' blob:", "base-uri 'self'", "form-action 'self'", "frame-ancestors 'none'", "object-src 'none'"].join("; ");

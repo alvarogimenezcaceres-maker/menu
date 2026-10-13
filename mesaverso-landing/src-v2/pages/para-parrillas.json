@@ -1,0 +1,66 @@
+{
+ "slug": "para-parrillas",
+ "type": "rubro",
+ "published": "2026-10-13",
+ "modified": "2026-10-13",
+ "title": "Menú digital para parrilla en Paraguay | Mesaverso",
+ "description": "Carta digital y pedidos para parrillas de Paraguay: cortes, punto de cocción, picadas, cuenta dividida y cortes agotados. Con QR y WhatsApp.",
+ "h1": "Menú digital y sistema de pedidos para parrilla en Paraguay",
+ "lead": "Una parrilla vende cortes, puntos de cocción y mesas largas, no solo platos. Tu carta digital tiene que explicarlo, y el pedido tiene que llegar claro a la parrillera.",
+ "sections": [
+  {
+   "h2": "Una carta de parrilla no es una carta cualquiera",
+   "html": "<p>En una parrilla, el cliente no pide «un plato». Pide un corte, dice cómo lo quiere y suma achuras, mandioca, ensalada y algo para tomar. Si la carta es un PDF borroso o una foto de la pizarra, el mozo termina explicando todo de memoria, mesa por mesa, mientras el humo no espera.</p><p>Con un <a href='/menu-digital-qr/'>menú digital con QR</a> la carta vive en el celular de cada comensal, con fotos, precios al día y una descripción corta de cada corte. Si cambia el precio del kilo, lo cambiás una vez y listo: no hay que reimprimir nada.</p>"
+  },
+  {
+   "h2": "Cortes, puntos de cocción y porciones por persona",
+   "html": "<p>El dato que más define a una parrilla es el punto: jugoso, a punto o bien cocido. En el menú digital, cada plato puede tener opciones de elección obligatoria (por ejemplo, el punto de cocción) y el pedido admite una nota por línea, de modo que lo elegido llegue escrito y la parrillera no tenga que adivinar.</p><p>También ayuda decir cuánta gente come con cada porción. Un ejemplo de carta, con precios inventados de un local ficticio:</p><ul><li><strong>Costilla a la parrilla, para 2 personas:</strong> ₲ 120.000 (ejemplo)</li><li><strong>Vacío, 300 g, para 1 persona:</strong> ₲ 85.000 (ejemplo)</li><li><strong>Chorizo y morcilla, media porción:</strong> ₲ 35.000 (ejemplo)</li><li><strong>Mandioca y ensalada mixta, para compartir:</strong> ₲ 25.000 (ejemplo)</li></ul><p>Con «para 2 personas» y «para 1 persona» a la vista, al cliente le resulta más fácil calcular cuánto pedir.</p>"
+  },
+  {
+   "h2": "Picadas y mesas largas",
+   "html": "<p>El cumpleaños, el almuerzo de domingo en familia y la cena de la empresa tienen algo en común: una mesa larga y una picada al medio. Una picada suele combinar varios cortes, chorizo, queso, mandioca y chipa, y cada local la arma a su manera.</p><p>Lo mejor es cargarla como un producto con su descripción: qué trae, para cuántas personas rinde y qué se puede cambiar (con opciones de elección, si querés). Así el que reserva la mesa sabe qué pedir antes de llegar. Si el grupo es grande, el pedido puede llegar a tu <a href='/pedidos-por-whatsapp/'>WhatsApp ya armado</a>, con cantidades y total, en lugar de un audio de cuatro minutos.</p>"
+  },
+  {
+   "h2": "Cuando se acaba un corte, que no se entere el cliente en la mesa",
+   "html": "<p>En una parrilla hay cortes que se terminan: la costilla del sábado a las 21 h, el vacío del domingo. Lo peor es que el cliente lo pida, espere y se entere después. Lo práctico es marcar el corte como agotado desde Mesaverso Caja (en etapa de prueba) para que deje de ofrecerse, y tener la alternativa a mano.</p><p>Revisá esto antes del turno fuerte: qué cortes entraron, cuántos quedan y cuáles querés empujar. Un menú que se corrige en el momento ayuda a evitar discusiones en la mesa.</p>"
+  },
+  {
+   "h2": "La cuenta entre muchos",
+   "html": "<p>Doce personas, tres tipos de picada, bebidas que fueron y vinieron: la cuenta final es el momento más cansador del servicio. Hay quien quiere pagar solo lo suyo, quien invita a todos y quien divide en partes iguales.</p><p>Con Mesaverso Caja podés abrir la mesa, anotar lo que se fue pidiendo y dividir la cuenta por consumo o en partes. Mirá cómo funciona la <a href='/cuenta-dividida/'>cuenta dividida</a>. Caja está en etapa de prueba: no emite factura y no cobra pagos online, así que el cobro y la factura los seguís haciendo como hasta ahora.</p>"
+  },
+  {
+   "h2": "Los turnos de fin de semana",
+   "html": "<p>Un sábado a la noche la parrilla trabaja a pleno: mesas llenas, retiros que esperan en la puerta y el teléfono sin parar. El pedido por WhatsApp te sirve para el retiro de la familia que se lleva el asado a casa, y la comanda clara ayuda a que parrillera y mozo hablen el mismo idioma.</p><p>Una rutina simple para el turno: antes de abrir, actualizá los cortes disponibles y los precios; durante el turno, seguí los pedidos que van entrando; al cerrar, si usás Caja (en etapa de prueba), podés hacer el cierre de turno. Y hay 0 % de comisión en los pedidos que llegan por tu link o QR; los medios de cobro que uses pueden tener sus propias comisiones.</p>"
+  },
+  {
+   "h2": "Cómo empezar sin gastar de entrada",
+   "html": "<p>Podés probar con el plan <a href='/plan-gratis/'>Gratis</a>: hasta 11 productos (hace falta tener al menos 8 con precio para publicar), pedido básico por WhatsApp y la marca «Hecho con Mesaverso» visible. Para una parrilla puede alcanzar para mostrar tus cortes estrella, la picada y las bebidas principales. Si querés la carta completa, mirá los <a href='/#planes'>planes</a>. Las condiciones están en los <a href='/terminos-gratis/'>términos del plan Gratis</a>.</p>"
+  }
+ ],
+ "faq": [
+  [
+   "¿Puedo poner el punto de cocción en el pedido?",
+   "<p>Sí: podés configurarlo como opción de elección del corte, y el cliente también puede sumar una nota en la línea del pedido. Así llega escrito y la parrillera no tiene que preguntar.</p>"
+  ],
+  [
+   "¿Qué hago cuando se me acaba un corte?",
+   "<p>Lo marcás como agotado desde Mesaverso Caja (en etapa de prueba) para que no se siga ofreciendo. Conviene hacerlo antes del turno fuerte y tener una alternativa a mano.</p>"
+  ],
+  [
+   "¿Sirve para mesas grandes con cuenta dividida?",
+   "<p>Sí, con Mesaverso Caja podés abrir la mesa y dividir la cuenta por consumo o en partes. Caja está en etapa de prueba y no emite factura.</p>"
+  ],
+  [
+   "¿Mesaverso cobra por los pedidos que recibo?",
+   "<p>No cobra comisión sobre los pedidos que llegan por tu link o QR: es 0 % de comisión en esos pedidos. Pagás el plan elegido, salvo en el plan Gratis.</p>"
+  ]
+ ],
+ "cta": "Quiero el menú de mi parrilla",
+ "revisar": [
+  "Precios y cortes son ejemplo de un local ficticio, rotulados «ejemplo».",
+  "Opciones de elección y nota por línea (punto de cocción): confirmadas por producto; validar redacción final.",
+  "«Agotado» se marca desde Caja, que está en etapa de prueba; si Caja cambia, ajustar.",
+  "Plan Gratis: confirmar que /terminos-gratis/ coincide con 11 productos, mínimo 8 con precio, marca visible.",
+  "Comisión: 0 % solo en pedidos por link o QR; validar con abogado o contador."
+ ]
+}

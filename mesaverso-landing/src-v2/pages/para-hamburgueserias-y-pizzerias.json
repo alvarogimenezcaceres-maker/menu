@@ -1,0 +1,66 @@
+{
+ "slug": "para-hamburgueserias-y-pizzerias",
+ "type": "rubro",
+ "published": "2026-10-13",
+ "modified": "2026-10-13",
+ "title": "Menú digital para hamburguesería y pizzería en Paraguay",
+ "description": "Menú digital para hamburgueserías y pizzerías de Paraguay: combos, tamaños, sabores, mitad y mitad, delivery, retiro y tu producto estrella en 3D.",
+ "h1": "Menú digital para hamburguesería y pizzería en Paraguay",
+ "lead": "Combos, tamaños, sabores y mitad y mitad: en comida rápida la carta se arma de a pedazos. Tu menú tiene que dejar que el cliente los junte sin errores.",
+ "sections": [
+  {
+   "h2": "Acá el pedido se arma con opciones",
+   "html": "<p>Una pizza no es un precio: es un tamaño, uno o dos sabores y quizás un borde relleno. Una hamburguesa viene sola, en combo con papas o en combo familiar. Cuanto más combinaciones tiene el pedido, más fácil es equivocarse si se anota a mano.</p><p>Con un <a href='/menu-digital-qr/'>menú digital con QR</a>, el cliente va viendo cada opción en la pantalla, con su precio, y el total se arma antes de enviar. Ayuda a evitar el «me dijiste grande, ¿no?».</p><p>En horas pico, esas confusiones cuestan caro: una pizza que sale del tamaño equivocado se paga entera, y el cliente no vuelve contento. Un pedido que llega ya armado puede reducir esos errores.</p>"
+  },
+  {
+   "h2": "Combos, tamaños y sabores en una carta ordenada",
+   "html": "<p>Una buena carta de comida rápida separa lo que se elige de lo que se suma. Un ejemplo, con precios inventados de un local ficticio:</p><ul><li><strong>Hamburguesa clásica sola:</strong> ₲ 28.000 (ejemplo)</li><li><strong>Combo clásica con papas y gaseosa:</strong> ₲ 42.000 (ejemplo)</li><li><strong>Pizza muzzarella, mediana (6 porciones):</strong> ₲ 55.000 (ejemplo)</li><li><strong>Pizza muzzarella, grande (8 porciones):</strong> ₲ 70.000 (ejemplo)</li><li><strong>Combo familiar: 2 pizzas grandes y gaseosa de 2 litros:</strong> ₲ 150.000 (ejemplo)</li></ul><p>Los tamaños pueden cargarse como opciones del plato, con la cantidad de porciones en la descripción. Así el cliente compara y no tiene que adivinar cuánto rinde.</p>"
+  },
+  {
+   "h2": "Mitad y mitad sin enredos",
+   "html": "<p>Dos sabores en la misma pizza es un clásico, y un dolor de cabeza cuando se pide por mensaje: ¿la mitad de qué?, ¿cuál sale más cara? Una forma práctica es cargar «Pizza mitad y mitad» como producto, con la regla en la descripción: «Elegí dos sabores; se cobra el de mayor precio» (ejemplo de regla; la definís vos).</p><p>El cliente indica los dos sabores en la nota de la línea del pedido, y esa nota viaja en el mensaje. Así la cocina tiene menos que preguntar.</p>"
+  },
+  {
+   "h2": "Adicionales: extras con su precio",
+   "html": "<p>Queso extra, panceta, huevo, borde relleno, salsa. Son pequeños y se olvidan cuando se piden de palabra. Cargalos como extras del plato con su precio, así el cliente los ve y los suma solo.</p><p>Un buen orden es ofrecer los extras al final de la carta, bajo un título como «Sumale a tu pedido». Por ejemplo, «Queso extra» a ₲ 5.000 y «Borde relleno» a ₲ 12.000 (ejemplo). Así no tenés que acordarte de ofrecerlos en cada llamada de un viernes a la noche.</p>"
+  },
+  {
+   "h2": "Delivery, retiro y tiempos de preparación",
+   "html": "<p>En una pizzería, la pregunta de siempre es «¿cuánto tarda?». Si hay demora, es mejor decirlo antes de que el cliente pida. Podés dejar el tiempo estimado en la descripción de tu menú, por ejemplo «retiro en 30 minutos, delivery en 50» (ejemplo), y cambiarlo cuando se llena el local.</p><p>El pedido llega a tu WhatsApp con los productos y el total; en los planes pagos, también con delivery o retiro y la dirección. Mirá cómo funciona el <a href='/pedidos-por-whatsapp/'>pedido por WhatsApp</a> y cómo recibir <a href='/delivery-propio/'>delivery propio</a>. Hay 0 % de comisión en los pedidos que llegan por tu link o QR; los medios de cobro que uses pueden tener las suyas.</p><p>El retiro merece su lugar: mucha gente prefiere buscar la pizza en el camino a casa. Si el cliente elige retiro, no hace falta dirección y no pagás envío. Si elige delivery, deja su dirección y el costo del envío figura a confirmar, porque depende de la zona. Esto ayuda a evitar sorpresas en la puerta.</p>"
+  },
+  {
+   "h2": "Tu producto estrella en 3D",
+   "html": "<p>Si tenés una hamburguesa o una pizza que es tu cara, Mesaverso permite mostrarla en 3D: el cliente la gira en la pantalla y, en celulares compatibles, puede verla en su entorno. Se arma a partir de fotos del plato. No hace falta para empezar, y conviene dejarlo para tu producto más pedido.</p><p>Si además vendés lomitos, mirá la página para <a href='/para-lomiterias/'>lomiterías</a>.</p>"
+  },
+  {
+   "h2": "Probalo con una carta chica",
+   "html": "<p>Con el plan <a href='/plan-gratis/'>Gratis</a> podés publicar hasta 11 productos (al menos 8 con precio), con pedido básico por WhatsApp y la marca «Hecho con Mesaverso» visible; es para locales con lugar físico y las condiciones están en los <a href='/terminos-gratis/'>términos del plan Gratis</a>. Puede alcanzar para tus combos estrella. Si querés más productos, mirá los <a href='/#planes'>planes</a>. Mesaverso Caja, para seguir los pedidos, está en etapa de prueba y no emite factura ni cobra pagos online.</p>"
+  }
+ ],
+ "faq": [
+  [
+   "¿Puedo ofrecer pizza mitad y mitad?",
+   "<p>Sí, podés cargarla como un producto y el cliente indica los dos sabores en la nota de la línea del pedido, que viaja en el mensaje. La regla de precio la definís vos y la escribís en la descripción.</p>"
+  ],
+  [
+   "¿Cómo muestro distintos tamaños?",
+   "<p>Cargás los tamaños como opciones del plato, cada uno con su precio, y la cantidad de porciones en la descripción.</p>"
+  ],
+  [
+   "¿Cómo aviso que hay demora?",
+   "<p>Podés escribir el tiempo estimado en la descripción de tu menú y actualizarlo cuando cambie. El cliente lo ve antes de pedir.</p>"
+  ],
+  [
+   "¿El 3D hace falta para publicar?",
+   "<p>No. Es opcional y conviene usarlo para tu producto estrella. Empezás con fotos comunes y sumás el 3D cuando quieras.</p>"
+  ]
+ ],
+ "cta": "Quiero el menú de mi hamburguesería o pizzería",
+ "revisar": [
+  "Precios, tamaños, combos, regla de mitad y mitad y tiempos son ejemplo de un local ficticio, rotulados «ejemplo».",
+  "Tiempos de preparación: texto libre escrito por el local; no hay cálculo ni aviso automático al cliente (no se afirma).",
+  "3D: solo «en celulares compatibles»; confirmar que ningún texto promete realidad aumentada en todos los equipos.",
+  "Plan Gratis: confirmar con /terminos-gratis/.",
+  "Comisión: 0 % solo en pedidos por link o QR; Caja en etapa de prueba, sin factura ni cobro online."
+ ]
+}

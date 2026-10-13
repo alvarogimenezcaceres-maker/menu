@@ -1,0 +1,68 @@
+{
+ "slug": "guias/como-escribir-la-carta-del-restaurante",
+ "type": "guide",
+ "published": "2026-10-13",
+ "modified": "2026-10-13",
+ "title": "Cómo armar y escribir la carta para que se pida fácil",
+ "description": "Orden, nombres, descripciones, fotos, precios y «agotado»: cómo escribir la carta de tu local para que se entienda y se pida fácil desde el celular.",
+ "h1": "Cómo armar y escribir la carta de tu restaurante para que se pida fácil desde el celular",
+ "lead": "En el celular nadie lee una carta como un libro: mira, desliza y decide en segundos. Esta guía te muestra cómo ordenar los platos, qué nombres y descripciones usar, cómo sacar fotos que sirvan y qué hacer con los precios y los platos agotados.",
+ "sections": [
+  {
+   "h2": "Cómo se lee una carta en el celular",
+   "html": "<p>La pantalla es chica y la atención, corta. El cliente recorre la carta con el pulgar, se detiene en lo que reconoce y descarta lo que le obliga a pensar. Eso tiene consecuencias prácticas:</p><ul><li>Las listas largas sin categorías se abandonan.</li><li>Los textos largos no se leen: una línea por plato alcanza.</li><li>Lo que está arriba se ve más que lo que está abajo.</li><li>Una foto clara ayuda más que tres adjetivos.</li></ul><p>Tomá estas ideas como criterio de diseño, no como reglas rígidas: probalas con tu propia carta y mirá qué platos se piden más.</p>"
+  },
+  {
+   "h2": "1. Ordená por cómo piensa tu cliente",
+   "html": "<p>Armá categorías con el nombre que usaría un cliente, no uno que suene lindo. «Lomitos», «Hamburguesas», «Pizzas», «Para compartir», «Bebidas», «Postres». Entre cinco y ocho categorías suele ser lo cómodo en un menú de local de comida.</p><p>Dentro de cada una:</p><ol><li>Poné primero los platos que más salen y los que más margen te dejan.</li><li>Agrupá variantes parecidas: todos los lomitos juntos, de menor a mayor precio o por popularidad.</li><li>Dejá las bebidas y los extras al final, o en categorías propias, para que se vean cuando el cliente ya eligió el plato.</li></ol><p>Si el local vende combos, una categoría «Combos» arriba suele ayudar a decidir rápido. Cuando armes la primera versión, la guía de <a href=\"/guias/como-armar-menu-digital-qr-paraguay/\">cómo armar un menú digital QR</a> te da el paso a paso.</p>"
+  },
+  {
+   "h2": "2. Nombres que se entienden",
+   "html": "<p>Un buen nombre dice qué es el plato. Compará:</p><ul><li>«Especial de la casa» → «Lomito árabe con papas».</li><li>«La tentación» → «Milanesa napolitana».</li><li>«Combo 2» → «2 hamburguesas completas + 2 gaseosas».</li></ul><p>Si tenés platos con nombre propio, conservalo, pero agregá la aclaración al lado. Evitá abreviaturas internas de cocina, como «mila nap» o «lom. comp.»: el cliente no las conoce. Usá siempre las mismas palabras para lo mismo, «completo» o «especial», pero no las dos a la vez.</p>"
+  },
+  {
+   "h2": "3. Descripciones: una línea, lo que importa",
+   "html": "<p>La descripción responde lo que el cliente se pregunta antes de pedir: qué lleva, de qué tamaño es y con qué viene. Una línea alcanza.</p><ul><li><strong>Bien:</strong> «Pan casero, lomo, jamón, queso, huevo, lechuga y tomate. Viene con papas fritas.»</li><li><strong>Mejorable:</strong> «Un clásico irresistible que te va a conquistar con su sabor único.»</li></ul><p>Los adjetivos vacíos no informan. Mejor datos concretos: porción para una o dos personas, picante o no, si lleva algo que suele ser alérgeno, si se puede pedir sin cebolla. Para platos regionales como la chipa guasu o la mandioca frita, una descripción corta también sirve al turista que no los conoce.</p>"
+  },
+  {
+   "h2": "4. Fotos: pocas, claras y parecidas",
+   "html": "<p>No necesitás cámara profesional. Con un celular normal y estas pautas, alcanza:</p><ol><li><strong>Luz natural</strong>, cerca de una ventana, sin flash.</li><li><strong>Fondo limpio</strong>: una mesa lisa o una tabla, sin servilletas ni manos.</li><li><strong>El plato completo y recién servido</strong>, con lo que realmente lleva.</li><li><strong>Misma distancia y ángulo</strong> en todas, para que la carta se vea ordenada.</li><li><strong>Foto real, no de internet.</strong> Si el plato que llega no se parece a la foto, el cliente lo nota.</li></ol><p>Empezá por los diez platos que más vendés. Un plato sin foto con buena descripción es mejor que uno con foto mala.</p>"
+  },
+  {
+   "h2": "5. Precios: claros y al día",
+   "html": "<p>El precio va siempre visible y en guaraníes, con punto de mil: 38.000. Algunas pautas:</p><ul><li>Si hay tamaños, mostrá cada uno con su precio: «Chica 45.000 / Grande 70.000».</li><li>Si un adicional se cobra aparte (queso extra, huevo), decilo en el plato.</li><li>Si el precio de delivery o el envase se suman, avisalo antes de que el cliente arme el pedido.</li><li>Cuando suba un costo, actualizá la carta el mismo día para no vender a precio viejo.</li></ul><p>Una carta digital se cambia sin reimprimir, pero solo si alguien se acuerda de hacerlo. Asignale la tarea a una persona.</p>"
+  },
+  {
+   "h2": "6. Agotado: el detalle que evita cancelaciones",
+   "html": "<p>Nada molesta más que pedir algo y que te digan que ya no hay. Si tu herramienta permite marcar «agotado» (en Mesaverso se marca desde Caja, en etapa de prueba), usala apenas se termina un plato; si la carta es un PDF, tendrás que cambiar el archivo. Algunos criterios:</p><ul><li>Marcá agotado cuando queden pocas unidades, no cuando ya no haya ninguna.</li><li>Volvé a activar el plato al día siguiente, para no olvidarlo apagado.</li><li>Los platos del día se actualizan a primera hora, con el nombre del día en la categoría.</li></ul><p>Si vendés por WhatsApp, el agotado importa doble, porque cada cancelación es una conversación más. Lo desarrollamos en <a href=\"/guias/pedidos-por-whatsapp-restaurante/\">cómo recibir pedidos por WhatsApp sin perder ninguno</a>. Y para ver cómo se presenta todo esto en un menú con QR, está la página de <a href=\"/menu-digital-qr/\">menú digital con QR</a>.</p>"
+  },
+  {
+   "h2": "Una revisión de diez minutos antes de publicar",
+   "html": "<p>Cuando termines de cargar, hacé esta revisión desde tu celular, como si fueras un cliente nuevo:</p><ul><li>¿Se entiende la primera pantalla sin deslizar? ¿Se ve qué tipo de comida es?</li><li>¿Cada plato tiene precio? ¿Alguno tiene un precio viejo?</li><li>¿Los nombres coinciden con lo que llega a la mesa?</li><li>¿Hay faltas de ortografía o mayúsculas mezcladas?</li><li>¿Las fotos se ven del mismo estilo?</li><li>¿Probaste la carta con datos móviles y con una sola mano?</li></ul><p>Pedile además a alguien que no conoce tu local que busque un plato, por ejemplo un clericó o una chipa, y mirá cuánto tarda. Si duda, la carta necesita un ajuste.</p>"
+  }
+ ],
+ "faq": [
+  [
+   "¿Cuántos platos debería tener mi carta digital?",
+   "<p>Los que realmente vendés. Una carta corta y actualizada funciona mejor que una enorme con platos que ya no salen.</p>"
+  ],
+  [
+   "¿Necesito fotos de todos los platos?",
+   "<p>No. Empezá por los más vendidos, con buena luz, y sumá el resto con el tiempo.</p>"
+  ],
+  [
+   "¿Cada cuánto debo revisar los precios?",
+   "<p>Una vez por mes como mínimo, y el mismo día en que cambie un costo importante.</p>"
+  ],
+  [
+   "¿Cómo marco un plato agotado?",
+   "<p>En Mesaverso se marca desde Caja (en etapa de prueba) y el plato deja de ofrecerse. En un PDF hay que reemplazar el archivo.</p>"
+  ]
+ ],
+ "cta": "Armá tu carta gratis",
+ "revisar": [
+  "Categorías y orden: criterio de diseño, sin estudio ni cifra de mercado.",
+  "Ejemplos de platos y precios: ilustrativos; no corresponden a cartas reales de clientes.",
+  "«Agotado» desde Caja (etapa de prueba)."
+ ]
+}

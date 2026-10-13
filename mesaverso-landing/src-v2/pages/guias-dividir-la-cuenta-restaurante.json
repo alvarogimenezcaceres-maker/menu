@@ -1,0 +1,68 @@
+{
+ "slug": "guias/dividir-la-cuenta-restaurante",
+ "type": "guide",
+ "published": "2026-10-13",
+ "modified": "2026-10-13",
+ "title": "Cómo dividir la cuenta en un restaurante sin discusiones",
+ "description": "Métodos para dividir la cuenta en mesas grandes: partes iguales, por consumo y por ítem. Guía para mozos y dueños con ejemplos de picada, clericó y tereré.",
+ "h1": "Cómo dividir la cuenta en un restaurante sin discusiones",
+ "lead": "Mesa de ocho, una picada, dos jarras de clericó y cada uno con un plato distinto. A la hora de pagar empieza la calculadora. Esta guía te da los métodos para dividir la cuenta rápido, justo y sin tensión, tanto para el mozo como para quien administra el local.",
+ "sections": [
+  {
+   "h2": "Por qué dividir la cuenta genera fricción",
+   "html": "<p>No es solo matemática. En una mesa grande conviven gente que pidió poco, gente que pidió mucho y platos que se compartieron. Si nadie propone una regla, la cuenta se resuelve a los gritos, con aproximaciones, y siempre alguien siente que pagó de más.</p><p>Del lado del local el costo también existe: el mozo pierde minutos de mesa en hora pico y pueden aparecer errores al cobrar.</p><p>La solución es acordar el método <strong>antes de pedir o al momento de pedir la cuenta</strong>, no después de sumar.</p>"
+  },
+  {
+   "h2": "Método 1: partes iguales",
+   "html": "<p>Se suma todo y se divide por la cantidad de personas. Funciona cuando la mesa comparte casi todo: una picada grande, porciones de mandioca frita al centro, pizzas para cortar.</p><p><em>Ejemplo ilustrativo, con números inventados:</em> cuenta de 480.000 Gs. entre 6 personas: 80.000 Gs. cada una.</p><p><strong>Cuándo conviene:</strong> grupos de amigos o familia que comparten y no quieren complicarse. <strong>Cuándo no:</strong> cuando algunos no tomaron alcohol y otros pidieron varias bebidas, o cuando hay diferencias grandes de consumo.</p>"
+  },
+  {
+   "h2": "Método 2: cada uno paga lo suyo",
+   "html": "<p>Cada persona paga lo que consumió. Es el más justo, y el que más trabajo da si se hace a mano. El mozo necesita anotar quién pidió qué desde el principio, o rearmar la mesa después.</p><p>Para que funcione:</p><ol><li>Al tomar el pedido, anotá el nombre o el lugar en la mesa junto a cada plato.</li><li>Los platos compartidos (la picada, por ejemplo) se marcan aparte.</li><li>Los compartidos se reparten en partes iguales entre quienes los comieron.</li><li>Cada uno paga lo suyo más su parte de lo compartido.</li></ol><p><em>Ejemplo ilustrativo:</em> una persona pidió un lomito y un tereré, otra una milanesa y una cerveza, y los dos compartieron una picada. Cada uno paga su plato y bebida más la mitad de la picada.</p>"
+  },
+  {
+   "h2": "Método 3: grupos o parejas dentro de la mesa",
+   "html": "<p>Cuando la mesa es grande pero se divide en subgrupos (una pareja, una familia con chicos, un par de amigos), se arma una cuenta por subgrupo. Dentro de cada una se reparte igual. Es un punto medio: menos trabajo que el cobro individual y más justo que partes iguales para todos.</p><p>Para eso el mozo puede preguntar al inicio «¿una sola cuenta o cuentas separadas?», una pregunta que ahorra mucho al final.</p>"
+  },
+  {
+   "h2": "Qué decirle a la mesa para cortar la discusión",
+   "html": "<p>Las frases importan. Algunas que funcionan en el salón, sin sonar a reproche:</p><ul><li>«¿Les armo una cuenta sola o la separo por persona?» al servir el primer plato.</li><li>«La picada y el clericó los dividimos entre todos, y lo individual va por separado, ¿les parece?» cuando la mesa se complica.</li><li>«Les traigo el detalle con cada ítem así lo revisan» si alguien duda del total.</li><li>«¿Cómo prefieren pagar, juntos o cada uno?» antes de llevar la máquina o el efectivo.</li></ul><p>Con grupos grandes, como un cumpleaños o una cena de empresa, conviene acordar con quien organiza el evento si habrá una sola cuenta, un valor fijo por persona o un menú cerrado. Un menú cerrado con precio por persona evita casi toda la discusión. También ayuda avisar al reservar si el local acepta cuentas separadas y hasta cuántas, para que el mozo no se entere en el momento del cobro.</p>"
+  },
+  {
+   "h2": "Tips para el mozo y el encargado",
+   "html": "<ul><li><strong>Preguntá temprano.</strong> «¿La cuenta va junta o dividida?» al servir el primer plato es mejor que al final.</li><li><strong>Anotá por persona o por lugar.</strong> «Lomito, lugar 3» evita preguntas después.</li><li><strong>Usá una calculadora a la vista</strong> y mostrá el resultado al cliente. Lo que se ve, no se discute.</li><li><strong>Acordá con tu equipo cómo se maneja la propina</strong> en cuentas divididas, para que no haya malentendidos.</li><li><strong>Decidí qué medios de pago aceptás en una cuenta partida</strong> (efectivo, transferencia, tarjeta) y avisalo al principio.</li><li><strong>Revisá el total antes de dividir.</strong> Un plato mal cargado se multiplica por seis.</li></ul>"
+  },
+  {
+   "h2": "Cómo lo resuelve Mesaverso Caja",
+   "html": "<p>Mesaverso Caja permite abrir la mesa, cargar el pedido y dividir la cuenta por consumo o en partes, sin recalcular a mano. Caja está en etapa de prueba: no emite factura y no cobra pagos online; el cobro lo hacés vos, como siempre. Los detalles están en <a href=\"/cuenta-dividida/\">cuenta dividida con Mesaverso Caja</a>.</p><p>Si además querés que el pedido llegue ordenado desde el comienzo, mirá <a href=\"/guias/pedidos-por-whatsapp-restaurante/\">cómo recibir pedidos por WhatsApp sin perder ninguno</a>, y para ver todo lo que incluye cada plan, <a href=\"/#planes\">la sección de planes</a>.</p>"
+  },
+  {
+   "h2": "Un ejemplo paso a paso con mesa de seis",
+   "html": "<p><em>Ejemplo ilustrativo, con precios inventados.</em> Seis amigos piden una picada de 120.000 Gs., dos jarras de clericó de 60.000 Gs. cada una, y platos individuales: dos lomitos de 38.000 Gs., dos milanesas de 42.000 Gs. y dos hamburguesas de 35.000 Gs. Dos de ellos no tomaron clericó.</p><ol><li>Los compartidos son la picada y el clericó. Se reparte la picada entre los seis y el clericó entre los cuatro que tomaron.</li><li>Cada persona suma su plato individual.</li><li>Cada uno paga su plato más su parte de lo compartido.</li></ol><p>Hecho a mano, lleva varios minutos y un par de dudas. Por eso muchos locales prefieren definir el método al abrir la mesa y anotar cada ítem con el nombre de quien lo pidió. Para el equipo, una regla fija ayuda: «mesas de hasta cuatro: cuenta individual a pedido; mesas más grandes: preguntar al servir el primer plato».</p><p>Y un detalle que evita malos momentos: si la mesa paga con distintos medios, cobrá una persona a la vez y confirmá cada pago antes de pasar a la siguiente.</p>"
+  }
+ ],
+ "faq": [
+  [
+   "¿Cuál es la forma más justa de dividir la cuenta?",
+   "<p>Muchos la consideran la más justa: que cada uno pague lo que consumió, repartiendo los platos compartidos en partes iguales entre quienes los comieron.</p>"
+  ],
+  [
+   "¿Cuándo conviene dividir en partes iguales?",
+   "<p>Cuando la mesa comparte casi todo, como una picada grande o pizzas para cortar, y no hay diferencias grandes de consumo.</p>"
+  ],
+  [
+   "¿Qué hago con la propina en una cuenta dividida?",
+   "<p>Acordala con tu equipo de antemano y aplicá la misma regla en todas las mesas, para que nadie tenga que decidirla en el momento.</p>"
+  ],
+  [
+   "¿Mesaverso Caja emite la factura?",
+   "<p>No. Está en etapa de prueba, no emite factura y no cobra pagos online.</p>"
+  ]
+ ],
+ "cta": "Mirá cuenta dividida",
+ "revisar": [
+  "Ejemplos de cuentas: ilustrativos, con números inventados.",
+  "Caja divide por consumo o en partes: validar descripción con producto; Caja en etapa de prueba, sin factura ni pagos online.",
+  "Propina y medios de pago: orientación de gestión, sin norma citada; validar con abogado o contador."
+ ]
+}

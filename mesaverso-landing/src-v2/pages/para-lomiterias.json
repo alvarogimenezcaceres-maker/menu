@@ -1,0 +1,67 @@
+{
+ "slug": "para-lomiterias",
+ "type": "rubro",
+ "published": "2026-10-13",
+ "modified": "2026-10-13",
+ "title": "Menú digital para lomitería y pedidos online de lomitos",
+ "description": "Menú digital para lomiterías de Paraguay: lomito árabe y completo, adicionales, sacar ingredientes, pedidos por WhatsApp y comanda clara.",
+ "h1": "Menú digital para lomitería: pedidos online de lomitos en Paraguay",
+ "lead": "El lomito se pide con detalles: sin cebolla, con huevo extra, bien cargado. Tu menú tiene que juntar esos detalles en el pedido, y tu cocina tiene que leerlos de un vistazo.",
+ "sections": [
+  {
+   "h2": "El lomito es un pedido con detalles",
+   "html": "<p>Nadie pide solo «un lomito». Lo pide completo, o sin huevo, o con doble carne, o sin tomate porque le cae mal. Cuando esos detalles viajan en un audio de WhatsApp o se gritan desde el mostrador, algo se pierde: el lomito sale con cebolla y el cliente vuelve molesto.</p><p>En un <a href='/menu-digital-qr/'>menú digital con QR</a>, el cliente ve el lomito con su foto y arma su pedido en pantalla. El detalle queda escrito antes de que llegue a la cocina.</p>"
+  },
+  {
+   "h2": "Lomito árabe, completo y hamburguesas en la misma carta",
+   "html": "<p>Una lomitería suele tener tres familias de productos: lomitos, hamburguesas y acompañamientos. Un ejemplo de carta, con precios inventados de un local ficticio:</p><ul><li><strong>Lomito completo:</strong> ₲ 38.000 (ejemplo)</li><li><strong>Lomito árabe:</strong> ₲ 35.000 (ejemplo)</li><li><strong>Hamburguesa doble con queso:</strong> ₲ 32.000 (ejemplo)</li><li><strong>Papas fritas porción:</strong> ₲ 15.000 (ejemplo)</li><li><strong>Gaseosa 500 ml:</strong> ₲ 9.000 (ejemplo)</li></ul><p>Con una foto grande del lomito y una descripción de lo que trae, el cliente que no conoce tu local entiende al toque qué diferencia al árabe del completo. Y el que te conoce encuentra su favorito sin preguntar.</p><p>Una sugerencia: poné primero lo que más vendés. Si el lomito completo es tu estrella, que sea lo primero que ve el cliente al abrir el menú, con su foto y un precio claro. Si tenés una hamburguesa para quien no quiere lomito, ponela segunda. Y si querés mostrar tu lomito en 3D, Mesaverso lo permite con fotos del plato y funciona en celulares compatibles, aunque para empezar alcanza con buenas fotos comunes.</p>"
+  },
+  {
+   "h2": "Adicionales y «sacar ingredientes»",
+   "html": "<p>El negocio del lomito está en los adicionales: huevo extra, panceta, queso, doble carne. Y el reclamo más común está en lo que hay que sacar: sin cebolla, sin mayonesa, sin tomate.</p><p>Una forma práctica de ordenarlo es cargar los adicionales como extras del plato, para que se sumen al total, y dejar que el cliente escriba los «sin» en la nota de la línea del pedido. Así el cliente ve el total antes de enviar, y a tu cocina le llega todo en un solo mensaje, no en tres.</p>"
+  },
+  {
+   "h2": "Horas pico por WhatsApp sin perder ningún pedido",
+   "html": "<p>El mediodía y la noche son las horas fuertes: el teléfono suena, los mensajes entran de a diez y alguien tiene que contestar mientras otro arma. Es ahí donde se pierden pedidos.</p><p>Con el <a href='/pedidos-por-whatsapp/'>pedido por WhatsApp</a>, el cliente elige en tu menú y lo que te llega es un mensaje ya armado, con productos, cantidades y total. No hay que preguntar «¿qué te anoto?»: se lee, se confirma y se prepara. En los planes pagos, el mensaje trae además si es delivery o retiro, la dirección y un código para encontrar el pedido después.</p>"
+  },
+  {
+   "h2": "Delivery propio para tu zona",
+   "html": "<p>Muchas lomiterías ya tienen su moto o su repartidor de confianza para los clientes del barrio. Un link propio te deja recibir esos pedidos directo, sin intermediarios. No reemplaza a una app de delivery si ya vendés por una: es un canal más, con 0 % de comisión en los pedidos que llegan por tu link o QR. Los medios de cobro que uses pueden tener sus propias comisiones.</p><p>Para ver cómo funciona, leé sobre el <a href='/delivery-propio/'>delivery propio</a>.</p><p>Un detalle que ayuda: dejá a la vista tu zona de reparto y si el envío tiene costo. Así el cliente de otro barrio no pide algo que no podés llevar, y vos no tenés que explicar lo mismo en cada mensaje. En el pedido, el envío figura a confirmar hasta que lo acordés con el cliente.</p>"
+  },
+  {
+   "h2": "Una comanda clara para la cocina",
+   "html": "<p>La mejor carta del mundo no sirve si la cocina lee mal el pedido. Con Mesaverso Caja, cada pedido queda anotado con sus productos y sus notas, y se puede imprimir la comanda para la plancha (con una impresora térmica opcional, que se compra aparte). La idea es simple: que quien arma el lomito vea de un vistazo qué lleva, qué no lleva y para cuándo es.</p><p>Caja está en etapa de prueba: no emite factura y no cobra pagos online, así que seguís cobrando y facturando como siempre.</p><p>Pensá en la plancha un viernes a las 21 h: cinco lomitos a la vez, uno sin cebolla, otro con doble carne, otro para retirar a las 21:30. Una comanda ordenada, con el nombre o el código del pedido arriba, hace que nadie tenga que preguntar. Eso ayuda a reducir los gritos y los pedidos que salen cambiados.</p>"
+  },
+  {
+   "h2": "Empezar con el plan Gratis",
+   "html": "<p>El plan <a href='/plan-gratis/'>Gratis</a> admite hasta 11 productos, con al menos 8 con precio para publicar, pedido básico por WhatsApp y la marca «Hecho con Mesaverso» visible; es para locales con lugar físico y las condiciones están en los <a href='/terminos-gratis/'>términos del plan Gratis</a>. Para una lomitería con dos lomitos, una hamburguesa, papas y bebidas, puede alcanzar. Los precios de los planes pagos están en <a href='/#planes'>la sección de planes</a>.</p>"
+  }
+ ],
+ "faq": [
+  [
+   "¿El cliente puede pedir el lomito sin algún ingrediente?",
+   "<p>Sí, el cliente puede escribirlo en la nota de la línea del pedido, que viaja escrita en el mensaje. Así no depende de un audio.</p>"
+  ],
+  [
+   "¿Puedo cobrar los adicionales, como el huevo extra?",
+   "<p>Sí, los cargás como extras del plato y se suman al total que ve el cliente antes de enviar.</p>"
+  ],
+  [
+   "¿Puedo imprimir la comanda para la cocina?",
+   "<p>Sí, Mesaverso Caja permite imprimir la comanda; la impresora térmica es opcional y se compra aparte. Caja está en etapa de prueba y no emite factura.</p>"
+  ],
+  [
+   "¿Tengo que dejar mi app de delivery?",
+   "<p>No. El link propio es un canal más para los clientes que ya te conocen, con 0 % de comisión en los pedidos que llegan por tu link o QR.</p>"
+  ]
+ ],
+ "cta": "Quiero el menú de mi lomitería",
+ "revisar": [
+  "Precios y productos son ejemplo de un local ficticio, rotulados «ejemplo».",
+  "Extras del plato y nota por línea: confirmados; validar que el extra suma precio según la configuración real.",
+  "Comanda imprimible: impresora térmica opcional, sin marcas; Caja en etapa de prueba.",
+  "Mensaje de planes pagos con delivery/retiro, dirección y código: debe coincidir con /pedidos-por-whatsapp/.",
+  "Plan Gratis: confirmar con /terminos-gratis/.",
+  "Comisión: 0 % solo en pedidos por link o QR."
+ ]
+}

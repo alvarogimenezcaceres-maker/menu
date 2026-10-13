@@ -1,0 +1,61 @@
+{
+ "slug": "guias/carta-digital-o-pdf-con-qr",
+ "type": "guide",
+ "published": "2026-10-13",
+ "modified": "2026-10-13",
+ "title": "Carta digital o PDF con QR: cuál conviene a tu local",
+ "description": "Comparación honesta entre un PDF con QR y una carta digital: zoom, carga, búsqueda, agotados y pedidos. Cuándo alcanza cada una según tu tipo de local.",
+ "h1": "Carta digital o PDF con QR: qué le conviene a tu restaurante",
+ "lead": "Las dos opciones ponen tu carta en el celular del cliente mediante un QR. La diferencia está en lo que pasa después de escanear. Acá va una comparación honesta, con lo que se puede verificar, para que elijas según tu local y no según una moda.",
+ "sections": [
+  {
+   "h2": "Qué es cada una",
+   "html": "<p><strong>PDF con QR:</strong> tomás tu carta impresa (o una versión digital de la hoja), la guardás como archivo PDF o imagen y generás un QR que abre ese archivo. Es rápido y muchas veces gratis.</p><p><strong>Carta digital:</strong> tus platos están cargados como datos (nombre, descripción, foto, precio, categoría) y se muestran en una página pensada para el celular. El QR abre esa página.</p><p>Visualmente pueden parecer parecidas desde lejos. En el uso diario se comportan distinto.</p>"
+  },
+  {
+   "h2": "Comparación punto por punto",
+   "html": "<h3>Lectura en el celular</h3><p>Un PDF conserva el tamaño de una hoja. En una pantalla de seis pulgadas, el cliente tiene que ampliar con los dedos y desplazarse en todas direcciones para leer cada renglón. Una carta digital adapta el texto al ancho de la pantalla y no pide zoom.</p><h3>Velocidad de carga</h3><p>Un PDF con fotos de buena calidad puede pesar varios megas, y con datos móviles lentos tarda en abrir. Una página de carta digital bien hecha carga lo que se ve primero. Medilo vos: abrí tu QR con datos móviles, sin wifi, y cronometrá.</p><h3>Búsqueda</h3><p>En un PDF se puede buscar texto con el visor del celular, pero pocos clientes lo hacen y depende del programa que abra el archivo. Una carta digital puede tener buscador propio: el cliente escribe «tereré» o «milanesa» y salta al plato.</p><h3>Agotados</h3><p>Un PDF no sabe qué se terminó: para avisarlo hay que editar y volver a subir el archivo. En una carta digital se puede marcar «agotado» sin editar ni volver a subir archivos (en Mesaverso se marca desde Caja, que está en etapa de prueba).</p><h3>Cambiar un precio</h3><p>En un PDF editás el original, exportás de nuevo, lo reemplazás y, si el QR apunta a otro archivo, lo actualizás. En una carta digital cambiás el dato y todas las vistas se actualizan (según la herramienta, a veces con un paso de publicar).</p><h3>Armar el pedido</h3><p>Un PDF solo se mira: el cliente tiene que escribirte el pedido a mano. Una carta digital puede dejar que elija platos, vea el total y te envíe el pedido armado por WhatsApp.</p><h3>Posicionamiento en Google</h3><p>El texto de un PDF puede aparecer en buscadores, pero una página propia suele permitir un título, una descripción y datos del local más cuidados. Tomalo como una ventaja posible, no garantizada.</p>"
+  },
+  {
+   "h2": "Cuándo alcanza el PDF con QR",
+   "html": "<p>Seamos justos: hay casos donde el PDF cumple.</p><ul><li>Tu carta casi no cambia: pocos platos, precios estables.</li><li>No vendés por delivery ni por WhatsApp; solo querés que el cliente vea la carta en la mesa.</li><li>Estás probando la idea del QR antes de invertir tiempo.</li><li>Tenés una carta ya muy bien diseñada para pantalla (formato vertical, letra grande, pocas páginas).</li></ul><p>Si vas por este camino, diseñá el PDF para celular: una columna, tipografía grande y archivo liviano. Y mantené actualizado el archivo.</p>"
+  },
+  {
+   "h2": "Cuándo conviene pasar a una carta digital",
+   "html": "<ul><li>Cambiás precios o platos con frecuencia, o tenés platos del día.</li><li>Se te terminan platos y querés avisarlo sin editar archivos.</li><li>Recibís pedidos por WhatsApp y te cuesta ordenarlos.</li><li>Querés que el mismo link sirva en el salón, en Instagram y en Google.</li><li>Tenés una carta larga con varias categorías, donde un buscador ayuda.</li></ul><p>Con Mesaverso, el plan <a href=\"/plan-gratis/\">Gratis</a> te permite probar una carta digital con hasta 11 productos (hace falta un mínimo de 8 con precio para publicar) y pedido básico por WhatsApp, con la marca «Hecho con Mesaverso» visible y para locales con lugar físico; las condiciones están en <a href=\"/terminos-gratis/\">los términos del plan Gratis</a>. El resto de los planes está en <a href=\"/#planes\">la sección de planes</a>.</p>"
+  },
+  {
+   "h2": "Cómo migrar del PDF a la carta digital sin perder nada",
+   "html": "<ol><li>Abrí tu PDF y listá los platos que realmente vendés hoy.</li><li>Copiá nombres y precios a una planilla, una fila por plato.</li><li>Agrupalos en categorías cortas.</li><li>Sacá fotos de los diez más vendidos.</li><li>Cargá todo en la herramienta y probá el link con tu celular.</li><li>Cuando esté listo, si tu QR actual se puede redirigir, apuntalo a la carta nueva; si no, imprimí uno nuevo.</li></ol><p>Para el paso a paso completo, leé <a href=\"/guias/como-armar-menu-digital-qr-paraguay/\">cómo armar un menú digital QR</a>; y para escribir bien los platos, <a href=\"/guias/como-escribir-la-carta-del-restaurante/\">cómo escribir la carta para vender desde el celular</a>. Podés dejar el PDF disponible un tiempo: es tu decisión.</p>"
+  },
+  {
+   "h2": "Un criterio simple para decidir hoy",
+   "html": "<p>Si dudás, respondé estas tres preguntas con sinceridad:</p><ol><li><strong>¿Cuántas veces cambiaste la carta en los últimos tres meses?</strong> Si fueron varias, un PDF te va a dar trabajo cada vez.</li><li><strong>¿Cuántos pedidos recibís por mensaje?</strong> Si te llegan muchos, conviene que el cliente arme el pedido y no que lo escriba.</li><li><strong>¿Quién va a mantener la carta?</strong> Una carta, digital o en PDF, solo sirve si alguien la mantiene al día. Elegí la opción que esa persona pueda usar sin pedir ayuda.</li></ol><p>También podés hacer una prueba chica: dejá el PDF en las mesas y la carta digital en tu perfil de Instagram durante un mes, y mirá cuál usan más tus clientes. Un local con lomitos, milanesas y mandioca frita que casi no cambia puede quedarse tranquilo con el PDF; una pizzería con platos del día, agotados frecuentes y pedidos por delivery probablemente gane más con la carta digital.</p>"
+  }
+ ],
+ "faq": [
+  [
+   "¿Es malo tener la carta en PDF con QR?",
+   "<p>No. Funciona si tu carta cambia poco y está pensada para pantalla. Sus límites son el zoom, el peso del archivo, la falta de agotado y que no arma pedidos.</p>"
+  ],
+  [
+   "¿Cuál carga más rápido en el celular?",
+   "<p>Depende del peso del archivo y de la página. Probá tu QR con datos móviles y cronometralo; es la única manera de saberlo en tu caso.</p>"
+  ],
+  [
+   "¿Puedo empezar con el PDF y pasar a la carta digital después?",
+   "<p>Sí. Los platos y precios ya los tenés; es cuestión de cargarlos y reemplazar el QR.</p>"
+  ],
+  [
+   "¿La carta digital reemplaza a la impresa?",
+   "<p>No es obligatorio. Podés usar las dos juntas.</p>"
+  ]
+ ],
+ "cta": "Probá la carta digital gratis",
+ "revisar": [
+  "Comparación técnica general; sin nombrar productos de terceros ni cifras de pérdidas.",
+  "Posicionamiento en Google: ventaja posible, no garantizada.",
+  "Redirigir un QR impreso depende de cómo se generó; advertido en el texto.",
+  "Plan Gratis: confirmar con /terminos-gratis/. «Agotado» desde Caja (etapa de prueba)."
+ ]
+}

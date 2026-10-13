@@ -1,0 +1,65 @@
+{
+ "slug": "para-cafeterias",
+ "type": "rubro",
+ "published": "2026-10-13",
+ "modified": "2026-10-13",
+ "title": "Menú digital para cafetería en Paraguay | Mesaverso",
+ "description": "Carta digital para cafeterías de Paraguay: café, tereré, medialunas, combos de desayuno, productos del día y pedidos rápidos con QR y WhatsApp.",
+ "h1": "Menú digital para cafetería: carta digital de café en Paraguay",
+ "lead": "En una cafetería el pedido es corto, rápido y se repite todos los días. Tu carta digital tiene que ser igual: se lee rápido y se manda sin hacer fila.",
+ "sections": [
+  {
+   "h2": "Una cafetería vende rutina, no un menú largo",
+   "html": "<p>La gente no viene a leer una carta: viene a pedir «lo de siempre». Un café con leche y dos medialunas, un tereré frío en la tarde, un jugo con una tostada. Lo que importa es que la carta se vea rápido, con los precios al día y sin tener que esperar a que alguien traiga la pizarra.</p><p>Con un <a href='/menu-digital-qr/'>menú digital con QR</a> pegado en el mostrador y en las mesas, el cliente abre la carta en su celular y decide mientras todavía hace la fila. Cuando llega al mostrador, ya sabe qué pedir.</p>"
+  },
+  {
+   "h2": "Café, tereré y medialunas: ordená la carta por momento del día",
+   "html": "<p>Una cafetería tiene al menos tres momentos: desayuno, almuerzo liviano y merienda. Cada uno vende cosas distintas, y conviene que la carta lo refleje. Un ejemplo de carta, con precios inventados de un local ficticio:</p><ul><li><strong>Café con leche y dos medialunas:</strong> ₲ 28.000 (ejemplo)</li><li><strong>Tereré con yuyos, jarra chica:</strong> ₲ 15.000 (ejemplo)</li><li><strong>Cappuccino grande:</strong> ₲ 22.000 (ejemplo)</li><li><strong>Tostado de jamón y queso:</strong> ₲ 26.000 (ejemplo)</li><li><strong>Budín del día, porción:</strong> ₲ 14.000 (ejemplo)</li></ul><p>Agrupar por categorías claras, como «Cafés», «Tereré y fríos», «Para acompañar» y «Dulces», hace que el cliente encuentre lo suyo en pocos toques. Y si tu carta es corta, mejor: se lee más rápido.</p>"
+  },
+  {
+   "h2": "Combos de desayuno y merienda",
+   "html": "<p>Los combos son el corazón de una cafetería: bebida más algo para comer a un precio que cierra bien. En vez de explicar cada combo a cada cliente, lo cargás como un producto con su descripción: qué trae, hasta qué hora está y qué se puede cambiar (por ejemplo, con opciones de elección).</p><p>Un ejemplo: «Combo desayuno: café con leche, dos medialunas y jugo, hasta las 10 h» a ₲ 38.000 (ejemplo). Si el combo cambia mañana, lo editás y el QR sigue siendo el mismo. No hay que volver a imprimir ni a pegar carteles.</p>"
+  },
+  {
+   "h2": "Pedidos rápidos de mostrador y para llevar",
+   "html": "<p>Muchos clientes de cafetería piden para llevar: el café camino al trabajo, las medialunas para la oficina. Con el <a href='/pedidos-por-whatsapp/'>pedido por WhatsApp</a>, el cliente arma su pedido antes de llegar y lo retira en el local. A tu WhatsApp llega el pedido ordenado, con productos y total, sin que nadie tenga que anotar a mano.</p><p>Para un pico de mañana, esto puede aliviar el mostrador: parte de los clientes ya llega con el pedido elegido.</p>"
+  },
+  {
+   "h2": "Productos del día y horarios",
+   "html": "<p>La torta del día, el budín que salió recién del horno, el jugo de temporada: lo que cambia todos los días no puede vivir en una carta impresa. En el menú digital podés actualizar los productos del día por la mañana y marcarlos como agotados desde Mesaverso Caja (en etapa de prueba) cuando se terminan.</p><p>Lo mismo con los horarios. Si abrís desde temprano pero la cocina cierra a las 18 h, o si el combo de desayuno termina a las 10, decilo en la carta. Así el cliente no se acerca esperando algo que ya no está.</p><p>Un truco: poné el producto del día arriba de todo, con una foto buena. Suele ayudar al cliente que no tenía nada pensado, y es lo más fresco que tenés para ofrecer.</p>"
+  },
+  {
+   "h2": "Clientes que se quedan trabajando",
+   "html": "<p>Hay clientes que llegan con la notebook y se quedan varias horas. Para ellos, el menú en el celular es una comodidad: pueden ver la carta y armar su pedido desde su lugar.</p><p>Si abrís una mesa en Mesaverso Caja, podés ir sumando lo que consumen y cobrarles al final. Caja está en etapa de prueba: no emite factura y no cobra pagos online, así que la factura y el cobro los hacés como siempre. Si algún día querés dividir una mesa entre compañeros de trabajo, mirá la <a href='/cuenta-dividida/'>cuenta dividida</a>.</p>"
+  },
+  {
+   "h2": "Empezá con una carta corta",
+   "html": "<p>Una cafetería con carta corta puede empezar con el plan <a href='/plan-gratis/'>Gratis</a>: hasta 11 productos, con al menos 8 con precio para publicar, pedido básico por WhatsApp y la marca «Hecho con Mesaverso» visible. Puede alcanzar para tus cafés, tu tereré, un combo y dos o tres cosas para acompañar. El plan es para locales con lugar físico y las condiciones están en los <a href='/terminos-gratis/'>términos del plan Gratis</a>. Cuando quieras sumar más productos, mirá los <a href='/#planes'>planes</a>.</p><p>Hay 0 % de comisión en los pedidos que llegan por tu link o QR.</p>"
+  }
+ ],
+ "faq": [
+  [
+   "¿Cuántos productos puedo cargar gratis?",
+   "<p>Hasta 11 productos en el plan Gratis, y hacen falta al menos 8 con precio para publicar. Para una carta de cafetería corta puede alcanzar.</p>"
+  ],
+  [
+   "¿Puedo cambiar el producto del día todas las mañanas?",
+   "<p>Sí, editás el producto, y si se termina lo marcás agotado desde Mesaverso Caja (en etapa de prueba). El QR sigue siendo el mismo.</p>"
+  ],
+  [
+   "¿El cliente tiene que bajar una app para pedir?",
+   "<p>No hace falta instalar una app: el cliente abre tu link o QR desde el celular, arma el pedido y lo envía por WhatsApp.</p>"
+  ],
+  [
+   "¿Mesaverso emite factura de cada café?",
+   "<p>No. Mesaverso Caja está en etapa de prueba y no emite factura ni cobra pagos online. La factura y el cobro los seguís haciendo como hasta ahora.</p>"
+  ]
+ ],
+ "cta": "Quiero la carta digital de mi cafetería",
+ "revisar": [
+  "Precios, combos y horarios son ejemplo de un local ficticio, rotulados «ejemplo». El horario del combo es texto libre.",
+  "«Agotado» desde Caja (etapa de prueba); «abrir mesa y sumar consumos»: validar descripción con producto.",
+  "Plan Gratis: 11 productos, mínimo 8 con precio, marca visible, solo locales con lugar físico; confirmar con /terminos-gratis/.",
+  "«No hace falta instalar app»: inferido de que el menú es un link público."
+ ]
+}
