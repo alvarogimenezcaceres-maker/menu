@@ -17,6 +17,7 @@ export const WHATSAPP_MESSAGES = {
   planMonthly: "Hola, estoy interesado en el plan mensual de Mesaverso.",
   planAnnual: "Hola, estoy interesado en el plan anual de Mesaverso.",
   pack3d: "Hola, quiero consultar por el Pack 3D de Mesaverso.",
+  comedor: "Hola, tengo un comedor y quiero armar mi menú del día con Mesaverso.",
 };
 
 // Prices in guaraníes. Shown as "Gs. 150.000". Change here, never in the HTML.

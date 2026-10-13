@@ -18,7 +18,8 @@ for (const [slug, f] of pages) {
   check(`${t}: title 20-65 chars`, title.length >= 20 && title.length <= 65, `${title.length}`);
   check(`${t}: description 70-160 chars`, desc.length >= 70 && desc.length <= 160, `${desc.length}`);
   check(`${t}: canonical`, /<link rel="canonical" href="https:\/\/[^"]+"/.test(html));
-  check(`${t}: in the sitemap`, sitemap.includes(`<loc>`) && (slug === "" ? true : sitemap.includes(`/${slug}/</loc>`)));
+  const noindexed = /<meta name="robots" content="noindex/.test(html); // campaign pages (e.g. /comedores/) are shared by link, not listed
+  check(`${t}: ${noindexed ? "noindex page stays out of the sitemap" : "in the sitemap"}`, noindexed ? !sitemap.includes(`/${slug}/</loc>`) : (sitemap.includes(`<loc>`) && (slug === "" ? true : sitemap.includes(`/${slug}/</loc>`))));
   const text = html.replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/g, " ").replace(/<[^>]+>/g, " ");
   check(`${t}: no «sin comisiones» alone`, !/sin comisi[oó]n(es)?/i.test(text.replace(/0 % de comisi[oó]n/gi, "")));
   check(`${t}: no third-party names`, FORBID.every((r) => !r.test(text)));
