@@ -150,3 +150,11 @@ document.querySelectorAll('[data-mod]').forEach(sec=>{
   chips.forEach(c=>c.addEventListener('click',()=>{rubro=c.dataset.r;paint(true)}));
   paint(false);
 })();
+
+// Hide the floating WhatsApp button while a field has the focus (it covered the inputs on phones).
+(() => {
+  const root = document.documentElement;
+  const isField = (t) => t && t.matches && t.matches("input:not([type=checkbox]):not([type=radio]),textarea,select");
+  document.addEventListener("focusin", (e) => { if (isField(e.target)) root.dataset.typing = "1"; });
+  document.addEventListener("focusout", () => { delete root.dataset.typing; });
+})();

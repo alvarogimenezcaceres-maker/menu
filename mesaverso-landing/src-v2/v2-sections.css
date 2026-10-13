@@ -318,3 +318,25 @@
 .page__cta{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px}
 .foot__nav{display:flex;flex-wrap:wrap;gap:6px 18px;margin:8px 0}.foot__nav a{color:var(--text-2)}
 .m__cmp{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;font-size:13px}.m__cmp b{font:500 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:#c3c8ce}.m__cmp p{margin:0;border-top:1px solid #2f333a;padding-top:6px}.m__cmp p:nth-child(even){color:#f1f2ee}.m__cmp p:nth-child(odd){color:#9a9fa7}
+
+/* ---- UX pass 2026-10-13: first screen on phones, header CTA, tap targets, readable small text ---- */
+/* The primary action used to sit ~1600px down on a phone, below the 3D plate and the personalisation box. Now: headline, promise, buttons, then the plate. */
+@media(max-width:899px){
+  .hero__copy>.kicker{order:1}.hero__copy>h1{order:2}.hero__copy>.hero__sub{order:3}.hero__copy>.hero__cta{order:4}
+  .hero__in .hero__stagewrap{order:5}.hero__copy>.hero__try{order:6}.hero__copy>.hero__bullets{order:7}.hero__copy>.hero__note{order:8}.hero__copy>.hero__tiny{order:9}
+  .hero__sub{font-size:18px}
+}
+/* header: the main action is always one tap away, on every width */
+.nav__end .btn{display:inline-flex;min-height:44px;white-space:nowrap}
+.mv-wordmark{min-height:44px;align-items:center}
+@media(max-width:380px){.nav__end .btn{padding-inline:12px;font-size:14px}}
+/* footer and inline links: 44px tap targets */
+.foot nav a,.foot__nav a{display:inline-flex;align-items:center;min-height:44px}
+.foot nav,.foot__nav{gap:0 22px}
+.chk{min-height:44px;align-items:center}
+.chk input{width:24px;height:24px;flex:none}
+/* text that was 10-11px */
+.stage__menu .kicker,.kicker.kicker--s{font-size:12px}
+.pill.tagex{font-size:12px}
+/* the floating WhatsApp button covered the fields while typing */
+[data-typing] .wa-float{display:none}
