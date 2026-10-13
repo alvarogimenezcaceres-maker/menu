@@ -4,6 +4,7 @@ import React from 'react'
 import { isPlatformAdmin, userRestaurantIds } from '../access/roles'
 import type { Restaurant } from '../payload-types'
 import { limitsFor } from '../plans'
+import { ImportSeedBox } from './ImportSeedBox'
 
 type Props = { payload: Payload; user?: unknown }
 
@@ -48,7 +49,13 @@ async function progress(payload: Payload, restaurantId: number | string) {
 /** Dashboard block. Staff see a checklist to get their menu live; platform admins see the Gratis menus waiting for approval. */
 export async function StartGuide({ payload, user }: Props) {
   if (!user) return null
-  if (isPlatformAdmin(user)) return <PendingApprovals payload={payload} />
+  if (isPlatformAdmin(user))
+    return (
+      <>
+        <ImportSeedBox />
+        <PendingApprovals payload={payload} />
+      </>
+    )
 
   const restaurantId = userRestaurantIds(user)[0]
   if (restaurantId == null) return null

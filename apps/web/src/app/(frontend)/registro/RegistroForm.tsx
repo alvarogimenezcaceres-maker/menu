@@ -13,7 +13,7 @@ const FIELDS = [
   { name: 'password', label: 'Contraseña', type: 'password', autoComplete: 'new-password', hint: 'Al menos 10 caracteres' },
 ] as const
 
-export function RegistroForm({ termsUrl, privacyUrl }: { termsUrl: string; privacyUrl: string }) {
+export function RegistroForm({ termsUrl, privacyUrl, claim }: { termsUrl: string; privacyUrl: string; claim?: { name: string; codigo: string } | null }) {
   const [errors, setErrors] = useState<Errors>({})
   const [message, setMessage] = useState('')
   const [busy, setBusy] = useState(false)
@@ -24,6 +24,7 @@ export function RegistroForm({ termsUrl, privacyUrl }: { termsUrl: string; priva
     const form = new FormData(e.currentTarget)
     const body: Record<string, unknown> = Object.fromEntries(form.entries())
     body.terms = form.get('terms') === 'on'
+    if (claim) body.codigo = claim.codigo
     setBusy(true)
     setMessage('')
     setErrors({})
@@ -55,7 +56,7 @@ export function RegistroForm({ termsUrl, privacyUrl }: { termsUrl: string; priva
 
   return (
     <form className="reg__form" onSubmit={onSubmit} noValidate>
-      {FIELDS.map((f) => (
+      {FIELDS.filter((f) => !(claim && f.name === 'restaurantName')).map((f) => (
         <label key={f.name} className="reg__field">
           <span>{f.label}</span>
           <input name={f.name} type={f.type} autoComplete={f.autoComplete} required aria-invalid={Boolean(errors[f.name])} />

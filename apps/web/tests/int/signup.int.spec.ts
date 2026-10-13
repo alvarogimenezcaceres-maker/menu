@@ -41,6 +41,20 @@ describe('signup validation', () => {
   })
 })
 
+describe('activation code', () => {
+  const code = 'abcdEFGH1234-_xyz9876'
+  it('lets an invited owner skip the restaurant name', () => {
+    const r = validateSignup({ ...good, restaurantName: '', codigo: code })
+    expect(r.ok).toBe(true)
+    if (r.ok) expect(r.data.codigo).toBe(code)
+  })
+  it('rejects a malformed code', () => {
+    const r = validateSignup({ ...good, codigo: 'corto' })
+    expect(r.ok).toBe(false)
+    if (!r.ok) expect(r.errors.codigo).toBeTruthy()
+  })
+})
+
 describe('normalizePhone', () => {
   it.each([
     ['0981 123 456', '+595981123456'],

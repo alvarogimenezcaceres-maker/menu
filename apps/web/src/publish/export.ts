@@ -73,6 +73,7 @@ export async function exportRestaurant(payload: Payload, restaurantId: number | 
       plan: r.plan || undefined,
       orderingMode: r.whatsappOnly ? 'whatsapp' : undefined,
       reservations: r.reservationsWhatsapp ? true : undefined,
+      headerCenter: r.headerCenter ? true : undefined,
       whatsapp: r.whatsapp || undefined,
       cuisine: r.cuisine ?? [],
       googleReviewUrl: r.googleReviewUrl?.trim() || undefined,

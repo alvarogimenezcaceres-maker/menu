@@ -4,6 +4,7 @@ import { isPlatformAdmin, platformAdminOnly, userRestaurantIds } from '../access
 import { slugField } from '../fields/slug'
 import { PLAN_OPTIONS, userLimits } from '../plans'
 import { publishEndpoint } from '../publish/endpoint'
+import { importSeedEndpoint } from '../signup/import'
 
 const validateTime = (value: unknown) =>
   typeof value === 'string' && /^([01]?\d|2[0-3]):[0-5]\d$/.test(value.trim()) ? true : 'Usá el formato 18:00.'
@@ -23,7 +24,7 @@ export const Restaurants: CollectionConfig = {
     read: ({ req }) => (isPlatformAdmin(req.user) ? true : { id: { in: userRestaurantIds(req.user) } }),
     update: ({ req }) => (isPlatformAdmin(req.user) ? true : { id: { in: userRestaurantIds(req.user) } }),
   },
-  endpoints: [publishEndpoint],
+  endpoints: [publishEndpoint, importSeedEndpoint],
   fields: [
     {
       name: 'plan',
@@ -44,6 +45,20 @@ export const Restaurants: CollectionConfig = {
         description: 'Muestra el botón «Reservar mesa» en el menú: el cliente completa fecha, hora y personas y se abre WhatsApp con la reserva escrita. Necesita el WhatsApp del local cargado.',
       },
     },
+    {
+      name: 'headerCenter',
+      type: 'checkbox',
+      label: 'Logo centrado en el encabezado',
+      defaultValue: false,
+      admin: {
+        position: 'sidebar',
+        description: 'Centra el logo y la frase corta arriba del menú (sin foto de portada queda más prolijo).',
+        condition: (_data, _siblingData, { user }) => isPlatformAdmin(user),
+      },
+      access: { create: ({ req }) => isPlatformAdmin(req.user), update: ({ req }) => isPlatformAdmin(req.user) },
+    },
+    // one-time activation code (import-seed): never shown or editable from the panel
+    { name: 'claimCode', type: 'text', admin: { hidden: true }, access: { read: ({ req }) => isPlatformAdmin(req.user), create: () => false, update: () => false } },
     {
       name: 'whatsappOnly',
       type: 'checkbox',

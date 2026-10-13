@@ -142,6 +142,11 @@ export interface Restaurant {
    */
   reservationsWhatsapp?: boolean | null;
   /**
+   * Centra el logo y la frase corta arriba del menú (sin foto de portada queda más prolijo).
+   */
+  headerCenter?: boolean | null;
+  claimCode?: string | null;
+  /**
    * El menú manda el pedido por WhatsApp, sin formulario, sin «Mostrar al mozo» y sin franja de Mesaverso. Para locales que no usan la Caja.
    */
   whatsappOnly?: boolean | null;
@@ -571,6 +576,8 @@ export interface PayloadMigration {
 export interface RestaurantsSelect<T extends boolean = true> {
   plan?: T;
   reservationsWhatsapp?: T;
+  headerCenter?: T;
+  claimCode?: T;
   whatsappOnly?: T;
   publishApproved?: T;
   terms?:

@@ -13,6 +13,8 @@ export interface SignupInput {
   phone: string
   password: string
   restaurantName: string
+  /** one-time activation code of an imported restaurant: the user joins it instead of creating a new one */
+  codigo?: string
 }
 
 export type SignupResult = { ok: true; data: SignupInput } | { ok: false; errors: Record<string, string> }
@@ -35,6 +37,7 @@ export function validateSignup(body: unknown): SignupResult {
   const lastName = str(b.lastName)
   const email = str(b.email).toLowerCase()
   const restaurantName = str(b.restaurantName)
+  const codigo = str(b.codigo)
   const password = typeof b.password === 'string' ? b.password : ''
   const phone = normalizePhone(str(b.phone))
 
@@ -42,14 +45,17 @@ export function validateSignup(body: unknown): SignupResult {
   if (lastName.length < 2 || lastName.length > 60) errors.lastName = 'Escribí tu apellido.'
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email) || email.length > 120) errors.email = 'Escribí un correo válido.'
   if (!phone) errors.phone = 'Escribí tu celular, por ejemplo 0981 123 456.'
-  if (restaurantName.length < 2 || restaurantName.length > 80) errors.restaurantName = 'Escribí el nombre de tu local.'
-  else if (!slugify(restaurantName)) errors.restaurantName = 'Usá letras o números en el nombre del local.'
+  if (codigo && !/^[A-Za-z0-9_-]{16,64}$/.test(codigo)) errors.codigo = 'El link de activación no es válido.'
+  if (!codigo) {
+    if (restaurantName.length < 2 || restaurantName.length > 80) errors.restaurantName = 'Escribí el nombre de tu local.'
+    else if (!slugify(restaurantName)) errors.restaurantName = 'Usá letras o números en el nombre del local.'
+  }
   if (password.length < 10) errors.password = 'La contraseña tiene que tener al menos 10 caracteres.'
   else if (password.length > 128) errors.password = 'La contraseña es demasiado larga.'
   if (b.terms !== true) errors.terms = 'Tenés que aceptar los términos y el aviso de privacidad.'
 
   if (Object.keys(errors).length || !phone) return { ok: false, errors }
-  return { ok: true, data: { firstName, lastName, email, phone, password, restaurantName } }
+  return { ok: true, data: { firstName, lastName, email, phone, password, restaurantName, ...(codigo ? { codigo } : {}) } }
 }
 
 /** First free slug for a restaurant name: «pizza-sol», then «pizza-sol-2», … */
