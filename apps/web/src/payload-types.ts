@@ -138,6 +138,10 @@ export interface Restaurant {
    */
   plan?: ('free' | 'menu' | 'pedidos' | 'salon') | null;
   /**
+   * El menú manda el pedido por WhatsApp, sin formulario, sin «Mostrar al mozo» y sin franja de Mesaverso. Para locales que no usan la Caja.
+   */
+  whatsappOnly?: boolean | null;
+  /**
    * Plan Gratis: el local puede publicar recién cuando la plataforma lo aprueba.
    */
   publishApproved?: boolean | null;
@@ -562,6 +566,7 @@ export interface PayloadMigration {
  */
 export interface RestaurantsSelect<T extends boolean = true> {
   plan?: T;
+  whatsappOnly?: T;
   publishApproved?: T;
   terms?:
     | T

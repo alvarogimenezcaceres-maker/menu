@@ -66,6 +66,8 @@ const freeParts = slug => ({
   FREE_H: ' $("#waBtn").href = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(orderText())}`;',
 });
 const FREE_KEYS = Object.keys(freeParts("x"));
+// parts that advertise Mesaverso: only the Gratis plan carries them
+const BRAND_KEYS = new Set(["FREE_CSS", "BRAND_STRIP", "FREE_E", "FREE_G"]);
 
 // Google review link from the panel: only Google's own review/map URLs reach the page
 const reviewUrl = v => {
@@ -150,6 +152,8 @@ async function buildRestaurant(slug, templates) {
   const out = path.join(DIST, slug);
   const menu = publicMenu(m);
   const free = r.plan === "free";
+  // a restaurant that only wants its orders on WhatsApp (no form, no waiter QR, no caja link) gets the basic ordering without the Mesaverso strip
+  const basic = free || r.orderingMode === "whatsapp";
 
   const used = new Set([r.logo, r.hero].filter(Boolean));
   menu.categories.forEach(c => { if (c.cover) used.add(c.cover); c.dishes.forEach(d => d.photo && used.add(d.photo)); });
@@ -178,9 +182,9 @@ async function buildRestaurant(slug, templates) {
     WHATSAPP: whatsappDigits(r.whatsapp),
     PRIVACY_LINK: r.legal && r.legal.legalName && r.legal.ruc && r.legal.privacyContact ? ' · <a href="privacidad/">Privacidad</a>' : "",
     REVIEW_URL: jsonForScript(reviewUrl(r.googleReviewUrl)), ORDERING: jsonForScript(OrderCore.orderingConfig(r.ordering)),
-    ORDER_CORE: free ? ORDER_CORE : ORDER_CORE_PAID,
+    ORDER_CORE: basic ? ORDER_CORE : ORDER_CORE_PAID,
     // plan Gratis only; "" elsewhere (see freeParts)
-    ...Object.fromEntries(FREE_KEYS.map(k => [k, free ? freeParts(slug)[k] : ""])),
+    ...Object.fromEntries(FREE_KEYS.map(k => [k, (free || (basic && !BRAND_KEYS.has(k))) ? freeParts(slug)[k] : ""])),
   }));
 
   // Mesaverso Caja: the catalog the Worker prices orders with (public data: the same as the menu) and the staff page

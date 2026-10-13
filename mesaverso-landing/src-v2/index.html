@@ -4,13 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 {{HEAD_META}}
-<meta name="theme-color" content="#0e1014">
+<meta name="theme-color" content="#0e1014" media="(prefers-color-scheme: dark)"><meta name="theme-color" content="#f1f2ee" media="(prefers-color-scheme: light)">
 <meta name="color-scheme" content="dark light">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/assets/icon-32.png" type="image/png" sizes="32x32">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <link rel="preload" href="/fonts/familjen-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" as="image" href="/assets/torta-de-zanahoria-3d-480.webp" imagesrcset="/assets/torta-de-zanahoria-3d-480.webp 480w, /assets/torta-de-zanahoria-3d-800.webp 800w" imagesizes="(min-width:900px) 330px, 216px" fetchpriority="high">
 <link rel="stylesheet" href="/v2.css?v={{HASH:v2.css}}">
 <script src="/v2.js?v={{HASH:v2.js}}" defer></script>
 </head>
@@ -58,24 +57,19 @@
     <p class="hero__note rise" style="animation-delay:240ms">0 % de comisión en los pedidos que llegan por tu link o QR. Empezá con el plan Gratis o elegí un plan mensual.</p>
     <p class="hero__tiny rise" style="animation-delay:260ms">Mesaverso Caja está en etapa de prueba. No emite factura: seguís facturando con tu sistema.</p>
   </div>
-  <div class="hero__stagewrap"><div class="stage" id="stage">
-    <svg class="stage__ring" viewBox="-100 -100 200 200" aria-hidden="true">
-      <g class="bezel">
-        <circle class="ticks" r="92" stroke-width="5" stroke-dasharray="1 6.65"/>
-        <circle class="ticks ticks--major" r="92" stroke-width="9" stroke-dasharray="2 45.1"/>
-      </g>
-      <circle class="rim" r="84"/>
-      <g class="orbit"><circle class="dot" cx="0" cy="-84" r="3.6"/></g>
-    </svg>
-    <div class="stage__base" aria-hidden="true"></div>
-    <div class="dish" id="dish"><div class="dish__float"><div class="dish__tilt" id="tilt">
-      <img id="dishimg" src="/assets/torta-de-zanahoria-3d-480.webp" srcset="/assets/torta-de-zanahoria-3d-480.webp 480w, /assets/torta-de-zanahoria-3d-800.webp 800w" sizes="(min-width:900px) 330px, 216px" width="480" height="480" fetchpriority="high" decoding="async" alt="Torta de zanahoria en 3D, flotando sobre un anillo de precisión">
-    </div></div></div>
-    <span class="chip tag tag--1" aria-hidden="true">Plato 3D</span>
-    
-    <button class="btn btn--secondary btn--sm stage__ctrl" id="go3d" type="button">Girarlo en 3D</button>
-  </div><div class="stage__menu" id="heroMenu" aria-live="polite"><span class="kicker">Así se vería</span><b id="heroLocal">Tu local</b><ul id="heroRows"></ul><span class="stage__menu__qr"><svg class="ico" aria-hidden="true"><use href="#i-qr"/></svg>QR de tu mesa · ejemplo</span></div></div>
-</div></section>
+  <div class="hero__stagewrap">
+    <div class="phone" id="heroPhone" role="group" aria-label="Ejemplo: así se ve tu menú. Tocá el + para pedir">
+      <div class="phone__bar"><b id="heroLocal">Tu local</b><span>Mesa 4</span></div>
+      <ul class="phone__rows" id="heroRows"></ul>
+      <button class="phone__send" id="heroSend" type="button" tabindex="-1" aria-hidden="true"><span>Enviar pedido</span><b id="heroTotal">₲ 0</b></button>
+    </div>
+    <div class="ticket" id="heroTicket" aria-live="polite">
+      <div class="ticket__head"><span>COCINA</span><span id="heroCode">#MV-····</span></div>
+      <div class="ticket__body" id="heroLines"></div>
+      <div class="ticket__foot"><i class="ticket__dot" aria-hidden="true"></i><span>Llegó a la cocina, sin tipear</span></div>
+    </div>
+    <p class="hero__hint">Ejemplo en vivo: tocá el <b>+</b> y mirá cómo le llega a la cocina.</p>
+  </div></section>
 
 <!-- ============ EL CIRCUITO COMPLETO ============ -->
 <section class="sec cir" id="circuito" aria-labelledby="h2ci" data-mod="/m/circuito.js?v={{HASH:m/circuito.js}}"><div class="wrap">

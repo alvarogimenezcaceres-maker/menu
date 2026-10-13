@@ -6,18 +6,6 @@ const setTheme=t=>{html.dataset.theme=t;$('#theme').setAttribute('aria-label',t=
 setTheme(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark');
 $('#theme').onclick=()=>setTheme(html.dataset.theme==='dark'?'light':'dark');
 
-/* inclinación del plato: mouse con hover, táctil arrastrando en horizontal. Solo transform (compositor). */
-const stage=$('#stage'),tilt=$('#tilt');let down=false,sx=0;
-const set=(x,y)=>{tilt.style.setProperty('--ry',x+'deg');tilt.style.setProperty('--rx',y+'deg')};
-if(!reduce){
-  stage.addEventListener('pointermove',e=>{const r=stage.getBoundingClientRect();
-    if(e.pointerType==='mouse'){set(((e.clientX-r.left)/r.width-.5)*30,-((e.clientY-r.top)/r.height-.5)*14)}
-    else if(down){set(Math.max(-35,Math.min(35,(e.clientX-sx)*.3)),0)}});
-  stage.addEventListener('pointerdown',e=>{if(e.pointerType!=='mouse'){down=true;sx=e.clientX;tilt.classList.add('is-drag')}});
-  const up=()=>{down=false;tilt.classList.remove('is-drag');set(0,0)};
-  stage.addEventListener('pointerup',up);stage.addEventListener('pointercancel',up);
-  stage.addEventListener('pointerleave',e=>{if(e.pointerType==='mouse')set(0,0)});
-}
 /* 3D real: model-viewer (1,07 MB) y el GLB solo cuando el visitante lo pide */
 const MV='/vendor/model-viewer.min.js',GLB='/assets/torta-de-zanahoria-3d.glb';
 let mvP=null;
@@ -33,8 +21,6 @@ function makeViewer(withAr){
     b.style.cssText='position:absolute;left:50%;bottom:4px;transform:translateX(-50%)';mv.append(b)}
   return mv}
 const fail3d=b=>{b.textContent='No se pudo cargar el 3D. Probá de nuevo';b.disabled=false};
-$('#go3d').onclick=function(){const b=this;b.disabled=true;b.textContent='Cargando 3D…';
-  loadMV().then(()=>{tilt.replaceChildren(makeViewer(false));set(0,0);b.remove()}).catch(()=>fail3d(b))};
 $('#go3d2').onclick=function(){const b=this;b.disabled=true;b.textContent='Cargando 3D…';
   loadMV().then(()=>{$('#mv3d').replaceChildren(makeViewer(true));b.textContent='Listo: giralo con el dedo'}).catch(()=>fail3d(b))};
 
@@ -45,7 +31,7 @@ const Gs=n=>'₲ '+String(n).replace(/\B(?=(\d{3})+(?!\d))/g,'.');
 /* ---- pausar las animaciones infinitas cuando la escena sale de pantalla ---- */
 if('IntersectionObserver' in window){
   const io=new IntersectionObserver(es=>es.forEach(e=>e.target.classList.toggle('is-paused',!e.isIntersecting)),{rootMargin:'80px'});
-  document.querySelectorAll('#stage,.d3__stage').forEach(el=>io.observe(el));
+  document.querySelectorAll('.d3__stage').forEach(el=>io.observe(el));
 }
 const el=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e};
 const num=v=>{const n=parseInt(String(v).replace(/\D/g,''),10);return Number.isFinite(n)&&n>0?n:null};
@@ -130,24 +116,42 @@ document.querySelectorAll('[data-mod]').forEach(sec=>{
   const load=()=>import(sec.dataset.mod).then(m=>{stage.innerHTML='';stage.classList.add('is-live');m.default(stage)}).catch(()=>{});
   if('IntersectionObserver' in window){const io=new IntersectionObserver(es=>{if(es[0].isIntersecting){io.disconnect();load()}},{rootMargin:'600px'});io.observe(sec)}
 });
-/* ---- hero: tu local, en vivo (no se envía nada; solo rellena la vista previa y el formulario) ---- */
+/* ---- hero: teléfono de ejemplo en vivo (no se envía nada): tocás +, el total y la comanda de cocina se actualizan ---- */
 (()=>{
-  const inp=document.getElementById('heroName');if(!inp)return;const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const R={parrilla:['Asado de tira','Vacío','Mandioca frita'],cafe:['Café con leche','Medialuna','Tostado mixto'],lomo:['Lomito árabe','Hamburguesa','Papas fritas'],bar:['Cerveza','Tabla de picada','Hamburguesa']};
-  const chips=[...document.querySelectorAll('#heroChips .chip')],rows=document.getElementById('heroRows'),nm=document.getElementById('heroLocal'),card=document.getElementById('heroMenu');
-  let rubro='parrilla';
+  const inp=document.getElementById('heroName'),rows=document.getElementById('heroRows');if(!inp||!rows)return;
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const R={parrilla:[['Asado de tira',68000],['Vacío',72000],['Mandioca frita',16000]],cafe:[['Café con leche',14000],['Medialuna',8000],['Tostado mixto',18000]],lomo:[['Lomito árabe',32000],['Hamburguesa',28000],['Papas fritas',15000]],bar:[['Cerveza',14000],['Tabla de picada',65000],['Hamburguesa',28000]]};
+  const chips=[...document.querySelectorAll('#heroChips .chip')],nm=document.getElementById('heroLocal'),total=document.getElementById('heroTotal'),lines=document.getElementById('heroLines'),code=document.getElementById('heroCode'),ticket=document.getElementById('heroTicket'),send=document.getElementById('heroSend');
+  const Gs=n=>'₲ '+String(n).replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+  const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';code.textContent='#MV-'+Array.from({length:4},()=>A[Math.floor(Math.random()*A.length)]).join('');
+  let rubro='parrilla',qty=[1,1,0];
+  const bump=()=>{if(reduce)return;ticket.classList.remove('is-pop');void ticket.offsetWidth;ticket.classList.add('is-pop')};
   function paint(pop){
     const n=inp.value.trim();nm.textContent=n||'Tu local';
-    rows.replaceChildren(...R[rubro].map(t=>{const li=document.createElement('li');li.textContent=t;return li}));
+    const list=R[rubro];
+    rows.replaceChildren(...list.map(([t,pr],i)=>{
+      const li=document.createElement('li'),d=document.createElement('div'),name=document.createElement('span'),price=document.createElement('small'),btn=document.createElement('button');
+      name.textContent=t;price.textContent=Gs(pr);d.append(name,price);
+      btn.type='button';btn.className='phone__add';btn.setAttribute('aria-label','Agregar '+t);btn.textContent=qty[i]?String(qty[i]):'+';btn.dataset.on=qty[i]?'1':'0';
+      btn.addEventListener('click',()=>{qty[i]=qty[i]>=3?0:qty[i]+1;draw();bump()});
+      li.append(d,btn);return li}));
+    draw();
     chips.forEach(c=>c.setAttribute('aria-pressed',String(c.dataset.r===rubro)));
     document.documentElement.dataset.local=n;document.documentElement.dataset.rubro=rubro;document.dispatchEvent(new CustomEvent('mv-local',{detail:n}));
-    if(pop&&!reduce){card.classList.add('is-pop');setTimeout(()=>card.classList.remove('is-pop'),180)}
+    if(pop)bump();
+  }
+  function draw(){
+    const list=R[rubro];let sum=0;const out=[];
+    [...rows.children].forEach((li,i)=>{const b=li.querySelector('button');b.textContent=qty[i]?String(qty[i]):'+';b.dataset.on=qty[i]?'1':'0'});
+    list.forEach(([t,pr],i)=>{if(qty[i]){sum+=pr*qty[i];const r=document.createElement('div'),x=document.createElement('b'),y=document.createElement('span');x.textContent=qty[i]+'×';y.textContent=t;r.append(x,y);out.push(r)}});
+    if(!out.length){const e=document.createElement('div');e.className='ticket__empty';e.textContent='Esperando pedido…';out.push(e)}
+    lines.replaceChildren(...out);total.textContent=Gs(sum);send.dataset.on=sum?'1':'0';
   }
   inp.addEventListener('input',()=>{
-    paint(true);const n=inp.value.trim(),a=document.getElementById('pvName'),b=document.getElementById('fBusiness');
+    paint(false);const n=inp.value.trim(),a=document.getElementById('pvName'),b=document.getElementById('fBusiness');
     if(a){a.value=n;a.dispatchEvent(new Event('input'))}if(b&&n)b.value=n;
   });
-  chips.forEach(c=>c.addEventListener('click',()=>{rubro=c.dataset.r;paint(true)}));
+  chips.forEach(c=>c.addEventListener('click',()=>{rubro=c.dataset.r;qty=[1,1,0];paint(true)}));
   paint(false);
 })();
 
@@ -157,4 +161,12 @@ document.querySelectorAll('[data-mod]').forEach(sec=>{
   const isField = (t) => t && t.matches && t.matches("input:not([type=checkbox]):not([type=radio]),textarea,select");
   document.addEventListener("focusin", (e) => { if (isField(e.target)) root.dataset.typing = "1"; });
   document.addEventListener("focusout", () => { delete root.dataset.typing; });
+})();
+
+// The hero already carries two primary buttons: keep the floating WhatsApp button out of the way until the visitor scrolls past it.
+(() => {
+  const hero = document.getElementById("top");
+  if (!hero || !("IntersectionObserver" in window)) return;
+  const root = document.documentElement;
+  new IntersectionObserver(([e]) => { if (e.isIntersecting) root.dataset.inHero = "1"; else delete root.dataset.inHero; }, { rootMargin: "0px 0px -35% 0px" }).observe(hero);
 })();

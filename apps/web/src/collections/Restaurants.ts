@@ -35,6 +35,18 @@ export const Restaurants: CollectionConfig = {
       access: { create: ({ req }) => isPlatformAdmin(req.user), update: ({ req }) => isPlatformAdmin(req.user) },
     },
     {
+      name: 'whatsappOnly',
+      type: 'checkbox',
+      label: 'Pedidos solo por WhatsApp',
+      defaultValue: false,
+      admin: {
+        position: 'sidebar',
+        description: 'El menú manda el pedido por WhatsApp, sin formulario, sin «Mostrar al mozo» y sin franja de Mesaverso. Para locales que no usan la Caja.',
+        condition: (_data, _siblingData, { user }) => isPlatformAdmin(user),
+      },
+      access: { create: ({ req }) => isPlatformAdmin(req.user), update: ({ req }) => isPlatformAdmin(req.user) },
+    },
+    {
       name: 'publishApproved',
       type: 'checkbox',
       label: 'Publicación aprobada',

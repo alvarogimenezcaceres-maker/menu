@@ -71,13 +71,14 @@ export async function exportRestaurant(payload: Payload, restaurantId: number | 
       hero: image(r.hero),
       tables: r.tables ?? 0,
       plan: r.plan || undefined,
+      orderingMode: r.whatsappOnly ? 'whatsapp' : undefined,
       whatsapp: r.whatsapp || undefined,
       cuisine: r.cuisine ?? [],
       googleReviewUrl: r.googleReviewUrl?.trim() || undefined,
       legal: r.legal?.legalName?.trim() && r.legal?.ruc?.trim() && r.legal?.privacyContact?.trim()
         ? { legalName: r.legal.legalName.trim(), ruc: r.legal.ruc.trim(), address: r.legal.address?.trim() || '', privacyContact: r.legal.privacyContact.trim() }
         : undefined,
-      ordering: limits.basicOrdering ? undefined : {
+      ordering: limits.basicOrdering || r.whatsappOnly ? undefined : {
         orderTypes: r.orderTypes?.length ? r.orderTypes : undefined,
         paymentMethods: r.paymentMethods?.length ? r.paymentMethods : undefined,
         deliveryFee: r.deliveryFee ?? undefined,

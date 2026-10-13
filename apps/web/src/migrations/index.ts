@@ -7,6 +7,7 @@ import * as migration_20260930_234810_restaurant_legal from './20260930_234810_r
 import * as migration_20261005_230910_free_plan from './20261005_230910_free_plan';
 import * as migration_20261005_235646_free_plan_review_request from './20261005_235646_free_plan_review_request';
 import * as migration_20261012_233406_owner_contact from './20261012_233406_owner_contact';
+import * as migration_20261013_011407_whatsapp_only from './20261013_011407_whatsapp_only';
 
 export const migrations = [
   {
@@ -52,6 +53,11 @@ export const migrations = [
   {
     up: migration_20261012_233406_owner_contact.up,
     down: migration_20261012_233406_owner_contact.down,
-    name: '20261012_233406_owner_contact'
+    name: '20261012_233406_owner_contact',
+  },
+  {
+    up: migration_20261013_011407_whatsapp_only.up,
+    down: migration_20261013_011407_whatsapp_only.down,
+    name: '20261013_011407_whatsapp_only'
   },
 ];
