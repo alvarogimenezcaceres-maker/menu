@@ -172,6 +172,8 @@ const smap = [["/", lastmod], ...(guides.length ? [["/guias/", guides.map((g) =>
 await write("sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${smap.map(([p, d]) => `  <url><loc>${abs(p)}</loc><lastmod>${d}</lastmod></url>`).join("\n")}\n</urlset>\n`);
 // IndexNow (Bing, Yandex and others): the public key file proves the site is ours; ping-indexnow.mjs tells them about new or changed URLs
 try { const k = (await readFile(path.join(SRC2, "indexnow.key"), "utf8")).trim(); if (k) await write(`${k}.txt`, k); } catch {}
+// Search Console ownership files (googleXXXX.html) live in src-v2/ and are served from the root as they are
+for (const f of (await readdir(SRC2)).filter((x) => /^google[0-9a-f]+\.html$/.test(x))) await write(f, await readFile(path.join(SRC2, f), "utf8"));
 // llms.txt: a plain summary for AI assistants and answer engines (what Mesaverso is, who it is for, where the facts are)
 await write("llms.txt", [
   "# Mesaverso",
