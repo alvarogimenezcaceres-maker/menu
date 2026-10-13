@@ -14,6 +14,7 @@ import QRCode from "qrcode";
 import { MESAVERSO_WHATSAPP, PRICES, SITE_URL, formatGs, waUrl } from "./site.config.mjs";
 import { BUSINESS_TYPES, CITIES, PRODUCT_RANGES, PLACES, INTERESTS, HOWS } from "./src/lead-schema.js";
 import { FAQ } from "./src-v2/faq.mjs";
+import { COMEDORES_FAQ } from "./src-v2/comedores-faq.mjs";
 import { OWNER, ownerPending } from "./src-v2/owner.config.mjs";
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
@@ -92,6 +93,7 @@ function render(template, meta) {
       case "RAW": if (!(arg in PRICES)) throw new Error(`Unknown price ${arg}`); return String(PRICES[arg]);
       case "OWNER": if (!(arg in OWNER)) throw new Error(`Unknown owner field ${arg}`); return esc(OWNER[arg]);
       case "GUIDES_LIST": return guides.map((g) => `<li class="gl"><a href="/${g.slug}/"><b>${esc(g.h1)}</b></a><p>${esc(g.description)}</p></li>`).join("");
+      case "COMEDORES_FAQ": return COMEDORES_FAQ.map(([q, a]) => `<details><summary>${esc(q)}</summary><div>${esc(a)}</div></details>`).join("");
       case "REGISTRO_URL": return REGISTRO_URL;
       case "RUBROS_CHIPS": return ordered(rubros).map((p) => `<a class="rubro" href="/${p.slug}/">${esc(FOOT_LABEL[p.slug] || p.h1)}</a>`).join("") + `<a class="rubro rubro--all" href="/para-tu-negocio/">Ver todos</a>`;
       case "MARK": return MARK_SVG;
@@ -181,7 +183,7 @@ await write("index.html", render(await readFile(path.join(SRC2, "index.html"), "
 
 // Legal and small pages share the page shell. They are drafts until a licensed lawyer reviews them.
 const draft = PUBLISH ? "" : `<p class="draft"><b>Borrador para revisión.</b> Este texto lo redactó una asistente de IA y todavía no lo revisó un abogado matriculado. No publicar así.</p>`;
-const shell = (title, body, { legal = true, raw = false } = {}) => `<!doctype html><html lang="es-PY" data-theme="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">{{HEAD_META}}<meta name="theme-color" content="#0e1014"><meta name="color-scheme" content="dark light"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="preload" href="/fonts/familjen-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="/v2.css?v={{HASH:v2.css}}"></head><body><nav class="nav" aria-label="Principal"><div class="wrap nav__in"><a class="mv-wordmark" href="/" aria-label="Mesaverso, volver al inicio">${MARK_SVG}ESAVERSO</a><div class="nav__end"><a class="btn btn--secondary btn--sm" href="/#cierre"><span class="l">Quiero mi menú</span><span class="s">Empezar</span></a><a class="btn btn--secondary btn--sm" href="/"><span class="l">Inicio</span><span class="s">Inicio</span></a></div></div></nav>${raw ? `<main id="main" class="lp">${body}</main>` : `<main class="wrap legal"><h1>${title}</h1>${legal ? draft : ""}${body}</main>`}{{FOOTER}}<script src="/m/ev.js?v={{HASH:m/ev.js}}" defer></script><script>if(matchMedia('(prefers-color-scheme: light)').matches)document.documentElement.dataset.theme='light'</script></body></html>`;
+const shell = (title, body, { legal = true, raw = false } = {}) => `<!doctype html><html lang="es-PY" data-theme="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">{{HEAD_META}}<meta name="theme-color" content="#0e1014"><meta name="color-scheme" content="dark light"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="preload" href="/fonts/familjen-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="/v2.css?v={{HASH:v2.css}}"><script src="/m/theme.js?v={{HASH:m/theme.js}}"></script></head><body><nav class="nav" aria-label="Principal"><div class="wrap nav__in"><a class="mv-wordmark" href="/" aria-label="Mesaverso, volver al inicio">${MARK_SVG}ESAVERSO</a><div class="nav__end"><a class="btn btn--secondary btn--sm" href="/#cierre"><span class="l">Quiero mi menú</span><span class="s">Empezar</span></a><a class="btn btn--secondary btn--sm" href="/"><span class="l">Inicio</span><span class="s">Inicio</span></a></div></div></nav>${raw ? `<main id="main" class="lp">${body}</main>` : `<main class="wrap legal"><h1>${title}</h1>${legal ? draft : ""}${body}</main>`}{{FOOTER}}<script src="/m/ev.js?v={{HASH:m/ev.js}}" defer></script></body></html>`;
 const pages = [
   ["privacidad", "Aviso de privacidad", "Aviso de privacidad de Mesaverso: cómo usamos y protegemos los datos que dejás en esta página, y cómo ejercer tus derechos.", "privacidad.body.html"],
   ["terminos", "Términos del sitio", "Términos del sitio de Mesaverso: condiciones de uso de esta página, de sus herramientas de vista previa y del formulario de contacto.", "terminos.body.html"],
@@ -263,7 +265,9 @@ if (guides.length) {
   await write("guias/index.html", render(shell("Guías para dueños de locales gastronómicos", body, { legal: false }), { title: "Guías para restaurantes en Paraguay | Mesaverso", description: "Guías prácticas para dueños de restaurantes y bares de Paraguay: menú con QR, pedidos por WhatsApp, delivery propio y cuenta dividida.", pathname: "/guias/", extra }));
 }
 // Exclusive landing for comedores (shared by link, WhatsApp and ads). noindex on purpose: /para-comedores-y-viandas/ owns the search intent.
-await write("comedores/index.html", render(shell("Menú del día por link para comedores", await readFile(path.join(SRC2, "comedores.html"), "utf8"), { legal: false, raw: true }), { title: "Menú del día por link para comedores | Mesaverso", description: "Dejá de mandar la imagen del menú todos los días: un link con tu menú del día y pedidos armados por WhatsApp para tus clientes de empresas.", pathname: "/comedores/", noindex: true }));
+const comedorJs = await stat(path.join(SRC2, "m", "comedor.js")).then(() => `<script src="/m/comedor.js?v={{HASH:m/comedor.js}}" defer></script>`, () => "");
+await write("comedores/index.html", render(shell("Menú del día por link para comedores", (await readFile(path.join(SRC2, "comedores.html"), "utf8")) + comedorJs, { legal: false, raw: true }), { title: "Menú del día por link para comedores | Mesaverso", description: "Dejá de mandar la imagen del menú todos los días: un link con tu menú del día y pedidos armados por WhatsApp para tus clientes de empresas.", pathname: "/comedores/", noindex: true,
+  extra: [{ "@type": "FAQPage", mainEntity: COMEDORES_FAQ.map(([q, a]) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: a } })) }] }));
 const simple = (title, text) => render(shell(esc(title), `<p>${text}</p><p><a class="btn btn--primary" href="/">Volver a Mesaverso</a></p>`), { title: `${title} | Mesaverso`, description: title, pathname: "/", noindex: true });
 await write("gracias.html", simple("¡Listo! Recibimos tu solicitud", "Te vamos a escribir por WhatsApp para mostrarte cómo quedaría tu menú."));
 await write("404.html", simple("No encontramos esta página", "Puede que el enlace haya cambiado."));
