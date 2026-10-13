@@ -29,7 +29,9 @@ export default buildConfig({
     meta: { titleSuffix: ' · Menú 3D' },
     components: {
       // checklist for restaurant staff, approvals waiting for platform admins
-      beforeDashboard: ['/components/StartGuide#StartGuide'],
+      beforeDashboard: ['/components/MenuDelDiaCard#MenuDelDiaCard', '/components/StartGuide#StartGuide'],
+      // «Menú del día»: one simple screen to change the day's dishes and publish (comedores, viandas)
+      views: { menuDelDia: { Component: '/components/MenuDelDia#MenuDelDia', path: '/menu-del-dia' } },
       // «¿No tenés cuenta?» link to the public signup
       afterLogin: ['/components/SignupLink#SignupLink'],
     },
