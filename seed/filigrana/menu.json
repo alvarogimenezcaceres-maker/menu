@@ -13,6 +13,8 @@
     "default_locale": "es",
     "logo": "logo-blanco",
     "tables": 20,
+    "plan": "menu",
+    "orderingMode": "whatsapp",
     "whatsapp": "0976 130 444",
     "cuisine": [
       "Pizza",
@@ -22,8 +24,6 @@
       "Cócteles"
     ],
     "googleReviewUrl": "https://search.google.com/local/writereview?placeid=ChIJL_lDRsKvXZQRm5fi4Q5I3H0",
-    "orderingMode": "whatsapp",
-    "ordering": {},
     "theme": {
       "primary": "#ED9D15",
       "primaryLight": "#FFB943",
