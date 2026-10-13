@@ -74,3 +74,12 @@ test("reservations: the «Reservar mesa» button appears only when the restauran
     assert.ok(!html.includes("reserveBtn") && !html.includes("reserveDlg") && !html.includes("reserve-btn"), slug + " must not carry the reservation pieces");
   }
 });
+
+test("watermark: every menu without the Gratis strip carries the discreet Mesaverso mark; Gratis menus keep the strip only", () => {
+  for (const slug of ["zz-piloto", "zz-menu", "zz-reserva"]) {
+    const html = page(slug);
+    assert.match(html, /class="wm"/, slug);
+    assert.match(html, /utm_medium=watermark/, slug);
+  }
+  assert.ok(!page("zz-gratis").includes('class="wm"'), "Gratis already has the Hecho con Mesaverso strip");
+});

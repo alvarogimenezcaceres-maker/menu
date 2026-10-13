@@ -38,6 +38,8 @@ const BADGE_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" aria
 const brandHref = slug => `${MESAVERSO_URL}/?ref=${encodeURIComponent(slug)}&amp;utm_source=menu&amp;utm_medium=badge`;
 const brandStrip = slug => `
     <div class="made"><a href="${brandHref(slug)}" target="_blank" rel="noopener">${BADGE_ICON}<span class="t"><b>Hecho con Mesaverso</b><span class="cta">Creá el tuyo gratis<span class="sr"> (se abre en otra pestaña)</span> →</span></span></a></div>`;
+// Discreet watermark on every menu that does not already carry the Gratis «Hecho con Mesaverso» strip (owner decision 2026-10-13)
+const watermark = slug => `<a class="wm" href="${MESAVERSO_URL}/?ref=${encodeURIComponent(slug)}&amp;utm_source=menu&amp;utm_medium=watermark" target="_blank" rel="noopener" aria-label="Menú digital por Mesaverso"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M16 80V22L50 60L84 22V80" fill="none" stroke="currentColor" stroke-width="11" stroke-linejoin="round"/><circle cx="16" cy="82" r="10" fill="currentColor"/><circle cx="84" cy="82" r="10" fill="currentColor"/></svg><span>Mesaverso</span></a>`;
 const FREE_CSS = `
   .made { margin-top: 10px; padding-top: 14px; border-top: 1px solid var(--line); width: 100%; display: grid; justify-items: center; }
   .made a { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; max-width: 100%; padding: 8px 14px; border: 1px solid var(--line); border-radius: 12px; color: #d6d9dd; text-decoration: none; font-size: 13.5px; line-height: 1.3; }
@@ -185,6 +187,7 @@ async function buildRestaurant(slug, templates) {
     PRIVACY_LINK: r.legal && r.legal.legalName && r.legal.ruc && r.legal.privacyContact ? ' · <a href="privacidad/">Privacidad</a>' : "",
     REVIEW_URL: jsonForScript(reviewUrl(r.googleReviewUrl)), ORDERING: jsonForScript(OrderCore.orderingConfig(r.ordering)),
     ORDER_CORE: basic ? ORDER_CORE : ORDER_CORE_PAID,
+    WATERMARK: free ? "" : watermark(slug),
     RESERVE_CSS: reserve ? templates.reserve.CSS : "", RESERVE_BTN: reserve ? templates.reserve.BTN : "", RESERVE_DIALOG: reserve ? templates.reserve.DIALOG : "", RESERVE_JS: reserve ? templates.reserve.JS : "",
     // plan Gratis only; "" elsewhere (see freeParts)
     ...Object.fromEntries(FREE_KEYS.map(k => [k, (free || (basic && !BRAND_KEYS.has(k))) ? freeParts(slug)[k] : ""])),

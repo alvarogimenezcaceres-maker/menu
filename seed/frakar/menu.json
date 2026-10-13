@@ -1,0 +1,198 @@
+{
+  "restaurant": {
+    "name": "Frakar Gourmet",
+    "slug": "frakar",
+    "description": "Hamburguesas premium, lomitos, papas fritas y pollo frito. Ingredientes frescos, sabor inigualable. Visitanos en Comandante Peralta N° 85 c/ Mcal. López.",
+    "tagline": "Hamburguesas premium",
+    "currency": "PYG",
+    "default_locale": "es",
+    "logo": "logo",
+    "hero": "papas-de-la-casa",
+    "tables": 0,
+    "orderingMode": "whatsapp",
+    "whatsapp": "",
+    "cuisine": [
+      "Hamburguesas",
+      "Lomitos",
+      "Papas fritas",
+      "Pollo frito"
+    ],
+    "theme": {
+      "primary": "#F0B030",
+      "primaryLight": "#FFD36B",
+      "background": "#14100D",
+      "accentWine": "#B3121F"
+    }
+  },
+  "categories": [
+    {
+      "slug": "hamburguesas",
+      "name": "Hamburguesas",
+      "dishes": [
+        {
+          "slug": "clasica",
+          "name": "Clásica",
+          "description": "Pan, mayonesa de la casa, vegetales, carne y queso cheddar.",
+          "price": 22000,
+          "ingredients": [
+            "pan",
+            "mayonesa de la casa",
+            "vegetales",
+            "carne",
+            "queso cheddar"
+          ]
+        },
+        {
+          "slug": "doble",
+          "name": "Doble",
+          "description": "Pan, mayonesa de la casa, vegetales, doble carne y queso cheddar.",
+          "price": 30000,
+          "ingredients": [
+            "pan",
+            "mayonesa de la casa",
+            "vegetales",
+            "doble carne",
+            "queso cheddar"
+          ]
+        },
+        {
+          "slug": "bacon",
+          "name": "Bacon",
+          "description": "Pan, mayonesa de la casa, vegetales, doble carne, queso cheddar y tocino.",
+          "price": 35000,
+          "ingredients": [
+            "pan",
+            "mayonesa de la casa",
+            "vegetales",
+            "doble carne",
+            "queso cheddar",
+            "tocino (bacon)"
+          ],
+          "tags": [
+            "destacado"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "lomitos",
+      "name": "Lomitos",
+      "dishes": [
+        {
+          "slug": "lomito-1",
+          "name": "Lomito 1",
+          "description": "Pan, mayonesa de la casa, vegetales, carne, queso y tocino.",
+          "price": 33000,
+          "ingredients": [
+            "pan",
+            "mayonesa de la casa",
+            "vegetales",
+            "carne",
+            "queso",
+            "tocino (bacon)"
+          ]
+        },
+        {
+          "slug": "lomito-2",
+          "name": "Lomito 2",
+          "description": "Pan, mayonesa de la casa, vegetales, carne, queso, tocino y huevo.",
+          "price": 37000,
+          "ingredients": [
+            "pan",
+            "mayonesa de la casa",
+            "vegetales",
+            "carne",
+            "queso",
+            "tocino (bacon)",
+            "huevo"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "frakar-kids",
+      "name": "Frakar Kids",
+      "dishes": [
+        {
+          "slug": "frakar-kids",
+          "name": "Frakar Kids",
+          "description": "Hamburguesa, papas fritas y Coca-Cola de 250 ml.",
+          "price": 30000,
+          "ingredients": [
+            "hamburguesa",
+            "papas fritas",
+            "Coca-Cola 250 ml"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "papas-fritas",
+      "name": "Papas fritas",
+      "dishes": [
+        {
+          "slug": "papas-fritas",
+          "name": "Papas fritas",
+          "description": "Elegí el tamaño.",
+          "price": 10000,
+          "ingredients": [
+            "papas"
+          ],
+          "options": [
+            {
+              "group": "Tamaño",
+              "multiple": false,
+              "required": true,
+              "items": [
+                {
+                  "name": "Pequeña",
+                  "price": 0
+                },
+                {
+                  "name": "Mediana",
+                  "price": 8000
+                },
+                {
+                  "name": "Grande",
+                  "price": 15000
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "lo-nuevo-de-la-casa",
+      "name": "Lo nuevo de la casa",
+      "dishes": [
+        {
+          "slug": "papas-con-3-burger",
+          "name": "Papas con 3 Burger",
+          "description": "Papas, 3 burger, salsa de la casa y cheddar.",
+          "price": 45000,
+          "ingredients": [
+            "papas",
+            "3 burger",
+            "salsa de la casa",
+            "cheddar"
+          ],
+          "tags": [
+            "destacado"
+          ]
+        },
+        {
+          "slug": "pollo-frito",
+          "name": "Pollo frito",
+          "description": "Papas, pollo frito y cheddar.",
+          "price": 40000,
+          "ingredients": [
+            "papas",
+            "pollo frito",
+            "cheddar"
+          ]
+        }
+      ]
+    }
+  ]
+}

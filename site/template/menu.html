@@ -374,6 +374,10 @@
   .open-chip { display: inline-flex; align-items: center; gap: 6px; font: 600 12.5px/1 var(--display); letter-spacing: .06em; text-transform: uppercase; padding: 7px 10px 6px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); }
   .open-chip i { width: 8px; height: 8px; border-radius: 50%; background: #7bc47f; }
   .open-chip.closed i { background: var(--err); }
+  /* marca de agua de Mesaverso: lo más discreta posible */
+  .wm { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; padding: 0 14px; margin: 2px auto 0; color: var(--muted); opacity: .4; font: 600 10.5px/1 var(--display); letter-spacing: .16em; text-transform: uppercase; text-decoration: none; }
+  .wm svg { width: 10px; height: 11px; flex: none; }
+  .wm:hover, .wm:focus-visible { opacity: .8; }
 {{FREE_CSS}}{{RESERVE_CSS}}</style>
 </head>
 <body>
@@ -421,7 +425,7 @@
     <img src="img/{{LOGO}}-360.webp" alt="">
     <span>Precios en guaraníes (₲). Consultá por alérgenos al personal.</span>
     <a class="review-btn" id="reviewFoot" hidden target="_blank" rel="noopener"></a>
-    <span class="privacy">Sin cookies. Contamos visitas y clics de forma anónima para mejorar el menú.{{PRIVACY_LINK}}</span>{{BRAND_STRIP}}
+    <span class="privacy">Sin cookies. Contamos visitas y clics de forma anónima para mejorar el menú.{{PRIVACY_LINK}}</span>{{BRAND_STRIP}}{{WATERMARK}}
   </footer>
 </main>{{RESERVE_DIALOG}}
 
