@@ -90,6 +90,8 @@ mismo sitio, límite de 5 envíos por hora por IP y tamaño máximo.
 
 **Mientras falte `RESEND_API_KEY`, las solicitudes no se pierden:** quedan guardadas en el KV. Para verlas: `npm run leads`.
 
+**Correo con Cloudflare (sin cuenta aparte, desde 13/10/2026):** el Worker tiene el binding `EMAIL` (`wrangler.prod.jsonc`) y manda desde `avisos@mesaverso.app` al correo de `LEAD_TO_EMAIL`. Falta, en el panel de Cloudflare, habilitar **Email Service / Email Sending** para el dominio `mesaverso.app` (agrega solo los registros SPF y DKIM) y, si lo pide, verificar el correo de destino. Si además hubiera `RESEND_API_KEY`, el binding de Cloudflare tiene prioridad. Mientras no esté habilitado, las solicitudes se guardan igual (`npm run leads`).
+
 Para activar el correo:
 
 1. Creá una cuenta gratis en https://resend.com **con el mismo correo que recibe los leads** (el remitente de prueba de Resend solo entrega a la dirección de la cuenta).

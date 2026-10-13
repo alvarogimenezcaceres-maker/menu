@@ -52,7 +52,8 @@ async function readBody(request) {
 }
 
 async function sendEmail(env, lead, id) {
-  if (!env.RESEND_API_KEY || !env.LEAD_TO_EMAIL) return "not_configured";
+  // Two transports: Cloudflare Email Service (binding EMAIL, no key to store) or Resend (RESEND_API_KEY). Neither configured: the lead is only stored.
+  if (!env.LEAD_TO_EMAIL || !(env.EMAIL || env.RESEND_API_KEY)) return "not_configured";
   const wa = phoneToWa(lead.phone);
   const rows = [
     ["Nombre", lead.name],
@@ -72,13 +73,18 @@ async function sendEmail(env, lead, id) {
   const html = `<h2 style="font-family:sans-serif">Nueva solicitud de demo</h2><table style="font-family:sans-serif;font-size:15px;border-collapse:collapse">${rows
     .map(([k, v]) => `<tr><td style="padding:6px 14px 6px 0;color:#666;vertical-align:top">${k}</td><td style="padding:6px 0;white-space:pre-wrap">${escapeHtml(v)}</td></tr>`)
     .join("")}</table><p style="font-family:sans-serif"><a href="https://wa.me/${wa}">Escribirle por WhatsApp</a></p><p style="font-family:sans-serif;color:#999;font-size:12px">ID ${id}</p>`;
+  const subject = `Demo Mesaverso: ${lead.business} (${lead.type})`;
+  if (env.EMAIL) {
+    await env.EMAIL.send({ to: env.LEAD_TO_EMAIL, from: { email: env.LEAD_FROM_ADDRESS || "avisos@mesaverso.app", name: "Mesaverso" }, subject, text, html });
+    return "sent";
+  }
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: { authorization: `Bearer ${env.RESEND_API_KEY}`, "content-type": "application/json" },
     body: JSON.stringify({
       from: env.LEAD_FROM_EMAIL || "Mesaverso <onboarding@resend.dev>",
       to: [env.LEAD_TO_EMAIL],
-      subject: `Demo Mesaverso: ${lead.business} (${lead.type})`,
+      subject,
       text,
       html,
     }),
