@@ -5,6 +5,7 @@
 //   node build-v2.mjs                 preview build: noindex, owner data may still be «[completar …]»
 //   PUBLISH=1 node build-v2.mjs       production build: indexable; refuses to build while owner data is incomplete
 // Preview:  npm run dev:v2   (wrangler on port 8789).  Deploy: only with the owner's OK (see plan/landing-2026/ita.md).
+import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { cp, mkdir, readdir, readFile, rm, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
@@ -38,6 +39,8 @@ for (const f of await readdir(path.join(SRC2, "m"))) { const code = await readFi
 const hashes = { ...mods, "v2.css": createHash("sha256").update(css).digest("hex").slice(0, 10), "v2.js": createHash("sha256").update(js).digest("hex").slice(0, 10) };
 
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+// Brand mark: the warm dot rests at the right foot of the M, jumps to the left foot and traces the M every 8 s (same motion as src/brand/isotype-mesaverso-animated.svg)
+const MARK_SVG = `<svg viewBox="0 0 100 100" aria-hidden="true"><path class="m" d="M16 80V22L50 60L84 22V80"/><circle class="a" cx="16" cy="82" r="10"/><circle class="b" cx="0" cy="0" r="10"><animateMotion dur="8s" repeatCount="indefinite" calcMode="spline" path="M16 82V22L50 60L84 22V82" keyPoints="1;1;0;0;1;1" keyTimes="0;0.62;0.64;0.7;0.925;1" keySplines="0 0 1 1;0 0 1 1;0 0 1 1;0.65 0 0.35 1;0 0 1 1"/><animate attributeName="opacity" dur="8s" repeatCount="indefinite" values="1;1;0;0;1;1" keyTimes="0;0.6;0.63;0.66;0.7;1"/></circle></svg>`;
 const abs = (p) => SITE_URL + p;
 const opts = (list) => `<option value="">Elegí una opción</option>` + list.map((t) => `<option>${esc(t)}</option>`).join("");
 const waDisplay = `+${MESAVERSO_WHATSAPP.slice(0, 3)} ${MESAVERSO_WHATSAPP.slice(3, 6)} ${MESAVERSO_WHATSAPP.slice(6, 9)} ${MESAVERSO_WHATSAPP.slice(9)}`;
@@ -53,7 +56,7 @@ const OG_DESC = "Menú con QR, pedidos, cocina y cuenta dividida en tu local. Tu
 function headMeta({ title, description, pathname, noindex, extra = [], pageType = "WebPage" }) {
   const url = abs(pathname);
   const graph = [
-    { "@type": "Organization", "@id": `${SITE_URL}/#organization`, name: "Mesaverso", url: abs("/"), logo: abs("/assets/icon-512.png"), slogan: "Tu local atiende. Mesaverso ordena.", description: "Mesaverso es un servicio de menú digital con QR, pedidos por WhatsApp, cocina en pantalla y cuenta dividida para restaurantes, bares, lomiterías y cafeterías de Paraguay.", disambiguatingDescription: "Servicio paraguayo para locales gastronómicos. No es un metaverso ni una app de delivery.", knowsAbout: ["menú digital con QR", "pedidos por WhatsApp", "comanda de cocina", "cuenta dividida", "delivery propio"], areaServed: { "@type": "Country", name: "Paraguay" }, contactPoint: { "@type": "ContactPoint", contactType: "sales", telephone: `+${MESAVERSO_WHATSAPP}`, availableLanguage: ["es"], areaServed: "PY" } },
+    { "@type": "Organization", "@id": `${SITE_URL}/#organization`, name: "Mesaverso", url: abs("/"), logo: abs("/assets/icon-512.png"), slogan: "Tu local atiende. Mesaverso ordena.", description: "Mesaverso es un servicio de menú digital con QR, pedidos por WhatsApp, cocina en pantalla y cuenta dividida para restaurantes, bares, lomiterías y cafeterías de Paraguay.", disambiguatingDescription: "Servicio paraguayo para locales gastronómicos. No es un metaverso ni una app de delivery.", knowsAbout: ["menú digital con QR", "pedidos por WhatsApp", "comanda de cocina", "cuenta dividida", "delivery propio"], areaServed: { "@type": "Country", name: "Paraguay" }, contactPoint: { "@type": "ContactPoint", contactType: "sales", telephone: `+${MESAVERSO_WHATSAPP}`, email: "contacto@mesaverso.app", availableLanguage: ["es"], areaServed: "PY" } },
     ...(pathname === "/" ? [{ "@type": "SoftwareApplication", "@id": `${SITE_URL}/#software`, name: "Mesaverso", applicationCategory: "BusinessApplication", operatingSystem: "Web", inLanguage: "es-PY", url: abs("/"), publisher: { "@id": `${SITE_URL}/#organization` },
       description: "Menú digital con QR, pedidos por WhatsApp y caja (mesas, cocina, cuenta dividida) para restaurantes, bares y lomiterías de Paraguay.",
       offers: [{ "@type": "Offer", name: "Plan Gratis «Vidriera»", price: 0, priceCurrency: "PYG" }, { "@type": "Offer", name: "Plan mensual", price: PRICES.planMonthly, priceCurrency: "PYG" }, { "@type": "Offer", name: "Plan anual", price: PRICES.planAnnual, priceCurrency: "PYG" }] }] : []),
@@ -88,6 +91,7 @@ function render(template, meta) {
       case "RAW": if (!(arg in PRICES)) throw new Error(`Unknown price ${arg}`); return String(PRICES[arg]);
       case "OWNER": if (!(arg in OWNER)) throw new Error(`Unknown owner field ${arg}`); return esc(OWNER[arg]);
       case "GUIDES_LIST": return guides.map((g) => `<li class="gl"><a href="/${g.slug}/"><b>${esc(g.h1)}</b></a><p>${esc(g.description)}</p></li>`).join("");
+      case "MARK": return MARK_SVG;
       case "FOOTER": return footerHtml(meta.pathname === "/");
       case "PAGES_NAV": return [...products, ...rubros].map((p) => `<a href="/${p.slug}/">${esc(p.h1)}</a>`).join("") + (guides.length ? `<a href="/guias/">Guías para dueños de locales</a>` : "");
       case "WA_DISPLAY": return waDisplay;
@@ -109,7 +113,9 @@ function render(template, meta) {
 
 const write = async (rel, html) => { const f = path.join(DIST, rel); await mkdir(path.dirname(f), { recursive: true }); await writeFile(f, html); };
 const productPages = [];
-for (const f of (await readdir(path.join(SRC2, "pages"))).filter((x) => x.endsWith(".json")).sort()) productPages.push(JSON.parse(await readFile(path.join(SRC2, "pages", f), "utf8")));
+// ONLY_TRACKED_PAGES=1: publish only pages already committed to git (new drafts being written or reviewed stay out)
+const trackedPages = process.env.ONLY_TRACKED_PAGES === "1" ? new Set(spawnSync("git", ["ls-files", "src-v2/pages"], { cwd: ROOT, encoding: "utf8" }).stdout.split(String.fromCharCode(10)).map((x) => path.basename(x.trim()))) : null;
+for (const f of (await readdir(path.join(SRC2, "pages"))).filter((x) => x.endsWith(".json") && (!trackedPages || trackedPages.has(x))).sort()) productPages.push(JSON.parse(await readFile(path.join(SRC2, "pages", f), "utf8")));
 const kindOf = (p) => p.type || "product";
 // topical pairs: each product page links to its guides and each guide back to its product page
 const REL = {
@@ -142,10 +148,11 @@ const footerHtml = (home) => {
   return `<footer class="foot"><div class="wrap">
 <div class="foot__top">
   <div class="foot__brand">
-    <a class="mv-wordmark" href="/" aria-label="Mesaverso, inicio"><svg viewBox="0 0 100 100" aria-hidden="true"><path class="m" d="M16 80V22L50 60L84 22V80"/><circle class="a" cx="16" cy="82" r="10"/><circle class="b" cx="84" cy="82" r="10"/></svg>ESAVERSO</a>
+    <a class="mv-wordmark" href="/" aria-label="Mesaverso, inicio">${MARK_SVG}ESAVERSO</a>
     <p>Menú digital con QR, pedidos y cocina para restaurantes, bares y cafeterías de Paraguay.</p>
     <a class="btn btn--secondary foot__wa" href="${esc(waUrl("general"))}" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-wa"/></svg>Hablar por WhatsApp</a>
     <p class="foot__num">${waDisplay}</p>
+    <p class="foot__num"><a href="mailto:contacto@mesaverso.app">contacto@mesaverso.app</a></p>
   </div>
   ${col("Producto", [link("menu-digital-qr"), link("pedidos-por-whatsapp"), link("delivery-propio"), link("cuenta-dividida"), link("plan-gratis"), link("calculadora-comision-delivery")])}
   ${col("Para tu local", [link("para-parrillas"), link("para-cafeterias"), link("para-lomiterias"), link("para-hamburgueserias-y-pizzerias")])}
@@ -162,7 +169,7 @@ await write("index.html", render(await readFile(path.join(SRC2, "index.html"), "
 
 // Legal and small pages share the page shell. They are drafts until a licensed lawyer reviews them.
 const draft = PUBLISH ? "" : `<p class="draft"><b>Borrador para revisión.</b> Este texto lo redactó una asistente de IA y todavía no lo revisó un abogado matriculado. No publicar así.</p>`;
-const shell = (title, body, { legal = true } = {}) => `<!doctype html><html lang="es-PY" data-theme="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">{{HEAD_META}}<meta name="theme-color" content="#0e1014"><meta name="color-scheme" content="dark light"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="preload" href="/fonts/familjen-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="/v2.css?v={{HASH:v2.css}}"></head><body><nav class="nav" aria-label="Principal"><div class="wrap nav__in"><a class="mv-wordmark" href="/" aria-label="Mesaverso, volver al inicio"><svg viewBox="0 0 100 100" aria-hidden="true"><path class="m" d="M16 80V22L50 60L84 22V80"/><circle class="a" cx="16" cy="82" r="10"/><circle class="b" cx="84" cy="82" r="10"/></svg>ESAVERSO</a><div class="nav__end"><a class="btn btn--secondary btn--sm" href="/#cierre"><span class="l">Quiero mi menú</span><span class="s">Empezar</span></a><a class="btn btn--secondary btn--sm" href="/"><span class="l">Inicio</span><span class="s">Inicio</span></a></div></div></nav><main class="wrap legal"><h1>${title}</h1>${legal ? draft : ""}${body}</main>{{FOOTER}}<script src="/m/ev.js?v={{HASH:m/ev.js}}" defer></script><script>if(matchMedia('(prefers-color-scheme: light)').matches)document.documentElement.dataset.theme='light'</script></body></html>`;
+const shell = (title, body, { legal = true } = {}) => `<!doctype html><html lang="es-PY" data-theme="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">{{HEAD_META}}<meta name="theme-color" content="#0e1014"><meta name="color-scheme" content="dark light"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="preload" href="/fonts/familjen-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="/v2.css?v={{HASH:v2.css}}"></head><body><nav class="nav" aria-label="Principal"><div class="wrap nav__in"><a class="mv-wordmark" href="/" aria-label="Mesaverso, volver al inicio">${MARK_SVG}ESAVERSO</a><div class="nav__end"><a class="btn btn--secondary btn--sm" href="/#cierre"><span class="l">Quiero mi menú</span><span class="s">Empezar</span></a><a class="btn btn--secondary btn--sm" href="/"><span class="l">Inicio</span><span class="s">Inicio</span></a></div></div></nav><main class="wrap legal"><h1>${title}</h1>${legal ? draft : ""}${body}</main>{{FOOTER}}<script src="/m/ev.js?v={{HASH:m/ev.js}}" defer></script><script>if(matchMedia('(prefers-color-scheme: light)').matches)document.documentElement.dataset.theme='light'</script></body></html>`;
 const pages = [
   ["privacidad", "Aviso de privacidad", "Aviso de privacidad de Mesaverso: cómo usamos y protegemos los datos que dejás en esta página, y cómo ejercer tus derechos.", "privacidad.body.html"],
   ["terminos", "Términos del sitio", "Términos del sitio de Mesaverso: condiciones de uso de esta página, de sus herramientas de vista previa y del formulario de contacto.", "terminos.body.html"],

@@ -17,3 +17,6 @@
   let calc = false;
   document.addEventListener("input", (ev) => { if (!calc && ev.target.closest && ev.target.closest("#calcForm")) { calc = true; send("calc_used", "calculadora"); } });
 })();
+
+// Reduced motion: the brand dot stays at rest (the animation is SMIL, so CSS cannot stop it)
+if (matchMedia("(prefers-reduced-motion: reduce)").matches) document.querySelectorAll(".mv-wordmark svg").forEach((s) => s.pauseAnimations && s.pauseAnimations());

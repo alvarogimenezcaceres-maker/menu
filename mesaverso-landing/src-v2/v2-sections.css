@@ -479,3 +479,6 @@ textarea.in{min-height:84px;padding-top:12px;resize:vertical}
 }
 [data-in-foot] .wa-float{opacity:0;pointer-events:none}
 .foot__brand{align-content:start}
+
+.foot__num a{color:var(--text-2);display:inline-flex;align-items:center;min-height:44px}
+.foot__brand .foot__num{margin:-6px 0 0}
