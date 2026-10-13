@@ -5,12 +5,9 @@
 // Mientras algún valor siga con «[completar …]», la vista previa lo muestra tal cual y PUBLISH=1 se niega a construir.
 const e = (k, fallback) => (process.env["OWNER_" + k] || "").trim() || fallback;
 
+// El dueño pidió que ningún dato personal (nombre, RUC, domicilio, correo) aparezca en la página (13/10/2026): solo
+// queda la fecha de vigencia de los textos legales y el WhatsApp de contacto. Los demás campos ya no se usan.
 export const OWNER = {
-  TITULAR: e("TITULAR", "[completar: nombre y apellido]"),
-  RUC: e("RUC", "[completar: RUC]"),
-  DOMICILIO: e("DOMICILIO", "[completar: domicilio]"),
-  CORREO: e("CORREO", "[completar: correo de contacto]"),
-  CORREO_DATOS: e("CORREO_DATOS", "[completar: correo para datos personales]"),
   VIGENCIA: e("VIGENCIA", "[completar: fecha de vigencia]"),
 };
 

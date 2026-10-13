@@ -170,3 +170,14 @@ document.querySelectorAll('[data-mod]').forEach(sec=>{
   const root = document.documentElement;
   new IntersectionObserver(([e]) => { if (e.isIntersecting) root.dataset.inHero = "1"; else delete root.dataset.inHero; }, { rootMargin: "0px 0px -35% 0px" }).observe(hero);
 })();
+
+// Mobile menu: opens under the header, closes with a link, Escape or a tap on the button.
+(() => {
+  const btn = document.getElementById("navbtn"), menu = document.getElementById("navmenu");
+  if (!btn || !menu) return;
+  const set = (open) => { menu.hidden = !open; btn.setAttribute("aria-expanded", String(open)); btn.setAttribute("aria-label", open ? "Cerrar el menú" : "Abrir el menú"); };
+  btn.addEventListener("click", () => set(menu.hidden));
+  menu.addEventListener("click", (e) => { if (e.target.closest("a")) set(false); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !menu.hidden) { set(false); btn.focus(); } });
+  matchMedia("(min-width: 900px)").addEventListener("change", (m) => { if (m.matches) set(false); });
+})();
