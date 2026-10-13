@@ -189,3 +189,11 @@ document.querySelectorAll('[data-mod]').forEach(sec=>{
   const root = document.documentElement;
   new IntersectionObserver(([e]) => { if (e.isIntersecting) root.dataset.inForm = "1"; else delete root.dataset.inForm; }).observe(sec);
 })();
+
+// The floating WhatsApp button would cover the last footer links: it hides while the footer is on screen.
+(() => {
+  const foot = document.querySelector("footer.foot");
+  if (!foot || !("IntersectionObserver" in window)) return;
+  const root = document.documentElement;
+  new IntersectionObserver(([e]) => { if (e.isIntersecting) root.dataset.inFoot = "1"; else delete root.dataset.inFoot; }).observe(foot);
+})();

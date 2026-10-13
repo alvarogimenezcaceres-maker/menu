@@ -88,6 +88,7 @@ function render(template, meta) {
       case "RAW": if (!(arg in PRICES)) throw new Error(`Unknown price ${arg}`); return String(PRICES[arg]);
       case "OWNER": if (!(arg in OWNER)) throw new Error(`Unknown owner field ${arg}`); return esc(OWNER[arg]);
       case "GUIDES_LIST": return guides.map((g) => `<li class="gl"><a href="/${g.slug}/"><b>${esc(g.h1)}</b></a><p>${esc(g.description)}</p></li>`).join("");
+      case "FOOTER": return footerHtml(meta.pathname === "/");
       case "PAGES_NAV": return [...products, ...rubros].map((p) => `<a href="/${p.slug}/">${esc(p.h1)}</a>`).join("") + (guides.length ? `<a href="/guias/">Guías para dueños de locales</a>` : "");
       case "WA_DISPLAY": return waDisplay;
       case "YEAR": return String(new Date().getFullYear());
@@ -128,11 +129,40 @@ const products = productPages.filter((p) => kindOf(p) === "product");
 const rubros = productPages.filter((p) => kindOf(p) === "rubro");
 const guides = productPages.filter((p) => kindOf(p) === "guide");
 const dmy = (iso) => iso.split("-").reverse().join("/");
+// Footer: one component for the home and every inner page. Short labels, grouped columns, bottom legal bar.
+const FOOT_LABEL = {
+  "menu-digital-qr": "Menú digital con QR", "pedidos-por-whatsapp": "Pedidos por WhatsApp", "delivery-propio": "Delivery propio", "cuenta-dividida": "Cuenta dividida",
+  "plan-gratis": "Plan Gratis", "calculadora-comision-delivery": "Calculadora de comisión", "que-es-mesaverso": "Qué es Mesaverso",
+  "para-parrillas": "Parrillas", "para-cafeterias": "Cafeterías", "para-lomiterias": "Lomiterías", "para-hamburgueserias-y-pizzerias": "Hamburgueserías y pizzerías",
+};
+const footerHtml = (home) => {
+  const h = home ? "" : "/";
+  const link = (slug) => { const p = productPages.find((x) => x.slug === slug); return p ? `<li><a href="/${slug}/">${esc(FOOT_LABEL[slug] || p.h1)}</a></li>` : ""; };
+  const col = (title, items) => `<nav class="foot__col" aria-label="${esc(title)}"><p class="foot__h">${esc(title)}</p><ul>${items.join("")}</ul></nav>`;
+  return `<footer class="foot"><div class="wrap">
+<div class="foot__top">
+  <div class="foot__brand">
+    <a class="mv-wordmark" href="/" aria-label="Mesaverso, inicio"><svg viewBox="0 0 100 100" aria-hidden="true"><path class="m" d="M16 80V22L50 60L84 22V80"/><circle class="a" cx="16" cy="82" r="10"/><circle class="b" cx="84" cy="82" r="10"/></svg>ESAVERSO</a>
+    <p>Menú digital con QR, pedidos y cocina para restaurantes, bares y cafeterías de Paraguay.</p>
+    <a class="btn btn--secondary foot__wa" href="${esc(waUrl("general"))}" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-wa"/></svg>Hablar por WhatsApp</a>
+    <p class="foot__num">${waDisplay}</p>
+  </div>
+  ${col("Producto", [link("menu-digital-qr"), link("pedidos-por-whatsapp"), link("delivery-propio"), link("cuenta-dividida"), link("plan-gratis"), link("calculadora-comision-delivery")])}
+  ${col("Para tu local", [link("para-parrillas"), link("para-cafeterias"), link("para-lomiterias"), link("para-hamburgueserias-y-pizzerias")])}
+  ${col("Recursos", [link("que-es-mesaverso"), ...(guides.length ? [`<li><a href="/guias/">Guías para dueños</a></li>`] : []), `<li><a href="${h}#planes">Planes y precios</a></li>`, `<li><a href="${h}#preguntas">Preguntas frecuentes</a></li>`])}
+  ${col("Legal", [`<li><a href="/terminos/">Términos del sitio</a></li>`, `<li><a href="/terminos-gratis/">Términos del plan Gratis</a></li>`, `<li><a href="/privacidad/">Aviso de privacidad</a></li>`, `<li><a href="/reclamos/">Reclamos y retiro de contenido</a></li>`])}
+</div>
+<div class="foot__bar">
+  <p>© ${new Date().getFullYear()} Mesaverso™ · Hecho en Paraguay · No usamos cookies de seguimiento.</p>
+  <p><b>Mesaverso Caja no emite factura.</b> El ticket dice «NO VÁLIDO COMO FACTURA»: seguís facturando con tu sistema habitual.</p>
+</div>
+</div></footer>`;
+};
 await write("index.html", render(await readFile(path.join(SRC2, "index.html"), "utf8"), { title: TITLE, description: DESC, pathname: "/" }));
 
 // Legal and small pages share the page shell. They are drafts until a licensed lawyer reviews them.
 const draft = PUBLISH ? "" : `<p class="draft"><b>Borrador para revisión.</b> Este texto lo redactó una asistente de IA y todavía no lo revisó un abogado matriculado. No publicar así.</p>`;
-const shell = (title, body, { legal = true } = {}) => `<!doctype html><html lang="es-PY" data-theme="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">{{HEAD_META}}<meta name="theme-color" content="#0e1014"><meta name="color-scheme" content="dark light"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="preload" href="/fonts/familjen-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="/v2.css?v={{HASH:v2.css}}"></head><body><nav class="nav" aria-label="Principal"><div class="wrap nav__in"><a class="mv-wordmark" href="/" aria-label="Mesaverso, volver al inicio"><svg viewBox="0 0 100 100" aria-hidden="true"><path class="m" d="M16 80V22L50 60L84 22V80"/><circle class="a" cx="16" cy="82" r="10"/><circle class="b" cx="84" cy="82" r="10"/></svg>ESAVERSO</a><div class="nav__end"><a class="btn btn--secondary btn--sm" href="/#cierre"><span class="l">Quiero mi menú</span><span class="s">Empezar</span></a><a class="btn btn--secondary btn--sm" href="/"><span class="l">Inicio</span><span class="s">Inicio</span></a></div></div></nav><main class="wrap legal"><h1>${title}</h1>${legal ? draft : ""}${body}</main><footer class="foot"><div class="wrap foot__in"><p class="brandline">Mesaverso</p><nav aria-label="Funciones y guías" class="foot__nav">{{PAGES_NAV}}</nav><nav aria-label="Legal"><a href="/#planes">Planes</a><a href="/terminos/">Términos</a><a href="/privacidad/">Privacidad</a><a href="/reclamos/">Reclamos y retiro de contenido</a></nav></div></footer><script src="/m/ev.js?v={{HASH:m/ev.js}}" defer></script><script>if(matchMedia('(prefers-color-scheme: light)').matches)document.documentElement.dataset.theme='light'</script></body></html>`;
+const shell = (title, body, { legal = true } = {}) => `<!doctype html><html lang="es-PY" data-theme="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">{{HEAD_META}}<meta name="theme-color" content="#0e1014"><meta name="color-scheme" content="dark light"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="preload" href="/fonts/familjen-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="/v2.css?v={{HASH:v2.css}}"></head><body><nav class="nav" aria-label="Principal"><div class="wrap nav__in"><a class="mv-wordmark" href="/" aria-label="Mesaverso, volver al inicio"><svg viewBox="0 0 100 100" aria-hidden="true"><path class="m" d="M16 80V22L50 60L84 22V80"/><circle class="a" cx="16" cy="82" r="10"/><circle class="b" cx="84" cy="82" r="10"/></svg>ESAVERSO</a><div class="nav__end"><a class="btn btn--secondary btn--sm" href="/#cierre"><span class="l">Quiero mi menú</span><span class="s">Empezar</span></a><a class="btn btn--secondary btn--sm" href="/"><span class="l">Inicio</span><span class="s">Inicio</span></a></div></div></nav><main class="wrap legal"><h1>${title}</h1>${legal ? draft : ""}${body}</main>{{FOOTER}}<script src="/m/ev.js?v={{HASH:m/ev.js}}" defer></script><script>if(matchMedia('(prefers-color-scheme: light)').matches)document.documentElement.dataset.theme='light'</script></body></html>`;
 const pages = [
   ["privacidad", "Aviso de privacidad", "Aviso de privacidad de Mesaverso: cómo usamos y protegemos los datos que dejás en esta página, y cómo ejercer tus derechos.", "privacidad.body.html"],
   ["terminos", "Términos del sitio", "Términos del sitio de Mesaverso: condiciones de uso de esta página, de sus herramientas de vista previa y del formulario de contacto.", "terminos.body.html"],

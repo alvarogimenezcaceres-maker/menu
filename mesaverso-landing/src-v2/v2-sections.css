@@ -174,13 +174,6 @@
 .sendstate{font-size:14.5px;color:var(--text-2);min-height:1.4em}
 
 /* footer */
-.foot{padding:56px 0 calc(56px + 70px);border-top:1px solid var(--line);color:var(--text-2);font-size:14.5px;background:var(--bg)}
-.foot__in{display:grid;gap:22px;max-width:860px}
-.foot a{color:var(--text-2)}
-.foot a:hover{color:var(--text)}
-.foot nav{display:flex;flex-wrap:wrap;gap:8px 22px}
-.foot b{color:var(--text)}
-.foot .brandline{font:600 18px var(--display);color:var(--text)}
 
 /* legal pages */
 .legal{max-width:760px;padding:56px 0 96px}
@@ -425,7 +418,7 @@ a,button,summary,label,select{touch-action:manipulation;-webkit-tap-highlight-co
 .gl a{color:var(--text);text-decoration:none;font-size:19px;line-height:1.3;display:block;min-height:44px}
 .gl a:hover b{text-decoration:underline}
 .gl p{margin:6px 0 0;color:var(--text-2);font-size:15.5px}
-.legal+.foot{padding-top:40px}
+.legal+.foot{margin-top:0}
 
 /* LCP: the headline block paints at once (an opacity-0 animation delays the largest paint); the rest keeps its staggered entrance */
 .hero__copy>.kicker.rise,.hero__copy>h1.rise,.hero__copy>.hero__sub.rise{animation:none;opacity:1;transform:none}
@@ -459,3 +452,30 @@ a,button,summary,label,select{touch-action:manipulation;-webkit-tap-highlight-co
 @media(min-width:620px){.form__grid{grid-template-columns:1fr 1fr}.fld--wide{grid-column:1/-1}}
 textarea.in{min-height:84px;padding-top:12px;resize:vertical}
 [data-in-form] .wa-float{opacity:0;pointer-events:none}
+
+/* ---- Footer 2026-10-13: brand + grouped columns + legal bar ---- */
+.foot{padding:56px 0 calc(40px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);background:var(--surface);color:var(--text-2);font-size:15px}
+.foot a{color:var(--text-2);text-decoration:none}
+.foot a:hover{color:var(--text);text-decoration:underline;text-underline-offset:3px}
+.foot a:focus-visible{outline:2px solid var(--focus);outline-offset:3px;border-radius:4px}
+.foot b{color:var(--text)}
+.foot__top{display:grid;grid-template-columns:1fr 1fr;gap:34px 22px}
+.foot__brand{grid-column:1/-1;display:grid;gap:14px;justify-items:start;max-width:380px}
+.foot__brand p{margin:0;line-height:1.5}
+.foot__brand .mv-wordmark{color:var(--text);min-height:44px}
+.foot__wa{gap:10px;min-height:48px}
+.foot__wa .ico{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.foot__num{font:500 14px var(--mono);letter-spacing:.04em;color:var(--text-3)}
+.foot__h{margin:0 0 6px;font:600 12px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--text)}
+.foot__col ul{list-style:none;margin:0;padding:0;display:grid}
+.foot__col a{display:flex;align-items:center;min-height:44px;line-height:1.25}
+.foot__bar{margin-top:36px;padding-top:22px;border-top:1px solid var(--line);display:grid;gap:10px;font-size:13.5px;color:var(--text-3)}
+.foot__bar p{margin:0;line-height:1.5;max-width:70ch}
+@media(min-width:900px){
+  .foot{padding-top:72px}
+  .foot__top{grid-template-columns:1.5fr 1fr 1fr 1fr 1fr;gap:28px}
+  .foot__brand{grid-column:auto}
+  .foot__bar{grid-template-columns:auto 1fr;gap:28px;align-items:start}
+}
+[data-in-foot] .wa-float{opacity:0;pointer-events:none}
+.foot__brand{align-content:start}
