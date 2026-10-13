@@ -132,6 +132,9 @@ async function handleLead(request, env, url) {
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+    // Google Search Console ownership file: answered here because the static assets layer redirects *.html and Google does not follow redirects
+    const gv = url.pathname.match(/^\/(google[0-9a-f]{8,32}\.html)$/);
+    if (gv) return new Response(`google-site-verification: ${gv[1]}`, { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=3600" } });
     if (url.pathname === "/api/lead") return handleLead(request, env, url);
     if (url.pathname.startsWith("/api/")) return json(404, { ok: false, error: "No encontrado." });
     return env.ASSETS.fetch(request);
