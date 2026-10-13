@@ -1,0 +1,85 @@
+{
+ "slug": "para-comedores-y-viandas",
+ "type": "rubro",
+ "published": "2026-10-13",
+ "modified": "2026-10-13",
+ "title": "Menú digital para comedor: viandas y almuerzos a empresas",
+ "description": "Menú digital para comedores de Paraguay: menú del día y de la semana, pedidos por cantidad para empresas y un solo WhatsApp. Empezá con el plan Gratis.",
+ "h1": "Menú digital para comedor: almuerzos para empresas, viandas y menú del día en Asunción",
+ "lead": "Un comedor que le cocina a oficinas y empresas todos los días no necesita una carta eterna: necesita que el menú de hoy y de la semana esté claro, que los pedidos lleguen armados y que el mediodía no se vuelva un caos de audios.",
+ "sections": [
+  {
+   "h2": "Un comedor vende lo mismo, muchas veces, en pocas horas",
+   "html": "<p>El comedor tiene un ritmo propio. Entre las 9 y las 11 entran los pedidos de las oficinas, a las 12 salen las viandas y a la tarde ya hay que pensar en el menú de mañana. Si cada pedido llega como un audio, una foto del menú reenviada o un «lo mismo de ayer», alguien tiene que anotar, preguntar y volver a anotar.</p><p>Un <a href='/menu-digital-qr/'>menú digital con QR y link</a> te da un lugar fijo donde está todo: el menú del día, el de la semana y el link para mandar a los encargados de cada empresa. El QR lo pegás en la puerta o en el mostrador; el link lo dejás fijado en el grupo o en el estado de WhatsApp.</p>"
+  },
+  {
+   "h2": "Menú del día y menú de la semana: una categoría por día",
+   "html": "<p>La forma más ordenada de mostrar un menú que rota es armar una categoría por día: «Lunes», «Martes», «Miércoles», «Jueves» y «Viernes». Cada categoría lleva el plato principal de ese día, con su foto y su precio. Y debajo del título de la categoría se muestra la descripción de la categoría, que es el lugar justo para escribir el horario límite: «Pedidos hasta las 10:30 para entregar al mediodía».</p><p>Un ejemplo de semana, con un comedor ficticio y precios inventados:</p><ul><li><strong>Lunes:</strong> milanesa con puré, ₲ 28.000 (ejemplo)</li><li><strong>Martes:</strong> pollo al horno con arroz, ₲ 26.000 (ejemplo)</li><li><strong>Miércoles:</strong> sopa paraguaya con guiso de carne, ₲ 27.000 (ejemplo)</li><li><strong>Jueves:</strong> tallarín con salsa y bife, ₲ 28.000 (ejemplo)</li><li><strong>Viernes:</strong> pescado con ensalada, ₲ 30.000 (ejemplo)</li></ul><p>Un dato importante: el horario límite es un texto que escribís vos en la carta. Mesaverso no corta los pedidos solo cuando pasa la hora: dejalo bien visible.</p>"
+  },
+  {
+   "h2": "Pedidos por cantidad y una nota por cada línea",
+   "html": "<p>Una oficina no pide un almuerzo: pide doce. Y de esos doce, dos van sin sal, uno sin carne y otro sin cebolla. En el menú digital, el encargado elige el plato, indica la cantidad y puede escribir una nota en esa misma línea del pedido: «2 sin sal», «1 sin carne, con más ensalada».</p><p>Esa nota viaja escrita en el mensaje que te llega. No hay que escuchar un audio de dos minutos ni acordarse de quién pidió qué. Las variantes fijas, como arroz o puré, van como opciones del plato.</p>"
+  },
+  {
+   "h2": "Varias empresas, un solo WhatsApp",
+   "html": "<p>Lo normal en un comedor es atender a cuatro, seis o diez empresas por día, cada una con su encargado. Con el <a href='/pedidos-por-whatsapp/'>pedido por WhatsApp</a>, todos usan el mismo link y todos los pedidos terminan en un solo número: el tuyo. Lo que recibís es un mensaje ya armado, con los platos, las cantidades, las notas y el total, no una conversación suelta.</p><p>Para distinguir una empresa de otra, pedí que el encargado escriba el nombre de su empresa y el piso o la oficina en la nota de la primera línea del pedido o en el mensaje.</p>"
+  },
+  {
+   "h2": "Empresas y particulares: dos formas de pedir, una misma carta",
+   "html": "<p>Muchos comedores atienden a las dos puntas: la empresa que pide por cantidad y el vecino que pasa a buscar un almuerzo suelto. No hace falta tener dos cartas. Podés dejar en la descripción de cada categoría una línea para cada caso: «Empresas: pedidos de 5 o más hasta las 10:30. Particulares: hasta las 11:30, retiro en el local».</p><p>Las condiciones, como el mínimo por empresa, la zona de entrega o cómo se cobra, las definís vos y las escribís como texto en la carta. Mesaverso no maneja cobros online, facturación ni agenda de entregas: el cobro y la facturación los seguís haciendo como siempre, y qué corresponde en cada caso (facturas, IVA, retenciones) conviene consultarlo con tu contador. Las habilitaciones de tu cocina y de tu servicio también son tuyas: Mesaverso no las gestiona ni las verifica.</p>"
+  },
+  {
+   "h2": "Cómo ordenar el mediodía",
+   "html": "<p>Cuando llegan veinte pedidos antes de las 11, lo que ayuda es el orden. Una manera práctica de trabajar:</p><ol><li>Cerrás los pedidos a la hora que escribiste en la carta.</li><li>Leés los mensajes y los agrupás por empresa.</li><li>Armás las bandejas o bolsas de cada empresa y las rotulás con el nombre.</li><li>Entregás en el orden que vos definas, empezando por la más lejana o la que almuerza más temprano.</li></ol><p>El orden de entrega lo decidís vos: Mesaverso no calcula tiempos ni reparte. Si usás la prueba de Mesaverso Caja, cada pedido queda en la pantalla de cocina con sus notas y podés imprimir la comanda en una impresora térmica opcional, que se compra aparte. Si además armás bandejas para eventos, mirá <a href='/para-catering-y-eventos/'>la página para catering y eventos</a>. Más ideas en las guías de <a href='/guias/pedidos-de-almuerzo-para-empresas-whatsapp/'>pedidos de almuerzo para empresas por WhatsApp</a>, <a href='/guias/menu-semanal-comedor-viandas/'>menú semanal</a> y <a href='/guias/como-vender-viandas-a-empresas/'>cómo vender viandas a empresas</a>.</p>"
+  },
+  {
+   "h2": "Cuando un plato se agota",
+   "html": "<p>Si a las 10 ya no queda pollo, lo peor es seguir recibiendo pedidos de pollo. Desde Mesaverso Caja, que está en etapa de prueba y no viene incluida en el plan Gratis, podés marcar un plato como «agotado» y deja de poder pedirse. Si todavía no la usás, avisá en la descripción de la categoría: «Si se agota, te avisamos por WhatsApp».</p>"
+  },
+  {
+   "h2": "El plan Gratis, usado a fondo",
+   "html": "<p>El plan <a href='/plan-gratis/'>Gratis</a> admite hasta 11 productos, con al menos 8 con precio para publicar, pedido básico por WhatsApp y la marca «Hecho con Mesaverso». Para un comedor, 11 productos pueden alcanzar para empezar. Una forma de repartirlos:</p><ul><li><strong>5 platos principales:</strong> uno por día, de lunes a viernes.</li><li><strong>1 postre:</strong> el mismo toda la semana, o uno que rote.</li><li><strong>1 bebida:</strong> jugo o gaseosa de la casa.</li><li><strong>4 más a elección:</strong> una sopa, una ensalada, una opción vegetariana y un extra como pan o chipa.</li></ul><p>Cada semana podés editar el plato de cada día por el siguiente, así el menú se mantiene al día sin pasar el límite. La primera publicación se revisa antes de salir y el plan es para negocios gastronómicos con cocina o punto de venta propio, como un comedor o un servicio de viandas; las condiciones están en los <a href='/terminos-gratis/'>términos del plan Gratis</a>.</p>"
+  },
+  {
+   "h2": "Cuándo conviene pasar a un plan pago",
+   "html": "<p>Conviene mirar un plan pago cuando necesitás más de 11 productos, cuando querés marcar platos agotados, usar la pantalla de cocina y la comanda de Caja, o cuando el pedido por WhatsApp necesita más datos. Los planes y sus precios están en <a href='/#planes'>la sección de planes</a>.</p>"
+  }
+ ],
+ "faq": [
+  [
+   "¿Puedo cargar el menú de toda la semana?",
+   "<p>Sí, con una categoría por día y el plato principal de cada uno. Cada semana cambiás los platos por los nuevos.</p>"
+  ],
+  [
+   "¿Se puede pedir 12 almuerzos con distintas notas?",
+   "<p>Sí, el cliente indica la cantidad y escribe una nota en la línea del pedido, como «2 sin sal» o «1 sin carne». La nota llega escrita en el mensaje.</p>"
+  ],
+  [
+   "¿Mesaverso corta los pedidos a cierta hora?",
+   "<p>No, el corte no es automático. El horario límite lo escribís como texto en la descripción de la categoría y lo hacés respetar vos.</p>"
+  ],
+  [
+   "¿Puedo marcar un plato como agotado en el plan Gratis?",
+   "<p>No, la función «agotado» está en Mesaverso Caja, que está en etapa de prueba y no viene incluida en el plan Gratis.</p>"
+  ],
+  [
+   "¿Alcanza el plan Gratis para un comedor?",
+   "<p>Para empezar, sí: 5 platos principales, un postre, una bebida y cuatro productos más suman 11. Si necesitás más productos o Caja, hay planes pagos.</p>"
+  ],
+  [
+   "¿Hay comisión por los pedidos de las empresas?",
+   "<p>No hay comisión en los pedidos que llegan por tu link o QR: es 0 % de comisión en esos pedidos. Los medios de cobro que uses pueden tener las suyas.</p>"
+  ]
+ ],
+ "cta": "Armá tu menú gratis",
+ "revisar": [
+  "Precios y platos son ejemplo de un comedor ficticio, rotulados «ejemplo».",
+  "Descripción de categoría visible bajo el título: confirmado; el horario límite es solo texto, sin corte automático.",
+  "Nota por línea y cantidades en el pedido: validar que la cantidad y la nota llegan en el mensaje del plan Gratis.",
+  "Agotado: solo desde Caja (en prueba, no incluida en Gratis).",
+  "Plan Gratis: 11 productos, mínimo 8 con precio; alcance «negocios gastronómicos con cocina o punto de venta propio» (cambio a G-1: ver [REVISIÓN ABOGADO] en plan-gratis.json). Poder editar los platos cada semana debe confirmarse con el panel.",
+  "Tributario y habilitaciones: no se afirma nada; se remite a contador y se aclara que las habilitaciones son del comedor. Condiciones de pago/pedido presentadas como decisión del comedor.",
+  "Enlaces a las tres guías nuevas; confirmar que existan al publicar.",
+  "Comisión: 0 % solo en pedidos por link o QR."
+ ]
+}

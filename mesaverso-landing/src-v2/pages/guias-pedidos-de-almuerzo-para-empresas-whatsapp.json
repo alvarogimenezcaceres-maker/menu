@@ -1,0 +1,77 @@
+{
+ "slug": "guias/pedidos-de-almuerzo-para-empresas-whatsapp",
+ "type": "guide",
+ "published": "2026-10-13",
+ "modified": "2026-10-13",
+ "title": "Pedidos de almuerzo para empresas por WhatsApp: guía",
+ "description": "Cómo ordenar los pedidos de almuerzo y viandas de oficinas por WhatsApp: menú armado, cantidades con notas, un contacto por empresa y horario límite escrito.",
+ "h1": "Cómo organizar pedidos de almuerzo para empresas por WhatsApp",
+ "lead": "Si tu comedor o tu servicio de viandas le vende a oficinas, ya sabés cómo es la mañana: mensajes sueltos, alguien que pide «lo mismo de ayer», otro que cambia a último momento y la cocina esperando saber cuántos platos salen. Esta guía te da un orden concreto para que cada empresa pida de la misma forma y vos puedas saber, a una hora fija, cuánto cocinar.",
+ "sections": [
+  {
+   "h2": "Por qué los pedidos sueltos te complican el mediodía",
+   "html": "<p>Cuando cada empleado de una oficina te escribe por su cuenta, el pedido de una sola empresa llega en quince mensajes distintos, a distintas horas, con distintos formatos. El problema no es la cantidad de clientes: es que no hay un punto donde el pedido quede completo.</p><p>Los síntomas se repiten:</p><ul><li>Contás los platos a mano recién cuando ya tenés que estar cocinando.</li><li>Alguien dice «uno sin cebolla» en un audio y se pierde.</li><li>No sabés quién pidió qué cuando llega el momento de armar las bandejas.</li><li>Se te agota un plato y tenés que avisar uno por uno.</li></ul><p>La solución es acordar con cada empresa una forma única de pedir. Los pasos que siguen apuntan a un mediodía más previsible.</p>"
+  },
+  {
+   "h2": "Paso 1: tené un menú armado y compartible",
+   "html": "<p>Lo primero es dejar de contestar «¿qué hay hoy?» con una lista escrita cada vez. Armá una carta con los platos, las fotos y los precios, y pasá el mismo link a todas las empresas. Podés usar una planilla, una imagen o un menú digital; lo importante es que sea siempre la misma fuente.</p><p>Con el <a href=\"/para-comedores-y-viandas/\">menú digital de Mesaverso para comedores y viandas</a> la carta tiene un QR y un link, con fotos y buscador, y el pedido sale hacia tu WhatsApp ya armado, con un código #MV. Si todavía no tenés carta, la guía de <a href=\"/guias/menu-semanal-comedor-viandas/\">menú semanal para comedores</a> te explica cómo estructurarla.</p>"
+  },
+  {
+   "h2": "Paso 2: pedí por cantidad y con notas, no por persona",
+   "html": "<p>Para una oficina, lo que a vos te sirve es el total por plato, más las excepciones. Pedí el formato así:</p><ol><li>Plato y cantidad (por ejemplo, 8 milanesas con ensalada).</li><li>Opción de cada plato, si la hay (con arroz, con puré).</li><li>Notas puntuales: «1 sin sal», «1 sin carne».</li><li>Lugar y piso de entrega.</li></ol><p><strong>Ejemplo</strong> (ficticio): una oficina pide 8 milanesas con ensalada, 5 pucheros y 2 arroz con pollo. Nota en una milanesa: «sin ensalada». Nota en un puchero: «sin mandioca». Tu cocina lee tres líneas y dos notas, no quince chats.</p><p>En el menú de Mesaverso, el pedido se arma con opciones de plato y una nota por cada línea, así la excepción viaja pegada al plato y no suelta en un mensaje aparte.</p>"
+  },
+  {
+   "h2": "Paso 3: un solo contacto por empresa",
+   "html": "<p>Pedile a cada empresa que designe a una persona que junte los pedidos de su equipo y te los mande. Vos hablás con esa persona; ella se ocupa de reunir y anotar los pedidos de sus compañeros. Cómo se cobra (a la empresa o a cada persona) lo definís vos con ellos.</p><p>Ventajas concretas:</p><ul><li>Una conversación por empresa en lugar de diez.</li><li>Si hay un reclamo, sabés a quién escribirle.</li><li>Si cambia la persona, la empresa te avisa y seguís con el mismo hilo.</li></ul><p>Anotá en tu teléfono o planilla el nombre de la empresa, quién es el contacto de este mes y el lugar de entrega, y así cualquiera de tu equipo que atienda el chat lo encuentra enseguida.</p>"
+  },
+  {
+   "h2": "Paso 4: escribí el horario límite en la carta",
+   "html": "<p>El horario límite es la regla que más orden te da. Escribilo en la carta y repetilo en el mensaje de bienvenida: «Pedidos hasta las 9:30 para entrega al mediodía». Pasada esa hora, el pedido se anota para el día siguiente o queda sujeto a que haya disponibilidad.</p><p>Importante: en Mesaverso el horario límite es un texto que vos ponés en la carta; el sistema no corta los pedidos solo cuando llega la hora. Por eso conviene que la regla esté a la vista y que vos la sostengas con amabilidad: «Para mañana te lo anoto, hoy ya cerramos la producción».</p>"
+  },
+  {
+   "h2": "Paso 5: ordená la entrega por zona y por empresa",
+   "html": "<p>Cuando ya tenés los pedidos completos, armá la ruta antes de empezar a empacar. Agrupá por zona o por edificio, y dentro de cada grupo, por empresa. Cada bolsa o caja lleva el nombre de la empresa, la cantidad de platos y la hora estimada.</p><p><strong>Ejemplo</strong> (ficticio): primera tanda, tres empresas del mismo edificio, listas a las 11:45. Segunda tanda, dos empresas de otra zona, listas a las 12:15. Mesaverso no hace el reparto ni arma rutas; eso queda en tu equipo, pero un pedido con código #MV y datos claros te facilita etiquetar cada entrega.</p>"
+  },
+  {
+   "h2": "Qué hacer cuando se agota un plato",
+   "html": "<p>Es inevitable: un día se acaba el puchero o falta un ingrediente. Dejá una regla escrita para ese caso:</p><ul><li>Avisá apenas lo sabés, antes de que lleguen más pedidos.</li><li>Ofrecé un reemplazo parecido («si no hay milanesa, te propongo bife a caballo»).</li><li>Ya con el pedido recibido, escribile al contacto de la empresa para confirmar el cambio.</li></ul><p>Desde Mesaverso Caja, que está en etapa de prueba y no está incluida en el plan Gratis, podés marcar un plato como «agotado» para que deje de aparecer disponible en la carta. Mesaverso no manda avisos automáticos: el mensaje a la empresa lo escribís vos.</p>"
+  },
+  {
+   "h2": "Cómo empezar sin gastar",
+   "html": "<p>Podés probar este orden con una sola empresa y el menú más chico que tengas. El <a href=\"/plan-gratis/\">plan Gratis de Mesaverso</a> incluye hasta 11 productos (mínimo 8 con precio), pedido básico por WhatsApp y la marca «Hecho con Mesaverso»; es para negocios gastronómicos con cocina o punto de venta propio y la primera publicación pasa por una revisión. Y hay 0 % de comisión en los pedidos que llegan por tu link o QR; los medios de cobro que uses pueden tener sus propias comisiones.</p><p>Cuando tengas el orden funcionando, el siguiente paso es <a href=\"/guias/como-vender-viandas-a-empresas/\">sumar empresas con una propuesta clara</a>.</p>"
+  }
+ ],
+ "faq": [
+  [
+   "¿Puedo recibir pedidos de varias empresas en el mismo número?",
+   "<p>Sí. Lo que ordena es que cada empresa tenga un solo contacto y que todos usen la misma carta. Así tenés un hilo por empresa y no uno por empleado.</p>"
+  ],
+  [
+   "¿Mesaverso corta los pedidos a determinada hora?",
+   "<p>No. El horario límite lo escribís como texto en la carta y lo sostenés vos. No hay corte automático.</p>"
+  ],
+  [
+   "¿Se pueden programar pedidos repetidos todos los días?",
+   "<p>No: Mesaverso no tiene pedidos recurrentes ni suscripciones. Cada pedido se arma desde el menú y llega por WhatsApp.</p>"
+  ],
+  [
+   "¿Cómo aviso a la empresa que se agotó un plato?",
+   "<p>Le escribís vos por WhatsApp, con un reemplazo propuesto. Desde Mesaverso Caja (en prueba) podés marcar el plato como agotado en la carta.</p>"
+  ],
+  [
+   "¿Mesaverso hace el reparto o factura?",
+   "<p>No. No hace reparto, no emite facturas ni cobra online. La entrega, el cobro y la factura siguen en tus manos; para saber qué corresponde (facturas, IVA, retenciones), consultá con tu contador.</p>"
+  ]
+ ],
+ "cta": "Probá el plan Gratis",
+ "revisar": [
+  "Ejemplos de pedidos y tandas rotulados como ficticios.",
+  "Horario límite: se aclara que es texto en la carta, sin corte automático.",
+  "«Agotado» desde Mesaverso Caja: en prueba, no incluida en el plan Gratis.",
+  "Plan Gratis: hasta 11 productos, mínimo 8 con precio, marca «Hecho con Mesaverso», revisión de la primera publicación.",
+  "0 % de comisión solo en pedidos por link o QR; aclaración sobre comisiones de medios de cobro.",
+  "No promete pedidos recurrentes, avisos automáticos, facturación, cobros ni reparto.",
+  "Tributario: no se afirma nada; remite a contador. Cobro a la empresa o a cada persona: decisión del comedor.",
+  "Notas por línea y opciones: confirmar que también llegan en el pedido del plan Gratis (la página de plan Gratis dice «productos y total»)."
+ ]
+}

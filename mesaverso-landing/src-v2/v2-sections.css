@@ -482,3 +482,12 @@ textarea.in{min-height:84px;padding-top:12px;resize:vertical}
 
 .foot__num a{color:var(--text-2);display:inline-flex;align-items:center;min-height:44px}
 .foot__brand .foot__num{margin:-6px 0 0}
+
+/* venue chips on the home + plan secondary link */
+.rubros__h{margin:28px 0 10px;font:600 13px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--text-2)}
+.rubros{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:26px}
+.rubro{display:inline-flex;align-items:center;min-height:44px;padding:0 16px;border:1px solid var(--ring-soft);border-radius:var(--r-pill);color:var(--text);text-decoration:none;font-weight:600;font-size:15px;background:transparent}
+.rubro:hover{border-color:var(--text-2)}
+.rubro:focus-visible{outline:2px solid var(--focus);outline-offset:3px}
+.rubro--all{color:var(--text-2);border-style:dashed}
+.plan__alt{display:flex;align-items:center;justify-content:center;min-height:44px;color:var(--text-2);font-size:14.5px;text-decoration:underline;text-underline-offset:3px}

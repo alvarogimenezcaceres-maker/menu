@@ -3,7 +3,7 @@
  "title": "Menú digital gratis en Paraguay: plan Vidriera | Mesaverso",
  "description": "Plan Gratis «Vidriera»: menú con QR y link, hasta 11 productos y pedido por WhatsApp básico. Lleva el sello «Hecho con Mesaverso». Paraguay.",
  "h1": "Menú digital gratis para tu local: plan Vidriera",
- "lead": "Publicá tu menú con QR y link sin pagar un plan mensual. El plan Gratis tiene condiciones: las resumimos acá y los términos completos los ves antes de crear tu cuenta.",
+ "lead": "Publicá tu menú con QR y link sin pagar un plan mensual. Es para negocios gastronómicos con cocina o punto de venta propio (restaurantes, comedores y viandas, catering, panaderías, food trucks y emprendimientos). Tiene condiciones: las resumimos acá y los términos completos los ves antes de crear tu cuenta.",
  "sections": [
   {
    "h2": "Qué incluye el plan Gratis «Vidriera»",
@@ -35,7 +35,7 @@
   },
   {
    "h2": "A quién le sirve y a quién no",
-   "html": "<p>Le sirve a un local chico, a un emprendimiento que recién arranca, a una cafetería o lomitería que quiere salir del PDF, o a quien quiere probar antes de pagar. Para conocer el menú completo, leé <a href=\"/menu-digital-qr/\">menú digital con QR</a>.</p><p>No te sirve si tenés más de 11 productos que querés mostrar, si necesitás delivery con dirección, Mesaverso Caja, 3D o quitar la marca. Para eso están los <a href=\"/#planes\">planes pagos</a>. Hay 0 % de comisión en los pedidos que llegan por tu link o QR.</p>"
+   "html": "<p>Le sirve a un negocio gastronómico con cocina o punto de venta propio, con o sin salón: un local chico, un comedor o servicio de viandas, un catering, una panadería, un food truck, una dark kitchen, un emprendimiento que recién arranca (incluso desde casa), una cafetería o lomitería que quiere salir del PDF, o quien quiere probar antes de pagar. Las habilitaciones y los trámites de tu actividad son tuyos: Mesaverso no los gestiona. Para ver ejemplos por rubro, mirá <a href=\"/para-comedores-y-viandas/\">comedores y viandas</a> o <a href=\"/para-emprendimientos-gastronomicos/\">emprendimientos</a>. Para conocer el menú completo, leé <a href=\"/menu-digital-qr/\">menú digital con QR</a>.</p><p>No te sirve si tenés más de 11 productos que querés mostrar, si necesitás delivery con dirección, Mesaverso Caja, 3D o quitar la marca. Para eso están los <a href=\"/#planes\">planes pagos</a>. Hay 0 % de comisión en los pedidos que llegan por tu link o QR.</p>"
   },
   {
    "h2": "Si después querés más",
@@ -77,6 +77,7 @@
   "«Podés consultar por un plan pago»: el cambio de plan no está detallado en código.",
   "0 % de comisión mencionado junto a planes pagos; confirmar si también vale para el Gratis.",
   "Ejemplo de cafetería ficticia con precios rotulados «ejemplo».",
+  "[REVISIÓN ABOGADO] Alcance ampliado (2026-10-13): el plan Gratis pasa de «locales con lugar físico» a «negocios gastronómicos con cocina o punto de venta propio» (comedores, viandas, catering, panaderías, food trucks, dark kitchens, emprendimientos desde casa). Es un cambio sustancial a G-1 (definición de «Local» cláusula 1, límites cláusula 2, nuevo inciso 4(g) de habilitaciones y tributos del Local, cláusula 10 de aprobación): si G-1 ya fue aceptada por algún Local, evaluar publicar G-2 con aviso de 15 días (cláusula 13). Confirmar también quién habilita vender comida desde casa o por encargo (municipalidad, INAN/SENAVE u otro) sin que la página lo afirme.",
   "Revisión de primera publicación y facultad de no publicar contenido ajeno o engañoso: que el abogado confirme que está en los términos."
  ]
 }

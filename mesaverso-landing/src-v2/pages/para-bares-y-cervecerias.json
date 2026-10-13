@@ -1,0 +1,69 @@
+{
+ "slug": "para-bares-y-cervecerias",
+ "type": "rubro",
+ "published": "2026-10-13",
+ "modified": "2026-10-13",
+ "title": "Menú QR para bar y cervecería: tragos, picadas y cuenta",
+ "description": "Menú QR para bares y cervecerías de Paraguay: tragos, cervezas y picadas, pedido desde la mesa, carta que cambia y cuenta dividida.",
+ "h1": "Menú QR para bar y cervecería: tragos, picadas, mesas y cuenta dividida",
+ "lead": "En un bar o una cervecería se pide seguido, de a poco y desde la mesa. La carta digital tiene que mostrar las cervezas del momento, resolver las picadas para compartir y ordenar la cuenta cuando el grupo es grande.",
+ "sections": [
+  {
+   "h2": "En el bar se pide varias veces por noche",
+   "html": "<p>A diferencia de un almuerzo, en un bar la mesa pide una ronda, después otra y después una picada. Cada vez el mozo tiene que ir, anotar y volver. En una noche de viernes, esa vuelta es lo que más se demora. Con un <a href='/menu-digital-qr/'>menú digital con QR</a> en cada mesa, el cliente mira la carta en su celular, elige y le muestra el pedido al mozo, o lo envía, sin esperar a que pase.</p><p>El mozo sigue siendo el centro de la experiencia: el QR le saca el trabajo de repetir precios y explicar qué trae cada cosa.</p>"
+  },
+  {
+   "h2": "Tragos, cervezas y una carta que cambia",
+   "html": "<p>Los bares cambian la carta seguido: una cerveza artesanal nueva, el trago de la semana, los precios de la hora feliz. Un menú impreso queda viejo en una semana. Con un link y un QR fijos, actualizás la carta y todas las mesas ven lo nuevo. Un ejemplo, con un bar ficticio y precios inventados:</p><ul><li><strong>Cerveza rubia (pinta):</strong> ₲ 22.000 (ejemplo)</li><li><strong>Cerveza IPA artesanal (pinta):</strong> ₲ 30.000 (ejemplo)</li><li><strong>Trago de la casa:</strong> ₲ 35.000 (ejemplo)</li><li><strong>Jarra de 1 litro:</strong> ₲ 45.000 (ejemplo)</li></ul><p>Con las opciones del plato podés ofrecer tamaños (vaso, pinta o jarra) y elegir el estilo. Si tenés una hora feliz, escribila en la descripción de la categoría, que se muestra debajo del título: «Dos por uno de 18 a 20 h». Es un texto: Mesaverso no activa ni corta promociones por horario.</p>"
+  },
+  {
+   "h2": "Picadas y platos para compartir",
+   "html": "<p>La picada es el plato que más se piensa en grupo: para dos, para cuatro, para seis. Cargala como un producto con tamaños y una foto grande de la tabla completa, y con una descripción clara de lo que trae. Los extras, como más papas o una salsa, se suman con su precio. Pensá la picada como el plato que la mesa elige en grupo: una buena foto y un nombre fácil de recordar ayudan a que el cliente decida sin necesidad de consultarle al mozo.</p><ul><li>Picada para 2, 4 o 6 personas, como opciones de tamaño.</li><li>Elección obligatoria de la carne o del queso, si tu picada lo permite.</li><li>Extras: papas, bastoncitos, salsas.</li></ul><p>Escribí en la nota de la línea pedidos como «sin cebolla» o «la salsa aparte», y llegan escritos a la cocina.</p>"
+  },
+  {
+   "h2": "Mesas, mozo y pantalla de cocina",
+   "html": "<p>Si trabajás con mesas, Mesaverso Caja, que está en etapa de prueba, permite abrir mesas, anotar los pedidos y mostrar la cocina en una pantalla; también imprimir la comanda con una impresora térmica opcional, que se compra aparte. El cliente puede usar «mostrar al mozo», que genera un QR con el pedido armado. No es un reemplazo de tu facturación: Caja no emite factura ni cobra online, y no está incluida en el plan Gratis.</p><p>Para quienes también reciben pedidos para llevar, el pedido por WhatsApp llega armado con los productos, las notas y el total. Es útil los días de lluvia o para el cliente habitual que pasa a buscar su pinta y una porción de papas.</p><p>Un consejo práctico: poné el QR en un lugar fijo de la mesa, con una frase corta, como «Escaneá, elegí y mostrale al mozo». Cuanto más simple la instrucción, más mesas lo usan, y el mozo se entera de qué quiere cada mesa sin dar tres vueltas.</p>"
+  },
+  {
+   "h2": "La cuenta dividida, el momento de la verdad",
+   "html": "<p>El final de la noche con diez amigos es el peor momento para el mozo: «yo tomé dos cervezas», «yo no comí picada». Con la <a href='/cuenta-dividida/'>cuenta dividida</a>, que es parte de Mesaverso Caja (en prueba, no incluida en el plan Gratis), podés repartir por consumo, es decir, cada uno paga lo suyo, o en partes iguales.</p><p>Eso puede reducir la discusión y ayudar a cerrar la mesa más rápido en una noche llena. La división se arma sobre lo que la mesa efectivamente consumió, así que nadie tiene que sacar la calculadora ni acordarse de quién pidió la tercera ronda.</p>"
+  },
+  {
+   "h2": "Empezar con el plan Gratis",
+   "html": "<p>El plan <a href='/plan-gratis/'>Gratis</a> admite hasta 11 productos, con al menos 8 con precio para publicar, pedido básico por WhatsApp y la marca «Hecho con Mesaverso». Un bar puede arrancar con sus cervezas más pedidas, un trago, dos picadas, una porción de papas y una gaseosa. Está pensado para negocios gastronómicos con cocina o punto de venta propio, como un bar o una cervecería, y la primera publicación se revisa antes de salir; las condiciones están en los <a href='/terminos-gratis/'>términos del plan Gratis</a>. Cuando la carta crezca o quieras Caja, mirá <a href='/#planes'>los planes</a>. Si tu bar también sirve hamburguesas o pizzas, mirá la página de <a href='/para-hamburgueserias-y-pizzerias/'>hamburgueserías y pizzerías</a>.</p>"
+  }
+ ],
+ "faq": [
+  [
+   "¿El cliente puede pedir desde la mesa sin esperar al mozo?",
+   "<p>Puede armar el pedido en el menú y mostrárselo al mozo con un QR, o enviarlo por WhatsApp si lo usás. El mozo sigue atendiendo la mesa.</p>"
+  ],
+  [
+   "¿Puedo cambiar la carta cada semana?",
+   "<p>Sí, con el mismo link y el mismo QR. Lo que cambiás se ve al instante en todas las mesas.</p>"
+  ],
+  [
+   "¿Se puede dividir la cuenta por consumo?",
+   "<p>Sí, por consumo o en partes iguales, con la cuenta dividida. Está en Mesaverso Caja, que está en etapa de prueba.</p>"
+  ],
+  [
+   "¿Mesaverso activa la hora feliz automáticamente?",
+   "<p>No, no hay promociones por horario. La hora feliz la escribís como texto en la descripción de la categoría.</p>"
+  ],
+  [
+   "¿Hay comisión por los pedidos de mi bar?",
+   "<p>No hay comisión en los pedidos que llegan por tu link o QR: es 0 % en esos pedidos. Los medios de cobro que uses pueden tener las suyas.</p>"
+  ]
+ ],
+ "cta": "Armá el menú de tu bar",
+ "revisar": [
+  "Precios y productos son ejemplo de un bar ficticio, rotulados «ejemplo».",
+  "Opciones del plato y nota por línea: confirmados.",
+  "Hora feliz: solo texto; sin promociones por horario.",
+  "Mostrar al mozo con QR, mesas, cocina, comanda y cuenta dividida: desde Caja (en prueba, no incluida en Gratis).",
+  "Alcohol: no se hace ninguna afirmación sobre venta a menores ni sobre normativa; revisar si hace falta una aclaración.",
+  "Plan Gratis: alcance «cocina o punto de venta propio» (ver [REVISIÓN ABOGADO] en plan-gratis.json).",
+  "«Mostrar al mozo»: confirmar si está en el plan Gratis o solo desde Caja; la página lo presenta como función general del menú y dentro de Caja.",
+  "Comisión: 0 % solo en pedidos por link o QR."
+ ]
+}

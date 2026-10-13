@@ -1,0 +1,68 @@
+{
+ "slug": "para-heladerias-y-postres",
+ "type": "rubro",
+ "published": "2026-10-13",
+ "modified": "2026-10-13",
+ "title": "Menú digital para heladería: sabores, tamaños y toppings",
+ "description": "Menú digital para heladerías de Paraguay: sabores como opciones, tamaños, toppings como extras y postres para eventos con pedido por WhatsApp.",
+ "h1": "Menú digital para heladería: sabores, tamaños, toppings y postres para eventos",
+ "lead": "Una heladería tiene veinte sabores y cuatro tamaños, y nadie quiere leer una lista de ochenta renglones en el celular. Tu menú digital tiene que mostrar el tamaño primero, dejar elegir el sabor y sumar los toppings sin enredar el pedido.",
+ "sections": [
+  {
+   "h2": "El helado se pide en tres pasos: tamaño, sabor y topping",
+   "html": "<p>En el mostrador la charla es siempre igual: «¿un cucurucho o un vasito?», «¿de qué sabor?», «¿con algo arriba?». Un menú digital puede reproducir ese orden. Primero el cliente elige el tamaño, después el sabor y al final los extras. Si lo hace en su casa o en la cola, cuando llega al mostrador ya sabe lo que quiere.</p><p>Pensá también en el cliente que nunca vino: abre tu link desde Instagram, ve los tamaños con precio y los sabores con foto, y decide venir. Esa primera mirada puede ayudarle a decidir si viene. Es la lógica de un <a href='/menu-digital-qr/'>menú digital con QR y link</a>: la carta sale en el celular de cada cliente, con fotos reales de tus helados, y vos repetís menos las mismas preguntas.</p>"
+  },
+  {
+   "h2": "Sabores como opciones, tamaños como productos",
+   "html": "<p>Una manera ordenada de cargar la carta es que los tamaños sean los productos y los sabores sean una elección obligatoria dentro de cada uno. Así no necesitás un producto por sabor. Un ejemplo con una heladería ficticia y precios inventados:</p><ul><li><strong>Cucurucho simple (1 bocha):</strong> ₲ 12.000 (ejemplo)</li><li><strong>Vasito doble (2 bochas):</strong> ₲ 20.000 (ejemplo)</li><li><strong>Cuarto kilo:</strong> ₲ 45.000 (ejemplo)</li><li><strong>Medio kilo:</strong> ₲ 80.000 (ejemplo)</li><li><strong>Kilo:</strong> ₲ 150.000 (ejemplo)</li></ul><p>Dentro de cada uno, las opciones del plato piden elegir el sabor: chocolate, dulce de leche, frutilla, limón, coco, y los de temporada. Cuando un sabor se termina o sale uno nuevo, cambiás la lista de opciones y el resto de la carta queda igual. Si querés mostrar uno de tus postres estrella en 3D, existe el Pack 3D por plato en celulares compatibles, aunque para arrancar alcanzan fotos buenas.</p>"
+  },
+  {
+   "h2": "Toppings como extras con precio",
+   "html": "<p>Los toppings son el negocio chico que suma al ticket: salsa de chocolate, dulce de leche, granola, chips, frutas. Con los extras del plato, cada uno tiene su precio y se suma al total antes de enviar. El cliente ve cuánto va a pagar y no hay discusión en caja.</p><p>Una carta de toppings corta funciona mejor que una larga: elegí los cuatro o cinco que más se piden y mostrá la foto de un helado ya armado, con salsa y granola, porque ayuda a que el cliente se anime. Los que no se piden, sacalos.</p><p>Si alguien quiere algo puntual, como «sin maní por alergia» o «un sabor en cada bocha», lo escribe en la nota de la línea del pedido y llega escrito en el mensaje.</p>"
+  },
+  {
+   "h2": "Pedidos de postres para eventos",
+   "html": "<p>Muchas heladerías venden además tortas heladas, bandejas de postres y baldes de helado para cumpleaños. Esos productos se piden con antelación, y el cliente necesita saber cuánta. Armá una categoría aparte, «Para eventos», y usá la descripción de la categoría, que se muestra debajo del título, para escribir las reglas: «Pedidos con 48 horas de antelación. Retiro en el local o entrega a coordinar».</p><p>Un consejo: mostrá siempre una foto de la torta o del postre ya servido, con el tamaño real, porque quien organiza un cumpleaños quiere saber cuánto rinde antes de preguntar.</p><p>El pedido te llega por WhatsApp ya armado, con el producto, las opciones y el total, y desde ahí confirmás fecha, hora y forma de pago. Mesaverso no hace cobros online ni agenda; las condiciones las escribís vos y las acordás en la conversación. Si querés ver cómo funciona el mensaje, leé <a href='/pedidos-por-whatsapp/'>pedidos por WhatsApp</a>.</p>"
+  },
+  {
+   "h2": "Temporada: verano con cola, invierno con pedido",
+   "html": "<p>El helado depende del clima. En verano, la cola llega hasta la vereda y el menú en QR sirve para elegir mientras se espera. En invierno, el movimiento baja y los pedidos para llevar o los postres por encargo pasan a ser lo importante. Con un link fijo en tu perfil de Instagram y en tu estado de WhatsApp, siempre mostrás la carta vigente sin volver a mandar capturas.</p><p>Si tu local además sirve cafés y postres calientes, mirá la página para <a href='/para-cafeterias/'>cafeterías</a>, que comparte buena parte del enfoque.</p>"
+  },
+  {
+   "h2": "Empezar con el plan Gratis",
+   "html": "<p>El plan <a href='/plan-gratis/'>Gratis</a> admite hasta 11 productos, con al menos 8 con precio para publicar, pedido básico por WhatsApp y la marca «Hecho con Mesaverso». Si cargás los sabores como opciones del plato, no hace falta un producto por sabor, y 11 pueden alcanzar para: cuatro o cinco tamaños, una torta helada, un postre, una bebida y un par de extras. Está pensado para negocios gastronómicos con cocina o punto de venta propio, como una heladería, y la primera publicación se revisa antes de salir; las condiciones están en los <a href='/terminos-gratis/'>términos del plan Gratis</a>. Los planes pagos están en <a href='/#planes'>la sección de planes</a>.</p>"
+  }
+ ],
+ "faq": [
+  [
+   "¿Tengo que cargar un producto por cada sabor?",
+   "<p>No hace falta. Podés cargar los tamaños como productos y los sabores como una elección obligatoria dentro de cada uno.</p>"
+  ],
+  [
+   "¿Puedo cobrar los toppings aparte?",
+   "<p>Sí, los cargás como extras del plato con su precio y se suman al total que el cliente ve antes de enviar.</p>"
+  ],
+  [
+   "¿Puedo vender tortas heladas por encargo?",
+   "<p>Sí, en una categoría aparte con la antelación escrita en la descripción. La fecha y el retiro los confirmás por WhatsApp.</p>"
+  ],
+  [
+   "¿Mesaverso avisa cuando se termina un sabor?",
+   "<p>No hay avisos automáticos. Cuando un sabor se termina, lo sacás de la lista de opciones de la carta.</p>"
+  ],
+  [
+   "¿Hay comisión por los pedidos de la heladería?",
+   "<p>No hay comisión en los pedidos que llegan por tu link o QR: es 0 % en esos pedidos. Los medios de cobro que uses pueden tener las suyas.</p>"
+  ]
+ ],
+ "cta": "Armá el menú de tu heladería",
+ "revisar": [
+  "Precios, sabores y productos son ejemplo de un local ficticio, rotulados «ejemplo».",
+  "Sabores como elección obligatoria y toppings como extras: confirmar que el mismo producto admite varias elecciones y extras.",
+  "Postres para eventos: antelación solo como texto; sin agenda ni cobros online.",
+  "Plan Gratis: se suavizó «sabores como opciones no cuentan como productos» (validar con la implementación real); alcance «cocina o punto de venta propio» (ver [REVISIÓN ABOGADO] en plan-gratis.json).",
+  "Alérgenos («sin maní»): solo nota por línea; la información de alérgenos es responsabilidad del local.",
+  "Sin avisos automáticos ni agotado en Gratis.",
+  "Comisión: 0 % solo en pedidos por link o QR."
+ ]
+}

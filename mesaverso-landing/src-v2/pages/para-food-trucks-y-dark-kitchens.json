@@ -1,0 +1,67 @@
+{
+ "slug": "para-food-trucks-y-dark-kitchens",
+ "type": "rubro",
+ "published": "2026-10-13",
+ "modified": "2026-10-13",
+ "title": "Menú QR para food truck y dark kitchen con pedidos",
+ "description": "Menú QR para food trucks y dark kitchens en Paraguay: pedidos por WhatsApp y retiro, horarios y ubicación variable explicados en la carta.",
+ "h1": "Menú QR para food truck y dark kitchen: pedidos por WhatsApp y retiro",
+ "lead": "Un food truck o una dark kitchen no tiene mesas ni salón: tiene un punto de retiro, un horario y una cocina que trabaja a pedido. Tu carta digital es tu vidriera, y el WhatsApp es tu mostrador.",
+ "sections": [
+  {
+   "h2": "Sin salón, la carta es todo lo que ve el cliente",
+   "html": "<p>Cuando no hay un local con mesas, nadie puede asomarse a mirar. El cliente conoce tu negocio por una foto en Instagram, un reel o un mensaje de un amigo. Y si lo que recibe es una captura de la carta de la semana pasada, se pierde la venta.</p><p>Un <a href='/menu-digital-qr/'>menú digital con QR y link</a> te da una dirección fija: el QR lo pegás en el vidrio del food truck o en la bolsa de cada pedido, y el link va en tu biografía, en el estado y en los grupos de barrio. Cambiás la carta cuando hace falta y el link sigue siendo el mismo.</p>"
+  },
+  {
+   "h2": "Pedidos por WhatsApp y retiro: el flujo completo",
+   "html": "<p>El flujo típico es corto. El cliente abre la carta, arma su pedido en pantalla y lo envía por WhatsApp. A vos te llega un mensaje ya armado con los productos, las notas y el total, que es lo que vas a cocinar. Después confirman la hora de retiro o el punto donde estás hoy. Para más detalle, leé <a href='/pedidos-por-whatsapp/'>cómo funcionan los pedidos por WhatsApp</a>.</p><p>Un ejemplo de carta de un food truck ficticio, con precios inventados:</p><ul><li><strong>Smash burger simple:</strong> ₲ 28.000 (ejemplo)</li><li><strong>Smash burger doble:</strong> ₲ 36.000 (ejemplo)</li><li><strong>Papas con cheddar:</strong> ₲ 18.000 (ejemplo)</li><li><strong>Gaseosa en lata:</strong> ₲ 8.000 (ejemplo)</li></ul><p>Una carta corta es una ventaja en un food truck: cocinás rápido, no tenés mucha mercadería parada y el cliente decide enseguida. Cinco a ocho productos bien elegidos suelen ser suficientes.</p><p>Los adicionales, como panceta o huevo, van como extras con precio, y los «sin cebolla» en la nota de la línea del pedido.</p>"
+  },
+  {
+   "h2": "Horarios y ubicación variable: cómo explicarlo en la carta",
+   "html": "<p>Un food truck cambia de lugar según el día; una dark kitchen tiene horarios por turnos. Mesaverso no maneja un mapa en vivo ni una agenda, así que lo resolvés con texto, y funciona muy bien si lo ponés al principio. Una forma práctica es una categoría llamada «Hoy estamos en…» o usar la descripción de la primera categoría, que se muestra debajo del título:</p><ul><li>Dónde estamos hoy y hasta qué hora.</li><li>Los días y horarios fijos de la semana.</li><li>Si hay retiro o si hacés entregas en una zona.</li><li>Hasta qué hora se toman pedidos.</li></ul><p>Si salís un día de lluvia o cambiás de punto a último momento, editás el texto y listo, sin armar otro flyer ni reenviar una imagen. Cada mañana actualizás una sola línea y todos los que abren tu link o escanean tu QR ven la información al día. El horario de corte es un texto: Mesaverso no corta los pedidos solo.</p>"
+  },
+  {
+   "h2": "Dark kitchen: sin atención al público, con orden en la cocina",
+   "html": "<p>Si cocinás solo para pedidos, el desafío es que ninguno se pierda. Mesaverso Caja, que está en etapa de prueba, ofrece una pantalla de cocina y la comanda imprimible, con una impresora térmica opcional que se compra aparte. Cada pedido aparece con sus notas, y podés marcar un producto como agotado cuando se termina el pan o la carne. Caja no emite factura ni cobra online, y no está incluida en el plan Gratis.</p><p>Si hacés entregas con tu propio repartidor, mirá el <a href='/delivery-propio/'>delivery propio</a>: es un canal más, con 0 % de comisión en los pedidos que llegan por tu link o QR. Mesaverso no reparte ni calcula tiempos; el costo y la zona del envío los escribís en la carta.</p>"
+  },
+  {
+   "h2": "Dar a conocer el link: dónde ponerlo",
+   "html": "<p>Un menú que nadie ve no puede vender.Pegá el QR en el food truck, en los vasos y en las bolsas. Dejá el link en la biografía de Instagram, en el estado de WhatsApp y en los grupos de vecinos o de oficinas de la zona, siempre con la misma frase corta, algo como «Pedí desde la carta y retirá». Y cuando cambie la ubicación, no hace falta publicar otro enlace. Con el tiempo, el cliente aprende que ese link siempre tiene la información de hoy, y no necesita preguntarte dónde estás ni a qué hora abrís: lo ve en la primera pantalla.</p>"
+  },
+  {
+   "h2": "Empezar con el plan Gratis",
+   "html": "<p>El plan <a href='/plan-gratis/'>Gratis</a> admite hasta 11 productos, con al menos 8 con precio para publicar, pedido básico por WhatsApp y la marca «Hecho con Mesaverso». Para un food truck con una carta corta, 11 productos alcanzan con holgura. El plan Gratis está pensado para negocios gastronómicos con cocina o punto de venta propio, como un food truck o una dark kitchen, y la primera publicación se revisa antes de salir; las condiciones están en los <a href='/terminos-gratis/'>términos del plan Gratis</a>. Los planes pagos están en <a href='/#planes'>la sección de planes</a>. Las habilitaciones de tu actividad (por ejemplo, las del vehículo o la cocina) son tuyas: Mesaverso no las gestiona ni las verifica.</p>"
+  }
+ ],
+ "faq": [
+  [
+   "¿Puedo tener un menú si no tengo local con mesas?",
+   "<p>Sí, el menú con QR y link y el pedido por WhatsApp funcionan sin salón. El plan Gratis es para negocios con cocina o punto de venta propio; las condiciones figuran en los términos.</p>"
+  ],
+  [
+   "¿Cómo aviso dónde estoy hoy?",
+   "<p>Lo escribís como texto en la descripción de la primera categoría y lo actualizás cuando cambia. Mesaverso no maneja un mapa en vivo.</p>"
+  ],
+  [
+   "¿Los clientes retiran o les llevo el pedido?",
+   "<p>Como vos decidas. Escribís en la carta si hay retiro, entrega o ambos; Mesaverso no reparte ni calcula tiempos.</p>"
+  ],
+  [
+   "¿Puedo ver los pedidos en una pantalla de cocina?",
+   "<p>Sí, en Mesaverso Caja, que está en etapa de prueba y no viene incluida en el plan Gratis.</p>"
+  ],
+  [
+   "¿Hay comisión por los pedidos?",
+   "<p>No hay comisión en los pedidos que llegan por tu link o QR: es 0 % en esos pedidos. Los medios de cobro que uses pueden tener las suyas.</p>"
+  ]
+ ],
+ "cta": "Armá tu carta con QR",
+ "revisar": [
+  "Precios y productos son ejemplo de un negocio ficticio, rotulados «ejemplo».",
+  "Ubicación y horario como texto: sin mapa en vivo ni agenda.",
+  "Caja en prueba, no incluida en Gratis, sin factura ni cobros online; impresora térmica opcional.",
+  "Plan Gratis: alcance «cocina o punto de venta propio» incluye food trucks y dark kitchens (ver [REVISIÓN ABOGADO] en plan-gratis.json).",
+  "Habilitaciones de vehículo/cocina: solo se aclara que son del negocio; no se afirma nada sobre normativa.",
+  "Comisión: 0 % solo en pedidos por link o QR."
+ ]
+}

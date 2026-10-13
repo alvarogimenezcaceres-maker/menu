@@ -1,0 +1,68 @@
+{
+ "slug": "para-panaderias-y-pastelerias",
+ "type": "rubro",
+ "published": "2026-10-13",
+ "modified": "2026-10-13",
+ "title": "Carta digital para panadería y pastelería: tortas por encargo",
+ "description": "Carta digital para panaderías y pastelerías de Paraguay: productos del día, tortas por encargo con tamaño y sabor, retiro y antelación escritos.",
+ "h1": "Carta digital para panadería y pastelería: tortas por encargo y productos del día",
+ "lead": "Una panadería vende lo del día y una pastelería vende lo que se encarga: la torta de cumpleaños de este sábado, la docena de facturas del domingo. Tu carta digital tiene que separar las dos cosas y dejar claro cuánto antes hay que pedir.",
+ "sections": [
+  {
+   "h2": "Dos tiempos en una misma vitrina",
+   "html": "<p>En el mostrador conviven dos ritmos. Lo del día se compra y se lleva: pan, medialunas, chipa, facturas. Lo encargado se piensa con días de antelación: tortas, bandejas de mini sándwiches, cajas de alfajores. Cuando todo va mezclado en una lista o en capturas del estado de WhatsApp, el cliente no sabe qué puede pasar a buscar hoy y qué tiene que pedir con tiempo.</p><p>Con un <a href='/menu-digital-qr/'>menú digital con QR y link</a> armás dos zonas bien separadas y cada una explica sus reglas.</p>"
+  },
+  {
+   "h2": "Productos del día: lo que siempre hay",
+   "html": "<p>Creá una categoría «Del día» o «Para retirar hoy» con lo que sale todas las mañanas. Un ejemplo con precios inventados de una panadería ficticia:</p><ul><li><strong>Pan francés (kilo):</strong> ₲ 14.000 (ejemplo)</li><li><strong>Medialunas (docena):</strong> ₲ 30.000 (ejemplo)</li><li><strong>Chipa (kilo):</strong> ₲ 45.000 (ejemplo)</li><li><strong>Facturas surtidas (docena):</strong> ₲ 36.000 (ejemplo)</li></ul><p>Usá la descripción de la categoría, que se muestra bajo el título, para decir el horario de retiro y la salida del horno: «Pan caliente desde las 6:30. Retiro en el local». Con fotos reales de la vitrina, el cliente ve que lo que ve es lo que lleva.</p>"
+  },
+  {
+   "h2": "Tortas por encargo: tamaño, sabor y opciones del plato",
+   "html": "<p>Una torta es el producto con más variantes de toda la carta, y las opciones del plato están hechas para eso. Podés pedir una elección obligatoria de tamaño (para 10, para 20 o para 30 porciones), otra de sabor (chocolate, dulce de leche o frutilla) y sumar extras con su precio: una vela, una tarjeta, un cartel con nombre, un relleno extra.</p><p>El cliente ve el total antes de enviar y a vos te llega todo en un mensaje. Un ejemplo, con precios inventados:</p><ul><li><strong>Torta chocolate para 10 porciones:</strong> ₲ 120.000 (ejemplo)</li><li><strong>Torta chocolate para 20 porciones:</strong> ₲ 220.000 (ejemplo)</li><li><strong>Cartel con nombre (extra):</strong> ₲ 15.000 (ejemplo)</li></ul><p>El texto que quiere el cartel y los pedidos como «sin nueces por alergia» van en la nota de la línea, escrito y a la vista de quien decora.</p>"
+  },
+  {
+   "h2": "Retiro y antelación: escribilos en la carta",
+   "html": "<p>Mesaverso no tiene una agenda de encargos ni bloquea fechas, así que la antelación es un texto que escribís vos. En la descripción de la categoría «Tortas por encargo» ponelo bien claro: «Pedidos con 48 horas de antelación. Retiro en el local, de lunes a sábado de 8 a 18 h. Fechas de fin de año, consultar».</p><p>Con el <a href='/pedidos-por-whatsapp/'>pedido por WhatsApp</a>, el cliente te manda la torta elegida y vos confirmás por ahí la fecha y la hora de retiro. Es el momento de acordar la seña si trabajás con ella: Mesaverso no cobra online, el cobro lo manejás como siempre.</p><p>Una costumbre que ordena el sábado, el día más pesado: pedí que el cliente escriba en la nota de la línea el nombre que va en el cartel, la hora de retiro que prefiere y cualquier alergia. Así, quien decora la torta tiene todo en el mismo mensaje y no hay que volver a llamar para preguntar.</p>"
+  },
+  {
+   "h2": "Cuando el menú cambia seguido",
+   "html": "<p>Una pastelería suele tener productos de temporada: roscas en invierno, huevos de Pascua, pan dulce en diciembre. Con un link y un QR fijos, cambiás lo que muestra la carta sin reimprimir nada. Lo que ayuda es sacar del menú lo que se terminó la temporada pasada y dejar a la vista lo que sí podés hacer hoy, para que nadie pida una rosca en febrero.</p><p>En una panadería, además, el pan del día se acaba: cuando a la tarde ya no queda, bajá el producto de la carta o avisalo en la descripción de la categoría, así el cliente no hace el viaje en vano.</p><p>Otro hábito útil es mostrar siempre una foto propia de la torta terminada, no una imagen de internet: ayuda a que lo que se ve se parezca a lo que se retira.</p><p>Y si tu panadería tiene también un rincón de desayunos o café, mirá la página para <a href='/para-cafeterias/'>cafeterías</a>.</p>"
+  },
+  {
+   "h2": "Empezar con el plan Gratis",
+   "html": "<p>El plan <a href='/plan-gratis/'>Gratis</a> admite hasta 11 productos, con al menos 8 con precio para publicar, pedido básico por WhatsApp y la marca «Hecho con Mesaverso». Una panadería puede empezar con: pan, medialunas, chipa, facturas, tres tortas de sus sabores estrella, una bandeja de salados y dos bebidas. Está pensado para negocios gastronómicos con cocina o punto de venta propio, como una panadería o pastelería, y la primera publicación se revisa antes de salir; las condiciones están en los <a href='/terminos-gratis/'>términos del plan Gratis</a>. Para ver los planes pagos, entrá a <a href='/#planes'>la sección de planes</a>.</p>"
+  }
+ ],
+ "faq": [
+  [
+   "¿Puedo vender tortas con distintos tamaños y sabores?",
+   "<p>Sí, con las opciones del plato: elección obligatoria de tamaño y de sabor, y extras con precio. Los pedidos especiales van en la nota de la línea.</p>"
+  ],
+  [
+   "¿Cómo aviso que las tortas se piden con anticipación?",
+   "<p>Lo escribís en la descripción de la categoría, que se muestra debajo del título, por ejemplo «Pedidos con 48 horas de antelación».</p>"
+  ],
+  [
+   "¿Mesaverso agenda los retiros?",
+   "<p>No, no tiene agenda. La fecha y la hora de retiro las confirmás por WhatsApp con cada cliente.</p>"
+  ],
+  [
+   "¿Puedo mostrar una torta en 3D?",
+   "<p>Sí, con el Pack 3D por plato, que funciona en celulares compatibles. Para empezar alcanzan buenas fotos comunes.</p>"
+  ],
+  [
+   "¿Hay comisión por los pedidos de la panadería?",
+   "<p>No hay comisión en los pedidos que llegan por tu link o QR: es 0 % en esos pedidos. Los medios de cobro que uses pueden tener las suyas.</p>"
+  ]
+ ],
+ "cta": "Armá la carta de tu panadería",
+ "revisar": [
+  "Precios y productos son ejemplo de un local ficticio, rotulados «ejemplo».",
+  "Opciones del plato y nota por línea: confirmados.",
+  "Antelación y retiro: solo texto; sin agenda ni bloqueo de fechas.",
+  "3D: Pack 3D por plato en celulares compatibles.",
+  "Plan Gratis: alcance «cocina o punto de venta propio» (ver [REVISIÓN ABOGADO] en plan-gratis.json).",
+  "Alérgenos en tortas: la página solo menciona la nota por línea; la responsabilidad por la información de alérgenos es del local (términos G-1 cláusula 4).",
+  "Comisión: 0 % solo en pedidos por link o QR."
+ ]
+}

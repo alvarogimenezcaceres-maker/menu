@@ -1,6 +1,8 @@
 // Shared by build.mjs (renders the <select> options) and the Worker (server-side validation).
 export const BUSINESS_TYPES = [
   "Restaurante",
+  "Comedor o viandas para empresas",
+  "Catering y eventos",
   "Pizzería",
   "Hamburguesería",
   "Cafetería",
@@ -8,6 +10,8 @@ export const BUSINESS_TYPES = [
   "Sushi",
   "Panadería",
   "Repostería",
+  "Heladería",
+  "Emprendimiento desde casa",
   "Food truck",
   "Dark kitchen",
   "Delivery",

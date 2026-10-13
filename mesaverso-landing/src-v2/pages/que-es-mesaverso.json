@@ -6,7 +6,7 @@
   "title": "Qué es Mesaverso: menú QR y pedidos para locales | Mesaverso",
   "description": "Mesaverso es un servicio, operado desde Paraguay, de menú digital con QR, pedidos por WhatsApp, pantalla de cocina y cuenta dividida para locales gastronómicos.",
   "h1": "Qué es Mesaverso",
-  "lead": "Mesaverso es un servicio, operado desde Paraguay, que le da a restaurantes, bares, lomiterías y cafeterías un menú digital con QR, pedidos por WhatsApp ordenados, pantalla de cocina y cuenta dividida.",
+  "lead": "Mesaverso es un servicio, operado desde Paraguay, que le da a restaurantes, bares, lomiterías, cafeterías, comedores y servicios de viandas, catering, panaderías, food trucks y emprendimientos gastronómicos un menú digital con QR, pedidos por WhatsApp ordenados, pantalla de cocina y cuenta dividida.",
   "sections": [
     {
       "h2": "Mesaverso en una respuesta corta",
@@ -14,7 +14,7 @@
     },
     {
       "h2": "Datos clave de Mesaverso",
-      "html": "<ul><li><strong>Qué hace:</strong> menú digital con QR, pedidos por WhatsApp, pantalla de cocina, cuenta dividida y platos en 3D.</li><li><strong>Para quién:</strong> restaurantes, bares, lomiterías, cafeterías, hamburgueserías, pizzerías y parrillas.</li><li><strong>Dónde:</strong> Paraguay. Precios en guaraníes.</li><li><strong>Comisión:</strong> 0 % en los pedidos que llegan por el link o QR del local.</li><li><strong>Plan Gratis:</strong> hasta 11 productos, pedido básico por WhatsApp y marca «Hecho con Mesaverso» visible. <a href=\"/plan-gratis/\">Ver condiciones</a>.</li><li><strong>Pack 3D:</strong> platos en 3D, Gs. 120.000 por plato, aparte del plan.</li><li><strong>Plan mensual:</strong> Gs. 180.000 por mes, más una implementación de Gs. 300.000 que se paga una vez.</li><li><strong>Plan anual:</strong> Gs. 1.800.000 por año, con la implementación incluida.</li><li><strong>Para usarlo:</strong> un celular, una tablet o una computadora y conexión a internet. No hay aplicación que instalar.</li><li><strong>Mesaverso Caja:</strong> está en etapa de prueba, no emite factura y no cobra pagos online.</li></ul>"
+      "html": "<ul><li><strong>Qué hace:</strong> menú digital con QR, pedidos por WhatsApp, pantalla de cocina, cuenta dividida y platos en 3D.</li><li><strong>Para quién:</strong> negocios gastronómicos con cocina o punto de venta propio: restaurantes, bares, lomiterías, cafeterías, hamburgueserías, pizzerías y parrillas, y también <a href=\"/para-comedores-y-viandas/\">comedores y viandas para empresas</a>, <a href=\"/para-catering-y-eventos/\">catering</a>, panaderías, food trucks, dark kitchens y <a href=\"/para-emprendimientos-gastronomicos/\">emprendimientos</a>.</li><li><strong>Dónde:</strong> Paraguay. Precios en guaraníes.</li><li><strong>Comisión:</strong> 0 % en los pedidos que llegan por el link o QR del local.</li><li><strong>Plan Gratis:</strong> hasta 11 productos, pedido básico por WhatsApp y marca «Hecho con Mesaverso» visible. <a href=\"/plan-gratis/\">Ver condiciones</a>.</li><li><strong>Pack 3D:</strong> platos en 3D, Gs. 120.000 por plato, aparte del plan.</li><li><strong>Plan mensual:</strong> Gs. 180.000 por mes, más una implementación de Gs. 300.000 que se paga una vez.</li><li><strong>Plan anual:</strong> Gs. 1.800.000 por año, con la implementación incluida.</li><li><strong>Para usarlo:</strong> un celular, una tablet o una computadora y conexión a internet. No hay aplicación que instalar.</li><li><strong>Mesaverso Caja:</strong> está en etapa de prueba, no emite factura y no cobra pagos online.</li></ul>"
     },
     {
       "h2": "Cómo funciona, en cuatro pasos",
@@ -36,7 +36,7 @@
   "faq": [
     [
       "¿Qué es Mesaverso?",
-      "Es un servicio, operado desde Paraguay, de menú digital con QR, pedidos por WhatsApp, pantalla de cocina y cuenta dividida para restaurantes, bares, lomiterías y cafeterías."
+      "Es un servicio, operado desde Paraguay, de menú digital con QR, pedidos por WhatsApp, pantalla de cocina y cuenta dividida para restaurantes, bares, lomiterías, cafeterías, comedores y viandas, catering, panaderías, food trucks y emprendimientos gastronómicos."
     ],
     [
       "¿Mesaverso es una app de delivery?",

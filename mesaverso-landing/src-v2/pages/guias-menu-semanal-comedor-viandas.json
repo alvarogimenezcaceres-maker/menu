@@ -1,0 +1,71 @@
+{
+ "slug": "guias/menu-semanal-comedor-viandas",
+ "type": "guide",
+ "published": "2026-10-13",
+ "modified": "2026-10-13",
+ "title": "Cómo armar el menú semanal de un comedor o viandas",
+ "description": "Guía para comedores y servicios de viandas: una categoría por día, rotación de platos, platos base con opciones, fotos y cómo avisar el menú a las empresas.",
+ "h1": "Cómo armar el menú semanal y el menú del día de tu comedor",
+ "lead": "El menú del día cambia, pero tu forma de armarlo no debería cambiar cada semana. Esta guía te propone una estructura fija (una categoría por día, platos base y variaciones) para que armar y comunicar el menú te lleve minutos y tus clientes de empresas sepan siempre dónde mirar.",
+ "sections": [
+  {
+   "h2": "Empezá por una categoría por día",
+   "html": "<p>La forma más clara de mostrar un menú semanal es una categoría por día: Lunes, Martes, Miércoles, Jueves y Viernes. Dentro de cada una van los platos de ese día. Quien abre la carta busca «el jueves» y ya está.</p><p>A cada categoría podés ponerle una descripción corta que explique lo que incluye. En el menú de Mesaverso las categorías admiten descripción, y ahí es donde aclarás lo que no es un plato.</p><p><strong>Ejemplo</strong> (ficticio) de descripción para «Martes»: «Menú del día: plato principal con guarnición. El tereré va aparte. Pedidos hasta las 9:30.»</p><p>Si un día tenés un menú especial, como locro en una fecha patria, dale su propia categoría o su propio producto con una descripción clara. Y si ese día no hay servicio, aclaralo en la descripción en lugar de dejar la categoría vacía.</p>"
+  },
+  {
+   "h2": "Definí tus platos base",
+   "html": "<p>Antes de inventar cinco menús distintos, elegí los platos base que tu cocina hace bien y rápido. Para un comedor de mediodía paraguayo, suelen ser:</p><ul><li>Una carne a la plancha o frita: milanesa, bife.</li><li>Un plato de cuchara o guiso: puchero, locro.</li><li>Un plato de arroz o pasta: arroz con pollo.</li><li>Una guarnición fija: ensalada, puré, mandioca.</li><li>Algo para el postre o acompañar: sopa paraguaya.</li></ul><p>Con esas cinco piezas ya tenés material para toda la semana. La variedad viene de cómo las combinás y rotás, no de platos nuevos todos los días.</p><p><strong>Ejemplo</strong> (ficticio) de combinación: la milanesa del lunes sale con ensalada; el jueves, la misma milanesa se convierte en bife a caballo con el mismo acompañamiento. Cambia el nombre y la presentación, pero tu cocina usa los mismos insumos y los mismos tiempos. Anotá también cuánto rinde cada plato base por tanda, para saber cuándo conviene frenar los pedidos del día.</p>"
+  },
+  {
+   "h2": "Rotá con un calendario simple",
+   "html": "<p>Una rotación escrita evita que cocines lo mismo dos veces seguidas sin darte cuenta, y le da al cliente algo para anticipar.</p><p><strong>Ejemplo</strong> (ficticio) de rotación de cuatro semanas:</p><ol><li>Semana 1: lunes milanesa, martes puchero, miércoles arroz con pollo, jueves bife a caballo, viernes locro.</li><li>Semana 2: lunes arroz con pollo, martes milanesa, miércoles locro, jueves puchero, viernes bife a caballo.</li><li>Semanas 3 y 4: seguí moviendo cada plato un día.</li></ol><p>Anotá la rotación en una hoja y pegala en la cocina. Cuando un plato no se vende bien, lo reemplazás en el ciclo siguiente, no a mitad de semana.</p>"
+  },
+  {
+   "h2": "Elegí bien tus 11 productos del plan Gratis",
+   "html": "<p>El <a href=\"/plan-gratis/\">plan Gratis de Mesaverso</a> permite hasta 11 productos, con mínimo 8 con precio. Para un comedor eso obliga a pensar qué mostrar. Una propuesta:</p><ul><li><strong>5 platos del día</strong>, uno por día de la semana, con foto y precio.</li><li><strong>2 o 3 guarniciones o extras</strong> (ensalada, sopa paraguaya, postre).</li><li><strong>2 o 3 bebidas</strong>, como gaseosa, jugo o agua, con el tereré aparte si lo ofrecés.</li></ul><p>Los platos del día pueden cambiar cada semana editando el producto: no hace falta crear uno nuevo. Si tenés más variedad de la que entra, priorizá lo que más se pide y dejá el resto para comunicarlo por otro lado.</p>"
+  },
+  {
+   "h2": "Platos con opciones en lugar de más platos",
+   "html": "<p>Si cada variación fuera un producto aparte, tu carta se llenaría rápido. Usá las opciones de plato: un solo producto «Milanesa con guarnición» y adentro la elección de la guarnición (ensalada, puré o arroz).</p><p>Las opciones te ayudan a:</p><ul><li>Mantener la carta corta y fácil de recorrer en el celular.</li><li>Reducir los mensajes de «¿con qué viene?».</li><li>Ordenar la cocina, porque cada elección llega ya escrita en el pedido.</li></ul><p>Para lo que no entra en una opción, el cliente puede agregar una nota por línea del pedido, como «sin cebolla». Más sobre ese orden en la guía de <a href=\"/guias/pedidos-de-almuerzo-para-empresas-whatsapp/\">pedidos de almuerzo para empresas por WhatsApp</a>.</p>"
+  },
+  {
+   "h2": "Fotos que ayudan a elegir",
+   "html": "<p>Una buena foto vende el plato y evita preguntas. No necesitás un estudio: alcanza con luz natural, el plato entero, un fondo limpio y sacarla desde arriba o en ángulo suave. Evitá los filtros fuertes, porque el cliente tiene que reconocer el plato cuando le llegue.</p><p>Sacá una foto por plato base y reutilizala mientras el plato se vea igual. Si cambiás la guarnición de forma visible, actualizá la foto. Para escribir los nombres y descripciones, la guía de <a href=\"/guias/como-escribir-la-carta-del-restaurante/\">cómo escribir la carta</a> tiene criterios concretos.</p>"
+  },
+  {
+   "h2": "Cómo comunicar el menú a las empresas",
+   "html": "<p>Armar el menú es la mitad; la otra mitad es que las empresas lo vean a tiempo. Un ritmo que funciona:</p><ol><li>Elegí un día fijo para actualizar la semana siguiente (por ejemplo, el jueves a la tarde).</li><li>Mandá el mismo link a la persona de contacto de cada empresa, por WhatsApp o por correo.</li><li>Escribí en el mensaje el horario límite de pedido.</li><li>Si hay un cambio de último momento, avisá a esos contactos con un mensaje corto.</li></ol><p>Mesaverso no envía avisos solos ni programa pedidos repetidos: el mensaje lo mandás vos. Si querés ver cómo encaja con tu servicio, mirá <a href=\"/para-comedores-y-viandas/\">la página para comedores y viandas</a>. Y recordá: hay 0 % de comisión en los pedidos que llegan por tu link o QR.</p>"
+  }
+ ],
+ "faq": [
+  [
+   "¿Puedo cambiar los platos del día sin crear productos nuevos?",
+   "<p>Sí. Editás el nombre, la descripción, la foto y el precio del producto existente y la carta se actualiza con el cambio.</p>"
+  ],
+  [
+   "¿Conviene una categoría por día o una sola carta con todo?",
+   "<p>Para un menú que rota, una categoría por día es más clara. Si ofrecés lo mismo todos los días, una carta única alcanza.</p>"
+  ],
+  [
+   "¿Qué hago si tengo más de 11 platos?",
+   "<p>En el plan Gratis el tope es de 11 productos. Priorizá lo que más se pide y usá las opciones de plato para cubrir variaciones sin sumar productos.</p>"
+  ],
+  [
+   "¿Los clientes pueden pedir con una nota?",
+   "<p>Sí, cada línea del pedido admite una nota, por ejemplo «sin cebolla». Llega escrita en el mensaje de WhatsApp.</p>"
+  ],
+  [
+   "¿Mesaverso avisa a las empresas cuando cambia el menú?",
+   "<p>No, no manda avisos automáticos. Compartís vos el link por WhatsApp o correo cuando actualizás la semana.</p>"
+  ]
+ ],
+ "cta": "Armá tu menú semanal",
+ "revisar": [
+  "Ejemplos de descripción y de rotación rotulados como ficticios.",
+  "Plan Gratis: hasta 11 productos, mínimo 8 con precio; distribución de 11 productos es una sugerencia, no una regla del producto.",
+  "Categorías con descripción, opciones de plato y nota por línea: funciones existentes del menú.",
+  "Sin avisos automáticos, sin pedidos recurrentes: aclarado.",
+  "0 % de comisión solo en pedidos por link o QR.",
+  "Editar el producto cada semana en Gratis: confirmar con el panel; plan Gratis dirigido a negocios con cocina o punto de venta propio (ver [REVISIÓN ABOGADO] en plan-gratis.json)."
+ ]
+}

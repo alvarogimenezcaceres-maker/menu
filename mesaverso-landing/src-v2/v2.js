@@ -120,7 +120,7 @@ document.querySelectorAll('[data-mod]').forEach(sec=>{
 (()=>{
   const inp=document.getElementById('heroName'),rows=document.getElementById('heroRows');if(!inp||!rows)return;
   const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const R={parrilla:[['Asado de tira',68000],['Vacío',72000],['Mandioca frita',16000]],cafe:[['Café con leche',14000],['Medialuna',8000],['Tostado mixto',18000]],lomo:[['Lomito árabe',32000],['Hamburguesa',28000],['Papas fritas',15000]],bar:[['Cerveza',14000],['Tabla de picada',65000],['Hamburguesa',28000]]};
+  const R={parrilla:[['Asado de tira',68000],['Vacío',72000],['Mandioca frita',16000]],cafe:[['Café con leche',14000],['Medialuna',8000],['Tostado mixto',18000]],lomo:[['Lomito árabe',32000],['Hamburguesa',28000],['Papas fritas',15000]],bar:[['Cerveza',14000],['Tabla de picada',65000],['Hamburguesa',28000]],comedor:[['Menú del día',35000],['Vianda ejecutiva',30000],['Postre del día',8000]]};
   const chips=[...document.querySelectorAll('#heroChips .chip')],nm=document.getElementById('heroLocal'),total=document.getElementById('heroTotal'),lines=document.getElementById('heroLines'),code=document.getElementById('heroCode'),ticket=document.getElementById('heroTicket'),send=document.getElementById('heroSend');
   const Gs=n=>'₲ '+String(n).replace(/\B(?=(\d{3})+(?!\d))/g,'.');
   const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';code.textContent='#MV-'+Array.from({length:4},()=>A[Math.floor(Math.random()*A.length)]).join('');

@@ -41,6 +41,7 @@ const hashes = { ...mods, "v2.css": createHash("sha256").update(css).digest("hex
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 // Brand mark: the warm dot rests at the right foot of the M, jumps to the left foot and traces the M every 8 s (same motion as src/brand/isotype-mesaverso-animated.svg)
 const MARK_SVG = `<svg viewBox="0 0 100 100" aria-hidden="true"><path class="m" d="M16 80V22L50 60L84 22V80"/><circle class="a" cx="16" cy="82" r="10"/><circle class="b" cx="0" cy="0" r="10"><animateMotion dur="8s" repeatCount="indefinite" calcMode="spline" path="M16 82V22L50 60L84 22V82" keyPoints="1;1;0;0;1;1" keyTimes="0;0.62;0.64;0.7;0.925;1" keySplines="0 0 1 1;0 0 1 1;0 0 1 1;0.65 0 0.35 1;0 0 1 1"/><animate attributeName="opacity" dur="8s" repeatCount="indefinite" values="1;1;0;0;1;1" keyTimes="0;0.6;0.63;0.66;0.7;1"/></circle></svg>`;
+const REGISTRO_URL = "https://panel.mesaverso.app/registro";
 const abs = (p) => SITE_URL + p;
 const opts = (list) => `<option value="">Elegí una opción</option>` + list.map((t) => `<option>${esc(t)}</option>`).join("");
 const waDisplay = `+${MESAVERSO_WHATSAPP.slice(0, 3)} ${MESAVERSO_WHATSAPP.slice(3, 6)} ${MESAVERSO_WHATSAPP.slice(6, 9)} ${MESAVERSO_WHATSAPP.slice(9)}`;
@@ -91,6 +92,8 @@ function render(template, meta) {
       case "RAW": if (!(arg in PRICES)) throw new Error(`Unknown price ${arg}`); return String(PRICES[arg]);
       case "OWNER": if (!(arg in OWNER)) throw new Error(`Unknown owner field ${arg}`); return esc(OWNER[arg]);
       case "GUIDES_LIST": return guides.map((g) => `<li class="gl"><a href="/${g.slug}/"><b>${esc(g.h1)}</b></a><p>${esc(g.description)}</p></li>`).join("");
+      case "REGISTRO_URL": return REGISTRO_URL;
+      case "RUBROS_CHIPS": return ordered(rubros).map((p) => `<a class="rubro" href="/${p.slug}/">${esc(FOOT_LABEL[p.slug] || p.h1)}</a>`).join("") + `<a class="rubro rubro--all" href="/para-tu-negocio/">Ver todos</a>`;
       case "MARK": return MARK_SVG;
       case "FOOTER": return footerHtml(meta.pathname === "/");
       case "PAGES_NAV": return [...products, ...rubros].map((p) => `<a href="/${p.slug}/">${esc(p.h1)}</a>`).join("") + (guides.length ? `<a href="/guias/">Guías para dueños de locales</a>` : "");
@@ -126,6 +129,12 @@ const REL = {
   "cuenta-dividida": ["guias/dividir-la-cuenta-restaurante"],
   "plan-gratis": ["guias/como-armar-menu-digital-qr-paraguay"],
   "para-parrillas": ["guias/dividir-la-cuenta-restaurante"],
+  "para-comedores-y-viandas": ["guias/pedidos-de-almuerzo-para-empresas-whatsapp", "guias/menu-semanal-comedor-viandas", "guias/como-vender-viandas-a-empresas", "para-catering-y-eventos"],
+  "para-catering-y-eventos": ["guias/como-vender-viandas-a-empresas", "para-comedores-y-viandas"],
+  "para-panaderias-y-pastelerias": ["guias/como-escribir-la-carta-del-restaurante"],
+  "para-emprendimientos-gastronomicos": ["guias/como-armar-menu-digital-qr-paraguay", "plan-gratis"],
+  "para-bares-y-cervecerias": ["guias/dividir-la-cuenta-restaurante"],
+  "para-food-trucks-y-dark-kitchens": ["guias/pedidos-por-whatsapp-restaurante"],
   "para-cafeterias": ["guias/como-escribir-la-carta-del-restaurante"],
   "para-lomiterias": ["guias/pedidos-por-whatsapp-restaurante"],
   "para-hamburgueserias-y-pizzerias": ["guias/pedidos-por-whatsapp-restaurante", "guias/comision-apps-delivery-canal-propio"],
@@ -139,8 +148,11 @@ const dmy = (iso) => iso.split("-").reverse().join("/");
 const FOOT_LABEL = {
   "menu-digital-qr": "Menú digital con QR", "pedidos-por-whatsapp": "Pedidos por WhatsApp", "delivery-propio": "Delivery propio", "cuenta-dividida": "Cuenta dividida",
   "plan-gratis": "Plan Gratis", "calculadora-comision-delivery": "Calculadora de comisión", "que-es-mesaverso": "Qué es Mesaverso",
+  "para-comedores-y-viandas": "Comedores y viandas", "para-catering-y-eventos": "Catering y eventos", "para-panaderias-y-pastelerias": "Panaderías y pastelerías", "para-heladerias-y-postres": "Heladerías y postres", "para-food-trucks-y-dark-kitchens": "Food trucks y dark kitchens", "para-emprendimientos-gastronomicos": "Emprendimientos", "para-bares-y-cervecerias": "Bares y cervecerías",
   "para-parrillas": "Parrillas", "para-cafeterias": "Cafeterías", "para-lomiterias": "Lomiterías", "para-hamburgueserias-y-pizzerias": "Hamburgueserías y pizzerías",
 };
+const RUBRO_ORDER = ["para-comedores-y-viandas", "para-catering-y-eventos", "para-panaderias-y-pastelerias", "para-parrillas", "para-cafeterias", "para-lomiterias", "para-hamburgueserias-y-pizzerias", "para-bares-y-cervecerias", "para-heladerias-y-postres", "para-food-trucks-y-dark-kitchens", "para-emprendimientos-gastronomicos"];
+const ordered = (list) => [...list].sort((a, c) => (RUBRO_ORDER.indexOf(a.slug) + 100) % 100 - (RUBRO_ORDER.indexOf(c.slug) + 100) % 100);
 const footerHtml = (home) => {
   const h = home ? "" : "/";
   const link = (slug) => { const p = productPages.find((x) => x.slug === slug); return p ? `<li><a href="/${slug}/">${esc(FOOT_LABEL[slug] || p.h1)}</a></li>` : ""; };
@@ -155,7 +167,7 @@ const footerHtml = (home) => {
     <p class="foot__num"><a href="mailto:contacto@mesaverso.app">contacto@mesaverso.app</a></p>
   </div>
   ${col("Producto", [link("menu-digital-qr"), link("pedidos-por-whatsapp"), link("delivery-propio"), link("cuenta-dividida"), link("plan-gratis"), link("calculadora-comision-delivery")])}
-  ${col("Para tu local", [link("para-parrillas"), link("para-cafeterias"), link("para-lomiterias"), link("para-hamburgueserias-y-pizzerias")])}
+  ${col("Para tu negocio", [...ordered(rubros).slice(0, 6).map((p) => link(p.slug)), `<li><a href="/para-tu-negocio/">Todos los rubros</a></li>`])}
   ${col("Recursos", [link("que-es-mesaverso"), ...(guides.length ? [`<li><a href="/guias/">Guías para dueños</a></li>`] : []), `<li><a href="${h}#planes">Planes y precios</a></li>`, `<li><a href="${h}#preguntas">Preguntas frecuentes</a></li>`])}
   ${col("Legal", [`<li><a href="/terminos/">Términos del sitio</a></li>`, `<li><a href="/terminos-gratis/">Términos del plan Gratis</a></li>`, `<li><a href="/privacidad/">Aviso de privacidad</a></li>`, `<li><a href="/reclamos/">Reclamos y retiro de contenido</a></li>`])}
 </div>
@@ -213,7 +225,7 @@ for (const pg of productPages) {
   const dated = kind === "guide" && pg.modified ? `<p class="fine">Actualizado el ${dmy(pg.modified)} · Equipo Mesaverso</p>` : "";
   const body = `<p class="lead">${esc(pg.lead)}</p>${dated}` + pg.sections.map((s, i) => `<h2>${esc(s.h2)}</h2>${s.html}` + ((FIGS[pg.slug] || []).filter((_, j) => i === (j === 0 ? 0 : 2)).map(shotHtml).join(""))).join("") +
     `<h2>Preguntas frecuentes</h2><div class="faq faq--page">${pg.faq.map(([q, a]) => `<details><summary>${esc(q)}</summary><div>${a}</div></details>`).join("")}</div>` +
-    `<p class="page__cta"><a class="btn btn--primary" href="/#cierre">${esc(pg.cta)}</a> <a class="btn btn--secondary" href="/#circuito">Ver el circuito completo</a></p>` +
+    `<p class="page__cta"><a class="btn btn--primary" href="${pg.slug === "plan-gratis" ? REGISTRO_URL : "/#cierre"}">${esc(pg.slug === "plan-gratis" ? "Crear mi menú gratis" : pg.cta)}</a> <a class="btn btn--secondary" href="/#circuito">Ver el circuito completo</a></p>` +
     `<h2>Seguí leyendo</h2><ul>${rel}</ul>`;
   const crumbs = [{ name: "Mesaverso", path: "/" }, ...(kind === "guide" ? [{ name: "Guías", path: "/guias/" }] : []), { name: pg.h1, path: `/${pg.slug}/` }];
   const extra = [
@@ -225,6 +237,18 @@ for (const pg of productPages) {
   if (kind === "guide") extra.push({ "@type": "Article", headline: pg.h1, description: pg.description, datePublished: pg.published, dateModified: pg.modified || pg.published, inLanguage: "es-PY",
     author: { "@type": "Organization", name: "Equipo Mesaverso" }, publisher: { "@type": "Organization", name: "Mesaverso", url: abs("/") }, mainEntityOfPage: abs(`/${pg.slug}/`), image: abs("/assets/og-v2.png") });
   await write(`${pg.slug}/index.html`, render(shell(esc(pg.h1), body, { legal: false }), { title: pg.title, description: pg.description, pathname: `/${pg.slug}/`, extra, pageType: pg.schema || "WebPage" }));
+}
+// Hub of the venue types: one crawlable list, comedores first
+if (rubros.length) {
+  const list = ordered(rubros).map((g) => `<li class="gl"><a href="/${g.slug}/"><b>${esc(g.h1)}</b></a><p>${esc(g.description)}</p></li>`).join("");
+  const body = `<p class="lead">Mesaverso sirve a cualquier negocio gastronómico de Paraguay: comedores que venden almuerzos a empresas, restaurantes, bares, cafeterías, panaderías, heladerías, food trucks y emprendimientos. Elegí el tuyo y mirá cómo funciona.</p><ul class="gl-list">${list}</ul>` +
+    `<p class="page__cta"><a class="btn btn--primary" href="${REGISTRO_URL}" rel="noopener">Crear mi menú gratis</a> <a class="btn btn--secondary" href="/plan-gratis/">Cómo funciona el plan Gratis</a></p>`;
+  const extra = [
+    { "@type": "CollectionPage", name: "Menú digital para cada tipo de negocio gastronómico", url: abs("/para-tu-negocio/"), inLanguage: "es-PY" },
+    { "@type": "ItemList", itemListElement: ordered(rubros).map((g, i) => ({ "@type": "ListItem", position: i + 1, url: abs(`/${g.slug}/`), name: g.h1 })) },
+    { "@type": "BreadcrumbList", itemListElement: [{ "@type": "ListItem", position: 1, name: "Mesaverso", item: abs("/") }, { "@type": "ListItem", position: 2, name: "Para tu negocio", item: abs("/para-tu-negocio/") }] },
+  ];
+  await write("para-tu-negocio/index.html", render(shell("Menú digital para cada tipo de negocio gastronómico", body, { legal: false }), { title: "Menú digital para cada tipo de negocio | Mesaverso", description: "Menú digital con QR y pedidos por WhatsApp para comedores, restaurantes, bares, cafeterías, panaderías, heladerías y emprendimientos de Paraguay.", pathname: "/para-tu-negocio/", extra }));
 }
 // Hub of the guides: one crawlable list with a short description of each
 if (guides.length) {
@@ -252,7 +276,7 @@ await cp(path.join(ROOT, "node_modules/@google/model-viewer/dist/model-viewer.mi
 await write("robots.txt", PUBLISH ? `User-agent: *\nAllow: /\nDisallow: /api/\n\nSitemap: ${SITE_URL}/sitemap.xml\n` : "User-agent: *\nDisallow: /\n");
 const today = new Date().toISOString().slice(0, 10);
 const lastmod = (await stat(path.join(SRC2, "index.html"))).mtime.toISOString().slice(0, 10);
-const smap = [["/", lastmod], ...(guides.length ? [["/guias/", guides.map((g) => g.modified || g.published).sort().pop()]] : []), ...productPages.map((p) => [`/${p.slug}/`, p.modified || lastmod]), ...pages.map((p) => [`/${p[0]}/`, lastmod])];
+const smap = [["/", lastmod], ...(rubros.length ? [["/para-tu-negocio/", rubros.map((g) => g.modified || g.published).sort().pop()]] : []), ...(guides.length ? [["/guias/", guides.map((g) => g.modified || g.published).sort().pop()]] : []), ...productPages.map((p) => [`/${p.slug}/`, p.modified || lastmod]), ...pages.map((p) => [`/${p[0]}/`, lastmod])];
 await write("sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${smap.map(([p, d]) => `  <url><loc>${abs(p)}</loc><lastmod>${d}</lastmod></url>`).join("\n")}\n</urlset>\n`);
 // IndexNow (Bing, Yandex and others): the public key file proves the site is ours; ping-indexnow.mjs tells them about new or changed URLs
 try { const k = (await readFile(path.join(SRC2, "indexnow.key"), "utf8")).trim(); if (k) await write(`${k}.txt`, k); } catch {}
@@ -267,7 +291,7 @@ await write("llms.txt", [
   "## Funciones",
   ...products.map((p) => `- [${p.h1}](${abs(`/${p.slug}/`)}): ${p.description}`),
   "",
-  ...(rubros.length ? ["## Para cada tipo de local", ...rubros.map((p) => `- [${p.h1}](${abs(`/${p.slug}/`)}): ${p.description}`), ""] : []),
+  ...(rubros.length ? ["## Para cada tipo de negocio (comedores y viandas para empresas, catering, panaderías, parrillas, cafeterías, lomiterías, bares, heladerías, food trucks, emprendimientos)", ...rubros.map((p) => `- [${p.h1}](${abs(`/${p.slug}/`)}): ${p.description}`), ""] : []),
   ...(guides.length ? ["## Guías", ...guides.map((p) => `- [${p.h1}](${abs(`/${p.slug}/`)}): ${p.description}`), ""] : []),
   "## Contacto y condiciones",
   `- [Planes y precios](${abs("/#planes")})`,
