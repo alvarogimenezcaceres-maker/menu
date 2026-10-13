@@ -63,6 +63,9 @@
   .hero .brand h1 { margin: 0; }
   .hero .logo { width: 150px; max-width: 100%; display: block; }
   .hero p { margin: 0; color: var(--muted); font-size: 14.5px; max-width: 22ch; }
+  .hero--center .brand { justify-items: center; text-align: center; }
+  .hero--center .logo { width: 200px; }
+  .hero--center p { max-width: 30ch; }
   .hero .dish { position: absolute; right: -18px; bottom: -8px; width: 52%; max-width: 250px; filter: drop-shadow(0 14px 24px rgba(0,0,0,.6)); }
   .table-chip { display: inline-flex; align-items: center; gap: 6px; font: 600 13px/1 var(--display); letter-spacing: .08em; text-transform: uppercase; background: var(--amber); color: #1a1206; padding: 8px 12px 7px; border-radius: 999px; }
 
@@ -383,7 +386,7 @@
 <body>
 <a class="skip" href="#menu">Ir al menú</a>
 <main class="app">
-  <header class="hero">
+  <header class="hero{{HERO_CLASS}}">
     <div class="brand">
       <h1><img class="logo" src="img/{{LOGO}}-360.webp" alt="{{NAME}}"></h1>
       <p>{{TAGLINE}}</p>

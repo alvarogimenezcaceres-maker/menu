@@ -188,6 +188,7 @@ async function buildRestaurant(slug, templates) {
     REVIEW_URL: jsonForScript(reviewUrl(r.googleReviewUrl)), ORDERING: jsonForScript(OrderCore.orderingConfig(r.ordering)),
     ORDER_CORE: basic ? ORDER_CORE : ORDER_CORE_PAID,
     WATERMARK: free ? "" : watermark(slug),
+    HERO_CLASS: r.headerCenter === true ? " hero--center" : "",
     RESERVE_CSS: reserve ? templates.reserve.CSS : "", RESERVE_BTN: reserve ? templates.reserve.BTN : "", RESERVE_DIALOG: reserve ? templates.reserve.DIALOG : "", RESERVE_JS: reserve ? templates.reserve.JS : "",
     // plan Gratis only; "" elsewhere (see freeParts)
     ...Object.fromEntries(FREE_KEYS.map(k => [k, (free || (basic && !BRAND_KEYS.has(k))) ? freeParts(slug)[k] : ""])),
