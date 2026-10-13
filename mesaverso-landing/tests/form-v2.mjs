@@ -55,7 +55,7 @@ check("server rejects an unknown city, a bad email and a missing consent", direc
 await page.fill("#fEmail", "ana@example.com");
 await page.selectOption("#fCity", "Luque");
 await page.selectOption("#fPlace", "Tengo un local abierto");
-await page.selectOption("#fProducts", "31 a 60");
+await page.selectOption("#fProducts", "34 a 60");
 await page.selectOption("#fHow", "WhatsApp");
 await page.selectOption("#fInterest", "Plan mensual");
 await page.fill("#fSocial", "@lomiteria.prueba");

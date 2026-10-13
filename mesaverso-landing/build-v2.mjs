@@ -292,7 +292,7 @@ for (const f of (await readdir(SRC2)).filter((x) => /^google[0-9a-f]+\.html$/.te
 await write("llms.txt", [
   "# Mesaverso",
   "",
-  "> Menú digital con QR, pedidos por WhatsApp, cocina en pantalla y cuenta dividida para restaurantes, bares, lomiterías y cafeterías de Paraguay. 0 % de comisión en los pedidos que llegan por el link o QR del local. Plan Gratis disponible (hasta 11 productos). Mesaverso Caja está en etapa de prueba y no emite factura ni cobra pagos online.",
+  "> Menú digital con QR, pedidos por WhatsApp, cocina en pantalla y cuenta dividida para restaurantes, bares, lomiterías y cafeterías de Paraguay. 0 % de comisión en los pedidos que llegan por el link o QR del local. Plan Gratis disponible (hasta 33 productos por lanzamiento). Mesaverso Caja está en etapa de prueba y no emite factura ni cobra pagos online.",
   "",
   "## Funciones",
   ...products.map((p) => `- [${p.h1}](${abs(`/${p.slug}/`)}): ${p.description}`),

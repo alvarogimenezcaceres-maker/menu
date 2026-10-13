@@ -20,7 +20,7 @@ export const BUSINESS_TYPES = [
 ];
 
 export const CITIES = ["Asunción", "Luque", "San Lorenzo", "Lambaré", "Fernando de la Mora", "Capiatá", "Ñemby", "Villa Elisa", "Encarnación", "Ciudad del Este", "Pedro Juan Caballero", "Otra ciudad"];
-export const PRODUCT_RANGES = ["Hasta 11", "12 a 30", "31 a 60", "Más de 60", "Todavía no sé"];
+export const PRODUCT_RANGES = ["Hasta 11", "12 a 33", "34 a 60", "Más de 60", "Todavía no sé"];
 export const PLACES = ["Tengo un local abierto", "Vendo solo por delivery o redes", "Estoy por abrir"];
 export const INTERESTS = ["Plan Gratis", "Plan mensual", "Plan anual", "Todavía no sé"];
 export const HOWS = ["WhatsApp", "Papel y teléfono", "Apps de delivery", "Todavía no tengo local", "Otro"];
