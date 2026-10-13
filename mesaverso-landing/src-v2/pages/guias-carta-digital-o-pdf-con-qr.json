@@ -22,7 +22,7 @@
   },
   {
    "h2": "Cuándo conviene pasar a una carta digital",
-   "html": "<ul><li>Cambiás precios o platos con frecuencia, o tenés platos del día.</li><li>Se te terminan platos y querés avisarlo sin editar archivos.</li><li>Recibís pedidos por WhatsApp y te cuesta ordenarlos.</li><li>Querés que el mismo link sirva en el salón, en Instagram y en Google.</li><li>Tenés una carta larga con varias categorías, donde un buscador ayuda.</li></ul><p>Con Mesaverso, el plan <a href=\"/plan-gratis/\">Gratis</a> te permite probar una carta digital con hasta 11 productos (hace falta un mínimo de 8 con precio para publicar) y pedido básico por WhatsApp, con la marca «Hecho con Mesaverso» visible y para negocios gastronómicos con cocina o punto de venta propio (restaurantes, comedores y viandas, catering, panaderías, food trucks y emprendimientos); las condiciones están en <a href=\"/terminos-gratis/\">los términos del plan Gratis</a>. El resto de los planes está en <a href=\"/#planes\">la sección de planes</a>.</p>"
+   "html": "<ul><li>Cambiás precios o platos con frecuencia, o tenés platos del día.</li><li>Se te terminan platos y querés avisarlo sin editar archivos.</li><li>Recibís pedidos por WhatsApp y te cuesta ordenarlos.</li><li>Querés que el mismo link sirva en el salón, en Instagram y en Google.</li><li>Tenés una carta larga con varias categorías, donde un buscador ayuda.</li></ul><p>Con Mesaverso, el plan <a href=\"/plan-gratis/\">Gratis</a> te permite probar una carta digital con hasta 33 productos por lanzamiento (hace falta un mínimo de 8 con precio para publicar) y pedido básico por WhatsApp, con la marca «Hecho con Mesaverso» visible y para negocios gastronómicos con cocina o punto de venta propio (restaurantes, comedores y viandas, catering, panaderías, food trucks y emprendimientos); las condiciones están en <a href=\"/terminos-gratis/\">los términos del plan Gratis</a>. El resto de los planes está en <a href=\"/#planes\">la sección de planes</a>.</p>"
   },
   {
    "h2": "Cómo migrar del PDF a la carta digital sin perder nada",
@@ -53,6 +53,7 @@
  ],
  "cta": "Probá la carta digital gratis",
  "revisar": [
+  "Tope de 33 productos por lanzamiento: confirmar la redacción con /terminos-gratis/.",
   "Comparación técnica general; sin nombrar productos de terceros ni cifras de pérdidas.",
   "Posicionamiento en Google: ventaja posible, no garantizada.",
   "Redirigir un QR impreso depende de cómo se generó; advertido en el texto.",

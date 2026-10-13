@@ -1,5 +1,5 @@
 /**
- * Plans and what each one allows in the panel. The «Gratis» plan (decided 2026-10-04, product cap cut to 11
+ * Plans and what each one allows in the panel. The «Gratis» plan (decided 2026-10-04, product cap 11 until 2026-10-13 and 33 for the launch
  * on 2026-10-05) lets a restaurant manage its own menu with limits; the paid plans have none.
  * A restaurant without a plan (the pilots, created before plans existed) is treated as unlimited.
  */
@@ -12,7 +12,8 @@ export const PLAN_OPTIONS = [
 
 export type PlanId = (typeof PLAN_OPTIONS)[number]['value']
 
-export const FREE_MAX_DISHES = 11
+// Launch offer (2026-10-13): 33 products instead of 11, so a comedor can load several days of daily menus. Moving it back is this one number.
+export const FREE_MAX_DISHES = 33
 export const FREE_MIN_TO_PUBLISH = 8
 export const FREE_PUBLISHES_PER_DAY = 5
 

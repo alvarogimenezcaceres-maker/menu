@@ -23,7 +23,7 @@ export const publishEndpoint: Endpoint = {
     }
     if (busy) return Response.json({ message: 'Ya hay una publicación en curso. Probá de nuevo en unos segundos.' }, { status: 409 })
 
-    // plan limits (Gratis: approval, 8 to 11 dishes, a few publications per day)
+    // plan limits (Gratis: approval, 8 to FREE_MAX_DISHES dishes, a few publications per day)
     const restaurant = (await req.payload.findByID({ collection: 'restaurants', id, depth: 0, overrideAccess: true })) as Restaurant
     const limits = limitsFor(restaurant.plan)
     const limited = limits.needsApproval || limits.publishesPerDay != null || limits.maxDishes != null || limits.minToPublish > 0

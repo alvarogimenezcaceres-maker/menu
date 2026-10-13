@@ -25,8 +25,8 @@
    "html": "<p>Muchos emprendimientos entregan a conocidos y vecinos, o dejan que retiren en la puerta. Mesaverso no reparte, así que lo que importa es que la carta lo diga claro: dónde se retira, en qué horarios, si hacés entrega y hasta qué zona, y cuánto cuesta. Cómo entregás y cómo cobrás lo definís vos. Hay 0 % de comisión en los pedidos que llegan por tu link o QR; los medios de cobro que uses pueden tener las suyas.</p><p>Si querés vender más seguido, pensá en dos o tres productos que podés cocinar en tandas, como empanadas o brownies, y dejalos siempre en la carta. Lo que se hace en tandas rinde mejor el tiempo y se vuelve tu marca.</p><p>Por seguridad, escribí en la carta el barrio o la zona de retiro, y acordá la dirección exacta por WhatsApp solo cuando el pedido está confirmado.</p>"
   },
   {
-   "h2": "Cómo empezar con 11 productos gratis",
-   "html": "<p>El plan <a href='/plan-gratis/'>Gratis</a> admite hasta 11 productos, con al menos 8 con precio para publicar, pedido básico por WhatsApp y la marca «Hecho con Mesaverso». La regla de oro para un emprendimiento nuevo: menos es más. Elegí tus 8 a 11 productos que mejor salen, que mejor se fotografían y que más te piden. Una carta corta y bien presentada suele ser más clara que una larga y confusa.</p><ol><li>Elegí tus tres productos estrella y ponelos primero.</li><li>Sumá dos o tres acompañamientos o postres.</li><li>Agregá una bebida.</li><li>Revisá fotos, precios y descripciones antes de publicar.</li></ol><p>El plan está pensado para negocios gastronómicos con cocina o punto de venta propio, también un emprendimiento que cocina desde casa, y la primera publicación se revisa antes de salir; las condiciones están en los <a href='/terminos-gratis/'>términos del plan Gratis</a>. Los permisos y habilitaciones para vender comida los definís y gestionás vos con las autoridades que correspondan: Mesaverso no los tramita ni los verifica. Y los planes pagos están en <a href='/#planes'>la sección de planes</a>.</p>"
+   "h2": "Cómo empezar con hasta 33 productos gratis",
+   "html": "<p>El plan <a href='/plan-gratis/'>Gratis</a> admite hasta 33 productos por lanzamiento, con al menos 8 con precio para publicar, pedido básico por WhatsApp y la marca «Hecho con Mesaverso». Para un emprendimiento nuevo, empezá por lo que mejor sale y que mejor se fotografía, y después ampliá la carta de a poco. Una carta ordenada por categorías es más clara que una larga y mezclada.</p><ol><li>Cargá primero tus productos estrella y ponelos al principio.</li><li>Sumá acompañamientos, postres y combos, cada uno en su categoría.</li><li>Agregá las bebidas.</li><li>Revisá fotos, precios y descripciones antes de publicar.</li></ol><p>El plan está pensado para negocios gastronómicos con cocina o punto de venta propio, también un emprendimiento que cocina desde casa, y la primera publicación se revisa antes de salir; las condiciones están en los <a href='/terminos-gratis/'>términos del plan Gratis</a>. Los permisos y habilitaciones para vender comida los definís y gestionás vos con las autoridades que correspondan: Mesaverso no los tramita ni los verifica. Y los planes pagos están en <a href='/#planes'>la sección de planes</a>.</p>"
   },
   {
    "h2": "Crecer sin perder el control",
@@ -44,7 +44,7 @@
   ],
   [
    "¿Cuántos productos conviene cargar para empezar?",
-   "<p>Los que mejor salen y mejor se ven: entre 8 y 11 alcanzan, y el plan Gratis admite hasta 11. Se puede ampliar con un plan pago.</p>"
+   "<p>Empezá con los que mejor salen y mejor se ven; para publicar hacen falta al menos 8 con precio, y el plan Gratis admite hasta 33 por lanzamiento. Se puede ampliar con un plan pago.</p>"
   ],
   [
    "¿Tengo que dar mi dirección en la carta?",
@@ -57,6 +57,7 @@
  ],
  "cta": "Armá tu carta gratis",
  "revisar": [
+  "Tope de 33 productos por lanzamiento: confirmar la redacción con /terminos-gratis/.",
   "Precios y productos son ejemplo de un emprendimiento ficticio, rotulados «ejemplo».",
   "Horario límite y retiro: solo texto; sin corte automático, sin agenda ni reparto.",
   "[REVISIÓN ABOGADO] Plan Gratis para emprendimientos desde casa: alcance «cocina o punto de venta propio» (ver plan-gratis.json). Confirmar qué habilitación/registro sanitario o municipal exige vender comida desde casa; la página no afirma nada y remite al propio emprendedor. Tampoco se afirma nada tributario (RUC, facturación): no se menciona.",

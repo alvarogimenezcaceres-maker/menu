@@ -19,6 +19,9 @@ type Props = {
 }
 
 const gs = (n: number | null | undefined) => (n == null ? '' : String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, '.'))
+const norm = (t: string) => t.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim()
+const WEEK = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes']
+const todayName = () => norm(new Date().toLocaleDateString('es-PY', { weekday: 'long', timeZone: 'America/Asuncion' }))
 const toNum = (s: string) => {
   const d = s.replace(/\D/g, '')
   return d ? Number(d) : null
@@ -64,13 +67,18 @@ const CSS = `
 .mdd-btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 20px;border-radius:10px;border:1px solid var(--theme-elevation-250);background:transparent;color:var(--theme-text);font:inherit;font-weight:700;cursor:pointer}
 .mdd-btn--main{background:var(--theme-text);color:var(--theme-bg);border-color:var(--theme-text)}
 .mdd-btn:disabled{opacity:.55;cursor:wait}
-.mdd-add{display:grid;gap:8px}
+ .mdd-add{display:grid;gap:8px}
+.mdd-chips{display:flex;flex-wrap:wrap;gap:8px}
+.mdd-chip{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 16px;border-radius:999px;border:1px solid var(--theme-elevation-250);background:transparent;color:var(--theme-text);font:inherit;font-weight:600;cursor:pointer}
+.mdd-chip.is-today{border-color:var(--theme-success-500)}
+.mdd-chip small{font-weight:500;color:var(--theme-success-500)}
+.mdd-copy{min-height:36px!important;width:auto!important;font-size:13px!important;padding:0 8px!important}
 .mdd-bar{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--theme-bg);border-top:1px solid var(--theme-elevation-150);padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));display:grid;gap:6px;justify-items:center}
 .mdd-bar__in{width:100%;max-width:760px;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
 @media(max-width:560px){.mdd-fields{grid-template-columns:1fr}}
 `
 
-function DishRow({ dish, onSave }: { dish: Dish; onSave: (id: Dish['id'], patch: Partial<Dish>) => Promise<string | null> }) {
+function DishRow({ dish, cats, onSave, onCopy }: { dish: Dish; cats: Category[]; onSave: (id: Dish['id'], patch: Partial<Dish>) => Promise<string | null>; onCopy: (d: Dish, catId: Category['id']) => Promise<string | null> }) {
   const [name, setName] = useState(dish.name)
   const [price, setPrice] = useState(gs(dish.price))
   const [status, setStatus] = useState<{ ok: boolean; text: string } | null>(null)
@@ -104,6 +112,23 @@ function DishRow({ dish, onSave }: { dish: Dish; onSave: (id: Dish['id'], patch:
         <label>
           <input type="checkbox" checked={dish.soldOut} onChange={(e) => void save({ soldOut: e.target.checked })} /> Agotado
         </label>
+        {cats.length > 1 && (
+          <select
+            className="mdd-copy"
+            aria-label={`Copiar ${dish.name} a otra categoría`}
+            value=""
+            onChange={async (e) => {
+              const v = e.target.value
+              if (!v) return
+              setStatus({ ok: true, text: 'Copiando…' })
+              const err = await onCopy(dish, cats.find((c) => String(c.id) === v)?.id ?? v)
+              setStatus(err ? { ok: false, text: err } : { ok: true, text: 'Copiado ✓' })
+            }}
+          >
+            <option value="">Copiar a otro día…</option>
+            {cats.filter((c) => c.id !== dish.categoryId).map((c) => <option key={String(c.id)} value={String(c.id)}>{c.name}</option>)}
+          </select>
+        )}
         {status && <span role="status" className={status.ok ? 'mdd-ok' : 'mdd-err'}>{status.text}</span>}
       </div>
     </div>
@@ -186,6 +211,39 @@ export function MenuDelDiaClient(props: Props) {
   const lowMsg = visibleWithPrice < minToPublish ? `Para publicar necesitás al menos ${minToPublish} platos visibles con precio (ahora hay ${visibleWithPrice}).` : ''
   const highMsg = maxDishes != null && visibleWithPrice > maxDishes ? `Tu plan permite hasta ${maxDishes} platos visibles (ahora hay ${visibleWithPrice}).` : ''
 
+  const [dayMsg, setDayMsg] = useState('')
+  const copyDish = async (d: Dish, catId: Category['id']): Promise<string | null> => {
+    try {
+      await api('/api/dishes', 'POST', { name: d.name, price: d.price, category: /^\d+$/.test(String(catId)) ? Number(catId) : catId, tenant: restaurantId, visible: true })
+      await load()
+      return null
+    } catch (e) {
+      return e instanceof Error ? e.message : 'No se pudo copiar.'
+    }
+  }
+  // one tap: show only this category's dishes today (the typical comedor setup is one category per weekday)
+  const showOnly = async (cat: Category) => {
+    setDayMsg(`Armando el menú de ${cat.name}…`)
+    for (const d of dishes) {
+      const want = d.categoryId === cat.id
+      if (d.visible !== want) {
+        const err = await saveDish(d.id, { visible: want })
+        if (err) return setDayMsg(err)
+      }
+    }
+    setDayMsg(`Listo: hoy se muestra solo ${cat.name}. Tocá «Publicar menú de hoy».`)
+  }
+  const createWeek = async () => {
+    setDayMsg('Creando Lunes a Viernes…')
+    try {
+      const have = new Set(cats.map((c) => norm(c.name)))
+      for (const name of WEEK) if (!have.has(norm(name))) await api('/api/categories', 'POST', { name, tenant: restaurantId })
+      await load()
+      setDayMsg('Listo: ya tenés una categoría por día. Agregá los platos de cada día abajo.')
+    } catch (e) {
+      setDayMsg(e instanceof Error ? e.message : 'No se pudo crear las categorías.')
+    }
+  }
   const addDish = async () => {
     setAddErr('')
     if (newName.trim().length < 2) return setAddErr('Escribí el nombre del plato.')
@@ -255,11 +313,34 @@ export function MenuDelDiaClient(props: Props) {
             ))}
           </div>
 
+          <div className="mdd-card">
+            <strong>Menú por día</strong>
+            {cats.length > 1 ? (
+              <>
+                <span className="mdd-muted">Tocá un día para mostrar solo sus platos hoy. Después publicá.</span>
+                <div className="mdd-chips">
+                  {cats.map((c) => (
+                    <button key={String(c.id)} type="button" className={`mdd-chip${norm(c.name) === todayName() ? ' is-today' : ''}`} onClick={() => void showOnly(c)}>
+                      {c.name}
+                      {norm(c.name) === todayName() && <small>hoy</small>}
+                    </button>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <span className="mdd-muted">Si tu menú cambia por día, creá una categoría por día y alterná entre ellas con un toque.</span>
+            )}
+            {WEEK.some((w) => !cats.some((c) => norm(c.name) === norm(w))) && (
+              <div><button type="button" className="mdd-btn" onClick={createWeek}>Crear categorías de Lunes a Viernes</button></div>
+            )}
+            {dayMsg && <span role="status" className={dayMsg.startsWith('Listo') || dayMsg.endsWith('…') ? 'mdd-ok' : 'mdd-err'}>{dayMsg}</span>}
+          </div>
+
           {dishes.length === 0 && <p className="mdd-card">Todavía no cargaste platos. Agregá el primero acá abajo.</p>}
           {grouped.map((g) => (
             <section key={g.cat} aria-label={g.cat} style={{ display: 'grid', gap: 10 }}>
               <p className="mdd-cat">{g.cat}</p>
-              {g.list.map((d) => <DishRow key={d.id} dish={d} onSave={saveDish} />)}
+              {g.list.map((d) => <DishRow key={d.id} dish={d} cats={cats} onSave={saveDish} onCopy={copyDish} />)}
             </section>
           ))}
 

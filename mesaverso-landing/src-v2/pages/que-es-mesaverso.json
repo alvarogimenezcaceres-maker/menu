@@ -14,7 +14,7 @@
     },
     {
       "h2": "Datos clave de Mesaverso",
-      "html": "<ul><li><strong>Qué hace:</strong> menú digital con QR, pedidos por WhatsApp, pantalla de cocina, cuenta dividida y platos en 3D.</li><li><strong>Para quién:</strong> negocios gastronómicos con cocina o punto de venta propio: restaurantes, bares, lomiterías, cafeterías, hamburgueserías, pizzerías y parrillas, y también <a href=\"/para-comedores-y-viandas/\">comedores y viandas para empresas</a>, <a href=\"/para-catering-y-eventos/\">catering</a>, panaderías, food trucks, dark kitchens y <a href=\"/para-emprendimientos-gastronomicos/\">emprendimientos</a>.</li><li><strong>Dónde:</strong> Paraguay. Precios en guaraníes.</li><li><strong>Comisión:</strong> 0 % en los pedidos que llegan por el link o QR del local.</li><li><strong>Plan Gratis:</strong> hasta 11 productos, pedido básico por WhatsApp y marca «Hecho con Mesaverso» visible. <a href=\"/plan-gratis/\">Ver condiciones</a>.</li><li><strong>Pack 3D:</strong> platos en 3D, Gs. 120.000 por plato, aparte del plan.</li><li><strong>Plan mensual:</strong> Gs. 180.000 por mes, más una implementación de Gs. 300.000 que se paga una vez.</li><li><strong>Plan anual:</strong> Gs. 1.800.000 por año, con la implementación incluida.</li><li><strong>Para usarlo:</strong> un celular, una tablet o una computadora y conexión a internet. No hay aplicación que instalar.</li><li><strong>Mesaverso Caja:</strong> está en etapa de prueba, no emite factura y no cobra pagos online.</li></ul>"
+      "html": "<ul><li><strong>Qué hace:</strong> menú digital con QR, pedidos por WhatsApp, pantalla de cocina, cuenta dividida y platos en 3D.</li><li><strong>Para quién:</strong> negocios gastronómicos con cocina o punto de venta propio: restaurantes, bares, lomiterías, cafeterías, hamburgueserías, pizzerías y parrillas, y también <a href=\"/para-comedores-y-viandas/\">comedores y viandas para empresas</a>, <a href=\"/para-catering-y-eventos/\">catering</a>, panaderías, food trucks, dark kitchens y <a href=\"/para-emprendimientos-gastronomicos/\">emprendimientos</a>.</li><li><strong>Dónde:</strong> Paraguay. Precios en guaraníes.</li><li><strong>Comisión:</strong> 0 % en los pedidos que llegan por el link o QR del local.</li><li><strong>Plan Gratis:</strong> hasta 33 productos por lanzamiento, pedido básico por WhatsApp y marca «Hecho con Mesaverso» visible. <a href=\"/plan-gratis/\">Ver condiciones</a>.</li><li><strong>Pack 3D:</strong> platos en 3D, Gs. 120.000 por plato, aparte del plan.</li><li><strong>Plan mensual:</strong> Gs. 180.000 por mes, más una implementación de Gs. 300.000 que se paga una vez.</li><li><strong>Plan anual:</strong> Gs. 1.800.000 por año, con la implementación incluida.</li><li><strong>Para usarlo:</strong> un celular, una tablet o una computadora y conexión a internet. No hay aplicación que instalar.</li><li><strong>Mesaverso Caja:</strong> está en etapa de prueba, no emite factura y no cobra pagos online.</li></ul>"
     },
     {
       "h2": "Cómo funciona, en cuatro pasos",
@@ -48,7 +48,7 @@
     ],
     [
       "¿Cuánto cuesta Mesaverso?",
-      "Hay un plan Gratis con hasta 11 productos, un plan mensual de Gs. 180.000 más una implementación de Gs. 300.000 que se paga una vez, y un plan anual de Gs. 1.800.000 con la implementación incluida. Los platos en 3D se suman con el Pack 3D, a Gs. 120.000 por plato."
+      "Hay un plan Gratis con hasta 33 productos por lanzamiento, un plan mensual de Gs. 180.000 más una implementación de Gs. 300.000 que se paga una vez, y un plan anual de Gs. 1.800.000 con la implementación incluida. Los platos en 3D se suman con el Pack 3D, a Gs. 120.000 por plato."
     ],
     [
       "¿Mesaverso emite factura o cobra pagos online?",
@@ -61,6 +61,7 @@
   ],
   "cta": "Armá tu menú gratis",
   "revisar": [
+    "Tope de 33 productos por lanzamiento: confirmar la redacción con /terminos-gratis/.",
     "Quité «metaverso» (bullet, párrafo y FAQ) y la explicación del origen del nombre: evita confusión con marcas de terceros y afirmaciones sobre el nombre; el abogado debe confirmar el estado de registro de «Mesaverso» (los términos del sitio usan «Mesaverso™»).",
     "«operado desde Paraguay» viene de los términos del sitio; no se afirma nada sobre años, equipo, premios, alcance ni cantidad de locales.",
     "Datos y cookies: «estadísticas anónimas de menús sin cookies, IP ni nombres» viene de CLAUDE.md (analítica de menús); confirmar que la landing no usa cookies de seguimiento y que /privacidad/ coincide.",

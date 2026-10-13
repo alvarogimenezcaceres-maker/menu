@@ -19,7 +19,7 @@
   },
   {
    "h2": "Quién carga tu carta y cuánto cuesta empezar",
-   "html": "<p>En los planes pagos te ayudamos a armar tu menú con tus platos, precios y fotos: nos mandás tu carta en PDF o en fotos. En el plan Gratis la cargás vos desde el panel, hasta 11 productos.</p><p>El plan mensual cuesta Gs. 180.000 por mes, más una implementación de Gs. 300.000 que se paga una sola vez. El anual cuesta Gs. 1.800.000 e incluye la implementación. El Pack 3D es aparte: Gs. 120.000 por plato. Las condiciones completas están en la sección <a href=\"/#planes\">planes</a>.</p>"
+   "html": "<p>En los planes pagos te ayudamos a armar tu menú con tus platos, precios y fotos: nos mandás tu carta en PDF o en fotos. En el plan Gratis la cargás vos desde el panel, hasta 33 productos por lanzamiento.</p><p>El plan mensual cuesta Gs. 180.000 por mes, más una implementación de Gs. 300.000 que se paga una sola vez. El anual cuesta Gs. 1.800.000 e incluye la implementación. El Pack 3D es aparte: Gs. 120.000 por plato. Las condiciones completas están en la sección <a href=\"/#planes\">planes</a>.</p>"
   },
   {
    "h2": "Un ejemplo de carta: una lomitería de ejemplo (local ficticio)",
@@ -61,7 +61,7 @@
   ],
   [
    "¿Cuántos platos puedo cargar?",
-   "<p>En el plan Gratis hasta 11 productos. En los planes pagos te ayudamos a armar tu menú con todos tus platos, a partir de tu carta en PDF o en fotos.</p>"
+   "<p>En el plan Gratis, hasta 33 productos por lanzamiento. En los planes pagos te ayudamos a armar tu menú con todos tus platos, a partir de tu carta en PDF o en fotos.</p>"
   ],
   [
    "¿Puedo ofrecer tamaños y extras en un mismo plato?",
@@ -74,6 +74,7 @@
  ],
  "cta": "Quiero mi menú con QR",
  "revisar": [
+  "Tope de 33 productos por lanzamiento: confirmar la redacción con /terminos-gratis/.",
   "Confirmar con Itá cuánto tarda en verse un cambio de precio tras publicar (Publicar ahora copia a seed/ y puede haber demora); el texto dice solo «cuando publicás».",
   "QR por mesa: la página dice «QR del local en la mesa o el mostrador»; confirmar si existe QR por mesa en planes pagos (el Gratis no lo incluye).",
   "«agotado» se marca desde Mesaverso Caja (según el brief); confirmar si el buscador y la marca se ven en todos los planes.",

@@ -34,7 +34,7 @@
   },
   {
    "h2": "Empezar con el plan Gratis",
-   "html": "<p>El plan <a href='/plan-gratis/'>Gratis</a> admite hasta 11 productos, con al menos 8 con precio para publicar, pedido básico por WhatsApp y la marca «Hecho con Mesaverso». Para un catering chico alcanza para mostrar tus paquetes estrella: tres bandejas, dos menús cerrados, una mesa dulce y un par de bebidas. Está pensado para negocios gastronómicos con cocina o punto de venta propio, como un catering: revisá las condiciones en los <a href='/terminos-gratis/'>términos del plan Gratis</a>. Si tu carta necesita más productos, los planes pagos están en <a href='/#planes'>la sección de planes</a>.</p>"
+   "html": "<p>El plan <a href='/plan-gratis/'>Gratis</a> admite hasta 33 productos por lanzamiento, con al menos 8 con precio para publicar, pedido básico por WhatsApp y la marca «Hecho con Mesaverso». Un catering puede mostrar todos sus paquetes: bandejas, menús cerrados, mesas dulces y bebidas. Está pensado para negocios gastronómicos con cocina o punto de venta propio, como un catering: revisá las condiciones en los <a href='/terminos-gratis/'>términos del plan Gratis</a>. Si tu carta necesita más productos, los planes pagos están en <a href='/#planes'>la sección de planes</a>.</p>"
   }
  ],
  "faq": [
@@ -61,6 +61,7 @@
  ],
  "cta": "Armá tu menú de catering",
  "revisar": [
+  "Tope de 33 productos por lanzamiento: confirmar la redacción con /terminos-gratis/.",
   "Precios y paquetes son ejemplo de un servicio ficticio, rotulados «ejemplo».",
   "Opciones del plato (elección obligatoria, tamaño, extras) y nota por línea: confirmados.",
   "Sin agenda de fechas, sin cobros online ni facturación: confirmado con la lista de límites del producto.",

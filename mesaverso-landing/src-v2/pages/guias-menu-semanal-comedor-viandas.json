@@ -21,8 +21,8 @@
    "html": "<p>Una rotación escrita evita que cocines lo mismo dos veces seguidas sin darte cuenta, y le da al cliente algo para anticipar.</p><p><strong>Ejemplo</strong> (ficticio) de rotación de cuatro semanas:</p><ol><li>Semana 1: lunes milanesa, martes puchero, miércoles arroz con pollo, jueves bife a caballo, viernes locro.</li><li>Semana 2: lunes arroz con pollo, martes milanesa, miércoles locro, jueves puchero, viernes bife a caballo.</li><li>Semanas 3 y 4: seguí moviendo cada plato un día.</li></ol><p>Anotá la rotación en una hoja y pegala en la cocina. Cuando un plato no se vende bien, lo reemplazás en el ciclo siguiente, no a mitad de semana.</p>"
   },
   {
-   "h2": "Elegí bien tus 11 productos del plan Gratis",
-   "html": "<p>El <a href=\"/plan-gratis/\">plan Gratis de Mesaverso</a> permite hasta 11 productos, con mínimo 8 con precio. Para un comedor eso obliga a pensar qué mostrar. Una propuesta:</p><ul><li><strong>5 platos del día</strong>, uno por día de la semana, con foto y precio.</li><li><strong>2 o 3 guarniciones o extras</strong> (ensalada, sopa paraguaya, postre).</li><li><strong>2 o 3 bebidas</strong>, como gaseosa, jugo o agua, con el tereré aparte si lo ofrecés.</li></ul><p>Los platos del día pueden cambiar cada semana editando el producto: no hace falta crear uno nuevo. Si tenés más variedad de la que entra, priorizá lo que más se pide y dejá el resto para comunicarlo por otro lado.</p>"
+   "h2": "Cómo ordenar hasta 33 productos del plan Gratis",
+   "html": "<p>El <a href=\"/plan-gratis/\">plan Gratis de Mesaverso</a> permite hasta 33 productos por lanzamiento, con mínimo 8 con precio. Para un comedor alcanza para cargar la carta de varios días: ordenala por categorías. Una propuesta:</p><ul><li><strong>Una categoría por día</strong>, de lunes a viernes, con 4 a 5 platos cada una, con foto y precio (de 20 a 25 productos).</li><li><strong>3 o 4 guarniciones o extras</strong> (ensalada, sopa paraguaya, postre).</li><li><strong>3 o 4 bebidas</strong>, como gaseosa, jugo o agua, con el tereré aparte si lo ofrecés.</li></ul><p>Los platos de cada día pueden cambiar cada semana editando el producto: no hace falta crear uno nuevo. Si tenés más variedad de la que entra, priorizá lo que más se pide y dejá el resto para comunicarlo por otro lado.</p>"
   },
   {
    "h2": "Platos con opciones en lugar de más platos",
@@ -47,8 +47,8 @@
    "<p>Para un menú que rota, una categoría por día es más clara. Si ofrecés lo mismo todos los días, una carta única alcanza.</p>"
   ],
   [
-   "¿Qué hago si tengo más de 11 platos?",
-   "<p>En el plan Gratis el tope es de 11 productos. Priorizá lo que más se pide y usá las opciones de plato para cubrir variaciones sin sumar productos.</p>"
+   "¿Qué hago si tengo más de 33 platos?",
+   "<p>En el plan Gratis el tope es de 33 productos por lanzamiento. Priorizá lo que más se pide y usá las opciones de plato para cubrir variaciones sin sumar productos.</p>"
   ],
   [
    "¿Los clientes pueden pedir con una nota?",
@@ -61,8 +61,9 @@
  ],
  "cta": "Armá tu menú semanal",
  "revisar": [
+  "Tope de 33 productos por lanzamiento: confirmar la redacción con /terminos-gratis/.",
   "Ejemplos de descripción y de rotación rotulados como ficticios.",
-  "Plan Gratis: hasta 11 productos, mínimo 8 con precio; distribución de 11 productos es una sugerencia, no una regla del producto.",
+  "Plan Gratis: hasta 33 productos por lanzamiento, mínimo 8 con precio; distribución de 33 productos es una sugerencia, no una regla del producto.",
   "Categorías con descripción, opciones de plato y nota por línea: funciones existentes del menú.",
   "Sin avisos automáticos, sin pedidos recurrentes: aclarado.",
   "0 % de comisión solo en pedidos por link o QR.",

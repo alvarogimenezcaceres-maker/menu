@@ -38,11 +38,11 @@
   },
   {
    "h2": "El plan Gratis, usado a fondo",
-   "html": "<p>El plan <a href='/plan-gratis/'>Gratis</a> admite hasta 11 productos, con al menos 8 con precio para publicar, pedido básico por WhatsApp y la marca «Hecho con Mesaverso». Para un comedor, 11 productos pueden alcanzar para empezar. Una forma de repartirlos:</p><ul><li><strong>5 platos principales:</strong> uno por día, de lunes a viernes.</li><li><strong>1 postre:</strong> el mismo toda la semana, o uno que rote.</li><li><strong>1 bebida:</strong> jugo o gaseosa de la casa.</li><li><strong>4 más a elección:</strong> una sopa, una ensalada, una opción vegetariana y un extra como pan o chipa.</li></ul><p>Cada semana podés editar el plato de cada día por el siguiente, así el menú se mantiene al día sin pasar el límite. La primera publicación se revisa antes de salir y el plan es para negocios gastronómicos con cocina o punto de venta propio, como un comedor o un servicio de viandas; las condiciones están en los <a href='/terminos-gratis/'>términos del plan Gratis</a>.</p>"
+   "html": "<p>El plan <a href='/plan-gratis/'>Gratis</a> admite hasta 33 productos por lanzamiento, con al menos 8 con precio para publicar, pedido básico por WhatsApp y la marca «Hecho con Mesaverso». Para un comedor, 33 productos alcanzan para cargar la carta de varios días. Una forma de repartirlos:</p><ul><li><strong>25 platos principales:</strong> una categoría por día, de lunes a viernes, con 5 platos cada una.</li><li><strong>3 postres:</strong> los de la semana, o los que rotan.</li><li><strong>3 bebidas:</strong> jugo, gaseosa o agua.</li><li><strong>2 extras:</strong> por ejemplo pan o chipa.</li></ul><p>Cada semana podés editar los platos de cada día por los siguientes, así el menú se mantiene al día sin pasar el límite. La primera publicación se revisa antes de salir y el plan es para negocios gastronómicos con cocina o punto de venta propio, como un comedor o un servicio de viandas; las condiciones están en los <a href='/terminos-gratis/'>términos del plan Gratis</a>.</p>"
   },
   {
    "h2": "Cuándo conviene pasar a un plan pago",
-   "html": "<p>Conviene mirar un plan pago cuando necesitás más de 11 productos, cuando querés marcar platos agotados, usar la pantalla de cocina y la comanda de Caja, o cuando el pedido por WhatsApp necesita más datos. Los planes y sus precios están en <a href='/#planes'>la sección de planes</a>.</p>"
+   "html": "<p>Conviene mirar un plan pago cuando necesitás más de 33 productos, cuando querés marcar platos agotados, usar la pantalla de cocina y la comanda de Caja, o cuando el pedido por WhatsApp necesita más datos. Los planes y sus precios están en <a href='/#planes'>la sección de planes</a>.</p>"
   }
  ],
  "faq": [
@@ -64,7 +64,7 @@
   ],
   [
    "¿Alcanza el plan Gratis para un comedor?",
-   "<p>Para empezar, sí: 5 platos principales, un postre, una bebida y cuatro productos más suman 11. Si necesitás más productos o Caja, hay planes pagos.</p>"
+   "<p>Para empezar, sí: hasta 33 productos por lanzamiento alcanzan para una categoría por día con 4 a 6 platos cada una, más bebidas y postres. Si necesitás más productos o Caja, hay planes pagos.</p>"
   ],
   [
    "¿Hay comisión por los pedidos de las empresas?",
@@ -73,11 +73,12 @@
  ],
  "cta": "Armá tu menú gratis",
  "revisar": [
+  "Tope de 33 productos por lanzamiento: confirmar la redacción con /terminos-gratis/.",
   "Precios y platos son ejemplo de un comedor ficticio, rotulados «ejemplo».",
   "Descripción de categoría visible bajo el título: confirmado; el horario límite es solo texto, sin corte automático.",
   "Nota por línea y cantidades en el pedido: validar que la cantidad y la nota llegan en el mensaje del plan Gratis.",
   "Agotado: solo desde Caja (en prueba, no incluida en Gratis).",
-  "Plan Gratis: 11 productos, mínimo 8 con precio; alcance «negocios gastronómicos con cocina o punto de venta propio» (cambio a G-1: ver [REVISIÓN ABOGADO] en plan-gratis.json). Poder editar los platos cada semana debe confirmarse con el panel.",
+  "Plan Gratis: 33 productos por lanzamiento, mínimo 8 con precio; alcance «negocios gastronómicos con cocina o punto de venta propio» (cambio a G-1: ver [REVISIÓN ABOGADO] en plan-gratis.json). Poder editar los platos cada semana debe confirmarse con el panel.",
   "Tributario y habilitaciones: no se afirma nada; se remite a contador y se aclara que las habilitaciones son del comedor. Condiciones de pago/pedido presentadas como decisión del comedor.",
   "Enlaces a las tres guías nuevas; confirmar que existan al publicar.",
   "Comisión: 0 % solo en pedidos por link o QR."

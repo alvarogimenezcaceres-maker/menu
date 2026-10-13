@@ -30,7 +30,7 @@
   },
   {
    "h2": "Empezar con el plan Gratis",
-   "html": "<p>El plan <a href='/plan-gratis/'>Gratis</a> admite hasta 11 productos, con al menos 8 con precio para publicar, pedido básico por WhatsApp y la marca «Hecho con Mesaverso». Un bar puede arrancar con sus cervezas más pedidas, un trago, dos picadas, una porción de papas y una gaseosa. Está pensado para negocios gastronómicos con cocina o punto de venta propio, como un bar o una cervecería, y la primera publicación se revisa antes de salir; las condiciones están en los <a href='/terminos-gratis/'>términos del plan Gratis</a>. Cuando la carta crezca o quieras Caja, mirá <a href='/#planes'>los planes</a>. Si tu bar también sirve hamburguesas o pizzas, mirá la página de <a href='/para-hamburgueserias-y-pizzerias/'>hamburgueserías y pizzerías</a>.</p>"
+   "html": "<p>El plan <a href='/plan-gratis/'>Gratis</a> admite hasta 33 productos por lanzamiento, con al menos 8 con precio para publicar, pedido básico por WhatsApp y la marca «Hecho con Mesaverso». Un bar puede cargar sus cervezas, varios tragos, picadas, porciones y gaseosas, ordenados por categorías. Está pensado para negocios gastronómicos con cocina o punto de venta propio, como un bar o una cervecería, y la primera publicación se revisa antes de salir; las condiciones están en los <a href='/terminos-gratis/'>términos del plan Gratis</a>. Cuando la carta crezca o quieras Caja, mirá <a href='/#planes'>los planes</a>. Si tu bar también sirve hamburguesas o pizzas, mirá la página de <a href='/para-hamburgueserias-y-pizzerias/'>hamburgueserías y pizzerías</a>.</p>"
   }
  ],
  "faq": [
@@ -57,6 +57,7 @@
  ],
  "cta": "Armá el menú de tu bar",
  "revisar": [
+  "Tope de 33 productos por lanzamiento: confirmar la redacción con /terminos-gratis/.",
   "Precios y productos son ejemplo de un bar ficticio, rotulados «ejemplo».",
   "Opciones del plato y nota por línea: confirmados.",
   "Hora feliz: solo texto; sin promociones por horario.",

@@ -34,7 +34,7 @@
   },
   {
    "h2": "Cómo empezar sin gastar de entrada",
-   "html": "<p>Podés probar con el plan <a href='/plan-gratis/'>Gratis</a>: hasta 11 productos (hace falta tener al menos 8 con precio para publicar), pedido básico por WhatsApp y la marca «Hecho con Mesaverso» visible. Para una parrilla puede alcanzar para mostrar tus cortes estrella, la picada y las bebidas principales. Si querés la carta completa, mirá los <a href='/#planes'>planes</a>. Las condiciones están en los <a href='/terminos-gratis/'>términos del plan Gratis</a>.</p>"
+   "html": "<p>Podés probar con el plan <a href='/plan-gratis/'>Gratis</a>: hasta 33 productos por lanzamiento (hace falta tener al menos 8 con precio para publicar), pedido básico por WhatsApp y la marca «Hecho con Mesaverso» visible. Para una parrilla puede alcanzar para cargar tus cortes, las picadas, las guarniciones, los postres y las bebidas. Si tu carta es más grande, mirá los <a href='/#planes'>planes</a>. Las condiciones están en los <a href='/terminos-gratis/'>términos del plan Gratis</a>.</p>"
   }
  ],
  "faq": [
@@ -57,10 +57,11 @@
  ],
  "cta": "Quiero el menú de mi parrilla",
  "revisar": [
+  "Tope de 33 productos por lanzamiento: confirmar la redacción con /terminos-gratis/.",
   "Precios y cortes son ejemplo de un local ficticio, rotulados «ejemplo».",
   "Opciones de elección y nota por línea (punto de cocción): confirmadas por producto; validar redacción final.",
   "«Agotado» se marca desde Caja, que está en etapa de prueba; si Caja cambia, ajustar.",
-  "Plan Gratis: confirmar que /terminos-gratis/ coincide con 11 productos, mínimo 8 con precio, marca visible.",
+  "Plan Gratis: confirmar que /terminos-gratis/ coincide con 33 productos por lanzamiento, mínimo 8 con precio, marca visible.",
   "Comisión: 0 % solo en pedidos por link o QR; validar con abogado o contador."
  ]
 }

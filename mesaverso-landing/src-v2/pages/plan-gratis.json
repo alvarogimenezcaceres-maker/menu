@@ -1,13 +1,13 @@
 {
  "slug": "plan-gratis",
  "title": "Menú digital gratis en Paraguay: plan Vidriera | Mesaverso",
- "description": "Plan Gratis «Vidriera»: menú con QR y link, hasta 11 productos y pedido por WhatsApp básico. Lleva el sello «Hecho con Mesaverso». Paraguay.",
+ "description": "Plan Gratis «Vidriera»: menú con QR y link, hasta 33 productos por lanzamiento y pedido por WhatsApp básico. Lleva el sello «Hecho con Mesaverso». Paraguay.",
  "h1": "Menú digital gratis para tu local: plan Vidriera",
  "lead": "Publicá tu menú con QR y link sin pagar un plan mensual. Es para negocios gastronómicos con cocina o punto de venta propio (restaurantes, comedores y viandas, catering, panaderías, food trucks y emprendimientos). Tiene condiciones: las resumimos acá y los términos completos los ves antes de crear tu cuenta.",
  "sections": [
   {
    "h2": "Qué incluye el plan Gratis «Vidriera»",
-   "html": "<ul><li>Menú con QR y link propio.</li><li>Hasta 11 productos, con fotos.</li><li>Buscador para encontrar platos.</li><li>Pedido por WhatsApp básico: llega con los productos y el total.</li></ul><p>Ideal para un local chico que quiere salir de la carta en PDF: una cafetería con el café con leche, la medialuna y el tostado, o una lomitería con lo mejor de su carta.</p>"
+   "html": "<ul><li>Menú con QR y link propio.</li><li>Por lanzamiento, hasta 33 productos, con fotos.</li><li>Buscador para encontrar platos.</li><li>Pedido por WhatsApp básico: llega con los productos y el total.</li></ul><p>Ideal para un local que quiere salir de la carta en PDF: una cafetería con su carta de desayunos y meriendas, o una lomitería con casi toda su carta.</p>"
   },
   {
    "h2": "Qué no incluye",
@@ -22,12 +22,12 @@
    "html": "<ol><li>Nos escribís por WhatsApp desde cualquiera de los botones del sitio.</li><li>Cargás tu carta desde el panel: para publicar necesitás al menos 8 productos con precio. Vos sos responsable de que los precios, descripciones y fotos que cargues sean correctos y tuyos (o que tengas permiso para usarlos).</li><li>Revisamos tu primera publicación antes de que salga, y podemos pedirte cambios o no publicarla si el contenido no es tuyo, es engañoso o viola los términos.</li></ol>"
   },
   {
-   "h2": "Un ejemplo de menú de 11 productos (cafetería ficticia)",
-   "html": "<p>Imaginá una cafetería inventada que publica lo esencial. Los precios son de <em>ejemplo</em>:</p><ul><li>Café con leche, Gs. 12.000 (ejemplo).</li><li>Medialuna, Gs. 6.000 (ejemplo).</li><li>Tostado de jamón y queso, Gs. 20.000 (ejemplo).</li><li>Jugo de naranja, Gs. 14.000 (ejemplo).</li><li>Tereré en jarra, Gs. 10.000 (ejemplo).</li></ul><p>Con cinco productos todavía no alcanza: para publicar se necesitan al menos 8 con precio. Con 11 llenás el tope del plan. Ese límite te lleva a elegir qué mostrar, y en una carta chica eso puede ayudar a destacar lo principal.</p>"
+   "h2": "Un ejemplo de carta con hasta 33 productos (cafetería ficticia)",
+   "html": "<p>Imaginá una cafetería inventada que publica su carta ordenada por categorías: bebidas calientes, bebidas frías, panificados, sándwiches y postres. Estos son solo cinco productos de esa carta. Los precios son de <em>ejemplo</em>:</p><ul><li>Café con leche, Gs. 12.000 (ejemplo).</li><li>Medialuna, Gs. 6.000 (ejemplo).</li><li>Tostado de jamón y queso, Gs. 20.000 (ejemplo).</li><li>Jugo de naranja, Gs. 14.000 (ejemplo).</li><li>Tereré en jarra, Gs. 10.000 (ejemplo).</li></ul><p>Con cinco productos todavía no alcanza: para publicar se necesitan al menos 8 con precio. Con hasta 33 podés cargar una carta completa de cafetería y ordenarla por categorías, con un tope pensado para que el menú se lea rápido en el celular.</p>"
   },
   {
    "h2": "Errores comunes al empezar con el plan Gratis",
-   "html": "<ul><li><strong>Querer subir toda la carta.</strong> El tope es de 11 productos; elegí los que más salen o los que querés destacar.</li><li><strong>Cargar fotos ajenas.</strong> Tienen que ser tuyas o con permiso.</li><li><strong>Esperar delivery con dirección o Mesaverso Caja.</strong> El plan Gratis lleva pedido básico, solo productos y total.</li><li><strong>No leer las condiciones.</strong> Mirá los <a href=\"/terminos-gratis/\">términos del plan Gratis</a> antes de crear la cuenta.</li><li><strong>Olvidarse de actualizar precios.</strong> Es tu menú y es público: un precio viejo se ve igual que uno nuevo.</li></ul>"
+   "html": "<ul><li><strong>Pasarse del tope.</strong> El plan Gratis admite hasta 33 productos por lanzamiento; si tu carta es más larga, ordená por categorías y dejá afuera lo que casi no vendés.</li><li><strong>Cargar fotos ajenas.</strong> Tienen que ser tuyas o con permiso.</li><li><strong>Esperar delivery con dirección o Mesaverso Caja.</strong> El plan Gratis lleva pedido básico, solo productos y total.</li><li><strong>No leer las condiciones.</strong> Mirá los <a href=\"/terminos-gratis/\">términos del plan Gratis</a> antes de crear la cuenta.</li><li><strong>Olvidarse de actualizar precios.</strong> Es tu menú y es público: un precio viejo se ve igual que uno nuevo.</li></ul>"
   },
   {
    "h2": "Plan Gratis frente a un PDF, un álbum de fotos o la carta en papel",
@@ -35,7 +35,7 @@
   },
   {
    "h2": "A quién le sirve y a quién no",
-   "html": "<p>Le sirve a un negocio gastronómico con cocina o punto de venta propio, con o sin salón: un local chico, un comedor o servicio de viandas, un catering, una panadería, un food truck, una dark kitchen, un emprendimiento que recién arranca (incluso desde casa), una cafetería o lomitería que quiere salir del PDF, o quien quiere probar antes de pagar. Las habilitaciones y los trámites de tu actividad son tuyos: Mesaverso no los gestiona. Para ver ejemplos por rubro, mirá <a href=\"/para-comedores-y-viandas/\">comedores y viandas</a> o <a href=\"/para-emprendimientos-gastronomicos/\">emprendimientos</a>. Para conocer el menú completo, leé <a href=\"/menu-digital-qr/\">menú digital con QR</a>.</p><p>No te sirve si tenés más de 11 productos que querés mostrar, si necesitás delivery con dirección, Mesaverso Caja, 3D o quitar la marca. Para eso están los <a href=\"/#planes\">planes pagos</a>. Hay 0 % de comisión en los pedidos que llegan por tu link o QR.</p>"
+   "html": "<p>Le sirve a un negocio gastronómico con cocina o punto de venta propio, con o sin salón: un local chico, un comedor o servicio de viandas, un catering, una panadería, un food truck, una dark kitchen, un emprendimiento que recién arranca (incluso desde casa), una cafetería o lomitería que quiere salir del PDF, o quien quiere probar antes de pagar. Las habilitaciones y los trámites de tu actividad son tuyos: Mesaverso no los gestiona. Para ver ejemplos por rubro, mirá <a href=\"/para-comedores-y-viandas/\">comedores y viandas</a> o <a href=\"/para-emprendimientos-gastronomicos/\">emprendimientos</a>. Para conocer el menú completo, leé <a href=\"/menu-digital-qr/\">menú digital con QR</a>.</p><p>No te sirve si tenés más de 33 productos que querés mostrar, si necesitás delivery con dirección, Mesaverso Caja, 3D o quitar la marca. Para eso están los <a href=\"/#planes\">planes pagos</a>. Hay 0 % de comisión en los pedidos que llegan por tu link o QR.</p>"
   },
   {
    "h2": "Si después querés más",
@@ -45,7 +45,7 @@
  "faq": [
   [
    "¿Es realmente gratis?",
-   "<p>Sí, no pagás un plan mensual. Tiene condiciones: hasta 11 productos, la marca «Hecho con Mesaverso», el uso de los datos de tu negocio para mejorar el servicio y para estadísticas anónimas, y la revisión de tu primera publicación. Mirá la lista completa más arriba.</p>"
+   "<p>Sí, no pagás un plan mensual. Tiene condiciones: hasta 33 productos por lanzamiento, la marca «Hecho con Mesaverso», el uso de los datos de tu negocio para mejorar el servicio y para estadísticas anónimas, y la revisión de tu primera publicación. Mirá la lista completa más arriba.</p>"
   ],
   [
    "¿Usan los datos de mis clientes?",
@@ -57,7 +57,7 @@
   ],
   [
    "¿Cuántos productos mínimos necesito para publicar?",
-   "<p>Al menos 8 con precio, y hasta 11 como máximo en el plan Gratis.</p>"
+   "<p>Al menos 8 con precio, y hasta 33 como máximo en el plan Gratis, por lanzamiento.</p>"
   ],
   [
    "¿Puedo sacar la marca «Hecho con Mesaverso»?",
@@ -70,6 +70,7 @@
  ],
  "cta": "Solicitar mi menú gratis",
  "revisar": [
+  "Tope de 33 productos por lanzamiento: confirmar la redacción con /terminos-gratis/.",
   "Cláusula de datos y directorio del plan Gratis: la página solo resume /terminos-gratis/ y dice que prevalece el texto completo; el abogado debe verificar que el resumen coincida (estadísticas anónimas que se conservan tras la baja, baja en 7 días, directorio futuro, rol de responsable/encargado de datos de clientes, Ley 7593/2025).",
   "Quité «1 foto por producto», «QR por mesa», «soporte personal» y la marca de «agotado» del Gratis (no confirmados; «agotado» se maneja desde la Caja).",
   "Quité el formulario: el contacto es solo por WhatsApp; confirmar el flujo real de alta y de carga desde el panel.",

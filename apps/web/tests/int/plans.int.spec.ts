@@ -13,9 +13,9 @@ import {
 const free = limitsFor('free')
 
 describe('limitsFor', () => {
-  it('caps the Gratis plan at 11 dishes with no 3D and basic ordering', () => {
+  it('caps the Gratis plan at 33 dishes (launch offer) with no 3D and basic ordering', () => {
     expect(free.maxDishes).toBe(FREE_MAX_DISHES)
-    expect(FREE_MAX_DISHES).toBe(11)
+    expect(FREE_MAX_DISHES).toBe(33)
     expect(free.scan3d).toBe(false)
     expect(free.basicOrdering).toBe(true)
     expect(free.needsApproval).toBe(true)
@@ -49,7 +49,7 @@ describe('paraguayDay and publishesToday', () => {
 describe('publishBlock on the Gratis plan', () => {
   const ok = { limits: free, isAdmin: false, approved: true, published: 9, today: 0, hasLogo: true, hasWhatsapp: true }
 
-  it('lets an approved restaurant with 8 to 11 dishes publish', () => {
+  it('lets an approved restaurant with 8 to 33 dishes publish', () => {
     expect(publishBlock(ok)).toBeNull()
     expect(publishBlock({ ...ok, published: FREE_MIN_TO_PUBLISH })).toBeNull()
     expect(publishBlock({ ...ok, published: FREE_MAX_DISHES })).toBeNull()
@@ -79,10 +79,10 @@ describe('publishBlock on the Gratis plan', () => {
     expect(block?.message).toContain('al menos 8')
   })
 
-  it('refuses more than 11 published dishes', () => {
-    const block = publishBlock({ ...ok, published: 13 })
+  it('refuses more than 33 published dishes', () => {
+    const block = publishBlock({ ...ok, published: 35 })
     expect(block?.status).toBe(400)
-    expect(block?.message).toContain('13')
+    expect(block?.message).toContain('35')
   })
 
   it('stops after the daily publications', () => {
@@ -92,7 +92,7 @@ describe('publishBlock on the Gratis plan', () => {
 
   it('lets a platform admin skip approval and the daily limit, but not the dish count', () => {
     expect(publishBlock({ ...ok, isAdmin: true, approved: false, today: 99 })).toBeNull()
-    expect(publishBlock({ ...ok, isAdmin: true, published: 20 })?.status).toBe(400)
+    expect(publishBlock({ ...ok, isAdmin: true, published: 40 })?.status).toBe(400)
   })
 
   it('never blocks a restaurant without a plan', () => {

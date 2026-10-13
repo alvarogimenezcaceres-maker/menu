@@ -34,7 +34,7 @@
   },
   {
    "h2": "Empezar con el plan Gratis",
-   "html": "<p>El plan <a href='/plan-gratis/'>Gratis</a> admite hasta 11 productos, con al menos 8 con precio para publicar, pedido básico por WhatsApp y la marca «Hecho con Mesaverso» visible; es para negocios gastronómicos con cocina o punto de venta propio (restaurantes, comedores y viandas, catering, panaderías, food trucks y emprendimientos) y las condiciones están en los <a href='/terminos-gratis/'>términos del plan Gratis</a>. Para una lomitería con dos lomitos, una hamburguesa, papas y bebidas, puede alcanzar. Los precios de los planes pagos están en <a href='/#planes'>la sección de planes</a>.</p>"
+   "html": "<p>El plan <a href='/plan-gratis/'>Gratis</a> admite hasta 33 productos por lanzamiento, con al menos 8 con precio para publicar, pedido básico por WhatsApp y la marca «Hecho con Mesaverso» visible; es para negocios gastronómicos con cocina o punto de venta propio (restaurantes, comedores y viandas, catering, panaderías, food trucks y emprendimientos) y las condiciones están en los <a href='/terminos-gratis/'>términos del plan Gratis</a>. Una lomitería puede cargar sus lomitos, hamburguesas, papas, adicionales y bebidas, ordenados por categorías. Los precios de los planes pagos están en <a href='/#planes'>la sección de planes</a>.</p>"
   }
  ],
  "faq": [
@@ -57,6 +57,7 @@
  ],
  "cta": "Quiero el menú de mi lomitería",
  "revisar": [
+  "Tope de 33 productos por lanzamiento: confirmar la redacción con /terminos-gratis/.",
   "Precios y productos son ejemplo de un local ficticio, rotulados «ejemplo».",
   "Extras del plato y nota por línea: confirmados; validar que el extra suma precio según la configuración real.",
   "Comanda imprimible: impresora térmica opcional, sin marcas; Caja en etapa de prueba.",

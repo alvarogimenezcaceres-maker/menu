@@ -30,7 +30,7 @@
   },
   {
    "h2": "Empezar con el plan Gratis",
-   "html": "<p>El plan <a href='/plan-gratis/'>Gratis</a> admite hasta 11 productos, con al menos 8 con precio para publicar, pedido básico por WhatsApp y la marca «Hecho con Mesaverso». Si cargás los sabores como opciones del plato, no hace falta un producto por sabor, y 11 pueden alcanzar para: cuatro o cinco tamaños, una torta helada, un postre, una bebida y un par de extras. Está pensado para negocios gastronómicos con cocina o punto de venta propio, como una heladería, y la primera publicación se revisa antes de salir; las condiciones están en los <a href='/terminos-gratis/'>términos del plan Gratis</a>. Los planes pagos están en <a href='/#planes'>la sección de planes</a>.</p>"
+   "html": "<p>El plan <a href='/plan-gratis/'>Gratis</a> admite hasta 33 productos por lanzamiento, con al menos 8 con precio para publicar, pedido básico por WhatsApp y la marca «Hecho con Mesaverso». Con 33 podés tener un producto por sabor-base, además de cuatro o cinco tamaños, tortas heladas, postres, bebidas y extras; si preferís, cargá los sabores como opciones del plato y ahorrás lugar. Está pensado para negocios gastronómicos con cocina o punto de venta propio, como una heladería, y la primera publicación se revisa antes de salir; las condiciones están en los <a href='/terminos-gratis/'>términos del plan Gratis</a>. Los planes pagos están en <a href='/#planes'>la sección de planes</a>.</p>"
   }
  ],
  "faq": [
@@ -57,6 +57,7 @@
  ],
  "cta": "Armá el menú de tu heladería",
  "revisar": [
+  "Tope de 33 productos por lanzamiento: confirmar la redacción con /terminos-gratis/.",
   "Precios, sabores y productos son ejemplo de un local ficticio, rotulados «ejemplo».",
   "Sabores como elección obligatoria y toppings como extras: confirmar que el mismo producto admite varias elecciones y extras.",
   "Postres para eventos: antelación solo como texto; sin agenda ni cobros online.",
