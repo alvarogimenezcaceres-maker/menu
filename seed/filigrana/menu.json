@@ -15,7 +15,6 @@
     "tables": 20,
     "plan": "menu",
     "orderingMode": "whatsapp",
-    "reservations": true,
     "whatsapp": "0976 130 444",
     "cuisine": [
       "Pizza",
