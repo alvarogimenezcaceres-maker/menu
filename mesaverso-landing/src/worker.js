@@ -132,9 +132,12 @@ async function handleLead(request, env, url) {
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
-    // Google Search Console ownership file: answered here because the static assets layer redirects *.html and Google does not follow redirects
-    const gv = url.pathname.match(/^\/(google[0-9a-f]{8,32}\.html)$/);
-    if (gv) return new Response(`google-site-verification: ${gv[1]}`, { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=3600" } });
+    // Google Search Console ownership file: answered here because the static assets layer redirects *.html and Google does not follow redirects.
+    // Only the exact registered file exists; any other google*.html must be a real 404 (Google probes a random one to detect hacked sites).
+    if (/^\/google[0-9a-f]+\.html$/.test(url.pathname)) {
+      if (url.pathname === "/google33b12de65a1839f2.html") return new Response("google-site-verification: google33b12de65a1839f2.html", { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=3600" } });
+      return new Response("Not found", { status: 404, headers: { "content-type": "text/plain; charset=utf-8" } });
+    }
     if (url.pathname === "/api/lead") return handleLead(request, env, url);
     if (url.pathname.startsWith("/api/")) return json(404, { ok: false, error: "No encontrado." });
     return env.ASSETS.fetch(request);
