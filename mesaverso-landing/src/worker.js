@@ -75,7 +75,17 @@ async function sendEmail(env, lead, id) {
     .join("")}</table><p style="font-family:sans-serif"><a href="https://wa.me/${wa}">Escribirle por WhatsApp</a></p><p style="font-family:sans-serif;color:#999;font-size:12px">ID ${id}</p>`;
   const subject = `Demo Mesaverso: ${lead.business} (${lead.type})`;
   if (env.EMAIL) {
-    await env.EMAIL.send({ to: env.LEAD_TO_EMAIL, from: { email: env.LEAD_FROM_ADDRESS || "avisos@mesaverso.app", name: "Mesaverso" }, subject, text, html });
+    // Cloudflare Email Routing (free): the binding can only mail addresses verified in the Cloudflare dashboard (Email Routing → Destination addresses)
+    const from = env.LEAD_FROM_ADDRESS || "avisos@mesaverso.app";
+    const b64 = (str) => { let bin = ""; for (const b of new TextEncoder().encode(str)) bin += String.fromCharCode(b); return btoa(bin); };
+    const replyTo = /^[^\s@<>",;]+@[^\s@<>",;]+\.[^\s@<>",;]{2,}$/.test(lead.email || "") ? lead.email : "";
+    const raw = [
+      `From: Mesaverso <${from}>`, `To: ${env.LEAD_TO_EMAIL}`, ...(replyTo ? [`Reply-To: ${replyTo}`] : []),
+      `Subject: =?UTF-8?B?${b64(subject.slice(0, 60))}?=`, `Message-ID: <${crypto.randomUUID()}@mesaverso.app>`, `Date: ${new Date().toUTCString()}`,
+      "MIME-Version: 1.0", "Content-Type: text/plain; charset=UTF-8", "Content-Transfer-Encoding: base64", "", b64(text).replace(/.{1,76}/g, "$&\r\n"),
+    ].join("\r\n");
+    const { EmailMessage } = await import("cloudflare:email");
+    await env.EMAIL.send(new EmailMessage(from, env.LEAD_TO_EMAIL, raw));
     return "sent";
   }
   const res = await fetch("https://api.resend.com/emails", {
