@@ -1,4 +1,9 @@
 {
+  "$source": "Exportado desde el panel de administración",
+  "tenant": {
+    "name": "Frakar Gourmet",
+    "slug": "frakar"
+  },
   "restaurant": {
     "name": "Frakar Gourmet",
     "slug": "frakar",
@@ -8,7 +13,9 @@
     "default_locale": "es",
     "logo": "logo",
     "tables": 0,
+    "plan": "menu",
     "orderingMode": "whatsapp",
+    "headerCenter": true,
     "whatsapp": "0981 288 730",
     "cuisine": [
       "Hamburguesas",
@@ -21,8 +28,7 @@
       "primaryLight": "#FFD36B",
       "background": "#14100D",
       "accentWine": "#B3121F"
-    },
-    "headerCenter": true
+    }
   },
   "categories": [
     {
