@@ -359,6 +359,12 @@ function readyItems() {
   }
   return out.sort((a, b) => a.at - b.at);
 }
+// table rounds accepted and still cooking (the «En cocina» column of the board)
+function cookingItems() {
+  const out = [];
+  for (const o of orders.values()) if (o.kind === "table" && o.status === "open") for (const [r, k] of Object.entries(o.kitchen || {})) if (k.status === "pending") out.push({ ref: o.ref, table: o.table, round: +r, at: k.at, lines: o.lines.filter(l => l.round === +r) });
+  return out.sort((a, b) => a.at - b.at);
+}
 const pendingRounds = () => openTables().flatMap(t => (t.pending || []).map(p => ({ ...p, table: t.table, ref: t.ref })));
 const pSum = p => p.lines.reduce((s, l) => s + l.unit * l.n, 0);
 
@@ -551,6 +557,12 @@ function readyCard(k) {
     <ul class="items">${k.lines.map(l => `<li><b>${l.n}×</b><span>${esc(l.name)}${l.extras.length ? " · " + esc(l.extras.join(", ")) : ""}</span></li>`).join("")}</ul>
     <div class="acts"><button class="btn primary" data-act="served" data-ref="${k.ref}" data-round="${k.round}">${ic("check")}Entregado</button></div></article>`;
 }
+function cookCard(k) {
+  return `<article class="card" aria-label="Mesa ${k.table} en cocina">
+    <div class="row1"><span class="code">Mesa ${k.table} · ronda ${k.round + 1}</span><span class="st prep">${ic("flame")}En cocina</span><span class="ago">${ago(k.at)}</span></div>
+    <ul class="items">${k.lines.map(l => `<li><b>${l.n}×</b><span>${esc(l.name)}${l.extras.length ? " · " + esc(l.extras.join(", ")) : ""}${l.note ? ` · «${esc(l.note)}»` : ""}</span></li>`).join("")}</ul>
+    <div class="row1"><button class="link" data-tablen="${k.table}">Ver la mesa</button></div></article>`;
+}
 function roundCard(p) {
   return `<article class="card is-new" aria-label="Pedido de la mesa ${p.table}">
     <div class="row1"><span class="code">Mesa ${p.table}</span>${dinerChip(p.color)}<span class="ago">${ago(p.at)}</span></div>
@@ -568,8 +580,8 @@ function boardHtml() {
       <div class="chips" role="group" aria-label="Filtrar">${[["all", "Todos"], ["table", "Mesas"], ["wa", "WhatsApp"], ["manual", "A mano"], ["pay", "Por cobrar"]].map(([k, l]) => `<button class="chip" data-filter="${k}" aria-pressed="${filter === k}">${l}</button>`).join("")}</div>
       <span class="sp"></span><button class="btn" data-act="take">${ic("scan")}Tomar pedido de mesa</button><button class="btn primary" data-act="newOrder">${ic("plus")}Nuevo pedido</button></div>
     ${!catalog ? `<p class="banner">No encontré el menú publicado de este local: «Nuevo pedido» y «Agregar ítems» no funcionan hasta publicar desde el panel.</p>` : ""}
-    <div class="board">${cols.map(([t, f, i], ci) => { const c = list.filter(f), extra = ci === 0 ? rounds : [], served = ci === 2 && (filter === "all" || filter === "table") ? readyItems().filter(k => k.round != null) : [];
-      return `<section class="col" aria-label="${t}"><h2>${ic(i)}${t} <span class="n">${c.length + extra.length + served.length}</span></h2>${extra.map(roundCard).join("")}${served.map(readyCard).join("")}${c.map(card).join("") || (extra.length || served.length ? "" : `<p class="empty">Nada por acá.</p>`)}</section>`; }).join("")}</div>`;
+    <div class="board">${cols.map(([t, f, i], ci) => { const c = list.filter(f), extra = ci === 0 ? rounds : [], served = ci === 2 && (filter === "all" || filter === "table") ? readyItems().filter(k => k.round != null) : [], cooking = ci === 1 && (filter === "all" || filter === "table") ? cookingItems() : [];
+      return `<section class="col" aria-label="${t}"><h2>${ic(i)}${t} <span class="n">${c.length + extra.length + served.length + cooking.length}</span></h2>${extra.map(roundCard).join("")}${cooking.map(cookCard).join("")}${served.map(readyCard).join("")}${c.map(card).join("") || (extra.length || served.length || cooking.length ? "" : `<p class="empty">Nada por acá.</p>`)}</section>`; }).join("")}</div>`;
 }
 
 /* ---------- mesas ---------- */

@@ -265,6 +265,10 @@
   .mesabar .mb-t b { color: var(--amber); }
   .mesabar .mb-sum { font: 700 18px/1 var(--display); font-variant-numeric: tabular-nums; }
   .mesabar .mb-n { grid-column: 1; font-size: 13px; color: var(--muted); }
+  .mesabar .mb-prog { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin-top: 6px; }
+  .mesabar .mb-prog i { height: 3px; border-radius: 3px; background: var(--line); transition: background .5s; }
+  .mesabar .mb-prog i.on { background: var(--amber); }
+  .mesabar .mb-prog.done i.on { background: #4CC38A; }
   .mesabar .mb-chev { grid-row: 1 / span 2; grid-column: 3; font-size: 14px; color: var(--amber); transition: transform .2s; }
   .mesabar.open .mb-chev { transform: rotate(180deg); }
   .mesabar .mb-body { max-height: 40vh; overflow-y: auto; padding: 0 16px 12px; border-top: 1px solid var(--line); overscroll-behavior: contain; }
@@ -458,7 +462,7 @@
   <button type="button" id="openSel">Ver lista</button>
 </div>
 <section class="mesabar" id="mesabar" aria-label="Mi mesa" hidden>
-  <button type="button" class="mb-head" id="mbHead" aria-expanded="true"><span class="mb-t">Mesa <b id="mbTable"></b></span><span class="mb-sum" id="mbSum"></span><span class="mb-n" id="mbN"></span><span class="mb-chev" aria-hidden="true">▲</span></button>
+  <button type="button" class="mb-head" id="mbHead" aria-expanded="true"><span class="mb-t">Mesa <b id="mbTable"></b></span><span class="mb-sum" id="mbSum"></span><span class="mb-n" id="mbN"></span><span class="mb-chev" aria-hidden="true">▲</span><span class="mb-prog" id="mbProg" aria-hidden="true"><i></i><i></i><i></i><i></i></span></button>
   <div class="mb-body" id="mbBody"></div>
 </section>
 <div id="live" class="sr-only" aria-live="polite"></div>
@@ -1236,7 +1240,17 @@ function renderMesaBar() {
   const n = v.lines.reduce((a, l) => a + l.n, 0), wait = v.pending.reduce((a, p) => a + p.lines.reduce((b, l) => b + l.n, 0), 0);
   $("#mbTable").textContent = mesa.table;
   $("#mbSum").textContent = plain(v.total);
-  $("#mbN").textContent = `${n} ${n === 1 ? "producto" : "productos"}${wait ? " · " + wait + " esperando al mozo" : ""}${v.billRequested ? " · cuenta pedida" : ""}`;
+  // where the latest order is: sent → in the kitchen → ready → at the table (mine first, else the table's last round)
+  const rounds = [...new Set(v.lines.map(l => l.round))].sort((a, b) => a - b);
+  const mineR = rounds.filter(r => v.lines.some(l => l.round === r && l.diner === v.me));
+  const last = (mineR.length ? mineR : rounds).slice(-1)[0];
+  const st = v.rounds && last != null ? v.rounds[last] : null;
+  const stage = wait ? 1 : st === "served" ? 4 : st === "ready" ? 3 : st === "pending" ? 2 : 0;
+  const label = ["", "Esperando al mozo", "En cocina", "Listo, va para tu mesa", "En tu mesa · buen provecho"][stage];
+  $("#mbProg").classList.toggle("done", stage === 4);
+  $("#mbProg").querySelectorAll("i").forEach((el, i) => el.classList.toggle("on", i < stage));
+  $("#mbProg").parentElement.setAttribute("aria-label", `Mesa ${mesa.table}: ${label || "sin pedidos"}`);
+  $("#mbN").textContent = `${label ? label + " · " : ""}${n} ${n === 1 ? "producto" : "productos"}${wait && stage !== 1 ? " · " + wait + " esperando al mozo" : ""}${v.billRequested ? " · cuenta pedida" : ""}`;
   $("#mbHead").setAttribute("aria-expanded", String(mbOpen));
   bar.classList.toggle("open", mbOpen);
   const body = $("#mbBody");

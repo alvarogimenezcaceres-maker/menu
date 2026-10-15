@@ -144,6 +144,7 @@ export function dinerView(session, dinerId) {
     table: session.table, status: session.status, me: me ? me.color : null, colors: session.diners.map(d => d.color),
     lines: session.lines.map(line), total: orderTotal(session),
     pending: (session.pending || []).map(p => ({ id: p.id, color: p.color, mine: p.dinerId === dinerId, lines: p.lines.map(line), at: p.at })),
+    rounds: Object.fromEntries(Object.entries(session.kitchen || {}).map(([r, k]) => [r, k.status])),
     billRequested: !!session.bill, payMethod: session.payMethod || "", closedAt: session.closedAt || null,
     bill: session.bill ? { ...session.bill, parts: session.bill.parts.map(p => ({ ...p, paid: !!session.bill.paid[p.key], method: session.bill.paid[p.key] || "" })) } : null,
   };
