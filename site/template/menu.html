@@ -321,6 +321,14 @@
   .mesa-chip { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 14px 0 10px; border-radius: 999px; border: 1px solid var(--amber); background: rgba(237,157,21,.12); color: var(--text); font: 600 13px/1 var(--display); letter-spacing: .06em; text-transform: uppercase; cursor: pointer; }
   .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--c, var(--muted)); flex: none; box-shadow: 0 0 0 2px rgba(0,0,0,.35); }
   .mgroup { margin-top: 14px; }
+  .paidbox { padding: 14px; border: 1px solid rgba(76,195,138,.45); border-radius: 14px; background: rgba(76,195,138,.07); }
+  .paidbox textarea { width: 100%; min-height: 76px; padding: 12px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); font-size: 16px; resize: vertical; }
+  .paidbox label { display: block; margin: 12px 0 6px; font-size: 14px; color: #d6cfc4; }
+  .paidbox .ar-btn, .paidbox .sel-btn { margin-top: 12px; width: 100%; }
+  .stars { display: flex; gap: 6px; margin: 4px 0; }
+  .stars button { flex: 1; max-width: 56px; min-height: 48px; display: grid; place-items: center; border-radius: 12px; border: 1px solid var(--line); background: var(--raised); color: #6f695f; cursor: pointer; }
+  .stars button svg { width: 28px; height: 28px; }
+  .stars button.on { color: var(--amber); border-color: rgba(255,185,67,.55); background: rgba(237,157,21,.1); }
   .mgroup h3 { display: flex; align-items: center; gap: 8px; margin: 0 0 4px; font: 700 15px/1.2 var(--display); }
   .mgroup h3 .sum { margin-left: auto; font-variant-numeric: tabular-nums; }
   .mgroup ul { list-style: none; margin: 0; padding: 0; }
@@ -1177,8 +1185,15 @@ const colorDot = c => `<span class="dot" style="--c:${(COLORS[c] || [0, "#8a847b
 let mesa = null, mesaView = null, mesaQr = "", mesaWs = null, mesaTries = 0, mesaTimer = 0, myPending = new Set();
 try { mesa = JSON.parse(localStorage.getItem(MESA_KEY) || "null"); } catch (e) { mesa = null; }
 const mesaSheet = $("#mesaSheet");
+const DONE_KEY = "mesaFinal:" + location.pathname, DONE_MS = 12 * 3600000;
+let mesaDone = null, doneDraft = { stars: 0, comment: "" }; // the last paid account, kept on this phone to review it and download the ticket
+try { mesaDone = JSON.parse(localStorage.getItem(DONE_KEY) || "null"); if (mesaDone && Date.now() - mesaDone.at > DONE_MS) mesaDone = null; } catch (e) { mesaDone = null; }
+const saveDone = () => { try { mesaDone ? localStorage.setItem(DONE_KEY, JSON.stringify(mesaDone)) : localStorage.removeItem(DONE_KEY); } catch (e) {} };
+const opinionKey = t => "opinion:" + SLUG + ":" + String(t || "").slice(0, 12);
+const opinionSent = t => { try { return +localStorage.getItem(opinionKey(t)) || 0; } catch (e) { return 0; } };
 function setMesa(m) {
   mesa = m;
+  if (m && mesaDone) { mesaDone = null; saveDone(); }
   try { m ? localStorage.setItem(MESA_KEY, JSON.stringify(m)) : localStorage.removeItem(MESA_KEY); } catch (e) {}
   renderMesaChip();
   if (m) connectMesa(); else { clearTimeout(mesaTimer); if (mesaWs) { mesaWs.onclose = null; mesaWs.close(); mesaWs = null; } }
@@ -1186,7 +1201,8 @@ function setMesa(m) {
 }
 function renderMesaChip() {
   const chip = $("#mesaChip");
-  chip.hidden = !mesa;
+  chip.hidden = !mesa && !mesaDone;
+  if (!mesa && mesaDone) chip.innerHTML = `${STAR}Mesa ${esc(mesaDone.view.table)} · tu ticket`;
   if (mesa) chip.innerHTML = `${colorDot(mesaView?.me)}Mesa ${esc(mesa.table)}${mesaView?.me ? " · " + colorName(mesaView.me) : ""}`;
   if (mesa) $("#tableChip").hidden = true;
 }
@@ -1206,9 +1222,66 @@ function applyMesaView(view, qr) {
   renderMesaChip();
   if (!mesaSheet.hidden) { if (splitDraft) renderSplit(); else renderMesa(); }
 }
-function mesaClosed() {
+function mesaClosed(view) {
+  const token = (mesa && mesa.token) || (mesaDone && mesaDone.token) || "";
+  const v = view || (mesaDone && mesaDone.view);
   setMesa(null); mesaView = null;
+  // paid: the diner gets the stars, the comment box and their ticket right away
+  if (v && v.status === "paid" && token) {
+    mesaDone = { view: v, token, at: Date.now() }; saveDone(); renderMesaChip();
+    if (mesaSheet.hidden) openMesa(); else renderDone();
+    return;
+  }
   if (!mesaSheet.hidden) { $("#mesaBody").innerHTML = `<p class="sel-hint">La mesa se cerró. ¡Gracias por venir!</p>${reviewLink("block")}`; }
+}
+const myPart = v => (v.bill && v.me ? v.bill.parts.find(p => p.color === v.me && p.paid) || null : null);
+function paidBox(token) {
+  const sent = opinionSent(token), st = doneDraft.stars;
+  return `<div class="mgroup paidbox"><h3>Pagado ✓</h3>
+    <p class="sel-hint" style="margin:6px 0 0">¡Gracias por venir a ${esc(RESTAURANT)}!</p>
+    ${sent ? `<p class="sel-hint">¡Gracias por tu opinión! ${"★".repeat(sent)}${"☆".repeat(5 - sent)}</p>` : `
+    <span class="block-label">¿Cómo la pasaste?</span>
+    <div class="stars" role="radiogroup" aria-label="Calificación de 1 a 5 estrellas">${[1, 2, 3, 4, 5].map(n => `<button type="button" role="radio" aria-checked="${st === n}" aria-label="${n} ${n === 1 ? "estrella" : "estrellas"}" data-star="${n}" class="${n <= st ? "on" : ""}">${STAR}</button>`).join("")}</div>
+    <label for="opComment">Comentario sobre el lugar (opcional)</label>
+    <textarea id="opComment" maxlength="300" placeholder="Contanos qué te pareció">${esc(doneDraft.comment)}</textarea>
+    <p class="split-err" id="opMsg" role="alert" hidden></p>
+    <button class="ar-btn" type="button" id="opSend">Enviar mi opinión</button>
+    <p class="help" style="margin:8px 0 0">Tu opinión no lleva tu nombre.</p>`}
+    <button class="sel-btn" type="button" id="ticketPdf">Descargar mi ticket (PDF)</button>
+    <p class="help" style="margin:8px 0 0">El ticket no tiene valor fiscal: es solo tu comprobante de lo consumido. Pedí tu factura en el local.</p>
+    ${reviewLink("block")}</div>`;
+}
+function renderDone() {
+  $("#mesaTitle").textContent = `Mesa ${mesaDone.view.table} · pagada`;
+  $("#mesaBody").innerHTML = paidBox(mesaDone.token) + `<button class="sel-clear" type="button" id="doneClose">Cerrar</button>`;
+}
+async function sendOpinion() {
+  const msg = $("#opMsg"), token = (mesa && mesa.token) || (mesaDone && mesaDone.token);
+  const fail = t => { msg.textContent = t; msg.hidden = false; };
+  if (!doneDraft.stars) { fail("Elegí cuántas estrellas le das."); return; }
+  const btn = $("#opSend"); btn.disabled = true;
+  try {
+    const res = await fetch(`/api/${SLUG}/mesa/opinion`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ token, diner: dinerId(), stars: doneDraft.stars, comment: doneDraft.comment }) });
+    const r = await res.json().catch(() => ({}));
+    if (!res.ok) { btn.disabled = false; fail(r.error || "No se pudo enviar. Probá de nuevo."); return; }
+    try { localStorage.setItem(opinionKey(token), String(doneDraft.stars)); } catch (e) {}
+    live.textContent = "Gracias por tu opinión.";
+    doneDraft = { stars: 0, comment: "" };
+    mesaDone && !mesa ? renderDone() : renderMesa();
+  } catch (e) { btn.disabled = false; fail("Sin conexión. Probá de nuevo."); }
+}
+let ticketLoading = null;
+const loadTicket = () => window.Ticket ? Promise.resolve() : ticketLoading || (ticketLoading = new Promise((ok, no) => {
+  const sc = document.createElement("script"); sc.src = "/" + SLUG + "/ticket.js"; sc.onload = ok; sc.onerror = () => { ticketLoading = null; no(); }; document.head.appendChild(sc);
+}));
+async function downloadTicket() {
+  const v = mesa ? mesaView : mesaDone && mesaDone.view;
+  if (!v) return;
+  try { await loadTicket(); } catch (e) { alert("No pude preparar el ticket. Probá de nuevo con conexión."); return; }
+  const bytes = Ticket.pdf(Ticket.ticketComensal(v, { restaurant: RESTAURANT, part: myPart(v), at: v.closedAt || Date.now() }));
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([bytes], { type: "application/pdf" })); a.download = `ticket-mesa-${v.table}.pdf`;
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
 }
 function connectMesa() {
   if (!mesa || (mesaWs && mesaWs.readyState <= 1)) return;
@@ -1217,14 +1290,14 @@ function connectMesa() {
   try { mesaWs = new WebSocket(`${proto}//${location.host}/api/${SLUG}/mesa/ws?t=${encodeURIComponent(mesa.token)}&d=${encodeURIComponent(dinerId())}`); }
   catch (e) { return; }
   mesaWs.onopen = () => { mesaTries = 0; refreshMesa(); };
-  mesaWs.onmessage = e => { if (e.data === "pong") return; try { const m = JSON.parse(e.data); if (m.t === "mesa") { if (m.view.status !== "open") mesaClosed(); else applyMesaView(m.view); } } catch (err) {} };
+  mesaWs.onmessage = e => { if (e.data === "pong") return; try { const m = JSON.parse(e.data); if (m.t === "mesa") { if (m.view.status !== "open") mesaClosed(m.view); else applyMesaView(m.view); } } catch (err) {} };
   mesaWs.onclose = e => { mesaWs = null; if (e.code === 4000) { mesaClosed(); return; } if (mesa && document.visibilityState === "visible") mesaTimer = setTimeout(connectMesa, Math.min(30000, 1000 * 2 ** mesaTries++)); };
 }
 async function refreshMesa() {
   if (!mesa) return;
   try {
     const r = await (await fetch(`/api/${SLUG}/mesa/cuenta?t=${encodeURIComponent(mesa.token)}&d=${encodeURIComponent(dinerId())}`)).json();
-    if (r.closed) mesaClosed(); else applyMesaView(r.view, r.qr);
+    if (r.closed) mesaClosed(r.view); else applyMesaView(r.view, r.qr);
   } catch (e) {}
 }
 document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && mesa) connectMesa(); });
@@ -1254,6 +1327,7 @@ async function orderToTable() {
   finally { if (btn) btn.disabled = false; }
 }
 function renderMesa() {
+  if (!mesa && mesaDone) { renderDone(); return; }
   const v = mesaView, body = $("#mesaBody");
   $("#mesaTitle").textContent = mesa ? `Mesa ${mesa.table}` : "Mi mesa";
   if (!v) { body.innerHTML = `<p class="sel-hint">Cargando la cuenta…</p>`; return; }
@@ -1282,8 +1356,8 @@ function billSummary(v) {
   return `<div class="mgroup"><h3>Cuenta pedida · ${how}<span class="sum">${plain(b.grand)}</span></h3>
     <p class="sel-hint" style="margin:6px 0 0">El mozo ya sabe que pidieron la cuenta. Cada uno paga su parte (efectivo, tarjeta, transferencia o QR).</p>
     ${partsHtml(b.parts, v, true)}
-    ${reviewLink("block")}
-    <button class="sel-clear" type="button" id="splitOpen">Cambiar la división</button></div>`;
+    ${myPart(v) ? "" : reviewLink("block")}
+    <button class="sel-clear" type="button" id="splitOpen">Cambiar la división</button></div>${myPart(v) ? paidBox(mesa.token) : ""}`;
 }
 
 /* ---------- dividir la cuenta (el cálculo es OrderCore.splitBill, el mismo que usa el Worker) ---------- */
@@ -1349,8 +1423,13 @@ $("#mesaChip").addEventListener("click", openMesa);{{RESERVE_JS}}
 swipeToClose(mesaSheet, closeMesa);
 scrim.addEventListener("click", () => { if (!mesaSheet.hidden) closeMesa(); });
 addEventListener("keydown", e => { if (e.key === "Escape" && !mesaSheet.hidden) closeMesa(); });
+mesaSheet.addEventListener("input", e => { if (e.target.id === "opComment") doneDraft.comment = e.target.value; });
 mesaSheet.addEventListener("click", e => {
   const b = e.target.closest("button");
+  if (b && b.dataset.star) { doneDraft.stars = +b.dataset.star; mesa ? renderMesa() : renderDone(); const again = mesaSheet.querySelector(`[data-star="${doneDraft.stars}"]`); if (again) again.focus({ preventScroll: true }); return; }
+  if (b && b.id === "opSend") { sendOpinion(); return; }
+  if (b && b.id === "ticketPdf") { downloadTicket(); return; }
+  if (b && b.id === "doneClose") { closeMesa(); return; }
   if (b && splitDraft) {
     const d = splitDraft, v = mesaView;
     if (b.dataset.mode) { d.mode = b.dataset.mode; renderSplit(); return; }
@@ -1380,7 +1459,7 @@ mesaSheet.addEventListener("change", e => {
 {
   const token = params.get("unirse");
   if (token) { history.replaceState(null, "", location.pathname); joinMesa(token); }
-  else if (mesa) { renderMesaChip(); connectMesa(); }
+  else if (mesa) { renderMesaChip(); connectMesa(); } else if (mesaDone) renderMesaChip();
 }
 
 /* «Agotado hoy» marked from the caja: greyed out here and refused by the caja if someone tries anyway */

@@ -194,6 +194,8 @@ async function buildRestaurant(slug, templates) {
     ...Object.fromEntries(FREE_KEYS.map(k => [k, (free || (basic && !BRAND_KEYS.has(k))) ? freeParts(slug)[k] : ""])),
   }));
 
+  // the diner downloads their ticket PDF after paying: the PDF writer loads on demand, only for menus with the caja
+  if (!basic) await writeFile(path.join(out, "ticket.js"), TICKET_CORE);
   // Mesaverso Caja: the catalog the Worker prices orders with (public data: the same as the menu) and the staff page
   await writeFile(path.join(out, "catalog.json"), JSON.stringify({ name: r.name, ordering: r.ordering || {}, tables: r.tables || 20, categories: menu.categories }));
   await mkdir(path.join(out, "caja"), { recursive: true });

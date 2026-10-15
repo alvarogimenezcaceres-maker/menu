@@ -89,6 +89,27 @@ const Ticket = (() => {
     return [...out, ...footer()];
   }
 
+  // The diner's own copy, downloaded from their phone after paying: the whole table, or just their part of a split
+  // bill. `v` is the diner view the Worker sends (no names, no phones). It is never an invoice, and says so twice.
+  function ticketComensal(v, { restaurant, part, at } = {}) {
+    const warn = () => L("NO TIENE VALOR FISCAL", { bold: true, center: true });
+    const out = [L(restaurant || "", { bold: true, center: true }), L("TICKET DE CONSUMICION", { bold: true, center: true }), L(`MESA ${v.table}`, { big: true, center: true }), L(hhmm(at || v.closedAt || Date.now()), { center: true }), warn(), rule()];
+    if (part) {
+      out.push(L(part.color ? COLOR[part.color] || part.color : "Persona " + part.key.slice(1), { bold: true }));
+      for (const i of part.items || []) out.push(...twoCols(`${i.n}x ${i.name}${i.shared > 1 ? ` (1/${i.shared})` : ""}`, gs(i.amount)));
+      out.push(rule(), ...twoCols("Consumo", gs(part.amount)));
+      if (part.tip) out.push(...twoCols("Propina", gs(part.tip)));
+      out.push(...twoCols("TOTAL", gs(part.pay)).map(x => ({ ...x, bold: true })));
+      const m = part.method || v.payMethod;
+      if (m) out.push(L("Pago: " + (PAY[m] || m)));
+    } else {
+      v.lines.forEach(l => out.push(...priced(l)));
+      out.push(rule(), ...twoCols("TOTAL", gs(v.lines.reduce((a, l) => a + l.unit * l.n, 0))).map(x => ({ ...x, bold: true })));
+      if (v.payMethod) out.push(L("Pago: " + (PAY[v.payMethod] || v.payMethod)));
+    }
+    return [...out, rule(), warn(), L("Comprobante de lo consumido.", { center: true }), L("Pedí tu factura en el local.", { center: true }), L("Mesaverso", { center: true })];
+  }
+
   // End of shift: sales by payment method, tips apart, cancellations and what was still pending.
   function resumen(sum, { restaurant, openedBy, closedBy } = {}) {
     const out = [L(restaurant || "", { bold: true, center: true }), L("CIERRE DE TURNO", { bold: true, center: true }),
@@ -154,6 +175,6 @@ const Ticket = (() => {
   }
   const plainText = lines => lines.map(l => (l.center ? l.text.padStart(Math.floor((WIDTH + l.text.length) / 2)) : l.text)).join("\n");
 
-  return { WIDTH, wrap, comanda, precuenta, ticket, resumen, pdf, plainText };
+  return { WIDTH, wrap, comanda, precuenta, ticket, ticketComensal, resumen, pdf, plainText };
 })();
 globalThis.Ticket = Ticket;

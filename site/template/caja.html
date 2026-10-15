@@ -666,10 +666,10 @@ function kitchenHtml() {
 }
 
 /* ---------- caja: turno abierto, cierre y turnos anteriores (fase 4) ---------- */
-let shift = null, shifts = [];
+let shift = null, shifts = [], reviews = null;
 const PAYL = { ...C.PAYMENT_LABEL, tarjeta: "Tarjeta", mixto: "Varias" };
 async function loadShift() {
-  try { shift = await api("/op", { method: "POST", body: { op: "shift" } }); shifts = (await api("/op", { method: "POST", body: { op: "shifts" } })).shifts; }
+  try { shift = await api("/op", { method: "POST", body: { op: "shift" } }); shifts = (await api("/op", { method: "POST", body: { op: "shifts" } })).shifts; reviews = await api("/op", { method: "POST", body: { op: "opiniones" } }); }
   catch (e) { say(e.message, true); }
   if (view === "cash") renderMain();
 }
@@ -690,6 +690,8 @@ function cashHtml() {
       <tr><td><b>Total vendido</b></td><td style="text-align:right" class="num"><b>${gs(s.sales)}</b></td></tr></tbody></table>
     ${s.cancelled.length ? `<h2 style="font:700 16px/1 var(--display);margin:22px 0 10px">Cancelados (${s.cancelled.length})</h2>
       <table class="t"><tbody>${s.cancelled.map(c => `<tr><td>${esc(c.label)}</td><td>${esc(c.reason)}</td><td style="text-align:right" class="num">${gs(c.amount)}</td></tr>`).join("")}</tbody></table>` : ""}
+    <h2 style="font:700 16px/1 var(--display);margin:22px 0 10px">Opiniones de los clientes${reviews && reviews.count ? ` · ${reviews.average} de 5 (${reviews.count})` : ""}</h2>
+    <table class="t"><tbody>${reviews && reviews.opiniones.length ? reviews.opiniones.slice(0, 20).map(o => `<tr><td style="white-space:nowrap">${"★".repeat(o.stars)}${"☆".repeat(5 - o.stars)}</td><td>${esc(o.comment || "Sin comentario")}</td><td class="meta" style="text-align:right;white-space:nowrap">Mesa ${esc(o.mesa ?? "")} · ${esc(when(o.at))}</td></tr>`).join("") : `<tr><td class="meta">Cuando un cliente pague y deje su opinión, aparece acá (se borran a los 90 días).</td></tr>`}</tbody></table>
     <h2 style="font:700 16px/1 var(--display);margin:22px 0 10px">Turnos anteriores</h2>
     <table class="t"><tbody>${shifts.map(x => `<tr><td>${esc(when(x.start))} → ${esc(when(x.end))}</td><td>${esc(x.closedBy || "")}</td><td style="text-align:right" class="num">${gs(x.summary.sales)}</td>
       <td style="text-align:right;white-space:nowrap"><button class="btn ghost" data-act="shiftCsv" data-id="${x.id}">CSV</button> <button class="btn ghost" data-act="oldShiftPdf" data-id="${x.id}">PDF</button></td></tr>`).join("") || `<tr><td class="meta">Todavía no se cerró ningún turno.</td></tr>`}</tbody></table>`;

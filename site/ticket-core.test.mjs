@@ -90,3 +90,20 @@ test("the shift summary PDF lists methods, tips, cancellations and pending", () 
   assert.match(text, /Efectivo con Luis\s+Gs\. 114\.000/);
   for (const l of lines) if (!l.big) assert.ok(l.text.length <= T.WIDTH, `too long: «${l.text}»`);
 });
+
+test("the diner's ticket says it has no fiscal value, for the whole table and for one part", () => {
+  const v = { table: 7, payMethod: "tarjeta", closedAt: Date.UTC(2026, 9, 14, 23), lines: [{ n: 2, name: "Lomito completo", unit: 45000 }, { n: 1, name: "Tereré", unit: 8000 }] };
+  const whole = T.plainText(T.ticketComensal(v, { restaurant: "Filigrana" }));
+  assert.match(whole, /NO TIENE VALOR FISCAL/);
+  assert.match(whole, /TOTAL\s+Gs\. 98\.000/);
+  assert.match(whole, /Pago: Tarjeta/);
+  const part = { key: "azul", color: "azul", amount: 53000, tip: 0, pay: 53000, method: "qr", items: [{ n: 1, name: "Lomito completo", shared: 1, amount: 45000 }, { n: 1, name: "Tereré", shared: 1, amount: 8000 }] };
+  const mine = T.plainText(T.ticketComensal(v, { restaurant: "Filigrana", part }));
+  assert.match(mine, /Azul/);
+  assert.match(mine, /TOTAL\s+Gs\. 53\.000/);
+  assert.match(mine, /Pago: QR/);
+  assert.equal((mine.match(/NO TIENE VALOR FISCAL/g) || []).length, 2); // top and bottom
+  const lines = T.ticketComensal(v, { restaurant: "Filigrana" });
+  for (const l of lines) if (!l.big) assert.ok(l.text.length <= T.WIDTH, `too long: «${l.text}»`);
+  assert.ok(Buffer.from(T.pdf(lines)).toString("latin1").startsWith("%PDF-1.4"));
+});

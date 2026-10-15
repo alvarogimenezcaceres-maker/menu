@@ -22,6 +22,8 @@ const DAY = 86400000;
 const SESSION_MS = 16 * 3600000; // one long shift
 const LOCK_MS = 10 * 60000;
 const MAX_BODY = 32 * 1024;
+const REVIEW_MS = 12 * 3600000; // a paid table still shows its diners the final account (ticket and review) this long
+const OPINION_DAYS = 90; // reviews are deleted after this many days
 const DRAFT_MS = 30 * 60000; // a table order shown to the waiter waits this long
 
 // The QR a diner shows the waiter: it only carries a URL with the 4-letter code, so it stays small and easy to scan.
@@ -82,7 +84,8 @@ export class Caja {
       CREATE TABLE IF NOT EXISTS shifts (id INTEGER PRIMARY KEY AUTOINCREMENT, start INTEGER NOT NULL, end INTEGER NOT NULL, opened_by TEXT, closed_by TEXT, data TEXT NOT NULL);
       CREATE TABLE IF NOT EXISTS drafts (code TEXT PRIMARY KEY, created INTEGER NOT NULL, data TEXT NOT NULL);
       CREATE TABLE IF NOT EXISTS history (id INTEGER PRIMARY KEY AUTOINCREMENT, ref TEXT NOT NULL, at INTEGER NOT NULL, who TEXT, text TEXT);
-      CREATE INDEX IF NOT EXISTS history_ref ON history(ref);`);
+      CREATE INDEX IF NOT EXISTS history_ref ON history(ref);
+      CREATE TABLE IF NOT EXISTS opiniones (ref TEXT NOT NULL, diner TEXT NOT NULL, stars INTEGER NOT NULL, comment TEXT NOT NULL, at INTEGER NOT NULL, PRIMARY KEY (ref, diner));`);
     // «caja»: the tablet that keeps every PDF (comandas, tickets, shift closes). Added 2026-09-30.
     if (!this.sql.exec("PRAGMA table_info(devices)").toArray().some(c => c.name === "kind")) this.sql.exec("ALTER TABLE devices ADD COLUMN kind TEXT DEFAULT ''");
   }
@@ -126,6 +129,7 @@ export class Caja {
         case "POST /mesa/unirse": return this.dinerJoin(body, slug, url);
         case "POST /mesa/pedir": return await this.dinerOrder(body, slug, url);
         case "POST /mesa/cuenta": return this.dinerBill(body, slug, url);
+        case "POST /mesa/opinion": return this.dinerReview(body);
         case "POST /vincular": return await this.link(body, slug);
         case "GET /usuarios": return await this.userList(request);
         case "POST /entrar": return await this.login(body, request);
@@ -303,6 +307,12 @@ export class Caja {
       this.broadcast({ t: "soldout", slugs });
       return json({ slugs });
     }
+    if (body.op === "opiniones") {
+      if (!can(s.role, "shift")) throw new CajaError("role", "Las opiniones las ven la cajera y el encargado.");
+      const rows = this.sql.exec("SELECT o.stars, o.comment, o.at, json_extract(r.data, '$.table') AS mesa FROM opiniones o LEFT JOIN orders r ON r.ref = o.ref ORDER BY o.at DESC LIMIT 100").toArray();
+      const avg = this.sql.exec("SELECT COUNT(*) AS n, AVG(stars) AS avg FROM opiniones").one();
+      return json({ opiniones: rows, count: avg.n, average: avg.n ? Math.round(avg.avg * 10) / 10 : null });
+    }
     if (body.op === "shiftCsv") {
       if (!can(s.role, "shift")) throw new CajaError("role", "Las ventas las ven la cajera y el encargado.");
       // a closed shift by id, or the open one
@@ -469,8 +479,44 @@ export class Caja {
     this.save(s, "Menú", `Pidió la cuenta (${s.bill.by || ""}) dividida ${how}: ${s.bill.parts.length} partes, ${C.money(s.bill.grand)}`);
     return this.dinerReply(s, body.diner, url, slug);
   }
+  // a table that was paid in the last 12 hours still shows its diners the final account (ticket and review)
+  tableByTokenRecent(token) {
+    if (typeof token !== "string" || token.length < 20) return null;
+    const since = Date.now() - REVIEW_MS;
+    return this.rows("closed IS NULL OR closed > ?", since).find(o => o.kind === "table" && o.joinToken && o.joinToken === token) || null;
+  }
+  // true once this diner's part (or the whole table) is paid: only then can they review and get the ticket
+  dinerPaid(t, dinerId) {
+    if (t.status === "paid") return true;
+    const me = t.diners.find(d => d.id === dinerId);
+    return !!(me && t.bill && t.bill.parts.some(p => p.color === me.color && t.bill.paid[p.key]));
+  }
+  // «¿Cómo la pasaste?»: 1 to 5 stars and a short comment, once per diner (sending again replaces it). No names.
+  dinerReview(body) {
+    const t = this.tableByTokenRecent(body.token);
+    if (!t) throw new CajaError("mesa", "Ya no se puede dejar la opinión de esta mesa.");
+    if (!validDiner(body.diner) || !t.diners.some(d => d.id === body.diner)) throw new CajaError("diner", "Tu celular no estaba en esta mesa.");
+    if (!this.dinerPaid(t, body.diner)) throw new CajaError("state", "Podés opinar cuando el mozo marque tu parte como pagada.");
+    const stars = Math.round(+body.stars);
+    if (!(stars >= 1 && stars <= 5)) throw new CajaError("stars", "Elegí de 1 a 5 estrellas.");
+    const comment = String(body.comment || "").replace(/[\x00-\x1f\x7f]+/g, " ").trim().slice(0, 300);
+    const now = Date.now();
+    this.publicHits = this.publicHits.filter(x => now - x < 10 * 60000);
+    if (this.publicHits.length >= 60) throw new CajaError("locked", "Demasiados envíos seguidos. Probá en unos minutos.");
+    this.publicHits.push(now);
+    this.sql.exec("INSERT INTO opiniones (ref, diner, stars, comment, at) VALUES (?, ?, ?, ?, ?) ON CONFLICT(ref, diner) DO UPDATE SET stars = excluded.stars, comment = excluded.comment, at = excluded.at", t.ref, body.diner, stars, comment, now);
+    this.broadcast({ t: "opinion", table: t.table, stars, comment });
+    return json({ ok: true });
+  }
   dinerAccount(url, slug) {
-    const t = this.tableByToken(url.searchParams.get("t") || "");
+    const open = this.tableByToken(url.searchParams.get("t") || "");
+    const t = open || this.tableByTokenRecent(url.searchParams.get("t") || "");
+    if (t && !open) {
+      const d = url.searchParams.get("d") || "";
+      // closed: the diner gets the final account only if it was their table and it was paid
+      if (t.status === "paid" && t.diners.some(x => x.id === d)) return json({ closed: true, view: dinerView(t, d) });
+      return json({ closed: true });
+    }
     if (!t) return json({ closed: true });
     return this.dinerReply(t, url.searchParams.get("d") || "", url, slug);
   }
@@ -591,6 +637,7 @@ export class Caja {
       this.sql.exec("UPDATE orders SET data = ? WHERE ref = ?", JSON.stringify(o), o.ref);
     }
     this.sql.exec("DELETE FROM sessions WHERE expires < ?", Date.now());
+    this.sql.exec("DELETE FROM opiniones WHERE at < ?", Date.now() - OPINION_DAYS * DAY);
     this.sql.exec("DELETE FROM tickets WHERE expires < ?", Date.now());
     this.sql.exec("DELETE FROM drafts WHERE created < ?", Date.now() - DAY);
     await this.ctx.storage.setAlarm(Date.now() + DAY);
