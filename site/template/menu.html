@@ -258,6 +258,19 @@
   .selbar .sum { font: 700 18px/1 var(--display); font-variant-numeric: tabular-nums; }
   .selbar button { min-height: 46px; padding: 0 18px; border-radius: 12px; border: 0; background: var(--amber); color: #15100a; font: 700 14px/1 var(--display); letter-spacing: .06em; text-transform: uppercase; cursor: pointer; }
   body.has-sel .app { padding-bottom: 104px; }
+  /* Mi mesa, always on screen while the table is open: everyone at the table sees the same list, live */
+  .mesabar { position: fixed; z-index: 16; left: 50%; bottom: 0; transform: translateX(-50%); width: min(100%, 520px); background: var(--surface); border: 1px solid rgba(255,185,67,.4); border-bottom: 0; border-radius: 18px 18px 0 0; box-shadow: 0 -12px 34px -12px rgba(0,0,0,.8); padding-bottom: env(safe-area-inset-bottom, 0px); }
+  .mesabar .mb-head { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 2px 12px; align-items: center; width: 100%; min-height: 60px; padding: 10px 16px; background: none; border: 0; text-align: left; cursor: pointer; color: var(--text); }
+  .mesabar .mb-t { font: 700 16px/1.1 var(--display); letter-spacing: .04em; text-transform: uppercase; }
+  .mesabar .mb-t b { color: var(--amber); }
+  .mesabar .mb-sum { font: 700 18px/1 var(--display); font-variant-numeric: tabular-nums; }
+  .mesabar .mb-n { grid-column: 1; font-size: 13px; color: var(--muted); }
+  .mesabar .mb-chev { grid-row: 1 / span 2; grid-column: 3; font-size: 14px; color: var(--amber); transition: transform .2s; }
+  .mesabar.open .mb-chev { transform: rotate(180deg); }
+  .mesabar .mb-body { max-height: 40vh; overflow-y: auto; padding: 0 16px 12px; border-top: 1px solid var(--line); overscroll-behavior: contain; }
+  .mesabar .mb-open { width: 100%; min-height: 46px; margin-top: 10px; border-radius: 12px; border: 1px solid rgba(255,185,67,.45); background: rgba(237,157,21,.1); color: var(--amber-soft); font: 700 14px/1 var(--display); letter-spacing: .05em; text-transform: uppercase; cursor: pointer; }
+  body.has-mesabar .app { padding-bottom: calc(var(--mbh, 72px) + 24px); }
+  body.has-mesabar .selbar { bottom: calc(var(--mbh, 72px) + 12px); }
 
   /* botón de selección en la ficha y panel de la selección */
   .sel-btn {
@@ -444,6 +457,10 @@
   <div class="info"><span class="t">Mi selección · <span id="selCount">0</span></span><span class="sum" id="selSum"></span></div>
   <button type="button" id="openSel">Ver lista</button>
 </div>
+<section class="mesabar" id="mesabar" aria-label="Mi mesa" hidden>
+  <button type="button" class="mb-head" id="mbHead" aria-expanded="true"><span class="mb-t">Mesa <b id="mbTable"></b></span><span class="mb-sum" id="mbSum"></span><span class="mb-n" id="mbN"></span><span class="mb-chev" aria-hidden="true">▲</span></button>
+  <div class="mb-body" id="mbBody"></div>
+</section>
 <div id="live" class="sr-only" aria-live="polite"></div>
 
 <div class="scrim" id="scrim" hidden></div>
@@ -1205,7 +1222,38 @@ function renderMesaChip() {
   if (!mesa && mesaDone) chip.innerHTML = `${STAR}Mesa ${esc(mesaDone.view.table)} · tu ticket`;
   if (mesa) chip.innerHTML = `${colorDot(mesaView?.me)}Mesa ${esc(mesa.table)}${mesaView?.me ? " · " + colorName(mesaView.me) : ""}`;
   if (mesa) $("#tableChip").hidden = true;
+  renderMesaBar();
 }
+let mbOpen = true;
+try { mbOpen = sessionStorage.getItem("mbOpen:" + SLUG) !== "0"; } catch (e) {}
+// the table's list, docked at the bottom for every diner until the table is paid (the sheet keeps the full detail and the bill)
+function renderMesaBar() {
+  const bar = $("#mesabar"), v = mesaView;
+  const show = !!(mesa && v && v.status === "open" && !myPart(v));
+  bar.hidden = !show;
+  document.body.classList.toggle("has-mesabar", show);
+  if (!show) return;
+  const n = v.lines.reduce((a, l) => a + l.n, 0), wait = v.pending.reduce((a, p) => a + p.lines.reduce((b, l) => b + l.n, 0), 0);
+  $("#mbTable").textContent = mesa.table;
+  $("#mbSum").textContent = plain(v.total);
+  $("#mbN").textContent = `${n} ${n === 1 ? "producto" : "productos"}${wait ? " · " + wait + " esperando al mozo" : ""}${v.billRequested ? " · cuenta pedida" : ""}`;
+  $("#mbHead").setAttribute("aria-expanded", String(mbOpen));
+  bar.classList.toggle("open", mbOpen);
+  const body = $("#mbBody");
+  body.hidden = !mbOpen;
+  if (mbOpen) {
+    const item = l => `<li><b>${l.n}×</b><span>${esc(l.name)}${l.extras.length ? `<small>${esc(l.extras.join(", "))}</small>` : ""}${l.note ? `<small>«${esc(l.note)}»</small>` : ""}</span><span>${plain(l.unit * l.n)}</span></li>`;
+    const groups = {};
+    for (const l of v.lines) (groups[l.diner || "_"] ||= []).push(l);
+    const order = [v.me, ...v.colors.filter(c => c !== v.me), "_"].filter((c, i, a) => c && a.indexOf(c) === i && groups[c]);
+    body.innerHTML = `${v.pending.length ? `<div class="mgroup wait"><h3>Esperando al mozo</h3><ul>${v.pending.map(p => p.lines.map(item).join("")).join("")}</ul></div>` : ""}
+      ${order.map(c => `<div class="mgroup"><h3>${colorDot(c === "_" ? null : c)}${c === "_" ? "Cargado por el mozo" : c === v.me ? "Vos" : esc(colorName(c))}<span class="sum">${plain(groups[c].reduce((a, l) => a + l.unit * l.n, 0))}</span></h3><ul>${groups[c].map(item).join("")}</ul></div>`).join("") || `<p class="sel-hint">Todavía no hay nada aceptado en la mesa.</p>`}
+      <button class="mb-open" type="button" id="mbOpenSheet">Ver la cuenta y pedirla</button>`;
+  }
+  document.documentElement.style.setProperty("--mbh", bar.offsetHeight + "px");
+}
+$("#mbHead").addEventListener("click", () => { mbOpen = !mbOpen; try { sessionStorage.setItem("mbOpen:" + SLUG, mbOpen ? "1" : "0"); } catch (e) {} renderMesaBar(); });
+$("#mbBody").addEventListener("click", e => { if (e.target.id === "mbOpenSheet") openMesa(); });
 function applyMesaView(view, qr) {
   if (qr) mesaQr = qr;
   // a pending order of mine that disappeared without new lines of my color was rejected
