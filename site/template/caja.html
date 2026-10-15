@@ -1049,6 +1049,8 @@ document.addEventListener("click", async e => {
     case "theme": { const r = document.documentElement; r.dataset.theme = r.dataset.theme === "light" ? "dark" : "light"; store.set("theme", r.dataset.theme); break; }
     case "logout": try { await api("/salir", { method: "POST" }); } catch (err) {} session = null; store.set("session", null); me = null; closeSocket(); screen = "pin"; pinUser = null; users = []; usersAsked = false; render(); break;
     case "addUser": userModal(); break;
+    case "pickRole": { $("#urole").value = d.r; document.querySelectorAll("[data-act=pickRole]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.r === d.r))); break; }
+    case "newPin": { $("#upin").value = suggestPin(); break; }
     case "soldout": {
       try { const r = await api("/op", { method: "POST", body: { op: "soldOut", slug: d.slug, on: !!d.on } }); soldOut = new Set(r.slugs); renderMain(); say(d.on ? "Marcado agotado hoy · ya se ve en el menú" : "Disponible de nuevo"); }
       catch (err) { say(err.message, true); }
@@ -1119,20 +1121,39 @@ document.addEventListener("submit", async e => {
     const pinv = $("#upin").value, id = f.dataset.id;
     if (!/^\d{4}$/.test(pinv)) { const p = $("#uerr"); p.hidden = false; p.textContent = "El PIN tiene 4 números."; return; }
     if (id) teamCall({ action: "pin", id: +id, pin: pinv }, "PIN cambiado");
-    else teamCall({ action: "add", name: $("#uname").value, role: $("#urole").value, pin: pinv }, "Persona agregada");
+    else { const nm = $("#uname").value.trim(), rl = $("#urole").value; teamCall({ action: "add", name: nm, role: rl, pin: pinv }, "Persona agregada").then(ok => { if (ok) userDone(nm, rl, pinv); }); }
   }
 });
+const ROLE_HELP = { mozo: "Toma y carga pedidos", cajero: "Además cobra", cocina: "Ve las comandas", encargado: "Maneja todo, incluido el equipo" };
+// a PIN that is easy to say out loud but not a pattern anyone tries first (no 1111, no 1234)
+function suggestPin() {
+  for (;;) {
+    const n = String(crypto.getRandomValues(new Uint32Array(1))[0] % 10000).padStart(4, "0");
+    if (new Set(n).size > 2 && !"01234567890".includes(n) && !"98765432109".includes(n)) return n;
+  }
+}
 function userModal(id, name) {
   showOverlay(`<div class="scrim" data-act="close"></div><form class="modal" id="userForm" data-id="${id || ""}" role="dialog" aria-modal="true" aria-labelledby="ut">
-    <h2 id="ut">${id ? "Cambiar PIN de " + esc(name) : "Agregar persona"}</h2>
-    ${id ? "" : `<div class="field"><label for="uname">Nombre</label><input id="uname" maxlength="30" required></div>
-      <div class="field"><label for="urole">Rol</label><select id="urole"><option value="mozo">Mozo: acepta y carga pedidos</option><option value="cajero">Cajero: además cobra</option><option value="encargado">Encargado: además cancela y maneja el equipo</option><option value="cocina">Cocina: solo ve las comandas y marca «Listo»</option></select></div>`}
-    <div class="field"><label for="upin">PIN de 4 números</label><input id="upin" inputmode="numeric" maxlength="4" autocomplete="off" required></div>
+    <h2 id="ut">${id ? "Nuevo PIN para " + esc(name) : "Agregar persona"}</h2>
+    ${id ? "" : `<div class="field"><label for="uname">¿Cómo se llama?</label><input id="uname" maxlength="30" autocomplete="off" required placeholder="Por ejemplo: Ana"></div>
+      <div class="field"><span class="lbl">¿Qué hace?</span><input type="hidden" id="urole" value="mozo"><div class="who-list" role="group" aria-label="Qué hace">${["mozo", "cajero", "cocina", "encargado"].map(r => `<button type="button" data-act="pickRole" data-r="${r}" aria-pressed="${r === "mozo"}">${ROLE_LABEL[r]}<small>${ROLE_HELP[r]}</small></button>`).join("")}</div></div>`}
+    <div class="field"><label for="upin">PIN de 4 números</label><div style="display:flex;gap:8px"><input id="upin" class="mono" style="font-size:24px;letter-spacing:.3em;text-align:center" inputmode="numeric" maxlength="4" autocomplete="off" required value="${suggestPin()}"><button class="btn" type="button" data-act="newPin">Otro</button></div>
+      <p class="help" style="margin:6px 0 0">Ya te sugerimos uno. Anotalo o decíselo: lo usa en las tablets del local.</p></div>
     <p class="err" id="uerr" role="alert" hidden></p>
     <div class="grid2" style="margin-top:16px"><button class="btn" type="button" data-act="close">Volver</button><button class="btn primary" type="submit">Guardar</button></div></form>`);
+  setTimeout(() => { const f = $("#uname") || $("#upin"); if (f) f.focus(); }, 50);
+}
+// after saving: the PIN stays on screen so the admin can tell it to the person
+function userDone(name, role, pin) {
+  showOverlay(`<div class="scrim" data-act="close"></div><div class="modal" role="dialog" aria-modal="true" aria-labelledby="ut">
+    <h2 id="ut">Listo, ${esc(name)} ya puede entrar</h2>
+    <p class="help" style="margin:0">${esc(ROLE_LABEL[role] || "")} · en cualquier tablet o celular vinculado del local, elige su nombre y pone este PIN:</p>
+    <p class="mono" style="font-size:44px;letter-spacing:.3em;text-align:center;margin:18px 0">${esc(pin)}</p>
+    <p class="help" style="margin:0">Este PIN no se vuelve a mostrar. Si se olvida, en Equipo tocás «Cambiar PIN».</p>
+    <div class="grid2" style="margin-top:16px"><button class="btn" type="button" data-act="close">Listo</button><button class="btn primary" type="button" data-act="addUser">${ic("plus")}Agregar otra persona</button></div></div>`);
 }
 async function teamCall(body, okMsg) {
-  try { team = await api("/equipo", { method: "POST", body }); closeOverlay(); renderMain(); say(okMsg); }
+  try { team = await api("/equipo", { method: "POST", body }); closeOverlay(); renderMain(); say(okMsg); return true; }
   catch (err) { const p = $("#uerr"); if (p) { p.hidden = false; p.textContent = err.message; } else say(err.message, true); if (body.action === "role") loadTeam(); }
 }
 
