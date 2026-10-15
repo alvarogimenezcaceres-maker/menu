@@ -391,7 +391,7 @@ function onMessage(msg) {
   if (view === "kitchen" || me?.role === "cocina") {
     const newInKitchen = (msg.order.kind !== "table" && msg.order.status === "prep" && was?.status !== "prep") ||
       Object.entries(msg.order.kitchen || {}).some(([r, k]) => k.status === "pending" && (!was?.kitchen || !was.kitchen[r]));
-    if (newInKitchen) { beep(); say(`Comanda nueva · ${msg.order.kind === "table" ? "Mesa " + msg.order.table : "#MV-" + msg.order.ref}`); }
+    if (newInKitchen) { notify(`Comanda nueva · ${RESTAURANT}`, msg.order.kind === "table" ? "Mesa " + msg.order.table : "#MV-" + msg.order.ref, "cocina-" + msg.order.ref); beep(); say(`Comanda nueva · ${msg.order.kind === "table" ? "Mesa " + msg.order.table : "#MV-" + msg.order.ref}`); }
   } else if (me && me.role !== "cocina") {
     const nowReady = (msg.order.kind !== "table" && msg.order.status === "ready" && was?.status === "prep") ||
       Object.entries(msg.order.kitchen || {}).find(([r, k]) => k.status === "ready" && was?.kitchen?.[r]?.status === "pending");
@@ -402,6 +402,7 @@ function onMessage(msg) {
     const fresh = (msg.order.pending || []).find(p => !before.has(p.id));
     if (fresh) alertRound(msg.order, fresh);
     if (msg.order.bill && (!was?.bill || was.bill.at !== msg.order.bill.at)) {
+      notify(`Mesa ${msg.order.table} pidió la cuenta`, gs(msg.order.bill.grand), "cuenta-" + msg.order.table);
       beep(); say(`Mesa ${msg.order.table} pidió la cuenta · ${gs(msg.order.bill.grand)}`);
     }
   }
@@ -423,6 +424,7 @@ function beep() {
   if (!soundOn) return;
   try {
     audio = audio || new (window.AudioContext || window.webkitAudioContext)();
+    if (audio.state !== "running") audio.resume();
     const now = audio.currentTime;
     [0, 0.22, 0.44].forEach((d, i) => {
       const o = audio.createOscillator(), g = audio.createGain();
@@ -433,12 +435,14 @@ function beep() {
   } catch (e) {}
 }
 function alertNew(o) {
+  notify(`Pedido nuevo · ${RESTAURANT}`, `#MV-${o.ref}${o.name ? " · " + o.name : ""}`, "pedido-" + o.ref);
   beep(); try { navigator.vibrate && navigator.vibrate([120, 80, 120]); } catch (e) {}
   say(`Pedido nuevo #MV-${o.ref}${o.name ? " · " + o.name : ""}`);
   clearInterval(titleTimer); let on = false;
   titleTimer = setInterval(() => { document.title = (on = !on) ? `● Pedido nuevo · ${RESTAURANT}` : `${RESTAURANT} · Caja`; }, 1000);
 }
 function alertRound(t, p) {
+  notify(`Pedido nuevo · Mesa ${t.table}`, `${COLORS[p.color]?.[0] || "Un cliente"} pidió desde su celular`, "mesa-" + t.table + "-" + p.id);
   beep(); try { navigator.vibrate && navigator.vibrate([120, 80, 120]); } catch (e) {}
   say(`Pedido nuevo · Mesa ${t.table} · ${COLORS[p.color]?.[0] || ""}`);
   clearInterval(titleTimer); let on = false;
@@ -446,7 +450,33 @@ function alertRound(t, p) {
 }
 addEventListener("focus", () => { clearInterval(titleTimer); document.title = `${RESTAURANT} · Caja`; });
 // the browser only plays sound after a tap: unlock it with the first one
-addEventListener("pointerdown", () => { try { audio = audio || new (window.AudioContext || window.webkitAudioContext)(); audio.resume(); } catch (e) {} }, { once: true });
+// (not «once»: the browser suspends the sound again when the tab is hidden for a while)
+const unlockAudio = () => { try { audio = audio || new (window.AudioContext || window.webkitAudioContext)(); if (audio.state !== "running") audio.resume(); } catch (e) {} };
+["pointerdown", "keydown", "touchstart"].forEach(ev => addEventListener(ev, unlockAudio, { passive: true }));
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") unlockAudio(); });
+
+/* ---------- avisos del navegador: una notificación por cada pedido nuevo (mientras la caja está abierta) ---------- */
+let notifOn = store.get("notif") === "on";
+const notifySupported = "Notification" in window;
+async function notify(title, body, tag) {
+  if (!notifOn || !notifySupported || Notification.permission !== "granted") return;
+  if (document.hasFocus()) return; // already looking at the caja: the sound and the screen are enough
+  try {
+    const reg = "serviceWorker" in navigator ? await navigator.serviceWorker.getRegistration() : null;
+    const opts = { body, tag, renotify: true, icon: "icon-192.png", vibrate: [120, 80, 120] };
+    if (reg) reg.showNotification(title, opts); else new Notification(title, opts); // Android only allows the first
+  } catch (e) {}
+}
+async function toggleNotif() {
+  if (!notifySupported) { say("Este navegador no permite avisos. Probá con Chrome o Safari actualizado.", true); return; }
+  if (notifOn) { notifOn = false; store.set("notif", "off"); renderTop(); say("Avisos del navegador apagados"); return; }
+  const perm = Notification.permission === "default" ? await Notification.requestPermission() : Notification.permission;
+  if (perm !== "granted") { say("Los avisos están bloqueados. Habilitalos con el candado de la barra del navegador y volvé a tocar «Avisos».", true); return; }
+  notifOn = true; store.set("notif", "on"); renderTop();
+  say("Avisos activados: te llegan aunque estés en otra pestaña");
+  try { const reg = "serviceWorker" in navigator ? await navigator.serviceWorker.getRegistration() : null; const o = { body: "Así te va a avisar cada pedido nuevo.", icon: "icon-192.png" }; if (reg) reg.showNotification(RESTAURANT, o); else new Notification(RESTAURANT, o); } catch (e) {}
+}
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
 
 /* ---------- pantallas de acceso ---------- */
 function linkScreen(err = "", first = false) {
@@ -723,6 +753,7 @@ function renderTop() {
   t.innerHTML = `<span class="brand">${esc(RESTAURANT)}</span><span class="sp"></span>
     <span class="pill${online ? "" : " off"}" role="status">${ic("wifi")}<span class="dot"></span><span class="hide-sm">${online ? "En línea" : "Sin conexión, reintentando"}</span></span>
     <button class="pill" data-act="sound" aria-pressed="${soundOn}" aria-label="Sonido de pedidos nuevos">${ic("sound")}<span class="hide-sm">${soundOn ? "Sonido" : "Sin sonido"}</span></button>
+    <button class="pill" data-act="notif" aria-pressed="${notifOn}" aria-label="Avisos del navegador por cada pedido nuevo">${ic("bell")}<span class="hide-sm">${notifOn ? "Avisos" : "Sin avisos"}</span></button>
     ${isCaja() ? `<button class="pill" data-act="pdfAuto" aria-pressed="${pdfAuto}" title="Esta tablet es la caja: guarda los PDF de comandas, tickets y cierres">${ic("cash")}<span class="hide-sm">${pdfAuto ? "Caja · guarda los PDF" : "Caja · PDF en pausa"}</span></button>` : ""}
     <button class="pill" data-act="theme" aria-label="Cambiar entre claro y oscuro">${ic("sun")}</button>
     <button class="pill" data-act="logout">${ic("user")}${esc(me ? me.name + " · " + ROLE_LABEL[me.role] : "")}<span class="hide-sm"> · Salir</span></button>`;
@@ -1016,6 +1047,7 @@ document.addEventListener("click", async e => {
       catch (err) { const p = $("#pkErr"); p.hidden = false; p.textContent = err.message; }
       break;
     }
+    case "notif": toggleNotif(); break;
     case "sound": soundOn = !soundOn; store.set("sound", soundOn ? "on" : "off"); renderTop(); if (soundOn) beep(); break;
     case "shiftRefresh": loadShift(); break;
     case "shiftCsv": {

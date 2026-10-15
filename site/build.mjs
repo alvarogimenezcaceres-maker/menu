@@ -209,6 +209,13 @@ async function buildRestaurant(slug, templates) {
     const icon = await sharp(path.join(out, "img", `${logo}-360.webp`)).resize({ width: Math.round(size * 0.78), height: Math.round(size * 0.78), fit: "inside" }).toBuffer();
     await sharp({ create: { width: size, height: size, channels: 4, background: "#0E1014" } }).composite([{ input: icon, gravity: "center" }]).png().toFile(path.join(out, "caja", `icon-${size}.png`));
   }
+  // a service worker so the caja can show notifications on Android too (no push: they work while the page is open)
+  await writeFile(path.join(out, "caja", "sw.js"), [
+    'self.addEventListener("install", () => self.skipWaiting());',
+    'self.addEventListener("activate", e => e.waitUntil(self.clients.claim()));',
+    'self.addEventListener("notificationclick", e => { e.notification.close(); e.waitUntil(self.clients.matchAll({ type: "window", includeUncontrolled: true }).then(l => (l[0] ? l[0].focus() : self.clients.openWindow("./")))); });',
+    "",
+  ].join("\n"));
   await writeFile(path.join(out, "caja", "index.html"), fill(templates.caja, { NAME: attr(r.name), NAME_JSON: jsonForScript(r.name), SLUG: slug, ORDER_CORE: ORDER_CORE_PAID, TICKET_CORE }));
 
   // Privacy notice for diners (plan/pos/legal): published only when the restaurant's legal data is loaded in the panel
