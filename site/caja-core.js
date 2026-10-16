@@ -182,8 +182,9 @@ export function applyTableOp(session, op, args, role, catalog, now = Date.now())
     const k = (session.kitchen || {})[args.round];
     if (!k) fail("state", "No encontré esa comanda.");
     const want = { kitchenReady: "pending", kitchenUndo: "ready", served: "ready" }[op];
-    if (k.status !== want) fail("state", op === "kitchenReady" ? "Esa comanda ya estaba lista." : op === "served" ? "Esa comanda todavía no está lista." : "Esa comanda ya no se puede volver atrás.");
-    const next = { kitchenReady: { ...k, status: "ready", readyAt: now }, kitchenUndo: { ...k, status: "pending", readyAt: null }, served: { ...k, status: "served", servedAt: now } }[op];
+    // with no kitchen screen (the comanda is only printed) the waiter delivers straight from «en cocina»
+    if (!(op === "served" ? ["pending", "ready"].includes(k.status) : k.status === want)) fail("state", op === "kitchenReady" ? "Esa comanda ya estaba lista." : op === "served" ? "Esa comanda todavía no está lista." : "Esa comanda ya no se puede volver atrás.");
+    const next = { kitchenReady: { ...k, status: "ready", readyAt: now }, kitchenUndo: { ...k, status: "pending", readyAt: null }, served: { ...k, status: "served", readyAt: k.readyAt || now, servedAt: now } }[op];
     const text = { kitchenReady: `Ronda ${+args.round + 1} lista en cocina`, kitchenUndo: `Ronda ${+args.round + 1} vuelve a cocina`, served: `Ronda ${+args.round + 1} entregada en la mesa` }[op];
     return { order: { ...session, updatedAt: now, kitchen: { ...session.kitchen, [args.round]: next } }, text };
   }

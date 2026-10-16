@@ -255,7 +255,7 @@ test("kitchen: each round is a comanda; Listo, undo, and the waiter serves it", 
   t = applyTableOp(t, "addItems", { lines: [{ slug: "burger", picks: [[0]], n: 1 }] }, "mozo", catalog).order;
   assert.deepEqual(Object.keys(t.kitchen), ["0", "1"]);
   assert.equal(t.kitchen[1].status, "pending");
-  throwsCode(() => applyTableOp(t, "served", { round: 1 }, "mozo", catalog), "state"); // not ready yet
+  throwsCode(() => applyTableOp(t, "served", { round: 9 }, "mozo", catalog), "state"); // no such round
   throwsCode(() => applyTableOp(t, "kitchenReady", { round: 9 }, "cocina", catalog), "state");
   t = applyTableOp(t, "kitchenReady", { round: 1 }, "cocina", catalog, 500).order;
   assert.equal(t.kitchen[1].status, "ready");
@@ -344,4 +344,12 @@ test("«montos a mano» can include people without a phone (extra palette colors
   assert.equal(s.bill.parts.map(p => p.color).join(), "azul,verde,naranja");
   assert.equal(s.bill.split.extra.join(), "verde,naranja");
   assert.throws(() => requestBill(t, { mode: "libres", amounts: { azul: 30000, verde: 60000 }, tipMode: "0" }, "diner-aaaaaaaa"), CajaError); // verde has no phone and was not added
+});
+
+test("with no kitchen screen the waiter can deliver a round straight from «en cocina»", () => {
+  let t = openTable({ ref: "ZZ33", table: 5, lines: [{ slug: "x", name: "Lomito", unit: 40000, n: 1, extras: [] }], by: "Ana", joinToken: "t".repeat(24), dinerId: "diner-aaaaaaaa" });
+  assert.equal(t.kitchen[0].status, "pending");
+  const { order } = applyTableOp(t, "served", { round: 0 }, "mozo");
+  assert.equal(order.kitchen[0].status, "served");
+  assert.equal(dinerView(order, "diner-aaaaaaaa").rounds[0], "served");
 });

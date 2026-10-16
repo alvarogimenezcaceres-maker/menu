@@ -589,6 +589,7 @@ function cookCard(k) {
   return `<article class="card" aria-label="Mesa ${k.table} en cocina">
     <div class="row1"><span class="code">Mesa ${k.table} · ronda ${k.round + 1}</span><span class="st prep">${ic("flame")}En cocina</span><span class="ago">${ago(k.at)}</span></div>
     <ul class="items">${k.lines.map(l => `<li><b>${l.n}×</b><span>${esc(l.name)}${l.extras.length ? " · " + esc(l.extras.join(", ")) : ""}${l.note ? ` · «${esc(l.note)}»` : ""}</span></li>`).join("")}</ul>
+    <div class="acts"><button class="btn primary" data-act="served" data-ref="${k.ref}" data-round="${k.round}">${ic("check")}Entregado</button></div>
     <div class="row1"><button class="link" data-tablen="${k.table}">Ver la mesa</button></div></article>`;
 }
 function roundCard(p) {
