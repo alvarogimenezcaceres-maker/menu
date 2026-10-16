@@ -1072,7 +1072,9 @@ function renderSelPanel() {
     <div class="order">${orderButtons()}</div>
     <p class="sel-hint">${{{FREE_D}}mesa ? `Estás en la mesa ${esc(mesa.table)}: tu pedido le llega al mozo para que lo acepte.` : table ? "Estás en el local: mostrale el pedido al mozo." : WHATSAPP ? "Mandá el pedido por WhatsApp al local, o mostráselo al mozo si estás ahí." : "Mostrale el pedido al mozo."} La lista queda guardada en este celular.</p>
     <button class="sel-clear" type="button" id="selClear">Vaciar la selección</button>{{FREE_E}}`
-    : `<p class="sel-hint">Todavía no agregaste platos. Tocá el corazón de cualquier plato para sumarlo acá.</p>`;
+    : mesa ? `<p class="sel-hint">Esta lista es para lo que quieras pedir ahora. Lo que ya pediste está en tu mesa.</p>
+      <button class="ar-btn" type="button" id="selToMesa">Ver mi mesa y cómo va mi pedido</button>`
+      : `<p class="sel-hint">Todavía no agregaste platos. Tocá el corazón de cualquier plato para sumarlo acá.</p>`;
   if (lines.length) refreshCheckout();
 }
 /* ---------- Pedido: por WhatsApp al local o en pantalla para el mozo ---------- */
@@ -1577,10 +1579,15 @@ function closeSel() {
   else { hideSel(); history.replaceState(null, "", location.pathname + location.search); }
 }
 $("#openSel").addEventListener("click", () => openSel());
+document.addEventListener("click", e => { if (e.target.id === "selToMesa") { hideSel(true); openMesa(); } });
 $("#closeSel").addEventListener("click", closeSel);
 swipeToClose(selSheet, closeSel);
 renderSel(false);
-if (location.hash === "#seleccion") openSel("deep");
+if (location.hash === "#seleccion") {
+  // reloaded on «Mi selección» with nothing in it: an empty sheet is useless, so go to the table's list (or just to the menu)
+  if (selCount() > 0) openSel("deep");
+  else { history.replaceState(null, "", location.pathname + location.search); if (mesa) openMesa(); }
+}
 else if (location.hash.length > 1 && bySlug[location.hash.slice(1)]) openDish(location.hash.slice(1), "deep");
 
 sheet.addEventListener("click", async e => {
