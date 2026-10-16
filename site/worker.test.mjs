@@ -74,3 +74,8 @@ test("badge_click (free-plan strip) is an accepted event", () => {
   assert.equal(points.length, 1);
   assert.equal(points[0].blobs[0], "badge_click");
 });
+
+test("share_click (the menu's Compartir button) is an accepted event", () => {
+  const points = parseBatch(JSON.stringify(batch({ events: [{ ev: "share_click" }] })));
+  assert.equal(points.length, 1);
+});

@@ -210,8 +210,20 @@
   }
   .dishes li.no-thumb .fav { right: 0; top: 50%; bottom: auto; margin-top: -20px; }
   .fav svg { width: 19px; height: 19px; }
-  .fav .fire { font-size: 20px; line-height: 1; filter: grayscale(1) opacity(.65); transition: filter .2s, transform .2s; }
-  .fav[aria-pressed="true"] .fire { filter: none; transform: scale(1.08); }
+  .fav svg { stroke-width: 2.4; }
+  .fav .ic-plus path, .fav .ic-check path { fill: none !important; stroke-linecap: round; }
+  .fav .ic-check { display: none; }
+  .fav[aria-pressed="true"] .ic-plus { display: none; }
+  .fav[aria-pressed="true"] .ic-check { display: block; }
+  .share-btn { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--raised); color: var(--text); font: 600 13px/1 var(--display); letter-spacing: .06em; text-transform: uppercase; cursor: pointer; }
+  .share-btn svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .share-dlg { width: min(92vw, 380px); border: 1px solid var(--line); border-radius: 18px; background: var(--surface); color: var(--text); padding: 18px; }
+  .share-dlg::backdrop { background: rgba(0,0,0,.6); }
+  .share-dlg h2 { margin: 0 0 4px; font: 700 18px/1.2 var(--display); }
+  .share-dlg p { margin: 0 0 12px; font-size: 14px; color: var(--muted); }
+  .share-dlg .opts { display: grid; gap: 8px; }
+  .share-dlg .opts a, .share-dlg .opts button { display: flex; align-items: center; min-height: 48px; padding: 0 16px; border-radius: 12px; border: 1px solid var(--line); background: var(--raised); color: var(--text); font: 600 15px/1 var(--display); text-decoration: none; cursor: pointer; text-align: left; }
+  .share-dlg .close { margin-top: 10px; width: 100%; min-height: 44px; background: none; border: 0; color: var(--muted); cursor: pointer; font: inherit; }
   .burst { position: fixed; z-index: 40; pointer-events: none; font: 700 15px/1 var(--display); color: var(--amber); animation: burst .7s ease-out forwards; }
   @keyframes burst { from { opacity: 1; transform: translate(0, 0) scale(.6); } to { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(1.1); } }
   .fav svg path, .sel-btn svg path { fill: none; stroke: currentColor; stroke-width: 2; stroke-linejoin: round; }
@@ -427,6 +439,7 @@
       </span>
       <span class="open-chip" id="openChip" hidden><i aria-hidden="true"></i><span></span></span>
       <button class="mesa-chip" id="mesaChip" type="button" hidden aria-haspopup="dialog"></button>{{RESERVE_BTN}}
+      <button class="share-btn" type="button" data-share><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3M8 7l4-4 4 4M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>Compartir</button>
     </div>
     {{HERO_IMG}}
   </header>
@@ -459,6 +472,8 @@
     <img src="img/{{LOGO}}-360.webp" alt="">
     <span>Precios en guaraníes (₲). Consultá por alérgenos al personal.</span>
     <a class="review-btn" id="reviewFoot" hidden target="_blank" rel="noopener"></a>
+    <button class="share-btn" type="button" data-share style="margin-top:12px"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3M8 7l4-4 4 4M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>Compartir el menú</button>
+    <dialog class="share-dlg" id="shareDlg" aria-labelledby="shareT"><h2 id="shareT">Compartir el menú</h2><p>Mandáselo a quien quieras o subilo a tus redes.</p><div class="opts" id="shareOpts"></div><button class="close" type="button" id="shareClose">Cerrar</button></dialog>
     <span class="privacy">Sin cookies. Contamos visitas y clics de forma anónima para mejorar el menú.{{PRIVACY_LINK}}</span>{{BRAND_STRIP}}{{WATERMARK}}
   </footer>
 </main>{{RESERVE_DIALOG}}
@@ -530,6 +545,22 @@ function burst(el) {
   sp.style.cssText = `left:${r.left + r.width / 2 - 10}px;top:${r.top - 4}px;--dx:0px;--dy:-34px`;
   document.body.appendChild(sp); setTimeout(() => sp.remove(), 750);
 }
+function shareMenu() {
+  const url = location.origin + location.pathname + "?s=share", text = `Mirá el menú de ${RESTAURANT}`;
+  track("share_click"); flushEvents();
+  if (navigator.share) { navigator.share({ title: RESTAURANT, text, url }).catch(() => {}); return; }
+  const dlg = $("#shareDlg"), u = encodeURIComponent(url), t = encodeURIComponent(text);
+  $("#shareOpts").innerHTML = `<a href="https://wa.me/?text=${t}%20${u}" target="_blank" rel="noopener">WhatsApp</a>
+    <a href="https://www.facebook.com/sharer/sharer.php?u=${u}" target="_blank" rel="noopener">Facebook</a>
+    <a href="https://twitter.com/intent/tweet?text=${t}&url=${u}" target="_blank" rel="noopener">X</a>
+    <a href="https://t.me/share/url?url=${u}&text=${t}" target="_blank" rel="noopener">Telegram</a>
+    <button type="button" id="shareCopy">Copiar el enlace (para Instagram o TikTok)</button>`;
+  if (dlg.showModal) dlg.showModal(); else dlg.setAttribute("open", "");
+  $("#shareCopy").onclick = () => { (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(() => { $("#shareCopy").textContent = "Enlace copiado ✓"; }, () => { $("#shareCopy").textContent = url; }); };
+}
+document.addEventListener("click", e => { if (e.target.closest("[data-share]")) shareMenu(); });
+$("#shareClose").addEventListener("click", () => $("#shareDlg").close());
+$("#shareDlg").addEventListener("click", e => { if (e.target === e.currentTarget) e.currentTarget.close(); });
 const HEART = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.5 8.1 3.6 4.5 7.1 4.5c2 0 3.4 1.1 4.9 2.9 1.5-1.8 2.9-2.9 4.9-2.9 3.5 0 5.6 3.6 4.4 6.8-1.8 4.6-9.3 9.2-9.3 9.2Z"/></svg>';
 const replay = (el, cls) => { if (REDUCED || !el) return; el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); };
 
@@ -608,7 +639,7 @@ menuEl.innerHTML = DATA.categories.map(c => `
             </span>
             ${d.photo ? `<span class="thumb"><img src="img/${d.photo}-360.webp" alt="" loading="lazy"></span>` : '<span aria-hidden="true"></span>'}
           </button>
-          ${d.soldOut ? "" : `<button class="fav" type="button" data-fav="${d.slug}" aria-pressed="false" aria-label="Agregar ${esc(d.name)} a mi selección"><span class="fire" aria-hidden="true">🍽️</span></button>`}
+          ${d.soldOut ? "" : `<button class="fav" type="button" data-fav="${d.slug}" aria-pressed="false" aria-label="Agregar ${esc(d.name)} a mi selección"><svg class="ic-plus" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><svg class="ic-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg></button>`}
         </li>`).join("")}
     </ul>
   </section>`).join("");
@@ -1087,7 +1118,7 @@ function renderSelPanel() {
     <button class="sel-clear" type="button" id="selClear">Vaciar la selección</button>{{FREE_E}}`
     : mesa ? `<p class="sel-hint">Esta lista es para lo que quieras pedir ahora. Lo que ya pediste está en tu mesa.</p>
       <button class="ar-btn" type="button" id="selToMesa">Ver mi mesa y cómo va mi pedido</button>`
-      : `<p class="sel-hint">Todavía no agregaste platos. Tocá el 🍽️ de cualquier plato para sumarlo acá.</p>`;
+      : `<p class="sel-hint">Todavía no agregaste platos. Tocá el + de cualquier plato para sumarlo acá.</p>`;
   if (lines.length) refreshCheckout();
 }
 /* ---------- Pedido: por WhatsApp al local o en pantalla para el mozo ---------- */
@@ -1291,7 +1322,7 @@ function orderMore() {
   mbOpen = false; try { sessionStorage.setItem("mbOpen:" + SLUG, "0"); } catch (e) {}
   closeMesa(); renderMesaBar();
   document.getElementById("menu").scrollIntoView({ behavior: "smooth" });
-  live.textContent = "Elegí lo que quieras sumar: tocá el 🍽️ de un plato.";
+  live.textContent = "Elegí lo que quieras sumar: tocá el + de un plato.";
 }
 $("#mbAdd").addEventListener("click", orderMore);
 function applyMesaView(view, qr) {
