@@ -210,6 +210,10 @@
   }
   .dishes li.no-thumb .fav { right: 0; top: 50%; bottom: auto; margin-top: -20px; }
   .fav svg { width: 19px; height: 19px; }
+  .fav .fire { font-size: 20px; line-height: 1; filter: grayscale(1) opacity(.65); transition: filter .2s, transform .2s; }
+  .fav[aria-pressed="true"] .fire { filter: none; transform: scale(1.08); }
+  .burst { position: fixed; z-index: 40; pointer-events: none; font-size: 16px; line-height: 1; animation: burst .7s ease-out forwards; }
+  @keyframes burst { from { opacity: 1; transform: translate(0, 0) scale(.6); } to { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(1.1); } }
   .fav svg path, .sel-btn svg path { fill: none; stroke: currentColor; stroke-width: 2; stroke-linejoin: round; }
   .fav[aria-pressed="true"] { color: #15100a; background: var(--amber); border-color: var(--amber); box-shadow: 0 0 18px rgba(237,157,21,.6); }
   .fav[aria-pressed="true"] svg path, .sel-btn[aria-pressed="true"] svg path { fill: currentColor; }
@@ -259,12 +263,12 @@
   .selbar button { min-height: 46px; padding: 0 18px; border-radius: 12px; border: 0; background: var(--amber); color: #15100a; font: 700 14px/1 var(--display); letter-spacing: .06em; text-transform: uppercase; cursor: pointer; }
   body.has-sel .app { padding-bottom: 104px; }
   /* Mi mesa, always on screen while the table is open: everyone at the table sees the same list, live */
-  .mesabar { position: fixed; z-index: 16; left: 50%; bottom: 0; transform: translateX(-50%); width: min(100%, 520px); background: var(--surface); border: 1px solid rgba(255,185,67,.4); border-bottom: 0; border-radius: 18px 18px 0 0; box-shadow: 0 -12px 34px -12px rgba(0,0,0,.8); padding-bottom: env(safe-area-inset-bottom, 0px); }
+  .mesabar { position: fixed; z-index: 16; left: 50%; bottom: 0; transform: translateX(-50%); width: min(100%, 520px); background: var(--surface); border: 1px solid var(--line); border-bottom: 0; border-radius: 18px 18px 0 0; box-shadow: 0 -12px 34px -12px rgba(0,0,0,.8); padding-bottom: env(safe-area-inset-bottom, 0px); }
   .mesabar .mb-row { display: flex; align-items: stretch; }
   .mesabar .mb-add { flex: none; align-self: center; min-height: 48px; margin: 0 12px 0 0; padding: 0 16px; border-radius: 12px; border: 0; background: var(--amber); color: #15100a; font: 700 14px/1 var(--display); letter-spacing: .05em; text-transform: uppercase; cursor: pointer; }
   .mesabar .mb-head { flex: 1; min-width: 0; display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 2px 12px; align-items: center; width: 100%; min-height: 60px; padding: 10px 16px; background: none; border: 0; text-align: left; cursor: pointer; color: var(--text); }
   .mesabar .mb-t { font: 700 16px/1.1 var(--display); letter-spacing: .04em; text-transform: uppercase; }
-  .mesabar .mb-t b { color: var(--amber); }
+  .mesabar .mb-t b { color: var(--text); }
   .mesabar .mb-sum { font: 700 18px/1 var(--display); font-variant-numeric: tabular-nums; }
   .mesabar .mb-n { grid-column: 1; font-size: 13px; color: var(--muted); }
   .mesabar .mb-prog { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin-top: 6px; }
@@ -337,7 +341,7 @@
   .waiter .qrbox .qr svg { display: block; width: 100%; height: auto; }
   .waiter .qrbox .code { font: 700 34px/1 var(--display); letter-spacing: .18em; color: var(--text); }
   .waiter .qrbox .how { color: var(--muted); font-size: 15px; text-align: center; max-width: 30ch; }
-  .mesa-chip { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 14px 0 10px; border-radius: 999px; border: 1px solid var(--amber); background: rgba(237,157,21,.12); color: var(--text); font: 600 13px/1 var(--display); letter-spacing: .06em; text-transform: uppercase; cursor: pointer; }
+  .mesa-chip { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 14px 0 10px; border-radius: 999px; border: 1px solid var(--line); background: var(--raised); color: var(--text); font: 600 13px/1 var(--display); letter-spacing: .06em; text-transform: uppercase; cursor: pointer; }
   .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--c, var(--muted)); flex: none; box-shadow: 0 0 0 2px rgba(0,0,0,.35); }
   .mgroup { margin-top: 14px; }
   .paidbox { padding: 14px; border: 1px solid rgba(76,195,138,.45); border-radius: 14px; background: rgba(76,195,138,.07); }
@@ -519,6 +523,17 @@ const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
 if (!REDUCED) document.documentElement.classList.add("motion");
 const haptic = () => { try { navigator.vibrate && navigator.vibrate(12); } catch (e) {} };
 const plain = n => "₲ " + n.toLocaleString("es-PY");
+function burst(el) {
+  if (REDUCED) return;
+  const r = el.getBoundingClientRect(), x = r.left + r.width / 2, y = r.top + r.height / 2;
+  for (let i = 0; i < 6; i++) {
+    const sp = document.createElement("span");
+    sp.className = "burst"; sp.textContent = "🔥"; sp.setAttribute("aria-hidden", "true");
+    const a = (-90 + (i - 2.5) * 28) * Math.PI / 180, d = 46 + (i % 2) * 18;
+    sp.style.cssText = `left:${x - 8}px;top:${y - 8}px;--dx:${Math.cos(a) * d}px;--dy:${Math.sin(a) * d}px`;
+    document.body.appendChild(sp); setTimeout(() => sp.remove(), 750);
+  }
+}
 const HEART = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.5 8.1 3.6 4.5 7.1 4.5c2 0 3.4 1.1 4.9 2.9 1.5-1.8 2.9-2.9 4.9-2.9 3.5 0 5.6 3.6 4.4 6.8-1.8 4.6-9.3 9.2-9.3 9.2Z"/></svg>';
 const replay = (el, cls) => { if (REDUCED || !el) return; el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); };
 
@@ -597,7 +612,7 @@ menuEl.innerHTML = DATA.categories.map(c => `
             </span>
             ${d.photo ? `<span class="thumb"><img src="img/${d.photo}-360.webp" alt="" loading="lazy"></span>` : '<span aria-hidden="true"></span>'}
           </button>
-          ${d.soldOut ? "" : `<button class="fav" type="button" data-fav="${d.slug}" aria-pressed="false" aria-label="Agregar ${esc(d.name)} a mi selección">${HEART}</button>`}
+          ${d.soldOut ? "" : `<button class="fav" type="button" data-fav="${d.slug}" aria-pressed="false" aria-label="Agregar ${esc(d.name)} a mi selección"><span class="fire" aria-hidden="true">🔥</span></button>`}
         </li>`).join("")}
     </ul>
   </section>`).join("");
@@ -873,7 +888,7 @@ function toggleSel(slug) {
 }
 menuEl.addEventListener("click", e => {
   const f = e.target.closest(".fav"); if (!f) return;
-  e.stopPropagation(); if (toggleSel(f.dataset.fav)) replay(f, "pop");
+  e.stopPropagation(); if (toggleSel(f.dataset.fav)) { replay(f, "pop"); if (f.getAttribute("aria-pressed") === "true") burst(f); }
 });
 
 /* ficha del plato: opciones, aclaración, cantidad y «Agregar» */
@@ -1076,7 +1091,7 @@ function renderSelPanel() {
     <button class="sel-clear" type="button" id="selClear">Vaciar la selección</button>{{FREE_E}}`
     : mesa ? `<p class="sel-hint">Esta lista es para lo que quieras pedir ahora. Lo que ya pediste está en tu mesa.</p>
       <button class="ar-btn" type="button" id="selToMesa">Ver mi mesa y cómo va mi pedido</button>`
-      : `<p class="sel-hint">Todavía no agregaste platos. Tocá el corazón de cualquier plato para sumarlo acá.</p>`;
+      : `<p class="sel-hint">Todavía no agregaste platos. Tocá el 🔥 de cualquier plato para sumarlo acá.</p>`;
   if (lines.length) refreshCheckout();
 }
 /* ---------- Pedido: por WhatsApp al local o en pantalla para el mozo ---------- */
@@ -1228,10 +1243,11 @@ function renderMesaChip() {
   const chip = $("#mesaChip");
   chip.hidden = !mesa && !mesaDone;
   if (!mesa && mesaDone) chip.innerHTML = `${STAR}Mesa ${esc(mesaDone.view.table)} · tu ticket`;
-  if (mesa) chip.innerHTML = `${colorDot(mesaView?.me)}Mesa ${esc(mesa.table)}${mesaView?.me ? " · " + colorName(mesaView.me) : ""}`;
+  if (mesa) chip.innerHTML = `Mesa ${esc(mesa.table)}`;
   if (mesa) $("#tableChip").hidden = true;
   $("#openSel").textContent = mesa ? "Pedir a la mesa" : "Ver lista";
   renderMesaBar();
+  typeof syncReserveBtn === "function" && syncReserveBtn(); // only on menus with reservations
 }
 let mbOpen = true;
 try { mbOpen = sessionStorage.getItem("mbOpen:" + SLUG) !== "0"; } catch (e) {}
@@ -1266,7 +1282,7 @@ function renderMesaBar() {
     for (const l of v.lines) (groups[l.diner || "_"] ||= []).push(l);
     const order = [v.me, ...v.colors.filter(c => c !== v.me), "_"].filter((c, i, a) => c && a.indexOf(c) === i && groups[c]);
     body.innerHTML = `${v.pending.length ? `<div class="mgroup wait"><h3>Esperando al mozo</h3><ul>${v.pending.map(p => p.lines.map(item).join("")).join("")}</ul></div>` : ""}
-      ${order.map(c => `<div class="mgroup"><h3>${colorDot(c === "_" ? null : c)}${c === "_" ? "Cargado por el mozo" : c === v.me ? "Vos" : esc(colorName(c))}<span class="sum">${plain(groups[c].reduce((a, l) => a + l.unit * l.n, 0))}</span></h3><ul>${groups[c].map(item).join("")}</ul></div>`).join("") || `<p class="sel-hint">Todavía no hay nada aceptado en la mesa.</p>`}
+      ${order.map(c => `<div class="mgroup"><h3>${colorDot(c === "_" ? null : c)}${c === "_" ? "De la mesa" : c === v.me ? "Vos" : esc(colorName(c))}<span class="sum">${plain(groups[c].reduce((a, l) => a + l.unit * l.n, 0))}</span></h3><ul>${groups[c].map(item).join("")}</ul></div>`).join("") || `<p class="sel-hint">Todavía no hay nada aceptado en la mesa.</p>`}
       <button class="mb-open" type="button" id="mbOpenSheet">Ver la cuenta y pedirla</button>`;
   }
   document.documentElement.style.setProperty("--mbh", bar.offsetHeight + "px");
@@ -1278,7 +1294,7 @@ function orderMore() {
   mbOpen = false; try { sessionStorage.setItem("mbOpen:" + SLUG, "0"); } catch (e) {}
   closeMesa(); renderMesaBar();
   document.getElementById("menu").scrollIntoView({ behavior: "smooth" });
-  live.textContent = "Elegí lo que quieras sumar: tocá el corazón de un plato.";
+  live.textContent = "Elegí lo que quieras sumar: tocá el 🔥 de un plato.";
 }
 $("#mbAdd").addEventListener("click", orderMore);
 function applyMesaView(view, qr) {
@@ -1413,7 +1429,7 @@ function renderMesa() {
   body.innerHTML = `
     <p class="sel-hint" style="margin-top:4px">${colorDot(v.me)} Tu color en esta mesa: <b>${esc(colorName(v.me))}</b></p>
     ${v.pending.length ? `<div class="mgroup wait"><h3>Esperando al mozo</h3><ul>${v.pending.map(p => p.lines.map(l => item(l).replace("<li>", `<li title="${esc(colorName(p.color))}">`)).join("")).join("")}</ul></div>` : ""}
-    ${order.map(c => `<div class="mgroup"><h3>${colorDot(c === "_" ? null : c)}${c === "_" ? "Cargado por el mozo" : c === v.me ? "Vos (" + esc(colorName(c)) + ")" : esc(colorName(c))}<span class="sum">${plain(groups[c].reduce((s, l) => s + l.unit * l.n, 0))}</span></h3><ul>${groups[c].map(item).join("")}</ul></div>`).join("") || `<p class="sel-hint">Todavía no hay nada aceptado en la mesa.</p>`}
+    ${order.map(c => `<div class="mgroup"><h3>${colorDot(c === "_" ? null : c)}${c === "_" ? "De la mesa" : c === v.me ? "Vos (" + esc(colorName(c)) + ")" : esc(colorName(c))}<span class="sum">${plain(groups[c].reduce((s, l) => s + l.unit * l.n, 0))}</span></h3><ul>${groups[c].map(item).join("")}</ul></div>`).join("") || `<p class="sel-hint">Todavía no hay nada aceptado en la mesa.</p>`}
     <div class="sel-total"><span>Total de la mesa</span>${fmt(v.total)}</div>
     ${mesaQr ? `<div class="invite"><div class="qr" role="img" aria-label="QR para sumarse a la mesa">${mesaQr}</div><p><b>¿Vienen más?</b> Que escaneen este código con la cámara y piden desde su celular, cada uno con su color.</p></div>` : ""}
     ${v.bill ? billSummary(v) : ""}
@@ -1535,6 +1551,7 @@ mesaSheet.addEventListener("change", e => {
   const token = params.get("unirse");
   if (token) { history.replaceState(null, "", location.pathname); joinMesa(token); }
   else if (mesa) { renderMesaChip(); connectMesa(); } else if (mesaDone) renderMesaChip();
+  typeof syncReserveBtn === "function" && syncReserveBtn(); // only on menus with reservations
 }
 
 /* «Agotado hoy» marked from the caja: greyed out here and refused by the caja if someone tries anyway */

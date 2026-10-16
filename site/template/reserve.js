@@ -1,5 +1,7 @@
 
 /* Reservas por WhatsApp: no hay agenda ni servidor; el mensaje sale armado por WhatsApp y el local confirma */
+// at the venue (table QR or a joined table) there is nothing to reserve
+function syncReserveBtn() { const b = $("#reserveBtn"); if (b) b.style.display = table || mesa || mesaDone ? "none" : ""; }
 (() => {
   const dlg = $("#reserveDlg"), btn = $("#reserveBtn"), form = $("#reserveForm");
   if (!dlg || !btn || !form || !WHATSAPP) return;
