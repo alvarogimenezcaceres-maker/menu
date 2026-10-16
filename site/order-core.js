@@ -195,7 +195,8 @@ const OrderCore = (() => {
     } else if (sp.mode === "iguales") {
       const n = Math.round(+sp.n);
       if (!(n >= 1 && n <= 30)) err("Elegí entre 1 y 30 personas.");
-      parts = spread(total, Array.from({ length: n }, () => 1)).map((amount, i) => ({ key: "p" + (i + 1), color: colors[i] || null, amount, items: [] }));
+      const spare = ["azul", "verde", "naranja", "violeta", "rosa", "celeste", "amarillo", "rojo"].filter(c => !colors.includes(c)); // the table's own colors come first
+      parts = spread(total, Array.from({ length: n }, () => 1)).map((amount, i) => ({ key: "p" + (i + 1), color: colors[i] || spare[i - colors.length] || null, amount, items: [] }));
     } else {
       const amounts = sp.amounts || {};
       parts = colors.map(c => ({ key: c, color: c, amount: Math.max(0, Math.round(+amounts[c] || 0)), items: [] })).filter(p => p.amount > 0);

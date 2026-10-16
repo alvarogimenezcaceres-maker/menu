@@ -142,3 +142,10 @@ test("basic order (free plan): only adds the delivery/pickup line, paid messages
   assert.equal(basic.replace("Te paso por acá si es delivery o retiro, mi nombre y cómo pago.\n\n", ""), base);
   assert.ok(!C.orderMessage({ ...args, basic: true, table: "4" }).includes("Te paso por acá"));
 });
+
+test("equal parts beyond the phones at the table get another color, never «Persona N»", () => {
+  const lines = [{ name: "Picada", unit: 90000, n: 1, diner: "azul" }];
+  const r = C.splitBill(lines, ["azul", "verde"], { mode: "iguales", n: 4, tipMode: "0" });
+  assert.equal(r.parts.map(p => p.color).join(), ["azul", "verde", "naranja", "violeta"].join());
+  assert.equal(r.parts.reduce((a, p) => a + p.amount, 0), 90000);
+});

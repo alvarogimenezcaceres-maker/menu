@@ -952,6 +952,7 @@ async function run(ref, op, args = {}, okMsg, after) {
     const { order } = await api("/op", { method: "POST", body: { op, ref, args, updatedAt: cur && cur.updatedAt } });
     orders.set(order.ref, order);
     closeOverlay(); renderMain(); if (okMsg) say(okMsg(order));
+    if (op === "payPart" && order.kind === "table" && order.status === "open") openTableDrawer(order.table, true); // more parts to charge: stay on the table
     if (after) after(order, cur);
     if (op === "accept") { clearInterval(titleTimer); document.title = `${RESTAURANT} · Caja`; }
   } catch (e) { say(e.message, true); if (e.code === "stale" || e.code === "closed" || e.code === "state") loadState().catch(() => {}); }

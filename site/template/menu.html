@@ -260,7 +260,9 @@
   body.has-sel .app { padding-bottom: 104px; }
   /* Mi mesa, always on screen while the table is open: everyone at the table sees the same list, live */
   .mesabar { position: fixed; z-index: 16; left: 50%; bottom: 0; transform: translateX(-50%); width: min(100%, 520px); background: var(--surface); border: 1px solid rgba(255,185,67,.4); border-bottom: 0; border-radius: 18px 18px 0 0; box-shadow: 0 -12px 34px -12px rgba(0,0,0,.8); padding-bottom: env(safe-area-inset-bottom, 0px); }
-  .mesabar .mb-head { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 2px 12px; align-items: center; width: 100%; min-height: 60px; padding: 10px 16px; background: none; border: 0; text-align: left; cursor: pointer; color: var(--text); }
+  .mesabar .mb-row { display: flex; align-items: stretch; }
+  .mesabar .mb-add { flex: none; align-self: center; min-height: 48px; margin: 0 12px 0 0; padding: 0 16px; border-radius: 12px; border: 0; background: var(--amber); color: #15100a; font: 700 14px/1 var(--display); letter-spacing: .05em; text-transform: uppercase; cursor: pointer; }
+  .mesabar .mb-head { flex: 1; min-width: 0; display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 2px 12px; align-items: center; width: 100%; min-height: 60px; padding: 10px 16px; background: none; border: 0; text-align: left; cursor: pointer; color: var(--text); }
   .mesabar .mb-t { font: 700 16px/1.1 var(--display); letter-spacing: .04em; text-transform: uppercase; }
   .mesabar .mb-t b { color: var(--amber); }
   .mesabar .mb-sum { font: 700 18px/1 var(--display); font-variant-numeric: tabular-nums; }
@@ -462,7 +464,7 @@
   <button type="button" id="openSel">Ver lista</button>
 </div>
 <section class="mesabar" id="mesabar" aria-label="Mi mesa" hidden>
-  <button type="button" class="mb-head" id="mbHead" aria-expanded="true"><span class="mb-t">Mesa <b id="mbTable"></b></span><span class="mb-sum" id="mbSum"></span><span class="mb-n" id="mbN"></span><span class="mb-chev" aria-hidden="true">▲</span><span class="mb-prog" id="mbProg" aria-hidden="true"><i></i><i></i><i></i><i></i></span></button>
+  <div class="mb-row"><button type="button" class="mb-head" id="mbHead" aria-expanded="true"><span class="mb-t">Mesa <b id="mbTable"></b></span><span class="mb-sum" id="mbSum"></span><span class="mb-n" id="mbN"></span><span class="mb-chev" aria-hidden="true">▲</span><span class="mb-prog" id="mbProg" aria-hidden="true"><i></i><i></i><i></i><i></i></span></button><button type="button" class="mb-add" id="mbAdd">+ Pedir más</button></div>
   <div class="mb-body" id="mbBody"></div>
 </section>
 <div id="live" class="sr-only" aria-live="polite"></div>
@@ -1228,6 +1230,7 @@ function renderMesaChip() {
   if (!mesa && mesaDone) chip.innerHTML = `${STAR}Mesa ${esc(mesaDone.view.table)} · tu ticket`;
   if (mesa) chip.innerHTML = `${colorDot(mesaView?.me)}Mesa ${esc(mesa.table)}${mesaView?.me ? " · " + colorName(mesaView.me) : ""}`;
   if (mesa) $("#tableChip").hidden = true;
+  $("#openSel").textContent = mesa ? "Pedir a la mesa" : "Ver lista";
   renderMesaBar();
 }
 let mbOpen = true;
@@ -1270,6 +1273,14 @@ function renderMesaBar() {
 }
 $("#mbHead").addEventListener("click", () => { mbOpen = !mbOpen; try { sessionStorage.setItem("mbOpen:" + SLUG, mbOpen ? "1" : "0"); } catch (e) {} renderMesaBar(); });
 $("#mbBody").addEventListener("click", e => { if (e.target.id === "mbOpenSheet") openMesa(); });
+// ask for more: fold the list so the menu has room, and go to the menu (the hearts add to the selection; the bar above sends it to the table)
+function orderMore() {
+  mbOpen = false; try { sessionStorage.setItem("mbOpen:" + SLUG, "0"); } catch (e) {}
+  closeMesa(); renderMesaBar();
+  document.getElementById("menu").scrollIntoView({ behavior: "smooth" });
+  live.textContent = "Elegí lo que quieras sumar: tocá el corazón de un plato.";
+}
+$("#mbAdd").addEventListener("click", orderMore);
 function applyMesaView(view, qr) {
   if (qr) mesaQr = qr;
   // a pending order of mine that disappeared without new lines of my color was rejected
@@ -1510,7 +1521,7 @@ mesaSheet.addEventListener("click", e => {
     if (b.id === "splitBack") { splitDraft = null; renderMesa(); return; }
   }
   if (e.target.id === "splitOpen") { openSplit(); return; }
-  if (e.target.id === "mesaMore") { closeMesa(); document.getElementById("menu").scrollIntoView(); }
+  if (e.target.id === "mesaMore") { orderMore(); }
   if (e.target.id === "mesaLeave" && confirm("¿Salir de la mesa en este celular? Tu consumo queda en la cuenta de la mesa.")) { setMesa(null); closeMesa(); }
 });
 mesaSheet.addEventListener("change", e => {
