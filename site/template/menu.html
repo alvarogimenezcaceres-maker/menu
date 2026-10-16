@@ -295,6 +295,11 @@
   .mesabar .mb-chev { grid-row: 1 / span 2; grid-column: 3; font-size: 14px; color: var(--amber); transition: transform .2s; }
   .mesabar.open .mb-chev { transform: rotate(180deg); }
   .mesabar .mb-body { max-height: 40vh; overflow-y: auto; padding: 0 16px 12px; border-top: 1px solid var(--line); overscroll-behavior: contain; }
+  .tipbox { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 10px; }
+  .tipbox .tip-l { font-size: 13.5px; color: var(--muted); margin-right: 2px; }
+  .tip-chip { min-height: 40px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--line); background: none; color: var(--text); font: 600 13.5px/1 var(--display); cursor: pointer; }
+  .tip-chip[aria-pressed="true"] { border-color: var(--amber); background: rgba(237,157,21,.14); }
+  .tipbox .lib-in { flex: 1 1 100%; }
   .adjust { margin-top: 12px; }
   .adjust summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; font: 600 14px/1.2 var(--display); color: var(--amber-soft); }
   .mesabar .mb-acts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -1356,14 +1361,17 @@ $("#mbBody").addEventListener("click", e => {
   if (e.target.id === "mbSplit") { openMesa(); openSplit(); }
 });
 // the whole bill in one tap: one equal part (no tip: the waiter takes it from there)
+let totalTip = { mode: "0", amount: 0 };
+const tipOf = v => totalTip.mode === "10" ? Math.round(v.total * 0.1) : totalTip.mode === "monto" ? Math.max(0, Math.round(totalTip.amount || 0)) : 0;
 async function requestTotal(btn) {
   btn.disabled = true;
   try {
-    const res = await fetch(`/api/${SLUG}/mesa/cuenta`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ token: mesa.token, diner: dinerId(), split: { mode: "iguales", n: 1, tipMode: "0" } }) });
+    const res = await fetch(`/api/${SLUG}/mesa/cuenta`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ token: mesa.token, diner: dinerId(), split: { mode: "iguales", n: 1, tipMode: totalTip.mode, tipAmount: totalTip.amount } }) });
     const r = await res.json();
     if (!res.ok) { btn.disabled = false; alert(r.error || "No se pudo pedir la cuenta."); return; }
+    totalTip = { mode: "0", amount: 0 };
     applyMesaView(r.view, r.qr);
-    toast(`Cuenta pedida · ${plain(r.view.total)} ✓`);
+    toast(`Cuenta pedida · ${plain(r.view.bill ? r.view.bill.grand : r.view.total)} ✓`);
     live.textContent = "Cuenta pedida: el mozo ya lo sabe.";
   } catch (e) { btn.disabled = false; alert("Sin conexión. Probá de nuevo."); }
 }
@@ -1516,7 +1524,11 @@ function renderMesa() {
     <div class="sel-total"><span>Total de la mesa</span>${fmt(v.total)}</div>
     ${mesaQr ? `<div class="invite"><div class="qr" role="img" aria-label="QR para sumarse a la mesa">${mesaQr}</div><p><b>¿Vienen más?</b> Que escaneen este código con la cámara y piden desde su celular, cada uno con su color.</p></div>` : ""}
     ${v.bill ? billSummary(v) : ""}
-    ${v.lines.length && !v.bill ? `<button class="ar-btn" type="button" id="billTotal">Pedir la cuenta · ${plain(v.total)}</button>
+    ${v.lines.length && !v.bill ? `<button class="ar-btn" type="button" id="billTotal">Pedir la cuenta · ${plain(v.total + tipOf(v))}</button>
+    <div class="tipbox" role="group" aria-label="Propina"><span class="tip-l">Propina (opcional)</span>
+      <button type="button" class="tip-chip" id="tip10" aria-pressed="${totalTip.mode === "10"}">10 % · ${plain(Math.round(v.total * 0.1))}</button>
+      <button type="button" class="tip-chip" id="tipX" aria-pressed="${totalTip.mode === "monto"}">Otro monto</button>
+      ${totalTip.mode === "monto" ? `<div class="lib-in"><span aria-hidden="true">₲</span><input id="tipTotal" inputmode="numeric" autocomplete="off" aria-label="Monto de la propina" placeholder="Monto exacto" value="${totalTip.amount ? Number(totalTip.amount).toLocaleString("es-PY") : ""}"></div>` : ""}</div>
     <button class="sel-btn" type="button" id="splitOpen">Dividir la cuenta</button>` : ""}
     <button class="sel-btn" type="button" id="mesaMore">Pedir algo más</button>
     <button class="sel-clear" type="button" id="mesaLeave">Salir de esta mesa en este celular</button>`;
@@ -1612,6 +1624,7 @@ scrim.addEventListener("click", () => { if (!mesaSheet.hidden) closeMesa(); });
 addEventListener("keydown", e => { if (e.key === "Escape" && !mesaSheet.hidden) closeMesa(); });
 mesaSheet.addEventListener("input", e => {
   if (e.target.id === "opComment") doneDraft.comment = e.target.value;
+  if (e.target.id === "tipTotal") { totalTip.amount = +e.target.value.replace(/[^0-9]/g, "") || 0; const b = $("#billTotal"); if (b && mesaView) b.textContent = `Pedir la cuenta · ${plain(mesaView.total + tipOf(mesaView))}`; }
   if (splitDraft && e.target.dataset.amount) { splitDraft.amounts[e.target.dataset.amount] = +e.target.value.replace(/[^0-9]/g, "") || 0; const st = $("#libStatus"); if (st) st.textContent = libStatus(mesaView, splitDraft); }
 });
 mesaSheet.addEventListener("click", e => {
@@ -1638,6 +1651,8 @@ mesaSheet.addEventListener("click", e => {
   }
   if (e.target.id === "splitOpen") { openSplit(); return; }
   if (e.target.id === "billTotal") { requestTotal(e.target); return; }
+  if (e.target.id === "tip10") { totalTip = { mode: totalTip.mode === "10" ? "0" : "10", amount: 0 }; renderMesa(); return; }
+  if (e.target.id === "tipX") { totalTip = { mode: totalTip.mode === "monto" ? "0" : "monto", amount: 0 }; renderMesa(); const i = $("#tipTotal"); if (i) i.focus(); return; }
   if (e.target.id === "mesaMore") { orderMore(); }
   if (e.target.id === "mesaLeave" && confirm("¿Salir de la mesa en este celular? Tu consumo queda en la cuenta de la mesa.")) { setMesa(null); closeMesa(); }
 });
