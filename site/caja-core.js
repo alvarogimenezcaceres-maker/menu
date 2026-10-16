@@ -168,9 +168,11 @@ export function requestBill(session, split, dinerId, now = Date.now()) {
   // the whole bill in one tap (equal parts, n = 1): it goes under the color of whoever asked
   const colors = session.diners.map(d => d.color).sort((a, b) => (split.mode === "iguales" && +split.n === 1 ? (b === by0) - (a === by0) : 0));
   let bill;
-  try { bill = C.splitBill(session.lines, colors, split); } catch (e) { fail("split", e.message); }
+  // «montos a mano» can add people without a phone: extra colors of the palette (never in the by-consumption split)
+  const extra = split.mode === "libres" && Array.isArray(split.extra) ? [...new Set(split.extra.filter(c => DINER_COLORS.some(x => x.key === c) && !colors.includes(c)))] : [];
+  try { bill = C.splitBill(session.lines, colors.concat(extra), split); } catch (e) { fail("split", e.message); }
   const by = session.diners.find(d => d.id === dinerId)?.color || null;
-  return { ...session, updatedAt: now, bill: { ...bill, split: { mode: split.mode, assign: split.assign, n: split.n, amounts: split.amounts, tipMode: split.tipMode, tipAmount: split.tipAmount }, by, at: now, paid: {} } };
+  return { ...session, updatedAt: now, bill: { ...bill, split: { mode: split.mode, assign: split.assign, n: split.n, amounts: split.amounts, tipMode: split.tipMode, tipAmount: split.tipAmount, extra }, by, at: now, paid: {} } };
 }
 
 export function applyTableOp(session, op, args, role, catalog, now = Date.now()) {

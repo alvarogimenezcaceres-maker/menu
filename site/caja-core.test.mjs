@@ -335,3 +335,13 @@ test("the whole bill in one tap goes under the color of whoever asked; a first n
   assert.equal(dinerView(setDinerName(named, "diner-bbbbbbbb", ""), "diner-bbbbbbbb").names.verde, undefined);
   assert.throws(() => setDinerName(t, "diner-cccccccc", "X"), CajaError);
 });
+
+test("«montos a mano» can include people without a phone (extra palette colors)", () => {
+  let t = openTable({ ref: "ZZ22", table: 4, lines: [], by: "Ana", joinToken: "t".repeat(24) });
+  t = addDiner(t, "diner-aaaaaaaa").session;
+  t = addRound(t, [{ slug: "x", name: "Picada", unit: 90000, n: 1, extras: [] }], "diner-aaaaaaaa").session;
+  const s = requestBill(t, { mode: "libres", amounts: { azul: 30000, verde: 30000, naranja: 30000 }, extra: ["verde", "naranja", "azul", "nope"], tipMode: "0" }, "diner-aaaaaaaa");
+  assert.equal(s.bill.parts.map(p => p.color).join(), "azul,verde,naranja");
+  assert.equal(s.bill.split.extra.join(), "verde,naranja");
+  assert.throws(() => requestBill(t, { mode: "libres", amounts: { azul: 30000, verde: 60000 }, tipMode: "0" }, "diner-aaaaaaaa"), CajaError); // verde has no phone and was not added
+});

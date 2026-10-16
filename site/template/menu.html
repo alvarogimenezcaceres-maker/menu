@@ -57,15 +57,15 @@
   .hero {
     position: relative; overflow: hidden; border-radius: 18px;
     background: radial-gradient(120% 90% at 85% 60%, #2a2118 0%, var(--surface) 55%, #0d0c0b 100%);
-    min-height: 168px; padding: 14px 16px; display: grid; grid-template-columns: minmax(0, 1fr) 44%; align-items: center;
+    min-height: 128px; padding: 12px 16px; display: grid; grid-template-columns: minmax(0, 1fr) 44%; align-items: center;
   }
   .hero .brand { position: relative; z-index: 1; display: grid; gap: 8px; justify-items: start; }
   .hero .brand h1 { margin: 0; }
-  .hero .logo { width: 92px; max-width: 100%; display: block; }
-  .hero p { margin: 0; color: var(--muted); font-size: 14.5px; max-width: 22ch; }
+  .hero .logo { width: 72px; max-width: 100%; display: block; }
+  .hero p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.3; max-width: 32ch; }
   .hero--center .brand { justify-items: center; text-align: center; }
-  .hero--center .logo { width: 108px; }
-  .hero--center p { max-width: 30ch; }
+  .hero--center .logo { width: 84px; }
+  .hero--center p { max-width: 36ch; }
   .hero .dish { position: absolute; right: -18px; bottom: -8px; width: 52%; max-width: 250px; filter: drop-shadow(0 14px 24px rgba(0,0,0,.6)); }
   .table-chip { display: inline-flex; align-items: center; gap: 6px; font: 600 13px/1 var(--display); letter-spacing: .08em; text-transform: uppercase; background: var(--amber); color: #1a1206; padding: 8px 12px 7px; border-radius: 999px; }
 
@@ -172,9 +172,9 @@
   /* sin plato de portada: el logo al centro */
   .hero:not(:has(.dish)) { grid-template-columns: minmax(0, 1fr); min-height: 0; }
   .hero:not(:has(.dish)) .brand { justify-items: center; text-align: center; }
-  .hero:not(:has(.dish)) .logo { width: 108px; }
+  .hero:not(:has(.dish)) .logo { width: 84px; }
   .hero:not(:has(.dish)) { padding-block: 12px; }
-  .hero:not(:has(.dish)) p { max-width: 30ch; }
+  .hero:not(:has(.dish)) p { max-width: 36ch; }
   .hero:not(:has(.dish))::after { right: 25%; bottom: auto; top: 30%; height: 40%; opacity: .5; }
   @keyframes float { 50% { transform: translateY(-9px) rotate(-1.5deg); } }
 
@@ -282,7 +282,6 @@
   /* Mi mesa, always on screen while the table is open: everyone at the table sees the same list, live */
   .mesabar { position: fixed; z-index: 16; left: 50%; bottom: 0; transform: translateX(-50%); width: min(100%, 520px); background: var(--surface); border: 1px solid var(--line); border-bottom: 0; border-radius: 18px 18px 0 0; box-shadow: 0 -12px 34px -12px rgba(0,0,0,.8); padding-bottom: env(safe-area-inset-bottom, 0px); }
   .mesabar .mb-row { display: flex; align-items: stretch; }
-  .mesabar .mb-add { flex: none; align-self: center; min-height: 48px; margin: 0 12px 0 0; padding: 0 16px; border-radius: 12px; border: 0; background: var(--amber); color: #15100a; font: 700 14px/1 var(--display); letter-spacing: .05em; text-transform: uppercase; cursor: pointer; }
   .mesabar .mb-head { flex: 1; min-width: 0; display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 2px 12px; align-items: center; width: 100%; min-height: 60px; padding: 10px 16px; background: none; border: 0; text-align: left; cursor: pointer; color: var(--text); }
   .mesabar .mb-t { font: 700 16px/1.1 var(--display); letter-spacing: .04em; text-transform: uppercase; }
   .mesabar .mb-t b { color: var(--text); }
@@ -292,7 +291,7 @@
   .mesabar .mb-prog i { height: 3px; border-radius: 3px; background: var(--line); transition: background .5s; }
   .mesabar .mb-prog i.on { background: var(--amber); }
   .mesabar .mb-prog.done i.on { background: #4CC38A; }
-  .mesabar .mb-chev { grid-row: 1 / span 2; grid-column: 3; font-size: 14px; color: var(--amber); transition: transform .2s; }
+  .mesabar .mb-chev { grid-row: 1 / span 2; grid-column: 3; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--line); background: var(--raised); font-size: 13px; color: var(--text); transition: transform .2s; }
   .mesabar.open .mb-chev { transform: rotate(180deg); }
   .mesabar .mb-body { max-height: 40vh; overflow-y: auto; padding: 0 16px 12px; border-top: 1px solid var(--line); overscroll-behavior: contain; }
   .tipbox { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 10px; }
@@ -377,11 +376,12 @@
   .split-foot .ar-btn { width: 100%; margin-top: 10px; }
   .split-foot .sel-clear { margin-top: 4px; }
   .lib { display: grid; gap: 8px; margin-top: 10px; }
-  .lib-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr) auto; gap: 8px; align-items: center; }
+  .lib-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr) auto auto; gap: 8px; align-items: center; }
   .lib-row label { display: flex; align-items: center; gap: 8px; font: 600 15px/1.2 var(--display); min-width: 0; }
   .lib-in { display: flex; align-items: center; gap: 6px; min-height: 48px; padding: 0 12px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); }
   .lib-in input { width: 100%; min-width: 0; border: 0; background: none; outline: none; font: 600 18px/1 var(--display); font-variant-numeric: tabular-nums; text-align: right; color: var(--text); }
   .lib-in span { color: var(--muted); }
+  .lib-add { min-height: 44px; border-radius: 12px; border: 1px dashed var(--line); background: none; color: var(--amber-soft); font: 600 14px/1 var(--display); cursor: pointer; }
   .lib-rest { min-height: 48px; padding: 0 12px; border-radius: 12px; border: 1px solid var(--line); background: var(--raised); color: var(--amber-soft); font: 600 13px/1 var(--display); cursor: pointer; }
   .lib-status { margin: 4px 0 0; font: 600 14px/1.2 var(--display); color: var(--amber-soft); }
   .split-hint { margin: 12px 0 0; font-size: 14px; color: var(--muted); }
@@ -512,7 +512,7 @@
   <button type="button" id="openSel">Ver lista</button>
 </div>
 <section class="mesabar" id="mesabar" aria-label="Mi mesa" hidden>
-  <div class="mb-row"><button type="button" class="mb-head" id="mbHead" aria-expanded="true"><span class="mb-t">Mesa <b id="mbTable"></b></span><span class="mb-sum" id="mbSum"></span><span class="mb-n" id="mbN"></span><span class="mb-chev" aria-hidden="true">▲</span><span class="mb-prog" id="mbProg" aria-hidden="true"><i></i><i></i><i></i><i></i></span></button><button type="button" class="mb-add" id="mbAdd">+ Pedir más</button></div>
+  <div class="mb-row"><button type="button" class="mb-head" id="mbHead" aria-expanded="true"><span class="mb-t">Mesa <b id="mbTable"></b></span><span class="mb-sum" id="mbSum"></span><span class="mb-n" id="mbN"></span><span class="mb-chev" aria-hidden="true">▲</span><span class="mb-prog" id="mbProg" aria-hidden="true"><i></i><i></i><i></i><i></i></span></button></div>
   <div class="mb-body" id="mbBody"></div>
 </section>
 <div id="live" class="sr-only" aria-live="polite"></div>
@@ -1378,14 +1378,13 @@ async function requestTotal(btn) {
 async function saveName(value) {
   try { const res = await fetch(`/api/${SLUG}/mesa/nombre`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ token: mesa.token, diner: dinerId(), name: value }) }); const r = await res.json(); if (res.ok) applyMesaView(r.view, r.qr); } catch (e) {}
 }
-// ask for more: fold the list so the menu has room, and go to the menu (the hearts add to the selection; the bar above sends it to the table)
-function orderMore() {
-  mbOpen = false; try { sessionStorage.setItem("mbOpen:" + SLUG, "0"); } catch (e) {}
-  closeMesa(); renderMesaBar();
-  document.getElementById("menu").scrollIntoView({ behavior: "smooth" });
-  live.textContent = "Elegí lo que quieras sumar: tocá el + de un plato.";
-}
-$("#mbAdd").addEventListener("click", orderMore);
+// scrolling down the menu folds the bar (it opens again with its button); scrolling is the diner choosing, not leaving
+let lastY = scrollY;
+addEventListener("scroll", () => {
+  const y = scrollY, down = y > lastY + 24;
+  if (down && mbOpen && !$("#mesabar").hidden && y > 160) { mbOpen = false; renderMesaBar(); }
+  if (Math.abs(y - lastY) > 24) lastY = y;
+}, { passive: true });
 function applyMesaView(view, qr) {
   if (qr) mesaQr = qr;
   // a pending order of mine that disappeared without new lines of my color was rejected
@@ -1530,7 +1529,7 @@ function renderMesa() {
       <button type="button" class="tip-chip" id="tipX" aria-pressed="${totalTip.mode === "monto"}">Otro monto</button>
       ${totalTip.mode === "monto" ? `<div class="lib-in"><span aria-hidden="true">₲</span><input id="tipTotal" inputmode="numeric" autocomplete="off" aria-label="Monto de la propina" placeholder="Monto exacto" value="${totalTip.amount ? Number(totalTip.amount).toLocaleString("es-PY") : ""}"></div>` : ""}</div>
     <button class="sel-btn" type="button" id="splitOpen">Dividir la cuenta</button>` : ""}
-    <button class="sel-btn" type="button" id="mesaMore">Pedir algo más</button>
+
     <button class="sel-clear" type="button" id="mesaLeave">Salir de esta mesa en este celular</button>`;
 }
 function partLabel(p, v) { return p.color ? (p.color === v.me ? "Vos (" + colorName(p.color) + ")" : colorName(p.color)) : "Persona " + p.key.slice(1); }
@@ -1551,7 +1550,7 @@ function billSummary(v) {
 let splitDraft = null;
 function openSplit() {
   const v = mesaView, prev = v.bill?.split;
-  splitDraft = prev ? { ...prev, assign: (prev.assign || []).slice(), amounts: { ...(prev.amounts || {}) } } : { mode: "consumo", assign: [], n: Math.max(2, v.colors.length), amounts: {}, tipMode: "0", tipAmount: 0 };
+  splitDraft = prev ? { ...prev, assign: (prev.assign || []).slice(), amounts: { ...(prev.amounts || {}) }, extra: (prev.extra || []).slice() } : { mode: "consumo", assign: [], n: Math.max(2, v.colors.length), amounts: {}, tipMode: "0", tipAmount: 0 };
   renderSplit();
 }
 const libSum = d => Object.values(d.amounts || {}).reduce((a, x) => a + (+x || 0), 0);
@@ -1563,7 +1562,8 @@ function renderSplit() {
   const v = mesaView, d = splitDraft, body = $("#mesaBody");
   $("#mesaTitle").textContent = `Dividir · Mesa ${mesa.table}`;
   let res = null, error = "";
-  try { res = C.splitBill(v.lines, v.colors, d); } catch (e) { error = e.message; }
+  const cols = d.mode === "libres" ? [...v.colors, ...(d.extra || [])] : v.colors;
+  try { res = C.splitBill(v.lines, cols, d); } catch (e) { error = e.message; }
   const who = (l, i) => { const a = d.assign[i]; return a && a.length ? a : l.diner && v.colors.includes(l.diner) ? [l.diner] : v.colors.slice(); };
   const modeBody = d.mode === "consumo"
     ? `<p class="split-hint">Cada uno paga lo que pidió. Revisá las partes abajo y pedí la cuenta.</p>
@@ -1573,7 +1573,8 @@ function renderSplit() {
     : d.mode === "iguales"
       ? `<div class="field"><label for="splitN">¿Entre cuántos?</label><div class="qty" role="group" aria-label="Personas"><button type="button" data-n="-1" aria-label="Uno menos">−</button><output id="splitN">${d.n}</output><button type="button" data-n="1" aria-label="Uno más">+</button></div></div>`
       : `<p class="split-hint">Poné cuánto paga cada uno. Entre todos tiene que sumar ${plain(v.total)}.</p>
-        <div class="lib">${v.colors.map(c => `<div class="lib-row"><label for="amt-${c}">${colorDot(c)} ${esc(c === v.me ? "Vos" : colorName(c))}</label><div class="lib-in"><span aria-hidden="true">₲</span><input id="amt-${c}" data-amount="${c}" inputmode="numeric" autocomplete="off" aria-label="Monto de ${esc(colorName(c))}" value="${d.amounts[c] ? Number(d.amounts[c]).toLocaleString("es-PY") : ""}" placeholder="0"></div><button type="button" class="lib-rest" data-rest="${c}" aria-label="Poner en ${esc(colorName(c))} lo que falta">Resto</button></div>`).join("")}
+        <div class="lib">${cols.map(c => `<div class="lib-row"><label for="amt-${c}">${colorDot(c)} ${esc(c === v.me ? "Vos" : colorName(c))}</label><div class="lib-in"><span aria-hidden="true">₲</span><input id="amt-${c}" data-amount="${c}" inputmode="numeric" autocomplete="off" aria-label="Monto de ${esc(colorName(c))}" value="${d.amounts[c] ? Number(d.amounts[c]).toLocaleString("es-PY") : ""}" placeholder="0"></div><button type="button" class="lib-rest" data-rest="${c}" aria-label="Poner en ${esc(colorName(c))} lo que falta">Resto</button>${(d.extra || []).includes(c) ? `<button type="button" class="lib-rest" data-rmp="${c}" aria-label="Quitar a ${esc(colorName(c))}">✕</button>` : ""}</div>`).join("")}
+        ${cols.length < 8 ? `<button type="button" class="lib-add" data-addp="1">+ Agregar otra persona</button>` : ""}
         <p class="lib-status" id="libStatus" role="status">${libStatus(v, d)}</p></div>`;
   body.innerHTML = `
     <div class="seg3" role="group" aria-label="Cómo dividir">${[["consumo", "Cada uno lo suyo"], ["iguales", "Partes iguales"], ["libres", "Montos a mano"]].map(([k, l]) => `<button type="button" data-mode="${k}" aria-pressed="${d.mode === k}">${l}</button>`).join("")}</div>
@@ -1636,6 +1637,8 @@ mesaSheet.addEventListener("click", e => {
   if (b && splitDraft) {
     const d = splitDraft, v = mesaView;
     if (b.dataset.mode) { d.mode = b.dataset.mode; renderSplit(); return; }
+    if (b.dataset.addp) { const used = [...v.colors, ...(d.extra || [])], next = Object.keys(COLORS).find(c => !used.includes(c)); if (next) { (d.extra ||= []).push(next); renderSplit(); } return; }
+    if (b.dataset.rmp) { d.extra = (d.extra || []).filter(c => c !== b.dataset.rmp); delete d.amounts[b.dataset.rmp]; renderSplit(); return; }
     if (b.dataset.rest) { const c = b.dataset.rest, others = libSum({ amounts: { ...d.amounts, [c]: 0 } }); d.amounts[c] = Math.max(0, v.total - others); renderSplit(); return; }
     if (b.dataset.tip) { d.tipMode = b.dataset.tip; renderSplit(); if (d.tipMode === "monto") $("#tipAmount").focus(); return; }
     if (b.dataset.n) { d.n = Math.max(1, Math.min(30, d.n + Number(b.dataset.n))); renderSplit(); return; }
@@ -1653,7 +1656,7 @@ mesaSheet.addEventListener("click", e => {
   if (e.target.id === "billTotal") { requestTotal(e.target); return; }
   if (e.target.id === "tip10") { totalTip = { mode: totalTip.mode === "10" ? "0" : "10", amount: 0 }; renderMesa(); return; }
   if (e.target.id === "tipX") { totalTip = { mode: totalTip.mode === "monto" ? "0" : "monto", amount: 0 }; renderMesa(); const i = $("#tipTotal"); if (i) i.focus(); return; }
-  if (e.target.id === "mesaMore") { orderMore(); }
+
   if (e.target.id === "mesaLeave" && confirm("¿Salir de la mesa en este celular? Tu consumo queda en la cuenta de la mesa.")) { setMesa(null); closeMesa(); }
 });
 mesaSheet.addEventListener("change", e => {
