@@ -51,7 +51,7 @@ const Ticket = (() => {
   }
 
   const priced = l => twoCols(`${l.n}x ${l.name}${who(l)}`, gs(l.unit * l.n));
-  const footer = () => [rule(), L("No válido como factura", { center: true }), L("Mesaverso", { center: true })];
+  const footer = () => [rule(), L("No válido como factura", { center: true }), L("#MV", { center: true })];
 
   // Before paying: every line with its price, by diner when the bill was split.
   function precuenta(t, { restaurant } = {}) {
@@ -107,7 +107,7 @@ const Ticket = (() => {
       out.push(rule(), ...twoCols("TOTAL", gs(v.lines.reduce((a, l) => a + l.unit * l.n, 0))).map(x => ({ ...x, bold: true })));
       if (v.payMethod) out.push(L("Pago: " + (PAY[v.payMethod] || v.payMethod)));
     }
-    return [...out, rule(), warn(), L("Comprobante de lo consumido.", { center: true }), L("Pedí tu factura en el local.", { center: true }), L("Mesaverso", { center: true })];
+    return [...out, rule(), warn(), L("Comprobante de lo consumido.", { center: true }), L("Pedí tu factura en el local.", { center: true }), L("#MV", { center: true })];
   }
 
   // End of shift: sales by payment method, tips apart, cancellations and what was still pending.
@@ -131,7 +131,7 @@ const Ticket = (() => {
       for (const [r, v] of Object.entries(p.street)) out.push(...twoCols(`Efectivo con ${r}`, gs(v)));
       if (p.openTables) out.push(...twoCols(`Mesas abiertas (${p.openTables})`, gs(p.openTablesTotal)));
     }
-    return [...out, rule(), L("Mesaverso", { center: true })];
+    return [...out, rule(), L("#MV", { center: true })];
   }
 
   /* ---------- PDF ---------- */

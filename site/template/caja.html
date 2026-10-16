@@ -288,9 +288,36 @@ function savePdf(lines, name) {
 const lastRound = o => o.lines.filter(l => l.round === o.rounds - 1);
 const pdfName = o => o.kind === "table" ? `mesa-${o.table}` : `pedido-${o.ref}`;
 function comandaPdf(o, lines) { savePdf(Ticket.comanda(o, { restaurant: RESTAURANT, by: me?.name, lines }), "comanda-" + pdfName(o)); }
+/* ---------- impresora de cocina: la comanda sale sola en el papel (cualquier impresora instalada en este equipo) ---------- */
+let kprint = store.get("kprint") === "on", kpWidth = store.get("kpwidth") === "58" ? "58" : "80";
+function printLines(lines) {
+  const W = kpWidth === "58" ? 58 : 80, mm = W === 58 ? 48 : 72, pt = W === 58 ? 7.1 : 10.5, pad = (W - mm) / 2; // 32 characters per line, like the PDF
+  const html = `<!doctype html><meta charset="utf-8"><style>@page{size:${W}mm auto;margin:0}html,body{margin:0}body{width:${mm}mm;padding:3mm ${pad}mm;font:${pt}pt/1.25 "Courier New",Courier,monospace;color:#000;background:#fff}div{white-space:pre;min-height:1.25em}.b{font-weight:700}.c{text-align:center}.big{font-size:${(pt * 1.8).toFixed(1)}pt;line-height:1.2}</style>` +
+    lines.map(l => `<div class="${[l.bold || l.big ? "b" : "", l.center ? "c" : "", l.big ? "big" : ""].join(" ").trim()}">${esc(l.text) || "&nbsp;"}</div>`).join("");
+  const f = document.createElement("iframe");
+  f.style.cssText = "position:fixed;right:0;bottom:0;width:0;height:0;border:0"; f.setAttribute("aria-hidden", "true");
+  document.body.appendChild(f);
+  f.onload = () => { try { f.contentWindow.focus(); f.contentWindow.print(); } catch (e) { say("No se pudo imprimir. Revisá que la impresora esté encendida y elegida.", true); } setTimeout(() => f.remove(), 60000); };
+  f.srcdoc = html;
+}
+const comandaLines = (o, round) => (round == null ? o.lines : o.lines.filter(l => l.round === round));
+function kprintModal() {
+  showOverlay(`<div class="scrim" data-act="close"></div><div class="modal" role="dialog" aria-modal="true" aria-labelledby="kpT">
+    <h2 id="kpT">Impresora de cocina</h2>
+    <p class="help" style="margin:0 0 12px">Con esto prendido, <b>cada comanda nueva sale impresa</b> en la impresora de este equipo. Los pedidos de cada mesa, de WhatsApp y los agregados a mano.</p>
+    <button class="btn ${kprint ? "" : "primary"}" style="width:100%" data-act="kpToggle">${kprint ? "Apagar la impresión automática" : "Prender la impresión automática"}</button>
+    <div class="field"><span class="lbl">Ancho del papel</span><div class="seg" role="group" aria-label="Ancho del papel"><button type="button" data-act="kpW" data-w="80" aria-pressed="${kpWidth === "80"}">80 mm</button><button type="button" data-act="kpW" data-w="58" aria-pressed="${kpWidth === "58"}">58 mm</button></div></div>
+    <button class="btn" style="width:100%" data-act="kpTest">Imprimir una prueba</button>
+    <p class="help" style="margin:12px 0 0">1) Instalá la impresora en este equipo y dejala como <b>predeterminada</b>. 2) Probá con «Imprimir una prueba». 3) Para que no pregunte cada vez, abrí Chrome con el atajo <span class="mono">--kiosk-printing</span> (te lo preparamos al instalar).</p>
+    <div class="grid2" style="margin-top:16px"><button class="btn" type="button" data-act="close">Cerrar</button></div></div>`);
+}
 // The tablet marked as «Caja» saves every comanda, ticket and shift close, whoever did it (the server sends «doc»).
 function autoComanda() {}
 function onDoc(msg) {
+  if (kprint && msg.kind === "comanda") {
+    const o = orders.get(msg.ref), ls = o ? comandaLines(o, msg.round) : [];
+    if (ls.length) printLines(Ticket.comanda(o, { restaurant: RESTAURANT, by: "", lines: ls }));
+  }
   if (!isCaja() || !pdfAuto) return;
   if (msg.kind === "cierre" && msg.closed) { savePdf(Ticket.resumen(msg.closed.summary, { restaurant: RESTAURANT, openedBy: msg.closed.openedBy, closedBy: msg.closed.closedBy }), "cierre-turno"); return; }
   const o = orders.get(msg.ref); if (!o) return;
@@ -702,6 +729,7 @@ function kitchenHtml() {
       <div class="kt"><b>${esc(k.title)}</b><span class="min" aria-label="${m} minutos">${m} min</span></div><div class="ks">${esc(k.sub)}</div>
       <ul>${k.lines.map(l => `<li>${l.n}× ${esc(l.name)}${l.diner && COLORS[l.diner] ? ` <span class="diner" style="--c:${COLORS[l.diner][1]}"><i aria-hidden="true"></i>${COLORS[l.diner][0]}</span>` : ""}${l.extras.length ? `<small>${esc(l.extras.join(", "))}</small>` : ""}${l.note ? `<span class="kn">${esc(l.note)}</span>` : ""}</li>`).join("")}</ul>
       ${k.note ? `<div class="ks">Nota: ${esc(k.note)}</div>` : ""}
+      <button class="link" data-act="kreprint" data-ref="${k.ref}" data-round="${k.round ?? ""}" style="min-height:36px">Reimprimir</button>
       <button class="btn primary kready" data-act="kready" data-ref="${k.ref}" data-round="${k.round ?? ""}">${ic("check")}LISTO</button></article>`; };
   return `<div class="head"><h1>Cocina</h1><span class="meta">${items.length} en preparación</span><span class="sp"></span><span class="help">Tocá LISTO cuando el pedido esté para llevar: le avisa al mozo.</span></div>
     ${items.length ? `<div class="kgrid">${items.map(card).join("")}</div>` : `<p class="empty" style="font-size:18px">No hay comandas. Cuando acepten un pedido, aparece acá con sonido.</p>`}
@@ -766,6 +794,7 @@ function renderTop() {
   t.innerHTML = `<span class="brand">${esc(RESTAURANT)}</span><span class="sp"></span>
     <span class="pill${online ? "" : " off"}" role="status">${ic("wifi")}<span class="dot"></span><span class="hide-sm">${online ? "En línea" : "Sin conexión, reintentando"}</span></span>
     <button class="pill" data-act="sound" aria-pressed="${soundOn}" aria-label="Sonido de pedidos nuevos">${ic("sound")}<span class="hide-sm">${soundOn ? "Sonido" : "Sin sonido"}</span></button>
+    <button class="pill" data-act="kprintCfg" aria-pressed="${kprint}" title="Imprimir las comandas en la impresora de este equipo">${ic("orders")}<span class="hide-sm">${kprint ? "Imprime comandas" : "Impresora"}</span></button>
     <button class="pill" data-act="notif" aria-pressed="${notifOn}" aria-label="Avisos del navegador por cada pedido nuevo">${ic("bell")}<span class="hide-sm">${notifOn ? "Avisos" : "Sin avisos"}</span></button>
     ${isCaja() ? `<button class="pill" data-act="pdfAuto" aria-pressed="${pdfAuto}" title="Esta tablet es la caja: guarda los PDF de comandas, tickets y cierres">${ic("cash")}<span class="hide-sm">${pdfAuto ? "Caja · guarda los PDF" : "Caja · PDF en pausa"}</span></button>` : ""}
     <button class="pill" data-act="theme" aria-label="Cambiar entre claro y oscuro">${ic("sun")}</button>
@@ -1009,6 +1038,11 @@ document.addEventListener("click", async e => {
       break;
     }
     case "chargeTable": payModal(ref, false, true); break;
+    case "kprintCfg": kprintModal(); break;
+    case "kpToggle": kprint = !kprint; store.set("kprint", kprint ? "on" : "off"); renderTop(); kprintModal(); say(kprint ? "Las comandas nuevas salen impresas en este equipo" : "Impresión automática apagada"); break;
+    case "kpW": kpWidth = d.w === "58" ? "58" : "80"; store.set("kpwidth", kpWidth); kprintModal(); break;
+    case "kpTest": printLines(Ticket.comanda({ kind: "table", table: 7, lines: [] }, { restaurant: RESTAURANT, by: "", lines: [{ n: 2, name: "Lomito completo", extras: ["Sin cebolla"], note: "bien cocido", diner: "azul" }, { n: 1, name: "Cerveza Pilsen", extras: [], diner: "verde" }] })); break;
+    case "kreprint": { const o = orders.get(ref); if (o) printLines(Ticket.comanda(o, { restaurant: RESTAURANT, by: "", lines: comandaLines(o, d.round === "" ? null : +d.round) })); break; }
     case "kready": {
       const o = orders.get(ref); if (!o) break;
       if (o.kind === "table") run(ref, "kitchenReady", { round: +d.round }, t => `Mesa ${t.table} lista · avisado al mozo`);
