@@ -57,14 +57,14 @@
   .hero {
     position: relative; overflow: hidden; border-radius: 18px;
     background: radial-gradient(120% 90% at 85% 60%, #2a2118 0%, var(--surface) 55%, #0d0c0b 100%);
-    min-height: 240px; padding: 22px 20px; display: grid; grid-template-columns: minmax(0, 1fr) 44%; align-items: center;
+    min-height: 168px; padding: 14px 16px; display: grid; grid-template-columns: minmax(0, 1fr) 44%; align-items: center;
   }
-  .hero .brand { position: relative; z-index: 1; display: grid; gap: 10px; justify-items: start; }
+  .hero .brand { position: relative; z-index: 1; display: grid; gap: 8px; justify-items: start; }
   .hero .brand h1 { margin: 0; }
-  .hero .logo { width: 112px; max-width: 100%; display: block; }
+  .hero .logo { width: 92px; max-width: 100%; display: block; }
   .hero p { margin: 0; color: var(--muted); font-size: 14.5px; max-width: 22ch; }
   .hero--center .brand { justify-items: center; text-align: center; }
-  .hero--center .logo { width: 136px; }
+  .hero--center .logo { width: 108px; }
   .hero--center p { max-width: 30ch; }
   .hero .dish { position: absolute; right: -18px; bottom: -8px; width: 52%; max-width: 250px; filter: drop-shadow(0 14px 24px rgba(0,0,0,.6)); }
   .table-chip { display: inline-flex; align-items: center; gap: 6px; font: 600 13px/1 var(--display); letter-spacing: .08em; text-transform: uppercase; background: var(--amber); color: #1a1206; padding: 8px 12px 7px; border-radius: 999px; }
@@ -172,7 +172,8 @@
   /* sin plato de portada: el logo al centro */
   .hero:not(:has(.dish)) { grid-template-columns: minmax(0, 1fr); min-height: 0; }
   .hero:not(:has(.dish)) .brand { justify-items: center; text-align: center; }
-  .hero:not(:has(.dish)) .logo { width: 136px; }
+  .hero:not(:has(.dish)) .logo { width: 108px; }
+  .hero:not(:has(.dish)) { padding-block: 12px; }
   .hero:not(:has(.dish)) p { max-width: 30ch; }
   .hero:not(:has(.dish))::after { right: 25%; bottom: auto; top: 30%; height: 40%; opacity: .5; }
   @keyframes float { 50% { transform: translateY(-9px) rotate(-1.5deg); } }
@@ -217,6 +218,7 @@
   .fav[aria-pressed="true"] .ic-check { display: block; }
   .share-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-width: 44px; min-height: 44px; border-radius: 50%; border: 0; background: none; color: var(--muted); cursor: pointer; }
   .share-btn:hover, .share-btn:focus-visible { color: var(--text); }
+  .hero .share-btn { position: absolute; top: 6px; right: 8px; z-index: 3; flex-direction: column; gap: 2px; min-height: 44px; padding: 4px 6px; border-radius: 10px; font: 600 10.5px/1 var(--display); letter-spacing: .04em; color: var(--text); background: rgba(14,13,12,.55); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
   .share-btn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
   .share-btn.link { border-radius: 10px; padding: 0 12px; font: 500 14px/1 var(--body); text-decoration: underline; text-underline-offset: 3px; }
   .toast { position: fixed; z-index: 40; left: 50%; bottom: calc(var(--mbh, 0px) + 84px); transform: translateX(-50%); max-width: calc(100% - 32px); padding: 12px 18px; border-radius: 999px; background: var(--text); color: #15100a; font: 600 14px/1.2 var(--display); box-shadow: 0 10px 30px rgba(0,0,0,.5); }
@@ -366,6 +368,14 @@
   .split-foot .sf-row.me { color: var(--amber-soft); margin-top: 4px; }
   .split-foot .ar-btn { width: 100%; margin-top: 10px; }
   .split-foot .sel-clear { margin-top: 4px; }
+  .lib { display: grid; gap: 8px; margin-top: 10px; }
+  .lib-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr) auto; gap: 8px; align-items: center; }
+  .lib-row label { display: flex; align-items: center; gap: 8px; font: 600 15px/1.2 var(--display); min-width: 0; }
+  .lib-in { display: flex; align-items: center; gap: 6px; min-height: 48px; padding: 0 12px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); }
+  .lib-in input { width: 100%; min-width: 0; border: 0; background: none; outline: none; font: 600 18px/1 var(--display); font-variant-numeric: tabular-nums; text-align: right; color: var(--text); }
+  .lib-in span { color: var(--muted); }
+  .lib-rest { min-height: 48px; padding: 0 12px; border-radius: 12px; border: 1px solid var(--line); background: var(--raised); color: var(--amber-soft); font: 600 13px/1 var(--display); cursor: pointer; }
+  .lib-status { margin: 4px 0 0; font: 600 14px/1.2 var(--display); color: var(--amber-soft); }
   .split-hint { margin: 12px 0 0; font-size: 14px; color: var(--muted); }
   .paidbox { padding: 14px; border: 1px solid rgba(76,195,138,.45); border-radius: 14px; background: rgba(76,195,138,.07); }
   .paidbox textarea { width: 100%; min-height: 76px; padding: 12px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); font-size: 16px; resize: vertical; }
@@ -450,9 +460,9 @@
       </span>
       <span class="open-chip" id="openChip" hidden><i aria-hidden="true"></i><span></span></span>
       <button class="mesa-chip" id="mesaChip" type="button" hidden aria-haspopup="dialog"></button>{{RESERVE_BTN}}
-      <button class="share-btn" type="button" data-share aria-label="Compartir el menú"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3M8 7l4-4 4 4M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg></button>
     </div>
     {{HERO_IMG}}
+    <button class="share-btn" type="button" data-share aria-label="Compartir el menú"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3M8 7l4-4 4 4M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg><span>Compartir</span></button>
   </header>
 
   <div class="toolbar" id="toolbar">
@@ -1509,6 +1519,11 @@ function openSplit() {
   splitDraft = prev ? { ...prev, assign: (prev.assign || []).slice(), amounts: { ...(prev.amounts || {}) } } : { mode: "consumo", assign: [], n: Math.max(2, v.colors.length), amounts: {}, tipMode: "0", tipAmount: 0 };
   renderSplit();
 }
+const libSum = d => Object.values(d.amounts || {}).reduce((a, x) => a + (+x || 0), 0);
+function libStatus(v, d) {
+  const diff = v.total - libSum(d);
+  return diff === 0 ? "Suma exacta ✓" : diff > 0 ? `Faltan ${plain(diff)}` : `Te pasaste ${plain(-diff)}`;
+}
 function renderSplit() {
   const v = mesaView, d = splitDraft, body = $("#mesaBody");
   $("#mesaTitle").textContent = `Dividir · Mesa ${mesa.table}`;
@@ -1521,8 +1536,9 @@ function renderSplit() {
         <div class="who" role="group" aria-label="Quién paga ${esc(l.name)}">${v.colors.map(c => `<button type="button" data-line="${i}" data-color="${c}" aria-pressed="${who(l, i).includes(c)}">${colorDot(c)}${esc(c === v.me ? "Vos" : colorName(c))}</button>`).join("")}</div></div>`).join("")}`
     : d.mode === "iguales"
       ? `<div class="field"><label for="splitN">¿Entre cuántos?</label><div class="qty" role="group" aria-label="Personas"><button type="button" data-n="-1" aria-label="Uno menos">−</button><output id="splitN">${d.n}</output><button type="button" data-n="1" aria-label="Uno más">+</button></div></div>`
-      : `<p class="sel-hint" style="margin-top:12px">Cada uno pone cuánto paga. Tiene que sumar ${plain(v.total)}.</p>
-        ${v.colors.map(c => `<div class="field"><label for="amt-${c}">${colorDot(c)} ${esc(c === v.me ? "Vos (" + colorName(c) + ")" : colorName(c))}</label><input id="amt-${c}" data-amount="${c}" inputmode="numeric" value="${d.amounts[c] ? Number(d.amounts[c]).toLocaleString("es-PY") : ""}" placeholder="0"></div>`).join("")}`;
+      : `<p class="split-hint">Poné cuánto paga cada uno. Entre todos tiene que sumar ${plain(v.total)}.</p>
+        <div class="lib">${v.colors.map(c => `<div class="lib-row"><label for="amt-${c}">${colorDot(c)} ${esc(c === v.me ? "Vos" : colorName(c))}</label><div class="lib-in"><span aria-hidden="true">₲</span><input id="amt-${c}" data-amount="${c}" inputmode="numeric" autocomplete="off" aria-label="Monto de ${esc(colorName(c))}" value="${d.amounts[c] ? Number(d.amounts[c]).toLocaleString("es-PY") : ""}" placeholder="0"></div><button type="button" class="lib-rest" data-rest="${c}" aria-label="Poner en ${esc(colorName(c))} lo que falta">Resto</button></div>`).join("")}
+        <p class="lib-status" id="libStatus" role="status">${libStatus(v, d)}</p></div>`;
   body.innerHTML = `
     <div class="seg3" role="group" aria-label="Cómo dividir">${[["consumo", "Cada uno lo suyo"], ["iguales", "Partes iguales"], ["libres", "Montos a mano"]].map(([k, l]) => `<button type="button" data-mode="${k}" aria-pressed="${d.mode === k}">${l}</button>`).join("")}</div>
     ${modeBody}
@@ -1570,7 +1586,10 @@ $("#mesaChip").addEventListener("click", openMesa);{{RESERVE_JS}}
 swipeToClose(mesaSheet, closeMesa);
 scrim.addEventListener("click", () => { if (!mesaSheet.hidden) closeMesa(); });
 addEventListener("keydown", e => { if (e.key === "Escape" && !mesaSheet.hidden) closeMesa(); });
-mesaSheet.addEventListener("input", e => { if (e.target.id === "opComment") doneDraft.comment = e.target.value; });
+mesaSheet.addEventListener("input", e => {
+  if (e.target.id === "opComment") doneDraft.comment = e.target.value;
+  if (splitDraft && e.target.dataset.amount) { splitDraft.amounts[e.target.dataset.amount] = +e.target.value.replace(/[^0-9]/g, "") || 0; const st = $("#libStatus"); if (st) st.textContent = libStatus(mesaView, splitDraft); }
+});
 mesaSheet.addEventListener("click", e => {
   const b = e.target.closest("button");
   if (b && b.dataset.star) { doneDraft.stars = +b.dataset.star; mesa ? renderMesa() : renderDone(); const again = mesaSheet.querySelector(`[data-star="${doneDraft.stars}"]`); if (again) again.focus({ preventScroll: true }); return; }
@@ -1580,6 +1599,7 @@ mesaSheet.addEventListener("click", e => {
   if (b && splitDraft) {
     const d = splitDraft, v = mesaView;
     if (b.dataset.mode) { d.mode = b.dataset.mode; renderSplit(); return; }
+    if (b.dataset.rest) { const c = b.dataset.rest, others = libSum({ amounts: { ...d.amounts, [c]: 0 } }); d.amounts[c] = Math.max(0, v.total - others); renderSplit(); return; }
     if (b.dataset.tip) { d.tipMode = b.dataset.tip; renderSplit(); if (d.tipMode === "monto") $("#tipAmount").focus(); return; }
     if (b.dataset.n) { d.n = Math.max(1, Math.min(30, d.n + Number(b.dataset.n))); renderSplit(); return; }
     if (b.dataset.line) {
