@@ -61,10 +61,10 @@
   }
   .hero .brand { position: relative; z-index: 1; display: grid; gap: 10px; justify-items: start; }
   .hero .brand h1 { margin: 0; }
-  .hero .logo { width: 150px; max-width: 100%; display: block; }
+  .hero .logo { width: 112px; max-width: 100%; display: block; }
   .hero p { margin: 0; color: var(--muted); font-size: 14.5px; max-width: 22ch; }
   .hero--center .brand { justify-items: center; text-align: center; }
-  .hero--center .logo { width: 200px; }
+  .hero--center .logo { width: 136px; }
   .hero--center p { max-width: 30ch; }
   .hero .dish { position: absolute; right: -18px; bottom: -8px; width: 52%; max-width: 250px; filter: drop-shadow(0 14px 24px rgba(0,0,0,.6)); }
   .table-chip { display: inline-flex; align-items: center; gap: 6px; font: 600 13px/1 var(--display); letter-spacing: .08em; text-transform: uppercase; background: var(--amber); color: #1a1206; padding: 8px 12px 7px; border-radius: 999px; }
@@ -172,7 +172,7 @@
   /* sin plato de portada: el logo al centro */
   .hero:not(:has(.dish)) { grid-template-columns: minmax(0, 1fr); min-height: 0; }
   .hero:not(:has(.dish)) .brand { justify-items: center; text-align: center; }
-  .hero:not(:has(.dish)) .logo { width: 190px; }
+  .hero:not(:has(.dish)) .logo { width: 136px; }
   .hero:not(:has(.dish)) p { max-width: 30ch; }
   .hero:not(:has(.dish))::after { right: 25%; bottom: auto; top: 30%; height: 40%; opacity: .5; }
   @keyframes float { 50% { transform: translateY(-9px) rotate(-1.5deg); } }
@@ -215,8 +215,11 @@
   .fav .ic-check { display: none; }
   .fav[aria-pressed="true"] .ic-plus { display: none; }
   .fav[aria-pressed="true"] .ic-check { display: block; }
-  .share-btn { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--raised); color: var(--text); font: 600 13px/1 var(--display); letter-spacing: .06em; text-transform: uppercase; cursor: pointer; }
-  .share-btn svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .share-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-width: 44px; min-height: 44px; border-radius: 50%; border: 0; background: none; color: var(--muted); cursor: pointer; }
+  .share-btn:hover, .share-btn:focus-visible { color: var(--text); }
+  .share-btn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .share-btn.link { border-radius: 10px; padding: 0 12px; font: 500 14px/1 var(--body); text-decoration: underline; text-underline-offset: 3px; }
+  .toast { position: fixed; z-index: 40; left: 50%; bottom: calc(var(--mbh, 0px) + 84px); transform: translateX(-50%); max-width: calc(100% - 32px); padding: 12px 18px; border-radius: 999px; background: var(--text); color: #15100a; font: 600 14px/1.2 var(--display); box-shadow: 0 10px 30px rgba(0,0,0,.5); }
   .share-dlg { width: min(92vw, 380px); border: 1px solid var(--line); border-radius: 18px; background: var(--surface); color: var(--text); padding: 18px; }
   .share-dlg::backdrop { background: rgba(0,0,0,.6); }
   .share-dlg h2 { margin: 0 0 4px; font: 700 18px/1.2 var(--display); }
@@ -439,7 +442,7 @@
       </span>
       <span class="open-chip" id="openChip" hidden><i aria-hidden="true"></i><span></span></span>
       <button class="mesa-chip" id="mesaChip" type="button" hidden aria-haspopup="dialog"></button>{{RESERVE_BTN}}
-      <button class="share-btn" type="button" data-share><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3M8 7l4-4 4 4M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>Compartir</button>
+      <button class="share-btn" type="button" data-share aria-label="Compartir el menú"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3M8 7l4-4 4 4M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg></button>
     </div>
     {{HERO_IMG}}
   </header>
@@ -447,7 +450,7 @@
   <div class="toolbar" id="toolbar">
     <div class="search">
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-      <input id="q" type="search" placeholder="Buscar un plato o ingrediente" autocomplete="off" aria-label="Buscar en el menú">
+      <input id="q" type="search" placeholder="¿Qué se te antoja?" autocomplete="off" aria-label="Buscar en el menú">
       <button class="clear" id="clearQ" type="button" aria-label="Borrar búsqueda" hidden>×</button>
     </div>
     <nav class="chips" id="chips" aria-label="Categorías"></nav>
@@ -472,7 +475,7 @@
     <img src="img/{{LOGO}}-360.webp" alt="">
     <span>Precios en guaraníes (₲). Consultá por alérgenos al personal.</span>
     <a class="review-btn" id="reviewFoot" hidden target="_blank" rel="noopener"></a>
-    <button class="share-btn" type="button" data-share style="margin-top:12px"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3M8 7l4-4 4 4M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>Compartir el menú</button>
+    <button class="share-btn link" type="button" data-share>Compartir el menú</button>
     <dialog class="share-dlg" id="shareDlg" aria-labelledby="shareT"><h2 id="shareT">Compartir el menú</h2><p>Mandáselo a quien quieras o subilo a tus redes.</p><div class="opts" id="shareOpts"></div><button class="close" type="button" id="shareClose">Cerrar</button></dialog>
     <span class="privacy">Sin cookies. Contamos visitas y clics de forma anónima para mejorar el menú.{{PRIVACY_LINK}}</span>{{BRAND_STRIP}}{{WATERMARK}}
   </footer>
@@ -538,6 +541,13 @@ const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
 if (!REDUCED) document.documentElement.classList.add("motion");
 const haptic = () => { try { navigator.vibrate && navigator.vibrate(12); } catch (e) {} };
 const plain = n => "₲ " + n.toLocaleString("es-PY");
+let toastTimer = 0;
+function toast(msg) {
+  let t = $("#toast");
+  if (!t) { t = document.createElement("div"); t.id = "toast"; t.className = "toast"; t.setAttribute("role", "status"); document.body.appendChild(t); }
+  t.textContent = msg; t.hidden = false;
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.hidden = true; }, 2600);
+}
 function burst(el) {
   if (REDUCED) return;
   const r = el.getBoundingClientRect(), sp = document.createElement("span");
@@ -938,6 +948,7 @@ function renderAdd(d) {
       <div class="qty" role="group" aria-label="Cantidad"><button type="button" data-dq="-1" aria-label="Uno menos">−</button><output id="draftN" aria-live="polite">1</output><button type="button" data-dq="1" aria-label="Uno más">+</button></div>
       <button class="add-btn" id="addBtn" type="button"></button>
     </div>
+    ${mesa ? `<button class="sel-btn" type="button" id="addSendBtn" style="margin-top:10px;width:100%">Pedir ya a la mesa</button>` : ""}
     <p class="in-sel" id="inSel" hidden></p>`;
   updateAdd(d);
   renderInSel(d);
@@ -978,7 +989,8 @@ $("#addBox").addEventListener("click", e => {
   const dq = e.target.closest("[data-dq]");
   if (dq) { draft.n = Math.max(1, Math.min(20, draft.n + Number(dq.dataset.dq))); updateAdd(d); return; }
   if (e.target.closest("#goSel")) { openSel(); return; }
-  if (!e.target.closest("#addBtn")) return;
+  const sendNow = !!e.target.closest("#addSendBtn");
+  if (!sendNow && !e.target.closest("#addBtn")) return;
   draft.tried = true;
   const missing = showPickErrors(d);
   if (missing.length) {
@@ -989,6 +1001,7 @@ $("#addBox").addEventListener("click", e => {
     return;
   }
   addLine(d.slug, C.cleanPicks(d, draft.picks), draft.note.trim(), draft.n);
+  if (sendNow) { hideSheet(); orderToTable(true); return; } // one tap from the dish: added and sent to the table
   renderAdd(d); // fresh form for another one with other options
   const fresh = $("#addBtn");
   fresh.classList.add("done"); fresh.textContent = "Agregado ✓";
@@ -1430,7 +1443,7 @@ async function joinMesa(token) {
     openMesa();
   } catch (e) { alert("Sin conexión. Probá de nuevo."); }
 }
-async function orderToTable() {
+async function orderToTable(quiet) {
   const btn = $("#mesaOrderBtn"); if (btn) btn.disabled = true;
   try {
     const res = await fetch(`/api/${SLUG}/mesa/pedir`, { method: "POST", headers: { "content-type": "application/json" },
@@ -1440,8 +1453,9 @@ async function orderToTable() {
     track("order_tap", { n: selCount(), total: selTotal(), mode: "table" }); flushEvents();
     lines = []; saveSel(); renderSel(true);
     applyMesaView(r.view, r.qr);
-    hideSel(true); openMesa();
     live.textContent = "Pedido enviado: el mozo lo tiene que aceptar.";
+    if (quiet === true) { hideSel(true); mbOpen = true; renderMesaBar(); toast("Pedido enviado al mozo ✓"); }
+    else { hideSel(true); openMesa(); }
   } catch (e) { alert("Sin conexión. Probá de nuevo."); }
   finally { if (btn) btn.disabled = false; }
 }
@@ -1634,7 +1648,11 @@ function closeSel() {
   if (history.state && history.state.sel && !history.state.deep) history.back();
   else { hideSel(); history.replaceState(null, "", location.pathname + location.search); }
 }
-$("#openSel").addEventListener("click", () => openSel());
+// at a table the bar's button sends the order (the waiter still has to accept it); the list stays one tap away on the left
+$("#openSel").addEventListener("click", () => { if (mesa && mesaView && mesaView.status === "open" && lines.length) orderToTable(true); else openSel(); });
+$("#selbar .info").setAttribute("role", "button"); $("#selbar .info").tabIndex = 0; $("#selbar .info").style.cursor = "pointer";
+$("#selbar .info").addEventListener("click", () => openSel());
+$("#selbar .info").addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openSel(); } });
 document.addEventListener("click", e => { if (e.target.id === "selToMesa") { hideSel(true); openMesa(); } });
 $("#closeSel").addEventListener("click", closeSel);
 swipeToClose(selSheet, closeSel);
