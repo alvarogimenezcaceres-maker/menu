@@ -212,7 +212,7 @@
   .fav svg { width: 19px; height: 19px; }
   .fav .fire { font-size: 20px; line-height: 1; filter: grayscale(1) opacity(.65); transition: filter .2s, transform .2s; }
   .fav[aria-pressed="true"] .fire { filter: none; transform: scale(1.08); }
-  .burst { position: fixed; z-index: 40; pointer-events: none; font-size: 16px; line-height: 1; animation: burst .7s ease-out forwards; }
+  .burst { position: fixed; z-index: 40; pointer-events: none; font: 700 15px/1 var(--display); color: var(--amber); animation: burst .7s ease-out forwards; }
   @keyframes burst { from { opacity: 1; transform: translate(0, 0) scale(.6); } to { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(1.1); } }
   .fav svg path, .sel-btn svg path { fill: none; stroke: currentColor; stroke-width: 2; stroke-linejoin: round; }
   .fav[aria-pressed="true"] { color: #15100a; background: var(--amber); border-color: var(--amber); box-shadow: 0 0 18px rgba(237,157,21,.6); }
@@ -525,14 +525,10 @@ const haptic = () => { try { navigator.vibrate && navigator.vibrate(12); } catch
 const plain = n => "₲ " + n.toLocaleString("es-PY");
 function burst(el) {
   if (REDUCED) return;
-  const r = el.getBoundingClientRect(), x = r.left + r.width / 2, y = r.top + r.height / 2;
-  for (let i = 0; i < 6; i++) {
-    const sp = document.createElement("span");
-    sp.className = "burst"; sp.textContent = "🔥"; sp.setAttribute("aria-hidden", "true");
-    const a = (-90 + (i - 2.5) * 28) * Math.PI / 180, d = 46 + (i % 2) * 18;
-    sp.style.cssText = `left:${x - 8}px;top:${y - 8}px;--dx:${Math.cos(a) * d}px;--dy:${Math.sin(a) * d}px`;
-    document.body.appendChild(sp); setTimeout(() => sp.remove(), 750);
-  }
+  const r = el.getBoundingClientRect(), sp = document.createElement("span");
+  sp.className = "burst"; sp.textContent = "+1"; sp.setAttribute("aria-hidden", "true");
+  sp.style.cssText = `left:${r.left + r.width / 2 - 10}px;top:${r.top - 4}px;--dx:0px;--dy:-34px`;
+  document.body.appendChild(sp); setTimeout(() => sp.remove(), 750);
 }
 const HEART = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.5 8.1 3.6 4.5 7.1 4.5c2 0 3.4 1.1 4.9 2.9 1.5-1.8 2.9-2.9 4.9-2.9 3.5 0 5.6 3.6 4.4 6.8-1.8 4.6-9.3 9.2-9.3 9.2Z"/></svg>';
 const replay = (el, cls) => { if (REDUCED || !el) return; el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); };
@@ -612,7 +608,7 @@ menuEl.innerHTML = DATA.categories.map(c => `
             </span>
             ${d.photo ? `<span class="thumb"><img src="img/${d.photo}-360.webp" alt="" loading="lazy"></span>` : '<span aria-hidden="true"></span>'}
           </button>
-          ${d.soldOut ? "" : `<button class="fav" type="button" data-fav="${d.slug}" aria-pressed="false" aria-label="Agregar ${esc(d.name)} a mi selección"><span class="fire" aria-hidden="true">🔥</span></button>`}
+          ${d.soldOut ? "" : `<button class="fav" type="button" data-fav="${d.slug}" aria-pressed="false" aria-label="Agregar ${esc(d.name)} a mi selección"><span class="fire" aria-hidden="true">🍽️</span></button>`}
         </li>`).join("")}
     </ul>
   </section>`).join("");
@@ -1091,7 +1087,7 @@ function renderSelPanel() {
     <button class="sel-clear" type="button" id="selClear">Vaciar la selección</button>{{FREE_E}}`
     : mesa ? `<p class="sel-hint">Esta lista es para lo que quieras pedir ahora. Lo que ya pediste está en tu mesa.</p>
       <button class="ar-btn" type="button" id="selToMesa">Ver mi mesa y cómo va mi pedido</button>`
-      : `<p class="sel-hint">Todavía no agregaste platos. Tocá el 🔥 de cualquier plato para sumarlo acá.</p>`;
+      : `<p class="sel-hint">Todavía no agregaste platos. Tocá el 🍽️ de cualquier plato para sumarlo acá.</p>`;
   if (lines.length) refreshCheckout();
 }
 /* ---------- Pedido: por WhatsApp al local o en pantalla para el mozo ---------- */
@@ -1261,17 +1257,18 @@ function renderMesaBar() {
   const n = v.lines.reduce((a, l) => a + l.n, 0), wait = v.pending.reduce((a, p) => a + p.lines.reduce((b, l) => b + l.n, 0), 0);
   $("#mbTable").textContent = mesa.table;
   $("#mbSum").textContent = plain(v.total);
-  // where the latest order is: sent → in the kitchen → ready → at the table (mine first, else the table's last round)
-  const rounds = [...new Set(v.lines.map(l => l.round))].sort((a, b) => a - b);
-  const mineR = rounds.filter(r => v.lines.some(l => l.round === r && l.diner === v.me));
-  const last = (mineR.length ? mineR : rounds).slice(-1)[0];
-  const st = v.rounds && last != null ? v.rounds[last] : null;
-  const stage = wait ? 1 : st === "served" ? 4 : st === "ready" ? 3 : st === "pending" ? 2 : 0;
+  // how many products are in each state (a product is counted once): waiting for the waiter, cooking, ready to bring, at the table
+  const cnt = { cooking: 0, ready: 0, served: 0 };
+  for (const l of v.lines) { const k = v.rounds && v.rounds[l.round]; if (k === "pending") cnt.cooking += l.n; else if (k === "ready") cnt.ready += l.n; else if (k === "served") cnt.served += l.n; }
+  const plural = (x, one, many) => `${x} ${x === 1 ? one : many}`;
+  const parts = [wait && plural(wait, "esperando al mozo", "esperando al mozo"), cnt.cooking && plural(cnt.cooking, "en cocina", "en cocina"), cnt.ready && plural(cnt.ready, "listo para llevar", "listos para llevar"), cnt.served && plural(cnt.served, "en tu mesa", "en tu mesa")].filter(Boolean);
+  // the progress follows what is still pending: the earliest stage that has products
+  const stage = wait ? 1 : cnt.cooking ? 2 : cnt.ready ? 3 : cnt.served ? 4 : 0;
   const label = ["", "Esperando al mozo", "En cocina", "Listo, va para tu mesa", "En tu mesa · buen provecho"][stage];
   $("#mbProg").classList.toggle("done", stage === 4);
   $("#mbProg").querySelectorAll("i").forEach((el, i) => el.classList.toggle("on", i < stage));
   $("#mbProg").parentElement.setAttribute("aria-label", `Mesa ${mesa.table}: ${label || "sin pedidos"}`);
-  $("#mbN").textContent = `${label ? label + " · " : ""}${n} ${n === 1 ? "producto" : "productos"}${wait && stage !== 1 ? " · " + wait + " esperando al mozo" : ""}${v.billRequested ? " · cuenta pedida" : ""}`;
+  $("#mbN").textContent = `${parts.length ? parts.join(" · ") : n ? plural(n, "producto", "productos") : "Todavía sin pedidos"}${v.billRequested ? " · cuenta pedida" : ""}`;
   $("#mbHead").setAttribute("aria-expanded", String(mbOpen));
   bar.classList.toggle("open", mbOpen);
   const body = $("#mbBody");
@@ -1294,7 +1291,7 @@ function orderMore() {
   mbOpen = false; try { sessionStorage.setItem("mbOpen:" + SLUG, "0"); } catch (e) {}
   closeMesa(); renderMesaBar();
   document.getElementById("menu").scrollIntoView({ behavior: "smooth" });
-  live.textContent = "Elegí lo que quieras sumar: tocá el 🔥 de un plato.";
+  live.textContent = "Elegí lo que quieras sumar: tocá el 🍽️ de un plato.";
 }
 $("#mbAdd").addEventListener("click", orderMore);
 function applyMesaView(view, qr) {
