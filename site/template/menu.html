@@ -131,7 +131,7 @@
   .sheet.open { transform: translate(-50%, 0); }
   .grip { width: 44px; height: 5px; border-radius: 4px; background: #4a443c; margin: 0 auto 10px; }
   .sheet.dragging { transition: none; }
-  .sheet .close { position: absolute; right: 8px; top: 6px; background: var(--raised); border: 0; width: 44px; height: 44px; border-radius: 50%; cursor: pointer; font-size: 24px; line-height: 1; color: var(--text); z-index: 2; }
+  .sheet .close { position: sticky; top: 8px; display: block; margin: 0 -12px -44px auto; background: rgba(36,33,29,.92); border: 1px solid var(--line); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); width: 44px; height: 44px; border-radius: 50%; cursor: pointer; font-size: 24px; line-height: 1; color: var(--text); z-index: 5; box-shadow: 0 4px 14px rgba(0,0,0,.45); }
   .stage { position: relative; height: 280px; border-radius: 16px; margin-top: 6px; background: radial-gradient(60% 60% at 50% 55%, #3a2d1c 0%, var(--raised) 60%, var(--surface) 100%); display: grid; place-items: center; overflow: hidden; }
   .stage > img { max-height: 250px; max-width: 92%; object-fit: contain; filter: drop-shadow(0 18px 24px rgba(0,0,0,.6)); }
   .stage .noimg { font: 700 64px/1 var(--display); color: var(--line); }
@@ -359,6 +359,14 @@
   .mesa-chip { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 14px 0 10px; border-radius: 999px; border: 1px solid var(--line); background: var(--raised); color: var(--text); font: 600 13px/1 var(--display); letter-spacing: .06em; text-transform: uppercase; cursor: pointer; }
   .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--c, var(--muted)); flex: none; box-shadow: 0 0 0 2px rgba(0,0,0,.35); }
   .mgroup { margin-top: 14px; }
+  .sheet.splitting { padding-bottom: 0; }
+  .split-foot { position: sticky; bottom: 0; margin: 18px -20px 0; padding: 12px 20px calc(14px + env(safe-area-inset-bottom, 0px)); background: var(--surface); border-top: 1px solid var(--line); box-shadow: 0 -10px 24px -12px rgba(0,0,0,.7); z-index: 4; }
+  .split-foot .sf-row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; font: 600 15px/1.2 var(--display); }
+  .split-foot .sf-row b { font-size: 20px; font-variant-numeric: tabular-nums; }
+  .split-foot .sf-row.me { color: var(--amber-soft); margin-top: 4px; }
+  .split-foot .ar-btn { width: 100%; margin-top: 10px; }
+  .split-foot .sel-clear { margin-top: 4px; }
+  .split-hint { margin: 12px 0 0; font-size: 14px; color: var(--muted); }
   .paidbox { padding: 14px; border: 1px solid rgba(76,195,138,.45); border-radius: 14px; background: rgba(76,195,138,.07); }
   .paidbox textarea { width: 100%; min-height: 76px; padding: 12px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); font-size: 16px; resize: vertical; }
   .paidbox label { display: block; margin: 12px 0 6px; font-size: 14px; color: #d6cfc4; }
@@ -1460,6 +1468,7 @@ async function orderToTable(quiet) {
   finally { if (btn) btn.disabled = false; }
 }
 function renderMesa() {
+  mesaSheet.classList.remove("splitting");
   if (!mesa && mesaDone) { renderDone(); return; }
   const v = mesaView, body = $("#mesaBody");
   $("#mesaTitle").textContent = mesa ? `Mesa ${mesa.table}` : "Mi mesa";
@@ -1515,15 +1524,20 @@ function renderSplit() {
       : `<p class="sel-hint" style="margin-top:12px">Cada uno pone cuánto paga. Tiene que sumar ${plain(v.total)}.</p>
         ${v.colors.map(c => `<div class="field"><label for="amt-${c}">${colorDot(c)} ${esc(c === v.me ? "Vos (" + colorName(c) + ")" : colorName(c))}</label><input id="amt-${c}" data-amount="${c}" inputmode="numeric" value="${d.amounts[c] ? Number(d.amounts[c]).toLocaleString("es-PY") : ""}" placeholder="0"></div>`).join("")}`;
   body.innerHTML = `
-    <div class="seg3" role="group" aria-label="Cómo dividir">${[["consumo", "Por consumo"], ["iguales", "Partes iguales"], ["libres", "Montos libres"]].map(([k, l]) => `<button type="button" data-mode="${k}" aria-pressed="${d.mode === k}">${l}</button>`).join("")}</div>
+    <div class="seg3" role="group" aria-label="Cómo dividir">${[["consumo", "Cada uno lo suyo"], ["iguales", "Partes iguales"], ["libres", "Montos a mano"]].map(([k, l]) => `<button type="button" data-mode="${k}" aria-pressed="${d.mode === k}">${l}</button>`).join("")}</div>
     ${modeBody}
     <div class="field"><span class="block-label" style="margin:16px 0 0">Propina</span>
       <div class="seg3" role="group" aria-label="Propina">${[["0", "Sin propina"], ["10", "10 %"], ["monto", "Otro monto"]].map(([k, l]) => `<button type="button" data-tip="${k}" aria-pressed="${d.tipMode === k}">${l}</button>`).join("")}</div>
       ${d.tipMode === "monto" ? `<input id="tipAmount" inputmode="numeric" placeholder="Monto de la propina" aria-label="Monto de la propina" value="${d.tipAmount ? Number(d.tipAmount).toLocaleString("es-PY") : ""}">` : ""}</div>
-    ${res ? `<div class="sel-total" style="margin-top:18px"><span>Total${res.tip ? " con propina" : ""}</span>${fmt(res.grand)}</div>${partsHtml(res.parts, v, false)}` : ""}
-    <p class="split-err" role="alert"${error ? "" : " hidden"}>${esc(error)}</p>
-    <button class="ar-btn" type="button" id="splitSend"${res ? "" : " disabled"}>Pedir la cuenta</button>
-    <button class="sel-clear" type="button" id="splitBack">Volver a la mesa</button>`;
+    ${res ? `<p class="split-hint">Así queda cada parte:</p>${partsHtml(res.parts, v, false)}` : ""}
+    <div class="split-foot">
+      <div class="sf-row"><span>Total${res && res.tip ? " con propina" : ""}</span><b>${res ? plain(res.grand) : "—"}</b></div>
+      ${res && v.me && res.parts.find(p => p.color === v.me) ? `<div class="sf-row me"><span>Tu parte (${esc(colorName(v.me))})</span><b>${plain(res.parts.find(p => p.color === v.me).pay)}</b></div>` : ""}
+      <p class="split-err" role="alert"${error ? "" : " hidden"}>${esc(error)}</p>
+      <button class="ar-btn" type="button" id="splitSend"${res ? "" : " disabled"}>Pedir la cuenta</button>
+      <button class="sel-clear" type="button" id="splitBack">Volver a la mesa</button>
+    </div>`;
+  mesaSheet.classList.add("splitting");
 }
 async function sendSplit() {
   const btn = $("#splitSend"); btn.disabled = true;
