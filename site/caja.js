@@ -12,7 +12,7 @@
 // watch the account; they get their own WebSocket with a filtered view (dinerView), never the staff broadcast.
 import QRCode from "qrcode/lib/core/qrcode.js";
 import QRSvg from "qrcode/lib/renderer/svg-tag.js";
-import { applyOp, applyTableOp, addDiner, addPending, addRound, buildOrder, can, dinerView, requestBill, shiftSummary, shiftRows, toCsv, soldOutNow, withSoldOut, isClosed, newRef, openTable, orderTotal, priceLines, PII_DAYS, ROLES, validDiner, validRef, validTable, wipePii, CajaError } from "./caja-core.js";
+import { applyOp, applyTableOp, addDiner, setDinerName, addPending, addRound, buildOrder, can, dinerView, requestBill, shiftSummary, shiftRows, toCsv, soldOutNow, withSoldOut, isClosed, newRef, openTable, orderTotal, priceLines, PII_DAYS, ROLES, validDiner, validRef, validTable, wipePii, CajaError } from "./caja-core.js";
 import { sameOrigin } from "./events.js";
 
 const C = globalThis.OrderCore; // loaded by caja-core.js
@@ -130,6 +130,7 @@ export class Caja {
         case "POST /mesa/pedir": return await this.dinerOrder(body, slug, url);
         case "POST /mesa/cuenta": return this.dinerBill(body, slug, url);
         case "POST /mesa/opinion": return this.dinerReview(body);
+        case "POST /mesa/nombre": return this.dinerName(body, slug, url);
         case "POST /vincular": return await this.link(body, slug);
         case "GET /usuarios": return await this.userList(request);
         case "POST /entrar": return await this.login(body, request);
@@ -507,6 +508,14 @@ export class Caja {
     this.sql.exec("INSERT INTO opiniones (ref, diner, stars, comment, at) VALUES (?, ?, ?, ?, ?) ON CONFLICT(ref, diner) DO UPDATE SET stars = excluded.stars, comment = excluded.comment, at = excluded.at", t.ref, body.diner, stars, comment, now);
     this.broadcast({ t: "opinion", table: t.table, stars, comment });
     return json({ ok: true });
+  }
+  dinerName(body, slug, url) {
+    const t = this.tableByToken(body.token);
+    if (!t) throw new CajaError("mesa", "Esta mesa ya se cerró.");
+    if (!validDiner(body.diner)) throw new CajaError("diner", "No pude identificar tu celular.");
+    const s = setDinerName(t, body.diner, body.name);
+    this.save(s, "Menú", "Un comensal puso su nombre");
+    return this.dinerReply(s, body.diner, url, slug);
   }
   dinerAccount(url, slug) {
     const open = this.tableByToken(url.searchParams.get("t") || "");

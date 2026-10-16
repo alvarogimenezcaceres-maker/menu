@@ -1,7 +1,7 @@
 // node --test site/caja-core.test.mjs
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { buildOrder, applyOp, can, isClosed, newRef, validRef, orderTotal, CajaError, wipePii, openTable, addRound, addDiner, applyTableOp, priceLines, DINER_COLORS, addPending, dinerView, requestBill, shiftSummary, soldOutNow, withSoldOut, shiftRows, toCsv } from "./caja-core.js";
+import { buildOrder, applyOp, can, isClosed, newRef, validRef, orderTotal, CajaError, wipePii, openTable, addRound, addDiner, applyTableOp, priceLines, DINER_COLORS, addPending, dinerView, requestBill, setDinerName, shiftSummary, soldOutNow, withSoldOut, shiftRows, toCsv } from "./caja-core.js";
 
 const catalog = {
   ordering: { orderTypes: ["delivery", "pickup"], paymentMethods: ["efectivo", "transferencia"], deliveryZones: [{ name: "Centro", fee: 10000 }] },
@@ -320,4 +320,18 @@ test("shift CSV: a row per sale, per person for split tables, cancellations mark
   assert.ok(csv.includes('"fuera de zona; lejos"'));
   assert.equal(csv.includes("Ana"), false); // no customer names
   assert.equal(csv.includes("Palma"), false); // no addresses
+});
+
+test("the whole bill in one tap goes under the color of whoever asked; a first name is optional and cleaned", () => {
+  let t = openTable({ ref: "ZZ11", table: 3, lines: [], by: "Ana", joinToken: "t".repeat(24) });
+  t = addDiner(addDiner(t, "diner-aaaaaaaa").session, "diner-bbbbbbbb").session;
+  t = addRound(t, [{ slug: "x", name: "Lomito", unit: 40000, n: 1, extras: [] }], "diner-aaaaaaaa").session;
+  const s = requestBill(t, { mode: "iguales", n: 1, tipMode: "0" }, "diner-bbbbbbbb");
+  assert.equal(s.bill.parts.length, 1);
+  assert.equal(s.bill.parts[0].color, "verde");
+  assert.equal(s.bill.parts[0].amount, 40000);
+  const named = setDinerName(t, "diner-bbbbbbbb", "  Ana<script>1  María ");
+  assert.equal(dinerView(named, "diner-bbbbbbbb").names.verde, "Anascript María".slice(0, 20));
+  assert.equal(dinerView(setDinerName(named, "diner-bbbbbbbb", ""), "diner-bbbbbbbb").names.verde, undefined);
+  assert.throws(() => setDinerName(t, "diner-cccccccc", "X"), CajaError);
 });

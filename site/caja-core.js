@@ -144,10 +144,19 @@ export function dinerView(session, dinerId) {
     table: session.table, status: session.status, me: me ? me.color : null, colors: session.diners.map(d => d.color),
     lines: session.lines.map(line), total: orderTotal(session),
     pending: (session.pending || []).map(p => ({ id: p.id, color: p.color, mine: p.dinerId === dinerId, lines: p.lines.map(line), at: p.at })),
+    names: Object.fromEntries(session.diners.filter(d => d.name).map(d => [d.color, d.name])),
     rounds: Object.fromEntries(Object.entries(session.kitchen || {}).map(([r, k]) => [r, k.status])),
     billRequested: !!session.bill, payMethod: session.payMethod || "", closedAt: session.closedAt || null,
     bill: session.bill ? { ...session.bill, parts: session.bill.parts.map(p => ({ ...p, paid: !!session.bill.paid[p.key], method: session.bill.paid[p.key] || "" })) } : null,
   };
+}
+
+// Optional first name of a diner (letters only, 20 characters): the waiter sees it next to the color.
+export function setDinerName(session, dinerId, name, now = Date.now()) {
+  const d = session.diners.find(x => x.id === dinerId);
+  if (!d) fail("diner", "Tu celular no está en esta mesa. Escaneá el QR de la mesa.");
+  const clean = String(name || "").replace(/[^\p{L} .'-]/gu, "").replace(/\s+/g, " ").trim().slice(0, 20);
+  return { ...session, updatedAt: now, diners: session.diners.map(x => (x === d ? { ...x, name: clean } : x)) };
 }
 
 // «Pedir la cuenta» from a phone: the split is computed here (same code as the phone's preview) and kept until
@@ -155,7 +164,9 @@ export function dinerView(session, dinerId) {
 export function requestBill(session, split, dinerId, now = Date.now()) {
   if (isClosed(session)) fail("closed", "Esta mesa ya está cerrada.");
   if ((session.pending || []).length) fail("state", "Hay pedidos esperando al mozo: esperá a que los acepte para pedir la cuenta.");
-  const colors = session.diners.map(d => d.color);
+  const by0 = session.diners.find(d => d.id === dinerId)?.color || null;
+  // the whole bill in one tap (equal parts, n = 1): it goes under the color of whoever asked
+  const colors = session.diners.map(d => d.color).sort((a, b) => (split.mode === "iguales" && +split.n === 1 ? (b === by0) - (a === by0) : 0));
   let bill;
   try { bill = C.splitBill(session.lines, colors, split); } catch (e) { fail("split", e.message); }
   const by = session.diners.find(d => d.id === dinerId)?.color || null;
@@ -277,7 +288,7 @@ export function applyOp(order, op, args, role, catalog, now = Date.now()) {
 
 // Personal data kept only while it is useful to the restaurant (plan: 30 days).
 export const PII_DAYS = 30;
-export const wipePii = o => ({ ...o, name: o.name ? "(borrado)" : "", address: "", reference: "", note: "" });
+export const wipePii = o => ({ ...o, name: o.name ? "(borrado)" : "", address: "", reference: "", note: "", ...(o.diners ? { diners: o.diners.map(d => ({ ...d, name: "" })) } : {}) });
 
 /* ---------- turno de caja (fase 4, DEC-063: cierre por turno) ---------- */
 // What was sold between `since` and `until`: closed sales by payment method (split tables count part by part),

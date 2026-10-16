@@ -333,7 +333,8 @@ let soldOut = new Set(); // today's «agotado» marks (server)
 let view = "orders", filter = "all", orders = new Map(), catalog = null, users = [], team = null, tableCount = 20;
 const COLORS = { azul: ["Azul", "#5B9DFF"], verde: ["Verde", "#4CC38A"], naranja: ["Naranja", "#FF9A4D"], violeta: ["Violeta", "#B9A3FF"],
   rosa: ["Rosa", "#FF7EB6"], celeste: ["Celeste", "#4FD1E0"], amarillo: ["Amarillo", "#FFD84D"], rojo: ["Rojo", "#FF6B6B"] };
-const dinerChip = c => c && COLORS[c] ? `<span class="diner" style="--c:${COLORS[c][1]}"><i aria-hidden="true"></i>${COLORS[c][0]}</span>` : `<span class="diner"><i aria-hidden="true"></i>Mozo</span>`;
+const dnames = t => Object.fromEntries(((t && t.diners) || []).filter(d => d.name).map(d => [d.color, d.name]));
+const dinerChip = (c, names) => c && COLORS[c] ? `<span class="diner" style="--c:${COLORS[c][1]}"><i aria-hidden="true"></i>${names && names[c] ? esc(names[c]) + " · " : ""}${COLORS[c][0]}</span>` : `<span class="diner"><i aria-hidden="true"></i>Mozo</span>`;
 // ?tomar=CODE: the waiter scanned a diner's QR with the phone camera
 let pendingTake = new URLSearchParams(location.search).get("tomar");
 if (pendingTake) history.replaceState(null, "", location.pathname);
@@ -565,7 +566,7 @@ function cookCard(k) {
 }
 function roundCard(p) {
   return `<article class="card is-new" aria-label="Pedido de la mesa ${p.table}">
-    <div class="row1"><span class="code">Mesa ${p.table}</span>${dinerChip(p.color)}<span class="ago">${ago(p.at)}</span></div>
+    <div class="row1"><span class="code">Mesa ${p.table}</span>${dinerChip(p.color, dnames(orders.get(p.ref)))}<span class="ago">${ago(p.at)}</span></div>
     <ul class="items">${p.lines.map(l => `<li><b>${l.n}×</b><span>${esc(l.name)}${l.extras.length ? " · " + esc(l.extras.join(", ")) : ""}${l.note ? ` · «${esc(l.note)}»` : ""}</span></li>`).join("")}</ul>
     <div class="foot"><span class="total num">${gs(pSum(p))}</span><span class="st new">${ic("bell")}Desde el celular</span></div>
     <div class="acts"><button class="btn primary" data-act="acceptRound" data-ref="${p.ref}" data-id="${p.id}">${ic("check")}Aceptar</button></div>
@@ -613,7 +614,7 @@ function openTableDrawer(n, refresh) {
       ${(t.pending || []).map(p => `<div class="pend"><h4 style="display:flex;justify-content:space-between;margin:0 0 6px;font:700 14px/1.2 var(--display)">${dinerChip(p.color)}<span>Pedido nuevo · ${ago(p.at)}</span></h4>
         <ul class="lines">${p.lines.map(l => `<li><span class="q">${l.n}×</span><span><span class="nm">${esc(l.name)}</span>${l.extras.length ? `<span class="x">${esc(l.extras.join(", "))}</span>` : ""}${l.note ? `<span class="x note">«${esc(l.note)}»</span>` : ""}</span><span class="p num">${gs(l.unit * l.n)}</span></li>`).join("")}</ul>
         <div class="grid2" style="margin-top:8px"><button class="btn" data-act="rejectRound" data-ref="${t.ref}" data-id="${p.id}">Rechazar</button><button class="btn primary" data-act="acceptRound" data-ref="${t.ref}" data-id="${p.id}">${ic("check")}Aceptar</button></div></div>`).join("")}
-      ${Object.entries(groups).map(([c, ls]) => `<div class="dgroup"><h4>${dinerChip(c === "_" ? null : c)}<span class="num">${gs(ls.reduce((s, l) => s + l.unit * l.n, 0))}</span></h4>
+      ${Object.entries(groups).map(([c, ls]) => `<div class="dgroup"><h4>${dinerChip(c === "_" ? null : c, dnames(t))}<span class="num">${gs(ls.reduce((s, l) => s + l.unit * l.n, 0))}</span></h4>
         <ul class="lines">${ls.map(l => `<li><span class="q">${l.n}×</span><span><span class="nm">${esc(l.name)}</span>${l.extras.length ? `<span class="x">${esc(l.extras.join(", "))}</span>` : ""}${l.note ? `<span class="x note">«${esc(l.note)}»</span>` : ""}<span class="x">Ronda ${l.round + 1}</span></span><span class="p num">${gs(l.unit * l.n)}</span></li>`).join("")}</ul></div>`).join("") || `<p class="empty">Todavía no hay consumo.</p>`}
       <div class="sum"><div class="grand"><span>Total</span><span class="num">${gs(t.total)}</span></div></div>
     </div>
@@ -627,7 +628,7 @@ function openTableDrawer(n, refresh) {
 
 function billHtml(t) {
   const b = t.bill, how = { consumo: "por consumo", iguales: "en partes iguales", libres: "por montos" }[b.mode];
-  const label = p => p.color ? dinerChip(p.color) : `<span class="diner"><i aria-hidden="true"></i>Persona ${esc(p.key.slice(1))}</span>`;
+  const label = p => p.color ? dinerChip(p.color, dnames(t)) : `<span class="diner"><i aria-hidden="true"></i>Persona ${esc(p.key.slice(1))}</span>`;
   const left = b.parts.filter(p => !b.paid[p.key]).reduce((a, p) => a + p.pay, 0);
   return `<div class="bill"><h4><span>${ic("money")} Pidieron la cuenta · ${how}</span><span class="num">${gs(b.grand)}</span></h4>
     ${b.tip ? `<p class="help" style="margin:0 0 6px">Incluye propina de ${gs(b.tip)} (consumo ${gs(b.total)}).</p>` : ""}

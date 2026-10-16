@@ -295,6 +295,9 @@
   .mesabar .mb-chev { grid-row: 1 / span 2; grid-column: 3; font-size: 14px; color: var(--amber); transition: transform .2s; }
   .mesabar.open .mb-chev { transform: rotate(180deg); }
   .mesabar .mb-body { max-height: 40vh; overflow-y: auto; padding: 0 16px 12px; border-top: 1px solid var(--line); overscroll-behavior: contain; }
+  .adjust { margin-top: 12px; }
+  .adjust summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; font: 600 14px/1.2 var(--display); color: var(--amber-soft); }
+  .mesabar .mb-acts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
   .mesabar .mb-open { width: 100%; min-height: 46px; margin-top: 10px; border-radius: 12px; border: 1px solid rgba(255,185,67,.45); background: rgba(237,157,21,.1); color: var(--amber-soft); font: 700 14px/1 var(--display); letter-spacing: .05em; text-transform: uppercase; cursor: pointer; }
   body.has-mesabar .app { padding-bottom: calc(var(--mbh, 72px) + 24px); }
   body.has-mesabar .selbar { bottom: calc(var(--mbh, 72px) + 12px); }
@@ -1278,7 +1281,7 @@ $("#selBody").addEventListener("click", e => {
 const MESA_KEY = "mesa:" + location.pathname;
 const COLORS = { azul: ["Azul", "#5B9DFF"], verde: ["Verde", "#4CC38A"], naranja: ["Naranja", "#FF9A4D"], violeta: ["Violeta", "#B9A3FF"],
   rosa: ["Rosa", "#FF7EB6"], celeste: ["Celeste", "#4FD1E0"], amarillo: ["Amarillo", "#FFD84D"], rojo: ["Rojo", "#FF6B6B"] };
-const colorName = c => (COLORS[c] || ["Mozo"])[0];
+const colorName = c => (mesaView && mesaView.names && mesaView.names[c]) || (COLORS[c] || ["Mozo"])[0];
 const colorDot = c => `<span class="dot" style="--c:${(COLORS[c] || [0, "#8a847b"])[1]}" aria-hidden="true"></span>`;
 let mesa = null, mesaView = null, mesaQr = "", mesaWs = null, mesaTries = 0, mesaTimer = 0, myPending = new Set();
 try { mesa = JSON.parse(localStorage.getItem(MESA_KEY) || "null"); } catch (e) { mesa = null; }
@@ -1342,12 +1345,31 @@ function renderMesaBar() {
     const order = [v.me, ...v.colors.filter(c => c !== v.me), "_"].filter((c, i, a) => c && a.indexOf(c) === i && groups[c]);
     body.innerHTML = `${v.pending.length ? `<div class="mgroup wait"><h3>Esperando al mozo</h3><ul>${v.pending.map(p => p.lines.map(item).join("")).join("")}</ul></div>` : ""}
       ${order.map(c => `<div class="mgroup"><h3>${colorDot(c === "_" ? null : c)}${c === "_" ? "De la mesa" : c === v.me ? "Vos" : esc(colorName(c))}<span class="sum">${plain(groups[c].reduce((a, l) => a + l.unit * l.n, 0))}</span></h3><ul>${groups[c].map(item).join("")}</ul></div>`).join("") || `<p class="sel-hint">Todavía no hay nada aceptado en la mesa.</p>`}
-      <button class="mb-open" type="button" id="mbOpenSheet">Ver la cuenta y pedirla</button>`;
+      ${v.lines.length && !v.bill ? `<div class="mb-acts"><button class="mb-open" type="button" id="mbTotal">Pedir la cuenta</button><button class="mb-open" type="button" id="mbSplit">Dividir</button></div>` : `<button class="mb-open" type="button" id="mbOpenSheet">Ver la cuenta</button>`}`;
   }
   document.documentElement.style.setProperty("--mbh", bar.offsetHeight + "px");
 }
 $("#mbHead").addEventListener("click", () => { mbOpen = !mbOpen; try { sessionStorage.setItem("mbOpen:" + SLUG, mbOpen ? "1" : "0"); } catch (e) {} renderMesaBar(); });
-$("#mbBody").addEventListener("click", e => { if (e.target.id === "mbOpenSheet") openMesa(); });
+$("#mbBody").addEventListener("click", e => {
+  if (e.target.id === "mbOpenSheet") openMesa();
+  if (e.target.id === "mbTotal") requestTotal(e.target);
+  if (e.target.id === "mbSplit") { openMesa(); openSplit(); }
+});
+// the whole bill in one tap: one equal part (no tip: the waiter takes it from there)
+async function requestTotal(btn) {
+  btn.disabled = true;
+  try {
+    const res = await fetch(`/api/${SLUG}/mesa/cuenta`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ token: mesa.token, diner: dinerId(), split: { mode: "iguales", n: 1, tipMode: "0" } }) });
+    const r = await res.json();
+    if (!res.ok) { btn.disabled = false; alert(r.error || "No se pudo pedir la cuenta."); return; }
+    applyMesaView(r.view, r.qr);
+    toast(`Cuenta pedida · ${plain(r.view.total)} ✓`);
+    live.textContent = "Cuenta pedida: el mozo ya lo sabe.";
+  } catch (e) { btn.disabled = false; alert("Sin conexión. Probá de nuevo."); }
+}
+async function saveName(value) {
+  try { const res = await fetch(`/api/${SLUG}/mesa/nombre`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ token: mesa.token, diner: dinerId(), name: value }) }); const r = await res.json(); if (res.ok) applyMesaView(r.view, r.qr); } catch (e) {}
+}
 // ask for more: fold the list so the menu has room, and go to the menu (the hearts add to the selection; the bar above sends it to the table)
 function orderMore() {
   mbOpen = false; try { sessionStorage.setItem("mbOpen:" + SLUG, "0"); } catch (e) {}
@@ -1488,14 +1510,15 @@ function renderMesa() {
   for (const l of v.lines) (groups[l.diner || "_"] ||= []).push(l);
   const order = [v.me, ...v.colors.filter(c => c !== v.me), "_"].filter((c, i, a) => c && a.indexOf(c) === i && groups[c]);
   body.innerHTML = `
-    <p class="sel-hint" style="margin-top:4px">${colorDot(v.me)} Tu color en esta mesa: <b>${esc(colorName(v.me))}</b></p>
+    <div class="field" style="margin-top:4px"><label for="dinerName">Tu nombre <span class="opt-l">(opcional)</span></label><input id="dinerName" maxlength="20" autocomplete="given-name" placeholder="Para que el mozo te ubique" value="${esc((v.names && v.me && v.names[v.me]) || "")}"></div>
     ${v.pending.length ? `<div class="mgroup wait"><h3>Esperando al mozo</h3><ul>${v.pending.map(p => p.lines.map(l => item(l).replace("<li>", `<li title="${esc(colorName(p.color))}">`)).join("")).join("")}</ul></div>` : ""}
     ${order.map(c => `<div class="mgroup"><h3>${colorDot(c === "_" ? null : c)}${c === "_" ? "De la mesa" : c === v.me ? "Vos (" + esc(colorName(c)) + ")" : esc(colorName(c))}<span class="sum">${plain(groups[c].reduce((s, l) => s + l.unit * l.n, 0))}</span></h3><ul>${groups[c].map(item).join("")}</ul></div>`).join("") || `<p class="sel-hint">Todavía no hay nada aceptado en la mesa.</p>`}
     <div class="sel-total"><span>Total de la mesa</span>${fmt(v.total)}</div>
     ${mesaQr ? `<div class="invite"><div class="qr" role="img" aria-label="QR para sumarse a la mesa">${mesaQr}</div><p><b>¿Vienen más?</b> Que escaneen este código con la cámara y piden desde su celular, cada uno con su color.</p></div>` : ""}
     ${v.bill ? billSummary(v) : ""}
-    <button class="ar-btn" type="button" id="mesaMore">Pedir algo más</button>
-    ${v.lines.length && !v.bill ? `<button class="sel-btn" type="button" id="splitOpen">Dividir y pedir la cuenta</button>` : ""}
+    ${v.lines.length && !v.bill ? `<button class="ar-btn" type="button" id="billTotal">Pedir la cuenta · ${plain(v.total)}</button>
+    <button class="sel-btn" type="button" id="splitOpen">Dividir la cuenta</button>` : ""}
+    <button class="sel-btn" type="button" id="mesaMore">Pedir algo más</button>
     <button class="sel-clear" type="button" id="mesaLeave">Salir de esta mesa en este celular</button>`;
 }
 function partLabel(p, v) { return p.color ? (p.color === v.me ? "Vos (" + colorName(p.color) + ")" : colorName(p.color)) : "Persona " + p.key.slice(1); }
@@ -1531,9 +1554,10 @@ function renderSplit() {
   try { res = C.splitBill(v.lines, v.colors, d); } catch (e) { error = e.message; }
   const who = (l, i) => { const a = d.assign[i]; return a && a.length ? a : l.diner && v.colors.includes(l.diner) ? [l.diner] : v.colors.slice(); };
   const modeBody = d.mode === "consumo"
-    ? `<p class="sel-hint" style="margin-top:12px">Cada uno paga lo suyo. Si algo lo compartieron, tocá los colores de quienes lo comieron.</p>
+    ? `<p class="split-hint">Cada uno paga lo que pidió. Revisá las partes abajo y pedí la cuenta.</p>
+      <details class="adjust"><summary>¿Compartieron algo? Cambiá quién paga cada cosa</summary>
       ${v.lines.map((l, i) => `<div class="sline"><div class="top"><span><b style="color:var(--amber)">${l.n}×</b> ${esc(l.name)}</span><span>${plain(l.unit * l.n)}</span></div>
-        <div class="who" role="group" aria-label="Quién paga ${esc(l.name)}">${v.colors.map(c => `<button type="button" data-line="${i}" data-color="${c}" aria-pressed="${who(l, i).includes(c)}">${colorDot(c)}${esc(c === v.me ? "Vos" : colorName(c))}</button>`).join("")}</div></div>`).join("")}`
+        <div class="who" role="group" aria-label="Quién paga ${esc(l.name)}">${v.colors.map(c => `<button type="button" data-line="${i}" data-color="${c}" aria-pressed="${who(l, i).includes(c)}">${colorDot(c)}${esc(c === v.me ? "Vos" : colorName(c))}</button>`).join("")}</div></div>`).join("")}</details>`
     : d.mode === "iguales"
       ? `<div class="field"><label for="splitN">¿Entre cuántos?</label><div class="qty" role="group" aria-label="Personas"><button type="button" data-n="-1" aria-label="Uno menos">−</button><output id="splitN">${d.n}</output><button type="button" data-n="1" aria-label="Uno más">+</button></div></div>`
       : `<p class="split-hint">Poné cuánto paga cada uno. Entre todos tiene que sumar ${plain(v.total)}.</p>
@@ -1613,10 +1637,12 @@ mesaSheet.addEventListener("click", e => {
     if (b.id === "splitBack") { splitDraft = null; renderMesa(); return; }
   }
   if (e.target.id === "splitOpen") { openSplit(); return; }
+  if (e.target.id === "billTotal") { requestTotal(e.target); return; }
   if (e.target.id === "mesaMore") { orderMore(); }
   if (e.target.id === "mesaLeave" && confirm("¿Salir de la mesa en este celular? Tu consumo queda en la cuenta de la mesa.")) { setMesa(null); closeMesa(); }
 });
 mesaSheet.addEventListener("change", e => {
+  if (e.target.id === "dinerName") { saveName(e.target.value); return; }
   if (!splitDraft) return;
   const el = e.target, n = +el.value.replace(/\D/g, "") || 0;
   if (el.dataset.amount) { splitDraft.amounts[el.dataset.amount] = n; renderSplit(); }
