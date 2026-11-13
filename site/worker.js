@@ -15,6 +15,11 @@ export default {
     const path = new URL(request.url).pathname;
     if (path === "/e") return handleEvents(request, env);
     if (path.startsWith("/api/")) return handleCaja(request, env);
+    if (path === "/directorio" || path === "/directorio/") {
+      const url = new URL(request.url);
+      url.pathname = "/directory.html";
+      return env.ASSETS.fetch(new Request(url, request));
+    }
     return env.ASSETS.fetch(request);
   },
 };

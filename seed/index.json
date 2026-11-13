@@ -1,0 +1,24 @@
+{
+  "restaurants": [
+    {
+      "slug": "filigrana",
+      "name": "Filigrana Bar-Restaurante",
+      "tagline": "Pizzas artesanales, parrilla, milanesas, cócteles y vinos.",
+      "cuisine": ["Pizza", "Parrilla", "Hamburguesas", "Pastas", "Cócteles"],
+      "logo": "logo-blanco",
+      "theme": { "primary": "#ED9D15", "background": "#181818" },
+      "whatsapp": "0976 130 444",
+      "active": true
+    },
+    {
+      "slug": "frakar",
+      "name": "Frakar Gourmet",
+      "tagline": "Hamburguesas premium, lomitos, papas fritas y pollo frito.",
+      "cuisine": ["Hamburguesas", "Lomitos", "Papas fritas", "Pollo frito"],
+      "logo": "logo",
+      "theme": { "primary": "#F0B030", "background": "#14100D" },
+      "whatsapp": "0981 288 730",
+      "active": true
+    }
+  ]
+}

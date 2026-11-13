@@ -276,16 +276,21 @@ async function main() {
   const built = [];
   for (const slug of slugs.sort()) built.push(await buildRestaurant(slug, templates));
 
-  // root: straight to the menu when there is only one restaurant, otherwise a list
-  const index = built.length === 1
-    ? `<!doctype html><meta charset="utf-8"><meta http-equiv="refresh" content="0;url=${built[0].slug}/"><link rel="canonical" href="${SITE_URL}${built[0].slug}/"><title>${attr(built[0].name)}</title><a href="${built[0].slug}/">Ver el menú</a>`
-    : `<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Menús</title><ul>${built.map(b => `<li><a href="${b.slug}/">${attr(b.name)}</a></li>`).join("")}</ul>`;
-  await writeFile(path.join(DIST, "index.html"), index);
+  // root: redirect to the marketplace directory (shows all restaurants)
+  await writeFile(path.join(DIST, "index.html"), `<!doctype html><meta charset="utf-8"><meta http-equiv="refresh" content="0;url=directorio/"><link rel="canonical" href="${SITE_URL}directorio/"><title>Mesaverso — Restaurantes</title><a href="directorio/">Ver restaurantes</a>`);
+  // marketplace directory page and its data
+  await cp(path.join(ROOT, "site", "directory.html"), path.join(DIST, "directory.html"));
+  // seed/index.json: served as /seed/index.json so the directory page can fetch it client-side
+  await mkdir(path.join(DIST, "seed"), { recursive: true });
+  await cp(path.join(ROOT, "seed", "index.json"), path.join(DIST, "seed", "index.json"));
   // search engines: the menus are public pages; the caja, the QR sheet and the API are not
   const base = SITE_URL.replace(/\/$/, "");
   await writeFile(path.join(DIST, "robots.txt"), ["User-agent: *", "Allow: /", "Disallow: /*/caja/", "Disallow: /*/qr/", "Disallow: /api/", "Disallow: /e", "", `Sitemap: ${base}/sitemap.xml`, ""].join("\n"));
   const today = new Date().toISOString().slice(0, 10);
-  const urls = built.map(b => `  <url><loc>${base}/${b.slug}/</loc><lastmod>${today}</lastmod></url>`).join("\n");
+  const urls = [
+    `  <url><loc>${base}/directorio/</loc><lastmod>${today}</lastmod></url>`,
+    ...built.map(b => `  <url><loc>${base}/${b.slug}/</loc><lastmod>${today}</lastmod></url>`),
+  ].join("\n");
   await writeFile(path.join(DIST, "sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`);
   await writeFile(path.join(DIST, ".nojekyll"), "");
   // Cloudflare response headers (GitHub Pages ignores this file). One `*` per rule: use :slug for the folder. File names aren't hashed,

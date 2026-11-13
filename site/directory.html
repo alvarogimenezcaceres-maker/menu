@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mesaverso — Restaurantes</title>
+<meta name="description" content="Encontrá los mejores restaurantes con menú digital en Paraguay. Escaneá el QR en tu mesa y pedí desde tu celular.">
+<meta property="og:title" content="Mesaverso — Restaurantes">
+<meta property="og:description" content="Menús digitales con 3D y realidad aumentada para restaurantes de Paraguay.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display+SC:wght@700&family=Karla:wght@400;500;600&display=swap">
+<style>
+  :root {
+    --bg: #0f0e0c;
+    --surface: #1a1916;
+    --surface2: #222018;
+    --amber: #ED9D15;
+    --amber-soft: rgba(237,157,21,.14);
+    --amber-border: rgba(237,157,21,.25);
+    --text: #e8e4dc;
+    --muted: #8a8780;
+    --border: rgba(255,255,255,.07);
+    --radius: 14px;
+    color-scheme: dark;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Karla', system-ui, sans-serif;
+    font-size: 16px;
+    min-height: 100dvh;
+    padding-bottom: 60px;
+  }
+
+  /* ── Header ── */
+  .site-header {
+    padding: 28px max(16px, env(safe-area-inset-left, 0px)) 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .logo-block { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+  .logo-mark {
+    width: 36px; height: 36px; border-radius: 9px;
+    background: var(--amber);
+    display: grid; place-items: center;
+    font-family: 'Playfair Display SC', serif;
+    font-size: 18px; color: #0f0e0c; font-weight: 700;
+    flex-shrink: 0;
+  }
+  .logo-text { font-family: 'Playfair Display SC', serif; font-size: 20px; color: var(--text); }
+  .header-cta {
+    font-size: 13px; font-weight: 600; color: var(--amber);
+    text-decoration: none; padding: 7px 16px;
+    border: 1px solid var(--amber-border); border-radius: 20px;
+    transition: background .18s;
+    white-space: nowrap;
+  }
+  .header-cta:hover { background: var(--amber-soft); }
+
+  /* ── Hero ── */
+  .hero {
+    padding: 52px max(16px, env(safe-area-inset-left, 0px)) 36px;
+    max-width: 640px;
+  }
+  .hero h1 {
+    font-family: 'Playfair Display SC', serif;
+    font-size: clamp(28px, 6vw, 42px);
+    line-height: 1.1;
+    margin-bottom: 14px;
+    text-wrap: balance;
+  }
+  .hero h1 span { color: var(--amber); }
+  .hero p { color: var(--muted); line-height: 1.6; font-size: 16px; max-width: 480px; }
+
+  /* ── Search ── */
+  .search-wrap {
+    padding: 0 max(16px, env(safe-area-inset-left, 0px)) 28px;
+  }
+  .search-box {
+    position: relative; max-width: 480px;
+  }
+  .search-box svg {
+    position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+    width: 18px; height: 18px; color: var(--muted); pointer-events: none;
+  }
+  #search {
+    width: 100%; padding: 12px 14px 12px 42px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; color: var(--text);
+    font: 15px/1 'Karla', sans-serif;
+    outline: none; transition: border-color .18s;
+  }
+  #search::placeholder { color: var(--muted); }
+  #search:focus { border-color: var(--amber-border); }
+
+  /* ── Filter chips ── */
+  .chips {
+    padding: 0 max(16px, env(safe-area-inset-left, 0px)) 28px;
+    display: flex; gap: 8px; flex-wrap: wrap;
+  }
+  .chip {
+    padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 500;
+    border: 1px solid var(--border); background: var(--surface);
+    color: var(--muted); cursor: pointer; transition: all .18s;
+    white-space: nowrap;
+  }
+  .chip:hover { border-color: var(--amber-border); color: var(--text); }
+  .chip.active { background: var(--amber-soft); border-color: var(--amber-border); color: var(--amber); }
+
+  /* ── Grid ── */
+  .grid-section {
+    padding: 0 max(16px, env(safe-area-inset-left, 0px));
+  }
+  .grid-label {
+    font-size: 12px; font-weight: 600; letter-spacing: .08em;
+    text-transform: uppercase; color: var(--muted);
+    margin-bottom: 16px;
+  }
+  #grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+
+  /* ── Restaurant card ── */
+  .rest-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    text-decoration: none;
+    color: var(--text);
+    display: flex; flex-direction: column;
+    transition: transform .22s cubic-bezier(.34,1.56,.64,1), border-color .18s, box-shadow .22s;
+  }
+  .rest-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(255,185,67,.3);
+    box-shadow: 0 12px 32px -8px rgba(0,0,0,.6);
+  }
+  .card-banner {
+    height: 80px;
+    display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+  }
+  .card-banner::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(to bottom, transparent 40%, rgba(0,0,0,.5));
+  }
+  .card-logo {
+    height: 44px; max-width: 140px; object-fit: contain;
+    position: relative; z-index: 1;
+    filter: brightness(0) invert(1);
+  }
+  .card-logo.dark-bg { filter: none; }
+  .card-body { padding: 16px; flex: 1; }
+  .card-name { font-weight: 600; font-size: 16px; margin-bottom: 4px; }
+  .card-tagline { font-size: 13px; color: var(--muted); line-height: 1.4; margin-bottom: 12px; }
+  .card-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+  .card-tag {
+    font-size: 11px; font-weight: 500; padding: 3px 8px;
+    border-radius: 20px; background: var(--surface2);
+    border: 1px solid var(--border); color: var(--muted);
+  }
+  .card-footer {
+    padding: 12px 16px;
+    border-top: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .card-cta {
+    font-size: 13px; font-weight: 600; color: var(--amber);
+    display: flex; align-items: center; gap: 5px;
+  }
+  .card-cta svg { width: 14px; height: 14px; }
+
+  /* ── Empty ── */
+  #empty {
+    display: none; padding: 48px 0; text-align: center; color: var(--muted);
+  }
+  #empty p { margin-top: 8px; font-size: 14px; }
+
+  /* ── Footer ── */
+  footer {
+    margin-top: 60px;
+    padding: 28px max(16px, env(safe-area-inset-left, 0px));
+    border-top: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+  }
+  footer p { font-size: 13px; color: var(--muted); }
+  .footer-link { color: var(--amber); text-decoration: none; font-size: 13px; font-weight: 500; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <a class="logo-block" href="/">
+    <div class="logo-mark">M</div>
+    <span class="logo-text">Mesaverso</span>
+  </a>
+  <a class="header-cta" href="https://mesaverso.app#contacto">Sumá tu restaurante →</a>
+</header>
+
+<section class="hero">
+  <h1>Restaurantes con <span>menú digital</span> en Paraguay</h1>
+  <p>Escaneá el QR en tu mesa, mirá los platos en 3D y pedí desde tu celular.</p>
+</section>
+
+<div class="search-wrap">
+  <div class="search-box">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+    </svg>
+    <input id="search" type="search" placeholder="Buscar restaurante o tipo de comida…" autocomplete="off" aria-label="Buscar restaurantes">
+  </div>
+</div>
+
+<div class="chips" id="chips" role="group" aria-label="Filtrar por tipo de comida"></div>
+
+<div class="grid-section">
+  <p class="grid-label" id="grid-label">Todos los restaurantes</p>
+  <div id="grid" role="list"></div>
+  <div id="empty" aria-live="polite">
+    <p style="font-size:28px">🍽️</p>
+    <p>No encontramos restaurantes con ese filtro.</p>
+  </div>
+</div>
+
+<footer>
+  <p>© 2026 Mesaverso</p>
+  <a class="footer-link" href="https://mesaverso.app">mesaverso.app</a>
+</footer>
+
+<script>
+const DATA_URL = "/seed/index.json";
+
+let allRestaurants = [];
+let activeChip = null;
+let query = "";
+
+async function init() {
+  try {
+    const res = await fetch(DATA_URL);
+    const data = await res.json();
+    allRestaurants = (data.restaurants || []).filter(r => r.active !== false);
+  } catch {
+    allRestaurants = [];
+  }
+  buildChips();
+  render();
+}
+
+function buildChips() {
+  const counts = {};
+  allRestaurants.forEach(r => (r.cuisine || []).forEach(c => { counts[c] = (counts[c] || 0) + 1; }));
+  const tags = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 8).map(e => e[0]);
+  const container = document.getElementById("chips");
+  container.innerHTML = "";
+  tags.forEach(tag => {
+    const btn = document.createElement("button");
+    btn.className = "chip";
+    btn.textContent = tag;
+    btn.setAttribute("aria-pressed", "false");
+    btn.addEventListener("click", () => {
+      activeChip = activeChip === tag ? null : tag;
+      document.querySelectorAll(".chip").forEach(c => {
+        const active = c.textContent === activeChip;
+        c.classList.toggle("active", active);
+        c.setAttribute("aria-pressed", active);
+      });
+      render();
+    });
+    container.appendChild(btn);
+  });
+}
+
+function render() {
+  const q = query.toLowerCase().trim();
+  const filtered = allRestaurants.filter(r => {
+    if (activeChip && !(r.cuisine || []).includes(activeChip)) return false;
+    if (q) {
+      const hay = `${r.name} ${r.tagline} ${(r.cuisine||[]).join(" ")}`.toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+
+  const grid = document.getElementById("grid");
+  const label = document.getElementById("grid-label");
+  const empty = document.getElementById("empty");
+
+  if (filtered.length === 0) {
+    grid.innerHTML = "";
+    empty.style.display = "block";
+    label.textContent = "Sin resultados";
+    return;
+  }
+  empty.style.display = "none";
+  label.textContent = filtered.length === allRestaurants.length
+    ? "Todos los restaurantes"
+    : `${filtered.length} restaurante${filtered.length > 1 ? "s" : ""}`;
+
+  grid.innerHTML = filtered.map(r => cardHTML(r)).join("");
+}
+
+function cardHTML(r) {
+  const bgColor = r.theme?.background || "#1a1916";
+  const accent = r.theme?.primary || "#ED9D15";
+  const logoSrc = r.logo ? `/seed/${r.slug}/images/${r.logo}.png` : "";
+  const tags = (r.cuisine || []).slice(0, 3).map(t => `<span class="card-tag">${esc(t)}</span>`).join("");
+
+  return `<a class="rest-card" href="/${r.slug}/" aria-label="${esc(r.name)}" role="listitem">
+    <div class="card-banner" style="background:${bgColor}">
+      ${logoSrc ? `<img class="card-logo" src="${esc(logoSrc)}" alt="${esc(r.name)}" loading="lazy" onerror="this.style.display='none'">` : `<span style="font-family:'Playfair Display SC',serif;font-size:22px;color:${accent}">${esc(r.name)}</span>`}
+    </div>
+    <div class="card-body">
+      <div class="card-name">${esc(r.name)}</div>
+      <div class="card-tagline">${esc(r.tagline || "")}</div>
+      <div class="card-tags">${tags}</div>
+    </div>
+    <div class="card-footer">
+      <div class="card-cta">
+        Ver menú
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </div>
+      ${r.whatsapp ? `<span style="font-size:12px;color:var(--muted)">📞 ${esc(r.whatsapp)}</span>` : ""}
+    </div>
+  </a>`;
+}
+
+function esc(s) {
+  return String(s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+document.getElementById("search").addEventListener("input", e => {
+  query = e.target.value;
+  render();
+});
+
+init();
+</script>
+</body>
+</html>
