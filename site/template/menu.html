@@ -757,7 +757,8 @@ if (picks.length) {
     <button class="card" type="button" data-dish="${d.slug}" data-view="${d.model ? "3d" : "foto"}" aria-haspopup="dialog">
       ${d.model ? '<span class="tag t3d">3D · AR</span>' : ""}
       <span class="ph">${d.photo ? `<img src="img/${d.photo}-360.webp" alt="" loading="lazy">` : ""}</span>
-      <span class="n">${esc(d.name)}</span>${fmtDish(d)}
+      <span class="n">${esc(d.name)}</span>
+      <span class="p">${fmtDish(d)}</span>
     </button>`).join("");
   $("#spot").hidden = false;
   $("#rail").addEventListener("click", e => { const b = e.target.closest("[data-dish]"); if (b) openDish(b.dataset.dish, "push", { view: b.dataset.view }); });
