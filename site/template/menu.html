@@ -1301,7 +1301,7 @@ let mesaDone = null, doneDraft = { stars: 0, comment: "" }; // the last paid acc
 if (table && !mesa) {
   const fab = document.createElement("button");
   fab.className = "btn-llamar"; fab.id = "llamarFab";
-  fab.style.cssText = "position:fixed;bottom:calc(env(safe-area-inset-bottom,0px)+16px);left:50%;transform:translateX(-50%);width:calc(100% - 32px);max-width:380px;z-index:15;box-shadow:0 4px 20px rgba(0,0,0,.45)";
+  fab.style.cssText = "position:fixed;bottom:16px;left:50%;transform:translateX(-50%);width:calc(100% - 32px);max-width:380px;z-index:15;box-shadow:0 4px 20px rgba(0,0,0,.45)";
   fab.textContent = "🔔 Llamar al mozo";
   document.body.appendChild(fab);
   fab.addEventListener("click", async function() {
