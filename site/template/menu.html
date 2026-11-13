@@ -305,6 +305,9 @@
   .mesabar .mb-open { width: 100%; min-height: 46px; margin-top: 10px; border-radius: 12px; border: 1px solid rgba(255,185,67,.45); background: rgba(237,157,21,.1); color: var(--amber-soft); font: 700 14px/1 var(--display); letter-spacing: .05em; text-transform: uppercase; cursor: pointer; }
   body.has-mesabar .app { padding-bottom: calc(var(--mbh, 72px) + 24px); }
   body.has-mesabar .selbar { bottom: calc(var(--mbh, 72px) + 12px); }
+  .btn-llamar { width: 100%; min-height: 46px; margin-top: 8px; border-radius: 12px; border: 1.5px solid rgba(255,185,67,.5); background: rgba(237,157,21,.1); color: var(--amber-soft); font: 700 14px/1 var(--display); letter-spacing: .05em; text-transform: uppercase; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .btn-llamar:active { background: rgba(237,157,21,.22); }
+  .btn-llamar.sent { border-color: rgba(76,195,138,.5); background: rgba(76,195,138,.1); color: #2D6A4F; pointer-events: none; }
 
   /* botón de selección en la ficha y panel de la selección */
   .sel-btn {
@@ -514,6 +517,7 @@
 <section class="mesabar" id="mesabar" aria-label="Mi mesa" hidden>
   <div class="mb-row"><button type="button" class="mb-head" id="mbHead" aria-expanded="true"><span class="mb-t">Mesa <b id="mbTable"></b></span><span class="mb-sum" id="mbSum"></span><span class="mb-n" id="mbN"></span><span class="mb-chev" aria-hidden="true">▲</span><span class="mb-prog" id="mbProg" aria-hidden="true"><i></i><i></i><i></i><i></i></span></button></div>
   <div class="mb-body" id="mbBody"></div>
+  <div style="padding:0 16px 12px"><button class="btn-llamar" id="llamarBtn" type="button">🔔 Llamar al mozo</button></div>
 </section>
 <div id="live" class="sr-only" aria-live="polite"></div>
 
@@ -610,6 +614,23 @@ document.addEventListener("click", e => { const a = e.target.closest("[data-revi
 const params = new URLSearchParams(location.search);
 const table = (params.get("table") || params.get("mesa") || "").slice(0, 12);
 if (table) { $("#tableLabel").textContent = "Mesa " + table; $("#tableChip").hidden = false; }
+// floating call-waiter button for plain ?mesa=N QR (no live session)
+if (table && !mesa) {
+  const fab = document.createElement("button");
+  fab.className = "btn-llamar"; fab.id = "llamarFab";
+  fab.style.cssText = "position:fixed;bottom:calc(env(safe-area-inset-bottom,0px)+16px);left:50%;transform:translateX(-50%);width:calc(100% - 32px);max-width:380px;z-index:15;box-shadow:0 4px 16px rgba(0,0,0,.35)";
+  fab.textContent = "🔔 Llamar al mozo";
+  document.getElementById("app").appendChild(fab);
+  fab.addEventListener("click", async function() {
+    this.disabled = true;
+    try {
+      const r = await fetch("/api/" + SLUG + "/llamar", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ table: +table }) });
+      if (!r.ok && r.status !== 204) throw new Error();
+      this.classList.add("sent"); this.textContent = "✓ Llamado enviado";
+      setTimeout(() => { this.classList.remove("sent"); this.textContent = "🔔 Llamar al mozo"; this.disabled = false; }, 15000);
+    } catch { this.disabled = false; }
+  });
+}
 
 /* abierto / cerrado según los horarios del local (hora de Paraguay); en la mesa no aplica */
 const openNow = () => (table ? null : C.openState(CFG.hours));
@@ -1355,6 +1376,20 @@ function renderMesaBar() {
   document.documentElement.style.setProperty("--mbh", bar.offsetHeight + "px");
 }
 $("#mbHead").addEventListener("click", () => { mbOpen = !mbOpen; try { sessionStorage.setItem("mbOpen:" + SLUG, mbOpen ? "1" : "0"); } catch (e) {} renderMesaBar(); });
+$("#llamarBtn").addEventListener("click", async function() {
+  const tableNo = mesa ? mesa.table : +table;
+  if (!tableNo) return;
+  this.disabled = true;
+  try {
+    await fetch("/api/" + SLUG + "/llamar", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ table: tableNo }) });
+    this.classList.add("sent");
+    this.textContent = "✓ Llamado enviado";
+    setTimeout(() => { this.classList.remove("sent"); this.textContent = "🔔 Llamar al mozo"; this.disabled = false; }, 15000);
+  } catch (e) {
+    this.disabled = false;
+    say("No se pudo enviar el llamado. Intentá de nuevo.");
+  }
+});
 $("#mbBody").addEventListener("click", e => {
   if (e.target.id === "mbOpenSheet") openMesa();
   if (e.target.id === "mbTotal") requestTotal(e.target);

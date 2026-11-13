@@ -45,6 +45,14 @@ svg.i { width: 20px; height: 20px; flex: none; fill: none; stroke: currentColor;
 .top { grid-column: 1 / -1; display: flex; align-items: center; gap: 10px; padding: 0 16px; background: var(--panel); border-bottom: 1px solid var(--line); }
 .brand { font: 700 17px/1 var(--display); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .sp { flex: 1; }
+.llamados-bar { display: flex; flex-wrap: wrap; gap: 8px; padding: 8px 16px; background: var(--panel); border-bottom: 1px solid var(--line); }
+.llamados-bar:empty { display: none; }
+.llamado { display: flex; align-items: center; gap: 10px; background: #FFF3CD; border: 1px solid #FFCA28; border-radius: 10px; padding: 8px 12px; color: #5C4000; font-size: 13.5px; }
+@media (prefers-color-scheme: dark) { .llamado { background: #3D2E00; border-color: #7A5900; color: #FFD97A; } }
+[data-theme="dark"] .llamado { background: #3D2E00; border-color: #7A5900; color: #FFD97A; }
+.llamado strong { font: 700 15px/1 var(--display); }
+.llamado .btn-aten { margin-left: 6px; padding: 5px 10px; border-radius: 7px; border: 1px solid currentColor; background: none; color: inherit; font: 600 12px/1 var(--display); letter-spacing: .04em; cursor: pointer; }
+.llamado .btn-aten:hover { background: rgba(0,0,0,.08); }
 .pill { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line); background: none; color: var(--text-2); font-size: 13.5px; white-space: nowrap; }
 .pill .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--st-ready); }
 .pill.off { color: var(--st-pay); border-color: var(--st-pay); }
@@ -364,6 +372,7 @@ const dnames = t => Object.fromEntries(((t && t.diners) || []).filter(d => d.nam
 const dinerChip = (c, names) => c && COLORS[c] ? `<span class="diner" style="--c:${COLORS[c][1]}"><i aria-hidden="true"></i>${names && names[c] ? esc(names[c]) + " · " : ""}${COLORS[c][0]}</span>` : `<span class="diner"><i aria-hidden="true"></i>Mozo</span>`;
 // ?tomar=CODE: the waiter scanned a diner's QR with the phone camera
 let pendingTake = new URLSearchParams(location.search).get("tomar");
+let llamados = []; // pending waiter calls: { id, table, at }
 if (pendingTake) history.replaceState(null, "", location.pathname);
 let pinUser = null, pin = "", soundOn = store.get("sound") !== "off";
 const closedO = o => o.kind === "table" ? o.status !== "open" : o.status === "cancelled" || (o.status === "delivered" && o.paid);
@@ -417,6 +426,20 @@ function onMessage(msg) {
   if (msg.t === "doc") { onDoc(msg); return; }
   if (msg.t === "devices") { loadState().catch(() => {}); return; }
   if (msg.t === "soldout") { soldOut = new Set(msg.slugs || []); if (view === "products") renderMain(); return; }
+  if (msg.t === "llamar") {
+    llamados = llamados.filter(c => c.id !== msg.id);
+    llamados.unshift({ id: msg.id, table: msg.table, at: msg.at });
+    renderLlamados();
+    notify(`Mesa ${msg.table} llama al mozo`, "Tocá «Atendida» cuando llegues", "llamar-" + msg.id);
+    beep();
+    say(`Mesa ${msg.table} llama al mozo`);
+    return;
+  }
+  if (msg.t === "llamar_ok") {
+    llamados = llamados.filter(c => c.id !== msg.id);
+    renderLlamados();
+    return;
+  }
   if (msg.t !== "order") return;
   const was = orders.get(msg.order.ref);
   orders.set(msg.order.ref, msg.order);
@@ -801,6 +824,15 @@ function renderTop() {
     <button class="pill" data-act="theme" aria-label="Cambiar entre claro y oscuro">${ic("sun")}</button>
     <button class="pill" data-act="logout">${ic("user")}${esc(me ? me.name + " · " + ROLE_LABEL[me.role] : "")}<span class="hide-sm"> · Salir</span></button>`;
 }
+function renderLlamados() {
+  const bar = $("#llamadosBar"); if (!bar) return;
+  bar.className = "llamados-bar";
+  bar.innerHTML = llamados.map(c => `<div class="llamado" data-id="${esc(c.id)}">
+    <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16V11a6 6 0 1 1 12 0v5l1.5 2h-15L6 16Z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg>
+    <strong>Mesa ${c.table}</strong> llama al mozo <span style="font-size:12px;opacity:.7">${ago(c.at)}</span>
+    <button class="btn-aten" data-act="atenderLlamado" data-id="${esc(c.id)}">Atendida</button>
+  </div>`).join("");
+}
 function renderMain() {
   const m = $("#main"); if (!m || !me) return;
   const scroll = m.scrollTop;
@@ -817,6 +849,7 @@ function render() {
   if (screen === "pin") { root.innerHTML = pinScreen(); if (!users.length && !usersAsked) loadUsers(); return; }
   if (!me) { root.innerHTML = `<div class="center"><p class="empty">Cargando…</p></div>`; return; }
   root.innerHTML = `<div class="app"><header class="top"></header>
+    <div id="llamadosBar"></div>
     <nav class="rail" aria-label="Secciones">
       ${me.role === "cocina" || me.role === "encargado" ? `<button data-view="kitchen"${view === "kitchen" ? ' aria-current="page"' : ""}>${ic("chef")}Cocina</button>` : ""}
       ${me.role === "cocina" ? "" : `<button data-view="orders"${view === "orders" ? ' aria-current="page"' : ""}>${ic("orders")}Pedidos<span class="badge" hidden></span></button>
@@ -1094,6 +1127,11 @@ document.addEventListener("click", async e => {
     case "sendNew": {
       try { const { order } = await api("/op", { method: "POST", body: { op: "create", lines: picker.lines, form: picker.form } }); orders.set(order.ref, order); closeOverlay(); renderMain(); say(`Pedido #MV-${order.ref} creado · a cocina`); autoComanda(order, order.lines); }
       catch (err) { const p = $("#pkErr"); p.hidden = false; p.textContent = err.message; }
+      break;
+    }
+    case "atenderLlamado": {
+      const id = b.dataset.id;
+      try { await api("/op", { method: "POST", body: JSON.stringify({ op: "atenderLlamado", id }) }); llamados = llamados.filter(c => c.id !== id); renderLlamados(); } catch (e) { say(e.message, true); }
       break;
     }
     case "notif": toggleNotif(); break;

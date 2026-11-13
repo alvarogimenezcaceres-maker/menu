@@ -88,6 +88,8 @@ export class Caja {
       CREATE TABLE IF NOT EXISTS opiniones (ref TEXT NOT NULL, diner TEXT NOT NULL, stars INTEGER NOT NULL, comment TEXT NOT NULL, at INTEGER NOT NULL, PRIMARY KEY (ref, diner));`);
     // «caja»: the tablet that keeps every PDF (comandas, tickets, shift closes). Added 2026-09-30.
     if (!this.sql.exec("PRAGMA table_info(devices)").toArray().some(c => c.name === "kind")) this.sql.exec("ALTER TABLE devices ADD COLUMN kind TEXT DEFAULT ''");
+    // «llamar al mozo»: waiter-call log for response-time tracking.
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS table_calls (id TEXT PRIMARY KEY, table_no INTEGER NOT NULL, called_at INTEGER NOT NULL, attended_at INTEGER, attended_by TEXT)`);
   }
 
   meta(k, fallback = null) { const r = this.sql.exec("SELECT v FROM meta WHERE k = ?", k).toArray()[0]; return r ? r.v : fallback; }
@@ -126,6 +128,7 @@ export class Caja {
         case "GET /agotados": return json({ slugs: this.soldOutList() }); // the menu greys these out
         case "POST /pedidos": return await this.publicOrder(body, slug);
         case "POST /mesa": return await this.tableDraft(body, slug, url);
+        case "POST /llamar": return this.callWaiter(body);
         case "POST /mesa/unirse": return this.dinerJoin(body, slug, url);
         case "POST /mesa/pedir": return await this.dinerOrder(body, slug, url);
         case "POST /mesa/cuenta": return this.dinerBill(body, slug, url);
@@ -334,6 +337,17 @@ export class Caja {
       this.doc("cierre", null, { closed: { start, end: now, openedBy, closedBy: who, summary } });
       return json({ closed: { start, end: now, openedBy, closedBy: who, summary }, start: now });
     }
+    if (body.op === "atenderLlamado") {
+      const id = String(body.id || "");
+      const call = this.sql.exec("SELECT * FROM table_calls WHERE id = ?", id).toArray()[0];
+      if (!call) throw new CajaError("ref", "No encontré ese llamado.");
+      if (!call.attended_at) {
+        const ms = Date.now() - call.called_at;
+        this.sql.exec("UPDATE table_calls SET attended_at = ?, attended_by = ? WHERE id = ?", Date.now(), s.name, id);
+        this.broadcast({ t: "llamar_ok", id, table: call.table_no, by: s.name, ms });
+      }
+      return json({ ok: true });
+    }
     if (body.op === "tableQr") {
       const t = this.getOrder(String(body.ref));
       if (t.kind !== "table" || t.status !== "open") throw new CajaError("state", "La mesa no está abierta.");
@@ -441,6 +455,22 @@ export class Caja {
     this.doc("comanda", session, { round: session.rounds - 1 });
     this.sql.exec("UPDATE drafts SET data = ? WHERE code = ?", JSON.stringify({ ...d, taken: { table, ref: session.ref, at: Date.now() } }), draft.code);
     return { order: this.withTotal(session), added: !!existing };
+  }
+
+  /* ---------- llamar al mozo ---------- */
+  callWaiter(body) {
+    if (!this.activated()) return new Response(null, { status: 204 });
+    const table = +body.table;
+    if (!validTable(table)) throw new CajaError("table", "Número de mesa inválido.");
+    // rate-limit: reuse publicHits (shared with orders; 40 hits / 10 min)
+    const now = Date.now();
+    this.publicHits = this.publicHits.filter(t => now - t < 10 * 60000);
+    if (this.publicHits.length >= 40) throw new CajaError("locked", "Demasiados llamados seguidos.");
+    this.publicHits.push(now);
+    const id = randomToken(12);
+    this.sql.exec("INSERT INTO table_calls (id, table_no, called_at) VALUES (?, ?, ?)", id, table, now);
+    this.broadcast({ t: "llamar", id, table, at: now });
+    return json({ id });
   }
 
   /* ---------- mesas: los comensales desde su celular ---------- */
