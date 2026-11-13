@@ -301,6 +301,61 @@ async function main() {
       }
     }
   }
+  // landing pages: /directorio/<slug>/ for each restaurant with a menu.json
+  const landingTemplate = await readFile(path.join(ROOT, "site", "landing.html"), "utf8");
+  for (const r of built) {
+    const menu = JSON.parse(await readFile(path.join(SEED, r.slug, "menu.json"), "utf8"));
+    const rest = menu.restaurant || {};
+    const accent = rest.theme?.primary || "#ffd6a5";
+    const bg = rest.theme?.background || "#0e1014";
+    const logoFile = rest.logo;
+    // find logo in seed images (supports .png, .webp, .svg)
+    const seedImgDir = path.join(SEED, r.slug, "images");
+    let logoSrc = "";
+    if (logoFile) {
+      for (const ext of [".png", ".webp", ".svg"]) {
+        if (await exists(path.join(seedImgDir, `${logoFile}${ext}`))) {
+          logoSrc = `/seed/${r.slug}/images/${logoFile}${ext}`; break;
+        }
+      }
+    }
+    const description = rest.description || rest.tagline || "";
+    const canonical = `${SITE_URL}directorio/${r.slug}/`;
+    const ogImage = logoSrc ? `${SITE_URL.replace(/\/$/, "")}${logoSrc}` : "";
+    const schema = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Restaurant",
+      "name": rest.name,
+      "description": description,
+      "url": canonical,
+      "servesCuisine": rest.cuisine || [],
+      "telephone": rest.whatsapp ? rest.whatsapp.replace(/\s/g, "") : undefined,
+    });
+    const cuisineTags = (rest.cuisine || []).map(c => `<span class="tag">${c}</span>`).join("");
+    const heroLogo = logoSrc
+      ? `<img class="hero-logo" src="${logoSrc}" alt="${rest.name}" loading="eager">`
+      : `<span style="font-family:'Familjen Grotesk',sans-serif;font-size:28px;font-weight:700;color:#fff;position:relative;z-index:1">${rest.name}</span>`;
+    const infoItems = [];
+    if (rest.whatsapp) infoItems.push(`<a class="info-item" href="https://wa.me/${rest.whatsapp.replace(/\s/g,"")}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.63 3.47 2 2 0 0 1 3.59 1.27h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.78a16 16 0 0 0 6.29 6.29l1.59-1.59a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>${rest.whatsapp}</a>`);
+    if (rest.googleReviewUrl) infoItems.push(`<a class="info-item" href="${rest.googleReviewUrl}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>Calificanos en Google</a>`);
+    const infoRows = infoItems.length ? `<div class="info-row">${infoItems.join("")}</div>` : "";
+    let page = landingTemplate
+      .replace(/{{NAME}}/g, rest.name || r.slug)
+      .replace(/{{DESCRIPTION}}/g, description)
+      .replace("{{LOCAL_ACCENT}}", accent)
+      .replace("{{LOCAL_BG}}", bg)
+      .replace("{{OG_IMAGE}}", ogImage)
+      .replace("{{CANONICAL}}", canonical)
+      .replace("{{SCHEMA}}", schema)
+      .replace("{{HERO_LOGO}}", heroLogo)
+      .replace("{{CUISINE_TAGS}}", cuisineTags)
+      .replace("{{SLUG}}", r.slug)
+      .replace("{{INFO_ROWS}}", infoRows);
+    const landingDir = path.join(DIST, "directorio", r.slug);
+    await mkdir(landingDir, { recursive: true });
+    await writeFile(path.join(landingDir, "index.html"), page);
+  }
+
   // search engines: the menus are public pages; the caja, the QR sheet and the API are not
   const base = SITE_URL.replace(/\/$/, "");
   await writeFile(path.join(DIST, "robots.txt"), ["User-agent: *", "Allow: /", "Disallow: /*/caja/", "Disallow: /*/qr/", "Disallow: /api/", "Disallow: /e", "", `Sitemap: ${base}/sitemap.xml`, ""].join("\n"));
@@ -308,6 +363,7 @@ async function main() {
   const urls = [
     `  <url><loc>${base}/directorio/</loc><lastmod>${today}</lastmod></url>`,
     ...built.map(b => `  <url><loc>${base}/${b.slug}/</loc><lastmod>${today}</lastmod></url>`),
+    ...built.map(b => `  <url><loc>${base}/directorio/${b.slug}/</loc><lastmod>${today}</lastmod></url>`),
   ].join("\n");
   await writeFile(path.join(DIST, "sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`);
   await writeFile(path.join(DIST, ".nojekyll"), "");
