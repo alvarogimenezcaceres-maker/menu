@@ -293,7 +293,7 @@ async function main() {
       const files = await readdir(imgSrc);
       for (const f of files) {
         const ext = path.extname(f).toLowerCase();
-        if ([".png", ".webp", ".jpg", ".jpeg"].includes(ext)) {
+        if ([".png", ".webp", ".jpg", ".jpeg", ".svg"].includes(ext)) {
           await cp(path.join(imgSrc, f), path.join(imgDst, f));
         }
       }

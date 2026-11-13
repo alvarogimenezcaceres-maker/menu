@@ -1,6 +1,18 @@
 {
   "restaurants": [
     {
+      "slug": "demo",
+      "name": "Mesaverso Demo",
+      "tagline": "Menú digital con 3D y realidad aumentada. Probá todas las funciones.",
+      "cuisine": ["Demo", "3D", "Carta digital"],
+      "logo": "logo",
+      "logoExt": "svg",
+      "theme": { "primary": "#ED9D15", "background": "#0f0e0c" },
+      "url": "https://mesaverso.app",
+      "badge": "Demo",
+      "active": true
+    },
+    {
       "slug": "filigrana",
       "name": "Filigrana Bar-Restaurante",
       "tagline": "Pizzas artesanales, parrilla, milanesas, cócteles y vinos.",

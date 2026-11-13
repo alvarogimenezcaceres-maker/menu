@@ -311,10 +311,13 @@ function render() {
 function cardHTML(r) {
   const bgColor = r.theme?.background || "#1a1916";
   const accent = r.theme?.primary || "#ED9D15";
-  const logoSrc = r.logo ? `/seed/${r.slug}/images/${r.logo}.png` : "";
+  const logoExt = r.logoExt || "png";
+  const logoSrc = r.logo ? `/seed/${r.slug}/images/${r.logo}.${logoExt}` : "";
   const tags = (r.cuisine || []).slice(0, 3).map(t => `<span class="card-tag">${esc(t)}</span>`).join("");
 
-  return `<a class="rest-card" href="/${r.slug}/" aria-label="${esc(r.name)}" role="listitem">
+  const href = r.url || `/${r.slug}/`;
+  const target = r.url ? ' target="_blank" rel="noopener"' : "";
+  return `<a class="rest-card" href="${esc(href)}"${target} aria-label="${esc(r.name)}" role="listitem">
     <div class="card-banner" style="background:${bgColor}">
       ${logoSrc ? `<img class="card-logo" src="${esc(logoSrc)}" alt="${esc(r.name)}" loading="lazy" onerror="this.style.display='none'">` : `<span style="font-family:'Playfair Display SC',serif;font-size:22px;color:${accent}">${esc(r.name)}</span>`}
     </div>
@@ -328,7 +331,7 @@ function cardHTML(r) {
         Ver menú
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
       </div>
-      ${r.whatsapp ? `<span style="font-size:12px;color:var(--muted)">📞 ${esc(r.whatsapp)}</span>` : ""}
+      ${r.badge ? `<span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;background:var(--amber-soft);color:var(--amber);border:1px solid var(--amber-border)">${esc(r.badge)}</span>` : r.whatsapp ? `<span style="font-size:12px;color:var(--muted)">📞 ${esc(r.whatsapp)}</span>` : ""}
     </div>
   </a>`;
 }
