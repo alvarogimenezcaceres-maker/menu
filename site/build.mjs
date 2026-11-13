@@ -283,6 +283,22 @@ async function main() {
   // seed/index.json: served as /seed/index.json so the directory page can fetch it client-side
   await mkdir(path.join(DIST, "seed"), { recursive: true });
   await cp(path.join(ROOT, "seed", "index.json"), path.join(DIST, "seed", "index.json"));
+  // logo images for each restaurant: served as /seed/<slug>/images/<logo>.{png,webp,jpg}
+  // so the directory card banners can display them without an extra build step
+  for (const r of built) {
+    const imgSrc = path.join(SEED, r.slug, "images");
+    const imgDst = path.join(DIST, "seed", r.slug, "images");
+    if (await exists(imgSrc)) {
+      await mkdir(imgDst, { recursive: true });
+      const files = await readdir(imgSrc);
+      for (const f of files) {
+        const ext = path.extname(f).toLowerCase();
+        if ([".png", ".webp", ".jpg", ".jpeg"].includes(ext)) {
+          await cp(path.join(imgSrc, f), path.join(imgDst, f));
+        }
+      }
+    }
+  }
   // search engines: the menus are public pages; the caja, the QR sheet and the API are not
   const base = SITE_URL.replace(/\/$/, "");
   await writeFile(path.join(DIST, "robots.txt"), ["User-agent: *", "Allow: /", "Disallow: /*/caja/", "Disallow: /*/qr/", "Disallow: /api/", "Disallow: /e", "", `Sitemap: ${base}/sitemap.xml`, ""].join("\n"));
