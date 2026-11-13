@@ -17,8 +17,21 @@
     "not_found_handling": "none",
     "run_worker_first": ["/e", "/api/*"]
   },
+  "triggers": {
+    // 09:00 UTC = 06:00 PY — aggregates the previous PY day into D1
+    "crons": ["0 9 * * *"]
+  },
   "analytics_engine_datasets": [
     { "binding": "MV_EVENTS", "dataset": "mesaverso_menu_events" }
+  ],
+  "d1_databases": [
+    {
+      "binding": "MV_D1",
+      "database_name": "mesaverso-analytics",
+      // Run: npx wrangler d1 create mesaverso-analytics  → paste the id here
+      "database_id": "dab6ce03-ff7a-4e1e-b960-25fc8917b197",
+      "migrations_dir": "site/migrations"
+    }
   ],
   "durable_objects": {
     "bindings": [{ "name": "CAJA", "class_name": "Caja" }]

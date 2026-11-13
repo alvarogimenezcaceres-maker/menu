@@ -7,6 +7,7 @@
 
 import { handleEvents } from "./events.js";
 import { handleCaja } from "./caja.js";
+import { aggregate } from "./aggregate.js";
 
 export { Caja } from "./caja.js";
 
@@ -21,5 +22,9 @@ export default {
       return env.ASSETS.fetch(new Request(url, request));
     }
     return env.ASSETS.fetch(request);
+  },
+
+  async scheduled(event, env, ctx) {
+    ctx.waitUntil(aggregate(event, env));
   },
 };
