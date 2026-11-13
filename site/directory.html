@@ -184,6 +184,11 @@
   }
   .card-cta svg { width: 14px; height: 14px; }
 
+  /* ── Featured strip ── */
+  .featured-section { margin-bottom: 32px; }
+  .featured-label { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+  .featured-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
+
   /* ── Empty ── */
   #empty {
     display: none; padding: 48px 0; text-align: center; color: var(--muted);
@@ -233,6 +238,11 @@
 </div>
 
 <div class="chips" id="chips" role="group" aria-label="Filtrar por tipo de comida"></div>
+
+<div class="featured-section" id="featuredSection" hidden>
+  <p class="featured-label">Destacados</p>
+  <div class="featured-grid" id="featuredGrid" role="list"></div>
+</div>
 
 <div class="grid-section">
   <p class="grid-label" id="grid-label">Todos los restaurantes</p>
@@ -321,6 +331,8 @@ function matches(r, tokens) {
 
 function render() {
   const tokens = norm(query).split(" ").filter(Boolean);
+  const isFiltering = tokens.length > 0 || activeChip;
+
   const filtered = allRestaurants.filter(r => {
     if (activeChip && !(r.cuisine || []).includes(activeChip)) return false;
     return matches(r, tokens);
@@ -329,6 +341,17 @@ function render() {
   const grid = document.getElementById("grid");
   const label = document.getElementById("grid-label");
   const empty = document.getElementById("empty");
+  const featuredSec = document.getElementById("featuredSection");
+  const featuredGrid = document.getElementById("featuredGrid");
+
+  // Featured strip: only when not filtering
+  const featured = allRestaurants.filter(r => r.featured);
+  if (featured.length && !isFiltering) {
+    featuredGrid.innerHTML = featured.map(r => cardHTML(r)).join("");
+    featuredSec.hidden = false;
+  } else {
+    featuredSec.hidden = true;
+  }
 
   if (filtered.length === 0) {
     grid.innerHTML = "";
@@ -337,11 +360,13 @@ function render() {
     return;
   }
   empty.style.display = "none";
-  label.textContent = filtered.length === allRestaurants.length
-    ? "Todos los restaurantes"
-    : `${filtered.length} restaurante${filtered.length > 1 ? "s" : ""}`;
 
-  grid.innerHTML = filtered.map(r => cardHTML(r)).join("");
+  // When not filtering: show non-featured in the main grid, featured already in strip
+  const mainList = isFiltering ? filtered : filtered.filter(r => !r.featured);
+  label.textContent = isFiltering
+    ? `${filtered.length} restaurante${filtered.length > 1 ? "s" : ""}`
+    : "Todos los restaurantes";
+  grid.innerHTML = mainList.map(r => cardHTML(r)).join("");
 }
 
 function cardHTML(r) {

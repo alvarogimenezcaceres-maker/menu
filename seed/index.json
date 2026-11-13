@@ -8,7 +8,9 @@
       "logo": "logo-blanco",
       "theme": { "primary": "#ED9D15", "background": "#181818" },
       "whatsapp": "0976 130 444",
-      "active": true
+      "active": true,
+      "featured": true,
+      "badge": "Popular"
     },
     {
       "slug": "frakar",
@@ -18,7 +20,9 @@
       "logo": "logo",
       "theme": { "primary": "#F0B030", "background": "#14100D" },
       "whatsapp": "0981 288 730",
-      "active": true
+      "active": true,
+      "featured": true,
+      "badge": "Nuevo"
     }
   ]
 }
