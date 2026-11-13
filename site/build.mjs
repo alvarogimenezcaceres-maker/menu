@@ -283,11 +283,12 @@ async function main() {
   // seed/index.json: served as /seed/index.json so the directory page can fetch it client-side
   await mkdir(path.join(DIST, "seed"), { recursive: true });
   await cp(path.join(ROOT, "seed", "index.json"), path.join(DIST, "seed", "index.json"));
-  // logo images for each restaurant: served as /seed/<slug>/images/<logo>.{png,webp,jpg}
-  // so the directory card banners can display them without an extra build step
-  for (const r of built) {
-    const imgSrc = path.join(SEED, r.slug, "images");
-    const imgDst = path.join(DIST, "seed", r.slug, "images");
+  // logo images for all directory entries (built restaurants + index-only slugs like demo)
+  const indexData = JSON.parse(await readFile(path.join(SEED, "index.json"), "utf8"));
+  const directorySlugs = new Set([...built.map(r => r.slug), ...(indexData.restaurants || []).map(r => r.slug)]);
+  for (const slug of directorySlugs) {
+    const imgSrc = path.join(SEED, slug, "images");
+    const imgDst = path.join(DIST, "seed", slug, "images");
     if (await exists(imgSrc)) {
       await mkdir(imgDst, { recursive: true });
       const files = await readdir(imgSrc);
