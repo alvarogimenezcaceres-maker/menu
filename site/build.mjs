@@ -284,8 +284,9 @@ async function main() {
   await mkdir(path.join(DIST, "seed"), { recursive: true });
   await cp(path.join(ROOT, "seed", "index.json"), path.join(DIST, "seed", "index.json"));
   // logo images for all directory entries (built restaurants + index-only slugs like demo)
-  const indexData = JSON.parse(await readFile(path.join(SEED, "index.json"), "utf8"));
-  const directorySlugs = new Set([...built.map(r => r.slug), ...(indexData.restaurants || []).map(r => r.slug)]);
+  let indexRestaurants = [];
+  try { indexRestaurants = JSON.parse(await readFile(path.join(SEED, "index.json"), "utf8")).restaurants || []; } catch { /* no index.json in test envs */ }
+  const directorySlugs = new Set([...built.map(r => r.slug), ...indexRestaurants.map(r => r.slug)]);
   for (const slug of directorySlugs) {
     const imgSrc = path.join(SEED, slug, "images");
     const imgDst = path.join(DIST, "seed", slug, "images");
