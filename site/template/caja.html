@@ -849,7 +849,7 @@ function render() {
   if (screen === "pin") { root.innerHTML = pinScreen(); if (!users.length && !usersAsked) loadUsers(); return; }
   if (!me) { root.innerHTML = `<div class="center"><p class="empty">Cargando…</p></div>`; return; }
   root.innerHTML = `<div class="app"><header class="top"></header>
-    <div id="llamadosBar"></div>
+    <div id="llamadosBar" class="llamados-bar"></div>
     <nav class="rail" aria-label="Secciones">
       ${me.role === "cocina" || me.role === "encargado" ? `<button data-view="kitchen"${view === "kitchen" ? ' aria-current="page"' : ""}>${ic("chef")}Cocina</button>` : ""}
       ${me.role === "cocina" ? "" : `<button data-view="orders"${view === "orders" ? ' aria-current="page"' : ""}>${ic("orders")}Pedidos<span class="badge" hidden></span></button>
