@@ -95,8 +95,9 @@
   .dish-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 14px; align-items: center; width: 100%; text-align: left; background: none; border: 0; border-bottom: 1px solid var(--line); padding: 14px 2px; cursor: pointer; }
   .dish-row > span:first-child { display: block; min-width: 0; }
   .dish-row:hover .name { color: var(--amber-soft); }
-  .dish-row { transition: background-color .12s; border-radius: 10px; }
-  .dish-row:active { background: var(--raised); }
+  .dish-row { transition: background-color .15s, transform .15s; border-radius: 12px; padding-inline: 8px; margin-inline: -8px; }
+  .dish-row:hover { background: rgba(255,185,67,.04); }
+  .dish-row:active { background: var(--raised); transform: scale(.99); }
   .dish-row .line { display: flex; align-items: baseline; gap: 8px; }
   .dish-row .name { font: 600 17px/1.25 var(--display); letter-spacing: .01em; transition: color .15s; }
   .dish-row .leader { flex: 1; border-bottom: 1px dotted #5a5247; transform: translateY(-4px); min-width: 12px; }
@@ -109,8 +110,8 @@
   .tag.sold { background: #3a3530; border-color: #3a3530; color: var(--text); font-weight: 600; }
   .dish-row.is-sold .name, .dish-row.is-sold .price { opacity: .5; text-decoration: line-through; text-decoration-thickness: 1px; }
   .dish-row.is-sold .thumb img { filter: grayscale(1) drop-shadow(0 6px 10px rgba(0,0,0,.55)); opacity: .6; }
-  .thumb { width: 84px; height: 84px; display: grid; place-items: center; border-radius: 50%; background: radial-gradient(circle, var(--glow) 0%, transparent 70%); }
-  .thumb img { max-width: 92px; max-height: 84px; object-fit: contain; filter: drop-shadow(0 6px 10px rgba(0,0,0,.55)); }
+  .thumb { width: 88px; height: 88px; display: grid; place-items: center; border-radius: 50%; background: radial-gradient(circle, rgba(237,157,21,.18) 0%, transparent 70%); flex-shrink: 0; }
+  .thumb img { max-width: 96px; max-height: 88px; object-fit: contain; filter: drop-shadow(0 8px 12px rgba(0,0,0,.6)); }
   .wine .dish-row .name { font: 600 17px/1.25 var(--serif); }
   .wine .price { color: var(--wine-text); }
   .wine .tag { color: var(--wine-text); border-color: rgba(217,138,158,.35); }
@@ -252,15 +253,20 @@
   .rail { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 12px 16px 8px; margin-inline: -16px; scrollbar-width: none; scroll-padding-inline: 16px; }
   .rail::-webkit-scrollbar { display: none; }
   .card {
-    flex: none; width: 164px; scroll-snap-align: start; position: relative; display: grid; gap: 6px; padding: 12px 12px 14px;
-    border-radius: 18px; text-align: left; cursor: pointer; color: var(--text);
-    background: linear-gradient(160deg, rgba(255,255,255,.07), rgba(255,255,255,.015)); border: 1px solid rgba(255,185,67,.18);
-    -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+    flex: none; width: 174px; scroll-snap-align: start; position: relative; display: grid; gap: 6px; padding: 14px 12px 16px;
+    border-radius: 20px; text-align: left; cursor: pointer; color: var(--text);
+    background: linear-gradient(160deg, rgba(255,255,255,.08), rgba(255,255,255,.018)); border: 1px solid rgba(255,185,67,.2);
+    -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+    transition: transform .22s cubic-bezier(.34,1.56,.64,1), box-shadow .22s;
+    box-shadow: 0 8px 24px -8px rgba(0,0,0,.55);
   }
-  .card .ph { height: 112px; display: grid; place-items: center; background: radial-gradient(closest-side, rgba(237,157,21,.3), transparent 75%); }
-  .card img { max-height: 108px; max-width: 100%; object-fit: contain; filter: drop-shadow(0 10px 14px rgba(0,0,0,.6)); transition: transform .3s cubic-bezier(.34,1.56,.64,1); }
-  .card:active img, .card:hover img { transform: scale(1.07) rotate(-4deg); }
-  .card .n { font: 600 15.5px/1.2 var(--display); }
+  .card:hover, .card:focus-visible { transform: translateY(-3px) scale(1.015); box-shadow: 0 16px 32px -8px rgba(0,0,0,.7), 0 0 0 1px rgba(255,185,67,.35); }
+  .card:active { transform: scale(.97); }
+  .card .ph { height: 120px; display: grid; place-items: center; background: radial-gradient(closest-side, rgba(237,157,21,.32), transparent 75%); }
+  .card img { max-height: 112px; max-width: 100%; object-fit: contain; filter: drop-shadow(0 10px 14px rgba(0,0,0,.6)); transition: transform .3s cubic-bezier(.34,1.56,.64,1); }
+  .card:active img, .card:hover img { transform: scale(1.09) rotate(-4deg); }
+  .card .n { font: 700 15.5px/1.2 var(--display); letter-spacing: .01em; }
+  .card .p { font: 700 15px/1 var(--display); color: var(--amber); font-variant-numeric: tabular-nums; margin-top: 4px; }
   .card .tag { position: absolute; top: 10px; left: 10px; }
 
   /* barra "Mi selección" */
@@ -306,6 +312,26 @@
   body.has-mesabar .app { padding-bottom: calc(var(--mbh, 72px) + 24px); }
   body.has-mesabar .selbar { bottom: calc(var(--mbh, 72px) + 12px); }
   .btn-llamar { width: 100%; min-height: 46px; margin-top: 8px; border-radius: 12px; border: 1.5px solid rgba(255,185,67,.5); background: rgba(237,157,21,.1); color: var(--amber-soft); font: 700 14px/1 var(--display); letter-spacing: .05em; text-transform: uppercase; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+
+  /* Llamar al mozo - FAB top-left pill (QR mesa mode) */
+  #llamarFab {
+    position: fixed !important; top: calc(8px + env(safe-area-inset-top, 0px)) !important;
+    left: 12px !important; bottom: auto !important;
+    width: auto !important; max-width: none !important;
+    transform: none !important;
+    padding: 0 16px !important; min-height: 44px !important;
+    border-radius: 999px !important;
+    background: var(--amber) !important; color: #15100a !important;
+    border: 0 !important;
+    font: 700 13px/1 var(--display) !important; letter-spacing: .07em !important;
+    box-shadow: 0 4px 20px -4px rgba(237,157,21,.7), 0 2px 8px rgba(0,0,0,.45) !important;
+    display: inline-flex !important; align-items: center !important; gap: 7px !important;
+    z-index: 20 !important;
+    transition: opacity .2s, transform .2s !important;
+  }
+  #llamarFab:disabled { opacity: .55; }
+  #llamarFab.sent { background: #2d7a56 !important; color: #fff !important; box-shadow: 0 4px 16px -4px rgba(45,122,86,.6) !important; }
+  #llamarFab svg { width: 16px; height: 16px; flex-shrink: 0; }
   .btn-llamar:active { background: rgba(237,157,21,.22); }
   .btn-llamar.sent { border-color: rgba(76,195,138,.5); background: rgba(76,195,138,.1); color: #2D6A4F; pointer-events: none; }
 
@@ -1300,16 +1326,16 @@ let mesaDone = null, doneDraft = { stars: 0, comment: "" }; // the last paid acc
 // floating call-waiter button for plain ?mesa=N QR (no live table session)
 if (table && !mesa) {
   const fab = document.createElement("button");
-  fab.className = "btn-llamar"; fab.id = "llamarFab";
-  fab.style.cssText = "position:fixed;bottom:16px;left:50%;transform:translateX(-50%);width:calc(100% - 32px);max-width:380px;z-index:15;box-shadow:0 4px 20px rgba(0,0,0,.45)";
-  fab.textContent = "🔔 Llamar al mozo";
+  fab.className = "btn-llamar"; fab.id = "llamarFab"; fab.type = "button";
+  fab.setAttribute("aria-label", "Llamar al mozo");
+  fab.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>Llamar al mozo`;
   document.body.appendChild(fab);
   fab.addEventListener("click", async function() {
     this.disabled = true;
     try {
       await fetch("/api/" + SLUG + "/llamar", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ table: +table }) });
-      this.classList.add("sent"); this.textContent = "✓ Llamado enviado";
-      setTimeout(() => { this.classList.remove("sent"); this.textContent = "🔔 Llamar al mozo"; this.disabled = false; }, 15000);
+      this.classList.add("sent"); this.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:16px;height:16px"><polyline points="20 6 9 17 4 12"/></svg>¡Mozo en camino!`;
+      setTimeout(() => { this.classList.remove("sent"); this.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:16px;height:16px"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>Llamar al mozo`; this.disabled = false; }, 15000);
     } catch { this.disabled = false; }
   });
 }
