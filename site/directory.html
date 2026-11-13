@@ -9,26 +9,37 @@
 <meta property="og:description" content="Menús digitales con 3D y realidad aumentada para restaurantes de Paraguay.">
 <meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display+SC:wght@700&family=Karla:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;700&family=Instrument+Sans:wght@400;600;700&display=swap">
 <style>
   :root {
-    --bg: #0f0e0c;
-    --surface: #1a1916;
-    --surface2: #222018;
-    --amber: #ED9D15;
-    --amber-soft: rgba(237,157,21,.14);
-    --amber-border: rgba(237,157,21,.25);
-    --text: #e8e4dc;
-    --muted: #8a8780;
-    --border: rgba(255,255,255,.07);
-    --radius: 14px;
+    /* Mesaverso brand 5B — Titanio + Luz Cálida */
+    --mv-noche:           #0e1014;
+    --mv-grafito:         #2a2d33;
+    --mv-titanio:         #c3c8ce;
+    --mv-niebla:          #f1f2ee;
+    --mv-luz-calida:      #ffd6a5;
+    --mv-luz-hover:       #ffd9ac;
+    --mv-titanio-apagado: #9a9fa7;
+
+    --bg:      var(--mv-noche);
+    --surface: var(--mv-grafito);
+    --surface2: #1a1d21;
+    --text:    var(--mv-niebla);
+    --muted:   var(--mv-titanio-apagado);
+    --text-2:  var(--mv-titanio);
+    --accent:  var(--mv-luz-calida);
+    --accent-soft:   rgba(255,214,165,.12);
+    --accent-border: rgba(255,214,165,.25);
+    --border:  rgb(195 200 206 / .12);
+    --radius: 6px;
+    --r-screen: 14px;
     color-scheme: dark;
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   body {
     background: var(--bg);
     color: var(--text);
-    font-family: 'Karla', system-ui, sans-serif;
+    font-family: 'Instrument Sans', system-ui, sans-serif;
     font-size: 16px;
     min-height: 100dvh;
     padding-bottom: 60px;
@@ -45,23 +56,17 @@
     flex-wrap: wrap;
   }
   .logo-block { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-  .logo-mark {
-    width: 36px; height: 36px; border-radius: 9px;
-    background: var(--amber);
-    display: grid; place-items: center;
-    font-family: 'Playfair Display SC', serif;
-    font-size: 18px; color: #0f0e0c; font-weight: 700;
-    flex-shrink: 0;
-  }
-  .logo-text { font-family: 'Playfair Display SC', serif; font-size: 20px; color: var(--text); }
+  .logo-isotype { width: 36px; height: 36px; flex-shrink: 0; display: block; }
+  @media (prefers-reduced-motion: reduce) { .logo-isotype .mv-dot-animated { display: none; } }
+  .logo-text { font-family: 'Familjen Grotesk', 'Playfair Display SC', serif; font-size: 18px; font-weight: 700; letter-spacing: .04em; color: var(--text); text-transform: uppercase; }
   .header-cta {
-    font-size: 13px; font-weight: 600; color: var(--amber);
+    font-size: 13px; font-weight: 600; color: var(--accent);
     text-decoration: none; padding: 7px 16px;
-    border: 1px solid var(--amber-border); border-radius: 20px;
+    border: 1px solid var(--accent-border); border-radius: var(--radius);
     transition: background .18s;
     white-space: nowrap;
   }
-  .header-cta:hover { background: var(--amber-soft); }
+  .header-cta:hover { background: var(--accent-soft); }
 
   /* ── Hero ── */
   .hero {
@@ -69,13 +74,13 @@
     max-width: 640px;
   }
   .hero h1 {
-    font-family: 'Playfair Display SC', serif;
+    font-family: 'Familjen Grotesk', system-ui, sans-serif;
     font-size: clamp(28px, 6vw, 42px);
     line-height: 1.1;
     margin-bottom: 14px;
     text-wrap: balance;
   }
-  .hero h1 span { color: var(--amber); }
+  .hero h1 span { color: var(--accent); }
   .hero p { color: var(--muted); line-height: 1.6; font-size: 16px; max-width: 480px; }
 
   /* ── Search ── */
@@ -92,12 +97,12 @@
   #search {
     width: 100%; padding: 12px 14px 12px 42px;
     background: var(--surface); border: 1px solid var(--border);
-    border-radius: 10px; color: var(--text);
-    font: 15px/1 'Karla', sans-serif;
+    border-radius: var(--radius); color: var(--text);
+    font: 15px/1 'Instrument Sans', sans-serif;
     outline: none; transition: border-color .18s;
   }
   #search::placeholder { color: var(--muted); }
-  #search:focus { border-color: var(--amber-border); }
+  #search:focus { border-color: var(--accent-border); }
 
   /* ── Filter chips ── */
   .chips {
@@ -110,8 +115,8 @@
     color: var(--muted); cursor: pointer; transition: all .18s;
     white-space: nowrap;
   }
-  .chip:hover { border-color: var(--amber-border); color: var(--text); }
-  .chip.active { background: var(--amber-soft); border-color: var(--amber-border); color: var(--amber); }
+  .chip:hover { border-color: var(--accent-border); color: var(--text); }
+  .chip.active { background: var(--accent-soft); border-color: var(--accent-border); color: var(--accent); }
 
   /* ── Grid ── */
   .grid-section {
@@ -141,7 +146,7 @@
   }
   .rest-card:hover {
     transform: translateY(-3px);
-    border-color: rgba(255,185,67,.3);
+    border-color: var(--accent-border);
     box-shadow: 0 12px 32px -8px rgba(0,0,0,.6);
   }
   .card-banner {
@@ -174,7 +179,7 @@
     display: flex; align-items: center; justify-content: space-between;
   }
   .card-cta {
-    font-size: 13px; font-weight: 600; color: var(--amber);
+    font-size: 13px; font-weight: 600; color: var(--accent);
     display: flex; align-items: center; gap: 5px;
   }
   .card-cta svg { width: 14px; height: 14px; }
@@ -193,14 +198,21 @@
     display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
   }
   footer p { font-size: 13px; color: var(--muted); }
-  .footer-link { color: var(--amber); text-decoration: none; font-size: 13px; font-weight: 500; }
+  .footer-link { color: var(--accent); text-decoration: none; font-size: 13px; font-weight: 500; }
 </style>
 </head>
 <body>
 
 <header class="site-header">
-  <a class="logo-block" href="/">
-    <div class="logo-mark">M</div>
+  <a class="logo-block" href="/" aria-label="Mesaverso — inicio">
+    <svg class="logo-isotype" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="Isotipo Mesaverso">
+      <path d="M16 80V22L50 60L84 22V80" fill="none" stroke="#C3C8CE" stroke-width="11" stroke-linejoin="round"/>
+      <circle cx="16" cy="82" r="10" fill="#C3C8CE"/>
+      <circle r="10" fill="#FFD6A5" cx="0" cy="0" class="mv-dot-animated">
+        <animateMotion dur="8s" repeatCount="indefinite" calcMode="spline" path="M16 82V22L50 60L84 22V82" keyPoints="1;1;0;0;1;1" keyTimes="0;0.62;0.64;0.7;0.925;1" keySplines="0 0 1 1;0 0 1 1;0 0 1 1;0.65 0 0.35 1;0 0 1 1"/>
+        <animate attributeName="opacity" dur="8s" repeatCount="indefinite" values="1;1;0;0;1;1" keyTimes="0;0.6;0.63;0.66;0.7;1"/>
+      </circle>
+    </svg>
     <span class="logo-text">Mesaverso</span>
   </a>
   <a class="header-cta" href="https://mesaverso.app#contacto">Sumá tu restaurante →</a>
@@ -319,7 +331,7 @@ function cardHTML(r) {
   const target = r.url ? ' target="_blank" rel="noopener"' : "";
   return `<a class="rest-card" href="${esc(href)}"${target} aria-label="${esc(r.name)}" role="listitem">
     <div class="card-banner" style="background:${bgColor}">
-      ${logoSrc ? `<img class="card-logo" src="${esc(logoSrc)}" alt="${esc(r.name)}" loading="lazy" onerror="this.style.display='none'">` : `<span style="font-family:'Playfair Display SC',serif;font-size:22px;color:${accent}">${esc(r.name)}</span>`}
+      ${logoSrc ? `<img class="card-logo" src="${esc(logoSrc)}" alt="${esc(r.name)}" loading="lazy" onerror="this.style.display='none'">` : `<span style="font-family:'Familjen Grotesk',system-ui,sans-serif;font-size:18px;font-weight:700;letter-spacing:.04em;color:${accent}">${esc(r.name)}</span>`}
     </div>
     <div class="card-body">
       <div class="card-name">${esc(r.name)}</div>
@@ -331,7 +343,7 @@ function cardHTML(r) {
         Ver menú
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
       </div>
-      ${r.badge ? `<span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;background:var(--amber-soft);color:var(--amber);border:1px solid var(--amber-border)">${esc(r.badge)}</span>` : r.whatsapp ? `<span style="font-size:12px;color:var(--muted)">📞 ${esc(r.whatsapp)}</span>` : ""}
+      ${r.badge ? `<span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;background:var(--accent-soft);color:var(--accent);border:1px solid var(--accent-border)">${esc(r.badge)}</span>` : r.whatsapp ? `<span style="font-size:12px;color:var(--muted)">📞 ${esc(r.whatsapp)}</span>` : ""}
     </div>
   </a>`;
 }
