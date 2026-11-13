@@ -255,6 +255,28 @@ let allRestaurants = [];
 let activeChip = null;
 let query = "";
 
+// Normalize: lowercase, strip diacritics (búsqueda→busqueda, Pizzería→pizzeria), collapse spaces.
+function norm(s) {
+  return String(s || "").toLowerCase()
+    .normalize("NFD").replace(/\p{Mn}/gu, "")
+    .replace(/[^a-z0-9]/g, " ").replace(/\s+/g, " ").trim();
+}
+
+// Random visit id — lives only in memory, never stored.
+const VISIT = Math.random().toString(36).slice(2, 10).padEnd(8, "0");
+
+function beacon(events) {
+  if (!navigator.sendBeacon) return;
+  const src = new URLSearchParams(location.search).get("s") || "direct";
+  const dev = /Mobi|Android/i.test(navigator.userAgent) ? "m" : "d";
+  const now = new Date();
+  navigator.sendBeacon("/e", JSON.stringify({
+    v: 1, slug: "directorio", visit: VISIT,
+    src, dev, hour: now.getHours(), dow: now.getDay(),
+    events,
+  }));
+}
+
 async function init() {
   try {
     const res = await fetch(DATA_URL);
@@ -291,15 +313,17 @@ function buildChips() {
   });
 }
 
+function matches(r, tokens) {
+  if (!tokens.length) return true;
+  const hay = norm(`${r.name} ${r.tagline} ${(r.cuisine||[]).join(" ")}`);
+  return tokens.every(t => hay.includes(t));
+}
+
 function render() {
-  const q = query.toLowerCase().trim();
+  const tokens = norm(query).split(" ").filter(Boolean);
   const filtered = allRestaurants.filter(r => {
     if (activeChip && !(r.cuisine || []).includes(activeChip)) return false;
-    if (q) {
-      const hay = `${r.name} ${r.tagline} ${(r.cuisine||[]).join(" ")}`.toLowerCase();
-      if (!hay.includes(q)) return false;
-    }
-    return true;
+    return matches(r, tokens);
   });
 
   const grid = document.getElementById("grid");
@@ -327,9 +351,9 @@ function cardHTML(r) {
   const logoSrc = r.logo ? `/seed/${r.slug}/images/${r.logo}.${logoExt}` : "";
   const tags = (r.cuisine || []).slice(0, 3).map(t => `<span class="card-tag">${esc(t)}</span>`).join("");
 
-  const href = r.url || `/${r.slug}/`;
+  const href = r.url || `/directorio/${r.slug}/`;
   const target = r.url ? ' target="_blank" rel="noopener"' : "";
-  return `<a class="rest-card" href="${esc(href)}"${target} aria-label="${esc(r.name)}" role="listitem">
+  return `<a class="rest-card" href="${esc(href)}"${target} aria-label="${esc(r.name)}" role="listitem" data-slug="${esc(r.slug)}">
     <div class="card-banner" style="background:${bgColor}">
       ${logoSrc ? `<img class="card-logo" src="${esc(logoSrc)}" alt="${esc(r.name)}" loading="lazy" onerror="this.style.display='none'">` : `<span style="font-family:'Familjen Grotesk',system-ui,sans-serif;font-size:18px;font-weight:700;letter-spacing:.04em;color:${accent}">${esc(r.name)}</span>`}
     </div>
@@ -343,7 +367,7 @@ function cardHTML(r) {
         Ver menú
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
       </div>
-      ${r.badge ? `<span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;background:var(--accent-soft);color:var(--accent);border:1px solid var(--accent-border)">${esc(r.badge)}</span>` : r.whatsapp ? `<span style="font-size:12px;color:var(--muted)">📞 ${esc(r.whatsapp)}</span>` : ""}
+      ${r.badge ? `<span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;background:var(--accent-soft);color:var(--accent);border:1px solid var(--accent-border)">${esc(r.badge)}</span>` : ""}
     </div>
   </a>`;
 }
@@ -352,9 +376,25 @@ function esc(s) {
   return String(s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
 }
 
+// Debounced search with dir_search beacon (fires after 300ms of silence, min 2 chars).
+let debounceTimer, lastTracked = "";
 document.getElementById("search").addEventListener("input", e => {
   query = e.target.value;
-  render();
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(() => {
+    render();
+    const q = norm(query);
+    if (q.length >= 2 && q !== lastTracked) {
+      lastTracked = q;
+      beacon([{ ev: "dir_search", q: q.slice(0, 40) }]);
+    }
+  }, 300);
+});
+
+// dir_click beacon on card click (before navigation).
+document.getElementById("grid").addEventListener("click", e => {
+  const card = e.target.closest("[data-slug]");
+  if (card?.dataset.slug) beacon([{ ev: "dir_click", dish: card.dataset.slug }]);
 });
 
 init();

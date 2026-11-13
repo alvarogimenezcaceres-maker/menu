@@ -1,7 +1,7 @@
 // Validation and parsing for the menu events endpoint (used by worker.js, tested in worker.test.mjs).
 // Kept apart because a Worker's main module may only export handlers.
 
-export const EVENTS = new Set(["menu_view", "dish_view", "model_open", "ar_open", "search", "add_item", "checkout_view", "order_tap", "waiter_show", "review_click", "badge_click", "reserve_click", "share_click"]);
+export const EVENTS = new Set(["menu_view", "dish_view", "model_open", "ar_open", "search", "add_item", "checkout_view", "order_tap", "waiter_show", "review_click", "badge_click", "reserve_click", "share_click", "dir_search", "dir_click"]);
 export const SOURCES = new Set(["qr", "ig", "maps", "wa", "dir", "fb", "web", "direct"]);
 const MODES = new Set(["delivery", "pickup", "table", ""]);
 export const MAX_BODY = 8 * 1024;
@@ -30,7 +30,7 @@ export function parseBatch(text, { city = "" } = {}) {
     if (dish && !slugOk(dish)) continue;
     const mode = MODES.has(e.mode) ? e.mode : "";
     // search terms are already normalised in the page; keep letters and spaces only
-    const q = e.ev === "search" ? str(e.q, 40).toLowerCase().replace(/[^a-zñ ]/g, "").trim() : "";
+    const q = (e.ev === "search" || e.ev === "dir_search") ? str(e.q, 40).toLowerCase().replace(/[^a-zñ ]/g, "").trim() : "";
     points.push({
       indexes: [slug],
       // blob order is the query contract for scripts/stats-month.mjs: keep it stable
