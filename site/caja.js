@@ -462,8 +462,13 @@ export class Caja {
     if (!this.activated()) return new Response(null, { status: 204 });
     const table = +body.table;
     if (!validTable(table)) throw new CajaError("table", "Número de mesa inválido.");
-    // rate-limit: reuse publicHits (shared with orders; 40 hits / 10 min)
     const now = Date.now();
+    // per-table rate-limit: 1 call per 60 s per table number
+    if (!this.waiterCooldowns) this.waiterCooldowns = {};
+    const last = this.waiterCooldowns[table] || 0;
+    if (now - last < 60000) throw new CajaError("cooldown", "Ya se llamó al mozo. Esperá un momento.");
+    this.waiterCooldowns[table] = now;
+    // global rate-limit: reuse publicHits (shared with orders; 40 hits / 10 min)
     this.publicHits = this.publicHits.filter(t => now - t < 10 * 60000);
     if (this.publicHits.length >= 40) throw new CajaError("locked", "Demasiados llamados seguidos.");
     this.publicHits.push(now);
