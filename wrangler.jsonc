@@ -18,8 +18,10 @@
     "run_worker_first": ["/e", "/api/*"]
   },
   "triggers": {
-    // 09:00 UTC = 06:00 PY — aggregates the previous PY day into D1
-    "crons": ["0 9 * * *"]
+    "crons": [
+      "0 9 * * *",   // daily   09:00 UTC = 06:00 PY — aggregates yesterday into D1
+      "0 10 1 * *"   // monthly 10:00 UTC = 07:00 PY on the 1st — exports prev month D1 → R2
+    ]
   },
   "analytics_engine_datasets": [
     { "binding": "MV_EVENTS", "dataset": "mesaverso_menu_events" }
@@ -31,6 +33,13 @@
       // Run: npx wrangler d1 create mesaverso-analytics  → paste the id here
       "database_id": "dab6ce03-ff7a-4e1e-b960-25fc8917b197",
       "migrations_dir": "site/migrations"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "MV_R2",
+      "bucket_name": "mesaverso-analytics"
+      // Run once: npx wrangler r2 bucket create mesaverso-analytics
     }
   ],
   "durable_objects": {

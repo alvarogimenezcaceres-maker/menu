@@ -8,6 +8,7 @@
 import { handleEvents } from "./events.js";
 import { handleCaja } from "./caja.js";
 import { aggregate } from "./aggregate.js";
+import { exportMonth } from "./export.js";
 
 export { Caja } from "./caja.js";
 
@@ -26,5 +27,9 @@ export default {
 
   async scheduled(event, env, ctx) {
     ctx.waitUntil(aggregate(event, env));
+    // Monthly export runs only on the 1st-of-month cron (10:00 UTC)
+    if (new Date(event.scheduledTime).getUTCHours() === 10) {
+      ctx.waitUntil(exportMonth(event, env));
+    }
   },
 };
