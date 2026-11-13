@@ -614,23 +614,6 @@ document.addEventListener("click", e => { const a = e.target.closest("[data-revi
 const params = new URLSearchParams(location.search);
 const table = (params.get("table") || params.get("mesa") || "").slice(0, 12);
 if (table) { $("#tableLabel").textContent = "Mesa " + table; $("#tableChip").hidden = false; }
-// floating call-waiter button for plain ?mesa=N QR (no live session)
-if (table && !mesa) {
-  const fab = document.createElement("button");
-  fab.className = "btn-llamar"; fab.id = "llamarFab";
-  fab.style.cssText = "position:fixed;bottom:calc(env(safe-area-inset-bottom,0px)+16px);left:50%;transform:translateX(-50%);width:calc(100% - 32px);max-width:380px;z-index:15;box-shadow:0 4px 16px rgba(0,0,0,.35)";
-  fab.textContent = "🔔 Llamar al mozo";
-  document.getElementById("app").appendChild(fab);
-  fab.addEventListener("click", async function() {
-    this.disabled = true;
-    try {
-      const r = await fetch("/api/" + SLUG + "/llamar", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ table: +table }) });
-      if (!r.ok && r.status !== 204) throw new Error();
-      this.classList.add("sent"); this.textContent = "✓ Llamado enviado";
-      setTimeout(() => { this.classList.remove("sent"); this.textContent = "🔔 Llamar al mozo"; this.disabled = false; }, 15000);
-    } catch { this.disabled = false; }
-  });
-}
 
 /* abierto / cerrado según los horarios del local (hora de Paraguay); en la mesa no aplica */
 const openNow = () => (table ? null : C.openState(CFG.hours));
@@ -1314,6 +1297,22 @@ try { mesa = JSON.parse(localStorage.getItem(MESA_KEY) || "null"); } catch (e) {
 const mesaSheet = $("#mesaSheet");
 const DONE_KEY = "mesaFinal:" + location.pathname, DONE_MS = 12 * 3600000;
 let mesaDone = null, doneDraft = { stars: 0, comment: "" }; // the last paid account, kept on this phone to review it and download the ticket
+// floating call-waiter button for plain ?mesa=N QR (no live table session)
+if (table && !mesa) {
+  const fab = document.createElement("button");
+  fab.className = "btn-llamar"; fab.id = "llamarFab";
+  fab.style.cssText = "position:fixed;bottom:calc(env(safe-area-inset-bottom,0px)+16px);left:50%;transform:translateX(-50%);width:calc(100% - 32px);max-width:380px;z-index:15;box-shadow:0 4px 16px rgba(0,0,0,.35)";
+  fab.textContent = "🔔 Llamar al mozo";
+  document.getElementById("app").appendChild(fab);
+  fab.addEventListener("click", async function() {
+    this.disabled = true;
+    try {
+      await fetch("/api/" + SLUG + "/llamar", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ table: +table }) });
+      this.classList.add("sent"); this.textContent = "✓ Llamado enviado";
+      setTimeout(() => { this.classList.remove("sent"); this.textContent = "🔔 Llamar al mozo"; this.disabled = false; }, 15000);
+    } catch { this.disabled = false; }
+  });
+}
 try { mesaDone = JSON.parse(localStorage.getItem(DONE_KEY) || "null"); if (mesaDone && Date.now() - mesaDone.at > DONE_MS) mesaDone = null; } catch (e) { mesaDone = null; }
 const saveDone = () => { try { mesaDone ? localStorage.setItem(DONE_KEY, JSON.stringify(mesaDone)) : localStorage.removeItem(DONE_KEY); } catch (e) {} };
 const opinionKey = t => "opinion:" + SLUG + ":" + String(t || "").slice(0, 12);
