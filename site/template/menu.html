@@ -519,6 +519,13 @@
     <div class="progress" aria-hidden="true"></div>
   </div>
 
+  <section class="spot" id="popular" aria-labelledby="popularTitle" hidden>
+    <div class="spot-head">
+      <h2 id="popularTitle">Lo más pedido ahora</h2>
+    </div>
+    <div class="rail" id="popularRail"></div>
+  </section>
+
   <section class="spot" id="spot" aria-labelledby="spotTitle" hidden>
     <div class="spot-head">
       <h2 id="spotTitle">Destacados</h2>
@@ -720,6 +727,32 @@ chipsEl.innerHTML = DATA.categories.map(c => `<button class="chip" type="button"
 
 const bySlug = {};
 DATA.categories.forEach(c => c.dishes.forEach(d => bySlug[d.slug] = { ...d, cat: c }));
+
+/* "Lo más pedido ahora" — fetch top dishes from D1 via /api/<slug>/popular */
+(async () => {
+  if (!SLUG) return;
+  try {
+    const res = await fetch(`/api/${SLUG}/popular`, { signal: AbortSignal.timeout?.(4000) });
+    if (!res.ok) return;
+    const { dishes } = await res.json();
+    if (!Array.isArray(dishes) || !dishes.length) return;
+    const known = dishes.map(s => bySlug[s]).filter(Boolean).filter(d => !d.soldOut);
+    if (!known.length) return;
+    const rail = document.getElementById("popularRail");
+    const sec  = document.getElementById("popular");
+    rail.innerHTML = known.map(d => `
+      <button class="card" type="button" data-dish="${d.slug}" aria-haspopup="dialog">
+        ${d.photo ? `<img src="img/${d.photo}-360.webp" alt="${esc(d.name)}" loading="lazy">` : ""}
+        <span class="card-name">${esc(d.name)}</span>
+      </button>`).join("");
+    rail.addEventListener("click", e => {
+      const btn = e.target.closest("[data-dish]");
+      if (btn) openDish(btn.dataset.dish);
+    });
+    sec.hidden = false;
+    track("popular_shown", { n: known.length });
+  } catch { /* never break the menu */ }
+})();
 
 /* category nav + scrollspy */
 chipsEl.addEventListener("click", e => { const b = e.target.closest("[data-go]"); if (b) document.getElementById(b.dataset.go).scrollIntoView(); });

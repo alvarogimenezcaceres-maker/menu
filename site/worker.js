@@ -7,6 +7,7 @@
 
 import { handleEvents } from "./events.js";
 import { handleCaja } from "./caja.js";
+import { handlePopular } from "./popular.js";
 import { aggregate } from "./aggregate.js";
 import { exportMonth } from "./export.js";
 
@@ -16,6 +17,7 @@ export default {
   async fetch(request, env) {
     const path = new URL(request.url).pathname;
     if (path === "/e") return handleEvents(request, env);
+    if (path.endsWith("/popular") && path.startsWith("/api/")) return handlePopular(request, env);
     if (path.startsWith("/api/")) return handleCaja(request, env);
     if (path === "/directorio" || path === "/directorio/") {
       const url = new URL(request.url);
