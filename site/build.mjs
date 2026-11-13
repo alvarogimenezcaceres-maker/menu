@@ -331,7 +331,8 @@ async function main() {
       "servesCuisine": rest.cuisine || [],
       "telephone": rest.whatsapp ? rest.whatsapp.replace(/\s/g, "") : undefined,
     });
-    const cuisineTags = (rest.cuisine || []).map(c => `<span class="tag">${c}</span>`).join("");
+    const cuisineArr = Array.isArray(rest.cuisine) ? rest.cuisine : rest.cuisine ? [rest.cuisine] : [];
+    const cuisineTags = cuisineArr.map(c => `<span class="tag">${c}</span>`).join("");
     const heroLogo = logoSrc
       ? `<img class="hero-logo" src="${logoSrc}" alt="${rest.name}" loading="eager">`
       : `<span style="font-family:'Familjen Grotesk',sans-serif;font-size:28px;font-weight:700;color:#fff;position:relative;z-index:1">${rest.name}</span>`;
