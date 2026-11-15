@@ -10,7 +10,7 @@
     "ordering": {"hours": [{"days": ["mon", "tue", "wed", "thu", "fri"], "open": "10:00", "close": "22:00"}, {"days": ["sat", "sun"], "open": "10:00", "close": "00:00"}]},
     "name": "Frakar Gourmet",
     "slug": "frakar",
-    "description": "Hamburguesas premium, lomitos, papas fritas y pollo frito. Ingredientes frescos, sabor inigualable. Visitanos en Comandante Peralta N° 85 c/ Mcal. López.",
+    "description": "Hamburguesas premium, lomitos, papas fritas y pollo frito. Ingredientes frescos, sabor inigualable. Visitanos en Comandante Peralta N° 71 c/ Mcal. López.",
     "tagline": "Hamburguesas premium",
     "currency": "PYG",
     "default_locale": "es",
