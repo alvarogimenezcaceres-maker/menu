@@ -185,7 +185,7 @@ async function buildRestaurant(slug, templates) {
     URL: url, LOGO: logo, OG_IMAGE: hero || logo, JSONLD: jsonLd(m, url, hero || logo, slug), DATA: jsonForScript(menu),
     HERO_IMG: hero ? `<img class="dish" src="img/${hero}-720.webp" alt="" fetchpriority="high">` : "",
     WHATSAPP: whatsappDigits(r.whatsapp),
-    PRIVACY_LINK: r.legal && r.legal.legalName && r.legal.ruc && r.legal.privacyContact ? ' · <a href="privacidad/">Privacidad</a>' : "",
+    PRIVACY_LINK: r.legal && r.legal.legalName && r.legal.ruc && r.legal.privacyContact ? ' · <a href="privacidad/">Privacidad</a> · <a href="/legal/terminos/">Términos</a>' : ' · <a href="/legal/privacidad/">Privacidad</a> · <a href="/legal/terminos/">Términos</a>',
     REVIEW_URL: jsonForScript(reviewUrl(r.googleReviewUrl)), ORDERING: jsonForScript(OrderCore.orderingConfig(r.ordering)),
     ORDER_CORE: basic ? ORDER_CORE : ORDER_CORE_PAID,
     WATERMARK: free ? "" : watermark(slug),

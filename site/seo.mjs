@@ -167,7 +167,7 @@ ul{padding-left:18px}small{opacity:.75}.cta{display:inline-block;margin-top:8px;
 <h1>${esc(h1)}</h1>
 <p>${esc(intro)}</p>
 ${body}
-<footer><a href="/directorio/">Ver todos los restaurantes</a> · Mesaverso</footer>
+<footer><a href="/directorio/">Ver todos los restaurantes</a> · Mesaverso · <a href="/legal/terminos/">Términos</a> · <a href="/legal/privacidad/">Privacidad</a></footer>
 </main>
 </body>
 </html>
