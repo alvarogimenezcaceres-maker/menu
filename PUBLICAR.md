@@ -315,3 +315,21 @@ La fotogrametría corre gratis en GitHub Actions (el repo es público) con `.git
 **Si falla:** el panel muestra la etapa que falló. Los logs quedan 3 días como artefacto del run (sin fotos ni modelo).
 
 La versión para la notebook (sección de arriba) sigue funcionando igual.
+
+## Salud y backups (desde el 15/11/2026, gratis)
+
+Workflow `.github/workflows/health-backup.yml`. Si algo falla, GitHub te manda un correo.
+
+- **Cada 6 horas** revisa que respondan el menú, la landing y el panel (el panel puede tardar ~1 minuto en despertar).
+- **Token del panel:** cargá la variable del repo `GITHUB_TOKEN_EXPIRES` (Settings → Secrets and variables →
+  Actions → **Variables**) con la fecha en que vence el `GITHUB_TOKEN` de Render, en formato `AAAA-MM-DD`.
+  El workflow empieza a fallar 30 días antes, para que lo renueves a tiempo.
+- **Backup semanal de Neon** (domingos): copia cifrada que queda 90 días en el run de Actions. Hacen falta dos
+  **Secrets** en GitHub (pegá solo el valor):
+  - `NEON_BACKUP_URL`: la cadena de conexión de Neon (la misma que `DATABASE_URL` de Render, o mejor una de solo lectura).
+  - `BACKUP_PASSPHRASE`: una frase larga que inventás vos. Guardala también en `.local/` y en tu gestor de claves:
+    **sin ella el backup no se puede abrir**.
+  - Sin estos dos secretos el backup se saltea sin error.
+- **Restaurar:** bajá el artefacto del run y corré
+  `gpg -d neon-AAAAMMDD.sql.gz.gpg | gunzip | psql "<cadena de conexión destino>"`.
+- **La Caja** (Durable Object) no entra en este backup: Cloudflare guarda 30 días de recuperación a un punto en el tiempo.

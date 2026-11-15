@@ -1,0 +1,79 @@
+# Free monitoring and backups (public repo => Actions minutes are free).
+# - health: every 6 h checks the public menu, the landing and the panel. A failed run makes
+#   GitHub email the owner (scheduled-workflow failure notifications), so no extra provider.
+# - token: fails 30 days before the panel's GITHUB_TOKEN expires (repo variable GITHUB_TOKEN_EXPIRES=YYYY-MM-DD).
+# - backup: weekly encrypted pg_dump of Neon kept 90 days as a run artifact. Artifacts of a public
+#   repo can be downloaded by any GitHub user, so the dump is ALWAYS encrypted (gpg AES256) before upload.
+#   Needs secrets NEON_BACKUP_URL and BACKUP_PASSPHRASE; without them the job is skipped, not failed.
+# The Caja (Durable Object, SQLite) is not dumped here: Cloudflare keeps 30 days of point-in-time recovery.
+name: Salud y backups
+
+on:
+  schedule:
+    - cron: "17 */6 * * *"   # health + token, every 6 h
+    - cron: "41 7 * * 0"     # backup, Sundays 07:41 UTC (04:41 PY)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  health:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      MENU_URL: ${{ vars.HEALTH_MENU_URL || 'https://menu3d-demo.alvarogimenezcaceres.workers.dev/filigrana/' }}
+      LANDING_URL: ${{ vars.HEALTH_LANDING_URL || 'https://mesaverso.app/' }}
+      PANEL_URL: ${{ secrets.PANEL_URL }}
+      TOKEN_EXPIRES: ${{ vars.GITHUB_TOKEN_EXPIRES }}
+    steps:
+      - name: Menú público y landing
+        run: |
+          fail=0
+          for u in "$MENU_URL" "$LANDING_URL"; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 -L "$u" || echo 000)
+            echo "$u -> $code"; [ "$code" = 200 ] || fail=1
+          done
+          exit $fail
+      - name: Panel (Render gratis tarda ~1 min en despertar)
+        if: env.PANEL_URL != ''
+        run: |
+          for i in 1 2 3; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 120 -L "$PANEL_URL/admin/login" || echo 000)
+            echo "panel -> $code"; [ "$code" = 200 ] && exit 0; sleep 20
+          done
+          exit 1
+      - name: Vencimiento del token de GitHub del panel
+        if: env.TOKEN_EXPIRES != ''
+        run: |
+          left=$(( ( $(date -d "$TOKEN_EXPIRES" +%s) - $(date +%s) ) / 86400 ))
+          echo "Faltan $left días para que venza GITHUB_TOKEN (Render)."
+          if [ "$left" -lt 30 ]; then echo "::error::Renovar GITHUB_TOKEN en Render: vence en $left días"; exit 1; fi
+
+  backup:
+    if: github.event_name == 'workflow_dispatch' || github.event.schedule == '41 7 * * 0'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      DB_URL: ${{ secrets.NEON_BACKUP_URL }}
+      PASS: ${{ secrets.BACKUP_PASSPHRASE }}
+    steps:
+      - name: Sin secretos, se saltea
+        if: env.DB_URL == '' || env.PASS == ''
+        run: echo "::notice::Backup salteado: faltan NEON_BACKUP_URL y/o BACKUP_PASSPHRASE."
+      - name: Dump cifrado
+        if: env.DB_URL != '' && env.PASS != ''
+        run: |
+          set -o pipefail
+          f="neon-$(date -u +%Y%m%d).sql.gz.gpg"
+          docker run --rm -e DB_URL postgres:18 sh -c 'pg_dump --no-owner --no-privileges "$DB_URL"' \
+            | gzip -9 \
+            | gpg --batch --yes --symmetric --cipher-algo AES256 --passphrase-fd 3 -o "$f" 3<<<"$PASS"
+          ls -l "$f"
+          echo "FILE=$f" >> "$GITHUB_ENV"
+      - uses: actions/upload-artifact@v4
+        if: env.FILE != ''
+        with:
+          name: ${{ env.FILE }}
+          path: ${{ env.FILE }}
+          retention-days: 90
