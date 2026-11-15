@@ -239,6 +239,9 @@ export interface Restaurant {
   /**
    * Aparece en el menú como «Dejanos tu reseña en Google», también cuando se cierra la mesa. Vacío = no se muestra.
    */
+  publicAddress?: string | null;
+  neighborhood?: string | null;
+  city?: string | null;
   googleReviewUrl?: string | null;
   /**
    * Ej.: Pizza, Parrilla. Ayuda en Google.
@@ -627,6 +630,9 @@ export interface RestaurantsSelect<T extends boolean = true> {
         address?: T;
         privacyContact?: T;
       };
+  publicAddress?: T;
+  neighborhood?: T;
+  city?: T;
   googleReviewUrl?: T;
   cuisine?: T;
   theme?:

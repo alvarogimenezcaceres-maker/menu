@@ -10,6 +10,7 @@ import * as migration_20261012_233406_owner_contact from './20261012_233406_owne
 import * as migration_20261013_011407_whatsapp_only from './20261013_011407_whatsapp_only';
 import * as migration_20261013_130504_reservations_whatsapp from './20261013_130504_reservations_whatsapp';
 import * as migration_20261013_233759_claim_and_header from './20261013_233759_claim_and_header';
+import * as migration_20261115_200000_public_location from './20261115_200000_public_location';
 
 export const migrations = [
   {
@@ -71,5 +72,10 @@ export const migrations = [
     up: migration_20261013_233759_claim_and_header.up,
     down: migration_20261013_233759_claim_and_header.down,
     name: '20261013_233759_claim_and_header'
+  },
+  {
+    up: migration_20261115_200000_public_location.up,
+    down: migration_20261115_200000_public_location.down,
+    name: '20261115_200000_public_location',
   },
 ];

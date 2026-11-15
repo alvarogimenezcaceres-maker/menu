@@ -295,6 +295,14 @@ export const Restaurants: CollectionConfig = {
       ],
     },
     {
+      type: 'row',
+      fields: [
+        { name: 'publicAddress', type: 'text', label: 'Dirección del local (pública)', admin: { width: '50%', placeholder: 'Vapor Cué 1290', description: 'Se muestra en el menú y en Google. Sin datos personales.' } },
+        { name: 'neighborhood', type: 'text', label: 'Barrio', admin: { width: '25%', placeholder: 'Villa Morra' } },
+        { name: 'city', type: 'text', label: 'Ciudad', admin: { width: '25%', placeholder: 'Asunción' } },
+      ],
+    },
+    {
       name: 'googleReviewUrl',
       type: 'text',
       label: 'Enlace para dejar reseña en Google',
