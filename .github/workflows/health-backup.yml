@@ -60,7 +60,8 @@ jobs:
     steps:
       - name: Sin secretos, se saltea
         if: env.DB_URL == '' || env.PASS == ''
-        run: echo "::notice::Backup salteado: faltan NEON_BACKUP_URL y/o BACKUP_PASSPHRASE."
+        run: |
+          echo "::notice::Backup salteado, faltan NEON_BACKUP_URL y/o BACKUP_PASSPHRASE."
       - name: Dump cifrado
         if: env.DB_URL != '' && env.PASS != ''
         run: |
