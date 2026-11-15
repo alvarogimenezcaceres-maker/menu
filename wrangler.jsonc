@@ -19,8 +19,8 @@
   },
   "triggers": {
     "crons": [
-      "0 9 * * *",   // daily   09:00 UTC = 06:00 PY — aggregates yesterday into D1
-      "0 10 1 * *"   // monthly 10:00 UTC = 07:00 PY on the 1st — exports prev month D1 → R2
+      "0 9 * * *"    // daily 09:00 UTC = 06:00 PY: aggregates yesterday into D1; on the 1st it also exports
+                     // the previous month. One cron only: the account is at the Workers Free limit of 5.
     ]
   },
   "analytics_engine_datasets": [

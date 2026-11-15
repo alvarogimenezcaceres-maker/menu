@@ -30,8 +30,8 @@ export default {
 
   async scheduled(event, env, ctx) {
     ctx.waitUntil(aggregate(event, env));
-    // Monthly export runs only on the 1st-of-month cron (10:00 UTC)
-    if (new Date(event.scheduledTime).getUTCHours() === 10) {
+    // Monthly export runs on the 1st of each month, from the same daily cron (account cron limit).
+    if (new Date(event.scheduledTime).getUTCDate() === 1) {
       ctx.waitUntil(exportMonth(event, env));
     }
   },
