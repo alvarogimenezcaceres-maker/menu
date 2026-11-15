@@ -35,3 +35,6 @@ plan/
 
 # Yunyi & Co. client files (costs, margins, partner debts) — separate project, never in this public repo
 Yun/
+
+# Reusable AI-team agent definitions (business roles) — keep out of the public repo (owner decision, DEC-071)
+.claude/agents/
