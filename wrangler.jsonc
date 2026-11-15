@@ -35,13 +35,8 @@
       "migrations_dir": "site/migrations"
     }
   ],
-  "r2_buckets": [
-    {
-      "binding": "MV_R2",
-      "bucket_name": "mesaverso-analytics"
-      // Run once: npx wrangler r2 bucket create mesaverso-analytics
-    }
-  ],
+  // R2 binding "MV_R2" (bucket mesaverso-analytics) removed 2026-11-15: the bucket was never created, so every
+  // deploy failed since 2026-11-13. export.js skips without it. Re-add after `npx wrangler r2 bucket create mesaverso-analytics`.
   "durable_objects": {
     "bindings": [{ "name": "CAJA", "class_name": "Caja" }]
   },
