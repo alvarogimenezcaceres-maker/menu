@@ -292,6 +292,65 @@
   </div>
 </section>
 
+<!-- ============ CALCULADORA DE COMISIÓN ============ -->
+<section class="section calc is-light" id="calculadora" aria-labelledby="calc-title">
+  <div class="wrap wrap--narrow">
+    <header class="sec-head">
+      <p class="kicker">Calculá cuánto te cuesta</p>
+      <h2 id="calc-title">¿Cuánto pagás de comisión por mes?</h2>
+      <p class="sec-lead">Ingresá tus ventas mensuales por delivery y ves cuánto se lleva la plataforma — y cuánto te sobra si pedís directo con Mesaverso.</p>
+    </header>
+
+    <div class="calc-card" data-calc data-plan="{{RAW:planMonthly}}">
+      <div class="calc-inputs">
+        <div class="calc-field">
+          <label class="calc-label" for="calc-ventas">Tus ventas mensuales por delivery</label>
+          <div class="calc-input-wrap">
+            <span class="calc-prefix">Gs.</span>
+            <input id="calc-ventas" class="calc-input" type="text" inputmode="numeric" placeholder="1.000.000" autocomplete="off" data-calc-ventas aria-describedby="calc-hint">
+          </div>
+          <p class="calc-hint" id="calc-hint">Total facturado en PedidosYa, Monchis u otras plataformas.</p>
+        </div>
+        <div class="calc-field">
+          <label class="calc-label" for="calc-rate">Comisión de la plataforma</label>
+          <div class="calc-rate-wrap">
+            <button class="calc-rate-btn" type="button" data-rate="8" aria-pressed="false">8 %</button>
+            <button class="calc-rate-btn calc-rate-btn--active" type="button" data-rate="10" aria-pressed="true">10 %</button>
+            <button class="calc-rate-btn" type="button" data-rate="15" aria-pressed="false">15 %</button>
+            <button class="calc-rate-btn" type="button" data-rate="18" aria-pressed="false">18 %</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="calc-result" data-calc-result aria-live="polite" aria-atomic="true">
+        <div class="calc-row calc-row--bad">
+          <span class="calc-row__label">Comisión que pagás</span>
+          <span class="calc-row__val" data-calc-comision>—</span>
+        </div>
+        <div class="calc-row">
+          <span class="calc-row__label">Plan Mesaverso (mensual)</span>
+          <span class="calc-row__val calc-row__val--fixed">{{price:planMonthly}} / mes</span>
+        </div>
+        <div class="calc-divider"></div>
+        <div class="calc-row calc-row--save">
+          <span class="calc-row__label">Ahorro mensual estimado</span>
+          <span class="calc-row__val calc-row__val--big" data-calc-ahorro>—</span>
+        </div>
+        <div class="calc-row calc-row--save calc-row--annual" data-calc-annual-row hidden>
+          <span class="calc-row__label">Ahorro anual estimado</span>
+          <span class="calc-row__val" data-calc-ahorro-anual>—</span>
+        </div>
+        <p class="calc-note" data-calc-note hidden>Esto asume que <strong>todos</strong> tus pedidos de delivery migran a Mesaverso. En la práctica el ahorro es proporcional a los pedidos directos que lográs. Los porcentajes son ejemplos: usá la comisión que figura en tu contrato con la plataforma.</p>
+      </div>
+
+      <div class="calc-cta" data-calc-cta hidden>
+        <a class="btn btn--primary" href="{{wa:demo}}" target="_blank" rel="noopener" data-track="calc_cta_click">
+          <svg aria-hidden="true"><use href="#i-wa"/></svg>Quiero recuperar esa plata</a>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ============ PRECIOS (light): 1 plan (mensual o anual) → 2 implementación → 3 Pack 3D opcional ============ -->
 <section class="section pricing is-light" id="planes" aria-labelledby="plans-title">
   <div class="wrap">
@@ -405,7 +464,7 @@
   </div>
 </section>
 
-<!-- ============ FORMULARIO ============ -->
+<!-- ============ APERTURA GANADORA E2 ============ -->
 <section class="section lead" id="demo" aria-labelledby="lead-title">
   <div class="wrap lead__grid">
     <div class="lead__copy">

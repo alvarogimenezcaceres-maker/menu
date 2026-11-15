@@ -52,6 +52,90 @@
     new IntersectionObserver(([en]) => nav.classList.toggle("is-past-hero", !en.isIntersecting), { rootMargin: "-68px 0px 0px 0px" }).observe(hero);
   }
 
+  /* ---------- calculadora de comisión ---------- */
+  const calcCard = $("[data-calc]");
+  if (calcCard) {
+    const input = $("[data-calc-ventas]", calcCard);
+    const rateBtns = $$("[data-rate]", calcCard);
+    const elComision = $("[data-calc-comision]", calcCard);
+    const elAhorro = $("[data-calc-ahorro]", calcCard);
+    const elAhorroAnual = $("[data-calc-ahorro-anual]", calcCard);
+    const elAnnualRow = $("[data-calc-annual-row]", calcCard);
+    const elNote = $("[data-calc-note]", calcCard);
+    const elCta = $("[data-calc-cta]", calcCard);
+    const PLAN = Number(calcCard.dataset.plan) || 0; // from site.config.mjs via {{RAW:planMonthly}}
+    let rate = 10;
+
+    const fmtGs = (n) => "Gs. " + Math.round(n).toLocaleString("de-DE");
+    const parseInput = (v) => { const n = parseInt(v.replace(/\D/g, ""), 10); return Number.isFinite(n) && n > 0 ? n : 0; };
+
+    const recalc = () => {
+      const ventas = parseInput(input.value);
+      if (!ventas) {
+        elComision.textContent = "—";
+        elAhorro.textContent = "—";
+        elAhorroAnual.textContent = "—";
+        elAnnualRow.hidden = true;
+        elNote.hidden = true;
+        elCta.hidden = true;
+        return;
+      }
+      const comision = ventas * rate / 100;
+      const ahorro = comision - PLAN;
+      elComision.textContent = fmtGs(comision) + " / mes";
+      elAhorro.textContent = ahorro > 0 ? fmtGs(ahorro) + " / mes" : "El plan ya te conviene";
+      if (ahorro > 0) {
+        elAhorroAnual.textContent = fmtGs(ahorro * 12) + " / año";
+        elAnnualRow.hidden = false;
+      } else {
+        elAnnualRow.hidden = true;
+      }
+      elNote.hidden = false;
+      elCta.hidden = ahorro <= 0;
+      if (ventas > 0) track("calc_update", { ventas_range: ventas < 500000 ? "<500k" : ventas < 2000000 ? "500k-2m" : ">2m", rate });
+    };
+
+    input.addEventListener("input", () => {
+      const raw = input.value.replace(/\D/g, "");
+      const n = parseInt(raw, 10);
+      if (raw && Number.isFinite(n)) input.value = n.toLocaleString("de-DE");
+      recalc();
+    });
+
+    rateBtns.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        rate = Number(btn.dataset.rate);
+        rateBtns.forEach((b) => { const on = b === btn; b.classList.toggle("calc-rate-btn--active", on); b.setAttribute("aria-pressed", String(on)); });
+        recalc();
+      });
+    });
+  }
+
+  /* ---------- apertura E2 tabs ---------- */
+  const apTabs = $$(".ap-tab");
+  if (apTabs.length) {
+    const activateTab = (tab) => {
+      apTabs.forEach((t) => {
+        const on = t === tab;
+        t.setAttribute("aria-selected", String(on));
+        t.setAttribute("tabindex", on ? "0" : "-1");
+        t.classList.toggle("ap-tab--active", on);
+        const panel = document.getElementById(t.getAttribute("aria-controls"));
+        if (panel) panel.hidden = !on;
+      });
+    };
+    apTabs.forEach((tab) => {
+      tab.addEventListener("click", () => activateTab(tab));
+      tab.addEventListener("keydown", (e) => {
+        const idx = apTabs.indexOf(e.currentTarget);
+        if (e.key === "ArrowRight") { e.preventDefault(); const next = apTabs[(idx + 1) % apTabs.length]; activateTab(next); next.focus(); }
+        if (e.key === "ArrowLeft") { e.preventDefault(); const prev = apTabs[(idx - 1 + apTabs.length) % apTabs.length]; activateTab(prev); prev.focus(); }
+        if (e.key === "Home") { e.preventDefault(); activateTab(apTabs[0]); apTabs[0].focus(); }
+        if (e.key === "End") { e.preventDefault(); activateTab(apTabs[apTabs.length - 1]); apTabs[apTabs.length - 1].focus(); }
+      });
+    });
+  }
+
   /* ---------- FAQ: accessible accordion (button + aria-expanded) ----------
      Answers are in the HTML (readable without JS and by search engines); JS only collapses them. */
   $$("[data-faq] .faq__q").forEach((btn) => {
