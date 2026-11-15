@@ -90,6 +90,11 @@ export const PAGES = [
     faq: "qr",
   },
   {
+    path: "/regalo-fin-de-anio/", file: "pages/regalo-fin-de-anio.html", crumb: "Regalo de fin de año",
+    title: "Menú digital gratis para tu local: regalo de fin de año | Mesaverso",
+    description: "Del 17/11 al 31/12/2026 armamos gratis el menú digital con QR y pedidos por WhatsApp de 12 locales de Paraguay. Se publica solo si te gusta.",
+  },
+  {
     path: "/sistema-de-caja-para-restaurantes/", file: "pages/sistema-de-caja-para-restaurantes.html", crumb: "Sistema de caja",
     title: "Sistema de caja para restaurantes en Paraguay | Mesaverso Caja",
     description: "Mesas, comandas a cocina, cuenta dividida y cierre de caja por turno, en el navegador. Conectado a tu menú QR y a tus pedidos por WhatsApp, sin comisión.",
