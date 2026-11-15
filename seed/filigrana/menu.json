@@ -5,9 +5,6 @@
     "slug": "filigrana"
   },
   "restaurant": {
-    "address": "Vapor Cué 1290",
-    "city": "Luque",
-    "ordering": {"hours": [{"days": ["wed", "thu", "sat"], "open": "18:30", "close": "01:00"}, {"days": ["fri"], "open": "18:30", "close": "00:00"}, {"days": ["sun"], "open": "18:30", "close": "23:30"}]},
     "name": "Filigrana Bar-Restaurante",
     "slug": "filigrana",
     "description": "Bar-Restaurante. Pizzas artesanales, hamburguesas, milanesas, picadas, pastas, cócteles y vinos.",
@@ -17,8 +14,10 @@
     "logo": "logo-blanco",
     "tables": 20,
     "plan": "menu",
+    "orderingMode": "whatsapp",
     "reservations": true,
-    "whatsapp": "0976 130 444",
+    "headerCenter": true,
+    "whatsapp": "0982 921 470",
     "cuisine": [
       "Pizza",
       "Parrilla",
@@ -26,6 +25,8 @@
       "Pastas",
       "Cócteles"
     ],
+    "address": "Vapor Cué 1290",
+    "city": "Luque",
     "googleReviewUrl": "https://search.google.com/local/writereview?placeid=ChIJL_lDRsKvXZQRm5fi4Q5I3H0",
     "theme": {
       "primary": "#ED9D15",
