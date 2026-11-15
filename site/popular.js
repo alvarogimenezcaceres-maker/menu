@@ -13,6 +13,12 @@ export function daysAgo(scheduledTime, n) {
   return d.toISOString().slice(0, 10);
 }
 
+// Owner decision DEC-073 (2026-11-15): only real orders count (`order_tap` = «Enviar pedido»,
+// not dishes added to the list), and nothing shows until there is enough volume, so one person's
+// taps never become «Lo más pedido ahora» (k-anonymity floor) and a quiet menu doesn't mislead.
+export const MIN_RESTAURANT_ORDERS = 10; // order taps in the window for the whole menu
+export const MIN_DISH_ORDERS = 3;        // order taps for a dish to be listed
+
 // Pure query logic, exported for tests.
 export async function queryPopular(env, slug, since) {
   if (!env.MV_D1) return [];
@@ -20,14 +26,16 @@ export async function queryPopular(env, slug, since) {
     .prepare(
       `SELECT dish, SUM(count) AS total
        FROM daily
-       WHERE slug = ? AND ev IN ('add_item', 'order_tap') AND day >= ? AND dish != ''
+       WHERE slug = ? AND ev = 'order_tap' AND day >= ? AND dish != ''
        GROUP BY dish
-       ORDER BY total DESC
-       LIMIT 5`,
+       ORDER BY total DESC`,
     )
     .bind(slug, since)
     .all();
-  return (results ?? []).map(r => r.dish);
+  const rows = results ?? [];
+  const all = rows.reduce((n, r) => n + Number(r.total || 0), 0);
+  if (all < MIN_RESTAURANT_ORDERS) return [];
+  return rows.filter(r => Number(r.total) >= MIN_DISH_ORDERS).slice(0, 5).map(r => r.dish);
 }
 
 export async function handlePopular(request, env) {

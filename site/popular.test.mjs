@@ -65,3 +65,22 @@ test("handlePopular: OPTIONS returns 204", async () => {
   const res = await handlePopular(req, {});
   assert.equal(res.status, 204);
 });
+
+const d1 = rows => ({ MV_D1: { prepare: () => ({ bind: () => ({ all: async () => ({ results: rows }) }) }) } });
+
+test("queryPopular: nothing below the restaurant floor (10 orders)", async () => {
+  assert.deepEqual(await queryPopular(d1([{ dish: "a", total: 5 }, { dish: "b", total: 4 }]), "x", "2026-11-06"), []);
+});
+
+test("queryPopular: drops dishes under 3 orders and keeps at most 5", async () => {
+  const rows = [9, 8, 7, 6, 5, 4, 2].map((total, i) => ({ dish: `d${i}`, total }));
+  assert.deepEqual(await queryPopular(d1(rows), "x", "2026-11-06"), ["d0", "d1", "d2", "d3", "d4"]);
+});
+
+test("queryPopular: counts only real orders (order_tap)", async () => {
+  let sql = "";
+  const env = { MV_D1: { prepare: q => { sql = q; return { bind: () => ({ all: async () => ({ results: [] }) }) }; } } };
+  await queryPopular(env, "x", "2026-11-06");
+  assert.match(sql, /ev = 'order_tap'/);
+  assert.doesNotMatch(sql, /add_item/);
+});
