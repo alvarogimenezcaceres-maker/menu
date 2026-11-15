@@ -12,7 +12,8 @@
 // watch the account; they get their own WebSocket with a filtered view (dinerView), never the staff broadcast.
 import QRCode from "qrcode/lib/core/qrcode.js";
 import QRSvg from "qrcode/lib/renderer/svg-tag.js";
-import { applyOp, applyTableOp, addDiner, setDinerName, addPending, addRound, buildOrder, can, dinerView, requestBill, shiftSummary, shiftRows, toCsv, soldOutNow, withSoldOut, isClosed, newRef, openTable, orderTotal, priceLines, PII_DAYS, ROLES, validDiner, validRef, validTable, wipePii, CajaError } from "./caja-core.js";
+import { applyOp, applyTableOp, addDiner, setDinerName, addPending, addRound, buildOrder, can, dinerView, requestBill, shiftSummary, shiftRows, toCsv, soldOutNow, withSoldOut, isClosed, newRef, openTable, orderTotal, priceLines, PII_DAYS, ROLES, validDiner, validRef, validTable, wipePii, CajaError, needsConsent, checkActivationConsent } from "./caja-core.js";
+import { LEGAL_VERSION } from "./legal-version.js";
 import { sameOrigin } from "./events.js";
 
 const C = globalThis.OrderCore; // loaded by caja-core.js
@@ -89,11 +90,16 @@ export class Caja {
     // «caja»: the tablet that keeps every PDF (comandas, tickets, shift closes). Added 2026-09-30.
     if (!this.sql.exec("PRAGMA table_info(devices)").toArray().some(c => c.name === "kind")) this.sql.exec("ALTER TABLE devices ADD COLUMN kind TEXT DEFAULT ''");
     // «llamar al mozo»: waiter-call log for response-time tracking.
+    // Legal consents (2026-11-15): who accepted which version of the terms / staff notice, when and where. No IP or UA.
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS consents (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL, name TEXT NOT NULL, role TEXT NOT NULL, version TEXT NOT NULL, screen TEXT NOT NULL, at INTEGER NOT NULL)`);
     this.sql.exec(`CREATE TABLE IF NOT EXISTS table_calls (id TEXT PRIMARY KEY, table_no INTEGER NOT NULL, called_at INTEGER NOT NULL, attended_at INTEGER, attended_by TEXT)`);
   }
 
   meta(k, fallback = null) { const r = this.sql.exec("SELECT v FROM meta WHERE k = ?", k).toArray()[0]; return r ? r.v : fallback; }
   setMeta(k, v) { this.sql.exec("INSERT INTO meta (k, v) VALUES (?, ?) ON CONFLICT(k) DO UPDATE SET v = excluded.v", k, String(v)); }
+  recordConsent(u, screen) { this.sql.exec("INSERT INTO consents (user_id, name, role, version, screen, at) VALUES (?, ?, ?, ?, ?, ?)", u.id, u.name, u.role, LEGAL_VERSION, screen, Date.now()); }
+  lastConsent(userId) { const r = this.sql.exec("SELECT version FROM consents WHERE user_id = ? AND screen = 'personal' ORDER BY id DESC LIMIT 1", userId).toArray()[0]; return r ? r.version : null; }
+  meOut(u) { return { id: u.id, name: u.name, role: u.role, needsConsent: needsConsent(this.lastConsent(u.id), LEGAL_VERSION), legalVersion: LEGAL_VERSION }; }
   activated() { return this.sql.exec("SELECT COUNT(*) AS n FROM users WHERE active = 1").one().n > 0; }
 
   soldOutMarks() { try { return JSON.parse(this.meta("soldout", "{}")) || {}; } catch { return {}; } }
@@ -137,6 +143,7 @@ export class Caja {
         case "POST /vincular": return await this.link(body, slug);
         case "GET /usuarios": return await this.userList(request);
         case "POST /entrar": return await this.login(body, request);
+        case "POST /aviso": { const s = await this.session(request); if (body.accept !== true) throw new CajaError("terms", "Marcá que leíste el aviso."); this.recordConsent(s, "personal"); return json({ me: this.meOut(s) }); }
         case "POST /salir": { const s = await this.session(request); this.endSessions("hash = ?", s.hash); return json({ ok: true }); }
         case "GET /estado": return await this.state(request, slug);
         case "POST /op": return await this.op(request, body, slug);
@@ -193,8 +200,10 @@ export class Caja {
     if (first) {
       // the first tablet creates the encargado
       const name = this.checkName(body.name), pin = this.checkPin(body.pin), salt = randomToken(12);
+      checkActivationConsent(body.acceptTerms);
       this.sql.exec("INSERT INTO users (name, role, salt, hash) VALUES (?, 'encargado', ?, ?)", name, salt, await this.pinHash(salt, pin));
       user = this.sql.exec("SELECT id, name, role FROM users ORDER BY id DESC LIMIT 1").one();
+      this.recordConsent(user, "activacion");
       this.setMeta("shift_start", Date.now()); this.setMeta("shift_by", name);
       await this.ctx.storage.setAlarm(Date.now() + DAY);
     }
@@ -202,7 +211,7 @@ export class Caja {
     const hash = await sha256(token);
     this.sql.exec("INSERT INTO devices (hash, name, created, seen) VALUES (?, ?, ?, ?)", hash, String(body.deviceName || "Tablet").slice(0, 40), Date.now(), Date.now());
     const out = { device: token, activated: true };
-    if (user) out.session = await this.newSession(user.id, hash), out.me = user;
+    if (user) out.session = await this.newSession(user.id, hash), out.me = this.meOut(user);
     return json(out);
   }
   async newSession(userId, deviceHash) {
@@ -231,7 +240,7 @@ export class Caja {
     }
     this.sql.exec("UPDATE users SET failed = 0, locked_until = 0 WHERE id = ?", u.id);
     this.sql.exec("UPDATE devices SET failed = 0, locked_until = 0, seen = ? WHERE hash = ?", now, d.hash);
-    return json({ session: await this.newSession(u.id, d.hash), me: { id: u.id, name: u.name, role: u.role } });
+    return json({ session: await this.newSession(u.id, d.hash), me: this.meOut(u) });
   }
 
   /* ---------- pedidos ---------- */
@@ -283,7 +292,7 @@ export class Caja {
     let catalog = null;
     try { catalog = await this.loadCatalog(slug); } catch { /* the board still works; pickers show an error */ }
     const dev = this.sql.exec("SELECT substr(hash, 1, 8) AS id, name, kind FROM devices WHERE hash = ?", s.device).toArray()[0] || {};
-    return json({ me: { id: s.id, name: s.name, role: s.role }, device: { id: dev.id, name: dev.name, kind: dev.kind || "" }, orders: this.rows("closed IS NULL OR closed > ?", since).map(o => this.withTotal(o)), catalog, soldOut: this.soldOutList(), tables: catalog?.tables || 20, now: Date.now() });
+    return json({ me: this.meOut(s), device: { id: dev.id, name: dev.name, kind: dev.kind || "" }, orders: this.rows("closed IS NULL OR closed > ?", since).map(o => this.withTotal(o)), catalog, soldOut: this.soldOutList(), tables: catalog?.tables || 20, now: Date.now() });
   }
 
   async op(request, body, slug) {

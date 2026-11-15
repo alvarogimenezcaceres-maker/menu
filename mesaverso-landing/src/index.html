@@ -508,6 +508,15 @@
         <label for="f-msg">Mensaje <span class="opt">(opcional)</span></label>
         <textarea id="f-msg" name="message" rows="3" maxlength="1000"></textarea>
       </div>
+      <div class="check">
+        <input id="f-privacy" name="privacy" type="checkbox" required aria-describedby="e-privacy">
+        <label for="f-privacy">Leí la <a href="https://menu.mesaverso.app/legal/privacidad/" target="_blank" rel="noopener">política de privacidad</a></label>
+        <p class="field__err" id="e-privacy" data-err-for="privacy"></p>
+      </div>
+      <div class="check">
+        <input id="f-marketing" name="marketing" type="checkbox">
+        <label for="f-marketing">Quiero recibir novedades de Mesaverso por WhatsApp <span class="opt">(opcional)</span></label>
+      </div>
       <div class="hp" aria-hidden="true">
         <label for="f-website">No completes este campo</label>
         <input id="f-website" name="website" type="text" tabindex="-1" autocomplete="off">

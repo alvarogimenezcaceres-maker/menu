@@ -29,6 +29,13 @@ describe('signup validation', () => {
     if (!r.ok) expect(Object.keys(r.errors).sort()).toEqual(['email', 'firstName', 'lastName', 'password', 'phone', 'restaurantName', 'terms'])
   })
 
+  it('marketing opt-in is optional and only true when sent as true', () => {
+    const off = validateSignup(good)
+    const on = validateSignup({ ...good, marketing: true })
+    expect(off.ok && off.data.marketing).toBe(false)
+    expect(on.ok && on.data.marketing).toBe(true)
+  })
+
   it('requires the terms to be accepted explicitly', () => {
     const r = validateSignup({ ...good, terms: 'true' })
     expect(r.ok).toBe(false)

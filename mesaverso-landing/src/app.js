@@ -364,6 +364,7 @@
       phone: (v) => { const d = v.replace(/\D/g, ""); return !v ? "Escribí tu número de WhatsApp." : !/^[+\d\s().-]+$/.test(v) || d.length < 6 || d.length > 15 ? "Revisá el número: solo números, por ejemplo 0981 123 456." : ""; },
       type: (v) => (!v ? "Elegí el tipo de negocio." : ""),
       message: (v) => (v.length > 1000 ? "El mensaje puede tener hasta 1000 caracteres." : ""),
+      privacy: (v, el) => (!el.checked ? "Marcá la casilla para confirmar que leíste la política de privacidad." : ""),
     };
     const setErr = (name, msg) => {
       const input = form.elements[name];
@@ -371,11 +372,11 @@
       if (p) p.textContent = msg;
       if (msg) input.setAttribute("aria-invalid", "true"); else input.removeAttribute("aria-invalid");
     };
-    const check = (name) => { const msg = rules[name](form.elements[name].value.trim()); setErr(name, msg); return msg; };
+    const check = (name) => { const el = form.elements[name]; const msg = rules[name](el.value.trim(), el); setErr(name, msg); return msg; };
     Object.keys(rules).forEach((name) => {
       const el = form.elements[name];
-      el.addEventListener("blur", () => { if (el.value.trim() || el.hasAttribute("aria-invalid")) check(name); });
-      el.addEventListener("input", () => { if (el.hasAttribute("aria-invalid")) check(name); });
+      el.addEventListener("blur", () => { if (el.type === "checkbox") return; if (el.value.trim() || el.hasAttribute("aria-invalid")) check(name); });
+      el.addEventListener(el.type === "checkbox" ? "change" : "input", () => { if (el.hasAttribute("aria-invalid")) check(name); });
     });
     const setStatus = (kind, html) => { status.className = "form__status" + (kind ? ` is-${kind}` : ""); status.innerHTML = html; };
     const waDemo = $('a[data-track-where="form_alt"]').href;
@@ -398,6 +399,8 @@
       submit.setAttribute("aria-disabled", "true");
       label.textContent = "Enviando…";
       const data = Object.fromEntries(new FormData(form));
+      data.privacy = form.elements.privacy.checked;
+      data.marketing = form.elements.marketing.checked;
       try {
         const res = await fetch(form.action, { method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify(data) });
         const body = await res.json().catch(() => ({}));

@@ -8,6 +8,7 @@ import { fileURLToPath } from "node:url";
 import vm from "node:vm";
 import sharp from "sharp";
 import QRCode from "qrcode";
+import { LEGAL_VERSION } from "./legal-version.js";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const DIST = process.env.DIST_DIR ? path.resolve(process.env.DIST_DIR) : path.join(ROOT, "dist"); // DIST_DIR / SEED_DIR: only for build.test.mjs
@@ -275,6 +276,25 @@ async function main() {
   }
   const built = [];
   for (const slug of slugs.sort()) built.push(await buildRestaurant(slug, templates));
+
+  // Mesaverso legal pages (privacy, terms, staff notice): /legal/<page>/, versioned by site/legal-version.js
+  const legalLayout = await readFile(path.join(ROOT, "site", "template", "legal", "layout.html"), "utf8");
+  const mv = templates.mesaverso, mvParts = [mv.holder, mv.ruc && "RUC " + mv.ruc, mv.email].filter(Boolean);
+  const holder = (mvParts.length ? mvParts.map(attr).join(", ") + ". " : "")
+    + `Contacto: por WhatsApp desde <a href="${MESAVERSO_URL}">mesaverso.app</a>.`;
+  const legalPages = {
+    privacidad: ["Política de privacidad de Mesaverso", "Qué datos usa Mesaverso, para qué, cuánto tiempo y cómo ejercer tus derechos."],
+    terminos: ["Términos del servicio para restaurantes", "Condiciones del servicio Mesaverso para restaurantes, incluido el acuerdo de tratamiento de datos."],
+    personal: ["Aviso de privacidad para el personal de la Caja", "Qué datos guarda la Caja de Mesaverso sobre el personal del restaurante."],
+  };
+  for (const [page, [title, description]] of Object.entries(legalPages)) {
+    await mkdir(path.join(DIST, "legal", page), { recursive: true });
+    await writeFile(path.join(DIST, "legal", page, "index.html"), fill(legalLayout, {
+      TITLE: title, DESCRIPTION: description, CANONICAL: `${SITE_URL}legal/${page}/`, VERSION: LEGAL_VERSION,
+      MESAVERSO_URL, HOLDER: holder,
+      BODY: await readFile(path.join(ROOT, "site", "template", "legal", page + ".html"), "utf8"),
+    }));
+  }
 
   // root: redirect to the marketplace directory (shows all restaurants)
   await writeFile(path.join(DIST, "index.html"), `<!doctype html><meta charset="utf-8"><meta http-equiv="refresh" content="0;url=directorio/"><link rel="canonical" href="${SITE_URL}directorio/"><title>Mesaverso — Restaurantes</title><a href="directorio/">Ver restaurantes</a>`);

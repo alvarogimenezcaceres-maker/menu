@@ -83,3 +83,14 @@ test("watermark: every menu without the Gratis strip carries the discreet Mesave
   }
   assert.ok(!page("zz-gratis").includes('class="wm"'), "Gratis already has the Hecho con Mesaverso strip");
 });
+
+test("legal pages: privacy, terms and staff notice are generated with the current version", async () => {
+  const { LEGAL_VERSION } = await import("./legal-version.js");
+  for (const p of ["privacidad", "terminos", "personal"]) {
+    const f = path.join(dist, "legal", p, "index.html");
+    assert.ok(existsSync(f), p);
+    const h = readFileSync(f, "utf8");
+    assert.ok(h.includes("Versión " + LEGAL_VERSION) && h.includes("Texto en revisión legal"), p);
+    assert.ok(!h.includes("{{") && !h.includes("undefined"), p);
+  }
+});

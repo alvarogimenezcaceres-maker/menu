@@ -8,6 +8,10 @@ export function SignupLink() {
       <a href="/registro" style={{ fontWeight: 600 }}>
         Creá tu local gratis
       </a>
+      <br />
+      <a href="https://menu.mesaverso.app/legal/privacidad/" target="_blank" rel="noreferrer" style={{ fontSize: 13 }}>
+        Política de privacidad
+      </a>
     </p>
   )
 }

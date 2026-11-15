@@ -142,6 +142,9 @@ main { min-width: 0; overflow: auto; padding: 18px 20px 28px; }
 .field textarea { padding: 10px 12px; min-height: 64px; }
 .help { color: var(--muted); font-size: 13px; }
 .err { color: var(--st-pay); font-size: 14px; margin: 6px 0 0; }
+.consent { display: flex; gap: 10px; align-items: flex-start; margin: 14px 0 0; font-size: 14px; line-height: 1.4; cursor: pointer; }
+.consent input { width: 20px; height: 20px; margin: 1px 0 0; flex: none; accent-color: var(--accent, currentColor); }
+.consent a { color: inherit; text-decoration: underline; }
 .seg { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 6px; background: var(--raised); padding: 4px; border-radius: 12px; }
 .seg button { min-height: 42px; border: 0; border-radius: 9px; background: none; color: var(--text-2); font: 600 14px/1 var(--display); }
 .seg button[aria-pressed="true"] { background: var(--card); color: var(--text); box-shadow: 0 1px 0 var(--line); }
@@ -547,9 +550,20 @@ function linkScreen(err = "", first = false) {
       <p class="help" style="margin:14px 0 0">Es la primera tablet del local: creá el usuario del encargado.</p>
       <div class="field"><label for="lname">Tu nombre</label><input id="lname" autocomplete="name" maxlength="30"></div>
       <div class="field"><label for="lpin">Tu PIN de 4 números</label><input id="lpin" inputmode="numeric" autocomplete="off" maxlength="4" pattern="\\d{4}"></div>
+      <label class="consent"><input type="checkbox" id="lterms"> <span>Acepto los <a href="/legal/terminos/" target="_blank" rel="noopener">Términos del servicio y el acuerdo de tratamiento de datos</a> en nombre del local</span></label>
     </div>
     <p class="err" id="lerr" role="alert"${err ? "" : " hidden"}>${esc(err)}</p>
     <button class="btn primary big block" style="margin-top:16px" type="submit">Vincular</button>
+  </form></div>`;
+}
+// shown once per staff member (and again when the legal version changes) before the first use
+function consentScreen(err = "") {
+  return `<div class="center"><form class="box" id="consentForm" novalidate>
+    <h1>Hola, ${esc(me.name)}</h1><p class="sub">Antes de empezar, leé cómo cuidamos tus datos en la caja.</p>
+    <label class="consent"><input type="checkbox" id="cterms"> <span>Leí el <a href="/legal/personal/" target="_blank" rel="noopener">aviso de privacidad para el personal</a></span></label>
+    <p class="err" id="cerr" role="alert"${err ? "" : " hidden"}>${esc(err)}</p>
+    <button class="btn primary big block" style="margin-top:16px" type="submit">Continuar</button>
+    <button class="btn ghost block" style="margin-top:8px" type="button" data-act="logout">Salir</button>
   </form></div>`;
 }
 function pinScreen(err = "") {
@@ -848,6 +862,7 @@ function render() {
   if (screen === "link") { root.innerHTML = linkScreen(); $("#lcode").focus(); return; }
   if (screen === "pin") { root.innerHTML = pinScreen(); if (!users.length && !usersAsked) loadUsers(); return; }
   if (!me) { root.innerHTML = `<div class="center"><p class="empty">Cargando…</p></div>`; return; }
+  if (me.needsConsent) { root.innerHTML = consentScreen(); return; }
   root.innerHTML = `<div class="app"><header class="top"></header>
     <div id="llamadosBar" class="llamados-bar"></div>
     <nav class="rail" aria-label="Secciones">
@@ -1194,8 +1209,15 @@ document.addEventListener("change", e => {
 document.addEventListener("submit", async e => {
   e.preventDefault();
   const f = e.target;
+  if (f.id === "consentForm") {
+    const err = $("#cerr");
+    if (!$("#cterms").checked) { err.hidden = false; err.textContent = "Marcá que leíste el aviso para seguir."; return; }
+    try { const r = await api("/aviso", { method: "POST", body: { accept: true } }); me = { ...me, ...r.me }; render(); }
+    catch (x) { err.hidden = false; err.textContent = x.message; }
+    return;
+  }
   if (f.id === "linkForm") {
-    const body = { code: $("#lcode").value, deviceName: $("#ldev").value, name: $("#lname").value, pin: $("#lpin").value };
+    const body = { code: $("#lcode").value, deviceName: $("#ldev").value, name: $("#lname").value, pin: $("#lpin").value, acceptTerms: $("#lterms").checked };
     const err = $("#lerr");
     try {
       const r = await api("/vincular", { method: "POST", body });
@@ -1204,7 +1226,7 @@ document.addEventListener("submit", async e => {
       else { screen = "pin"; users = []; usersAsked = false; render(); say("Tablet vinculada"); }
     } catch (x) {
       // the first link also needs the encargado's name and PIN
-      if (x.code === "name" || x.code === "pin") $("#firstFields").hidden = false;
+      if (x.code === "name" || x.code === "pin" || x.code === "terms") $("#firstFields").hidden = false;
       err.hidden = false; err.textContent = x.code === "name" ? "Es la primera tablet del local: completá tu nombre y un PIN." : x.message;
     }
     return;

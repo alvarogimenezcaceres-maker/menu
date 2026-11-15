@@ -1,6 +1,6 @@
 import type { Endpoint } from 'payload'
 
-import { makeLimiter, pickSlug, SIGNUP_TERMS_VERSION, validateSignup } from './validate'
+import { LEGAL_VERSION, makeLimiter, pickSlug, SIGNUP_TERMS_VERSION, validateSignup } from './validate'
 
 // per address and overall, so a script cannot fill the database with empty locales
 const perIp = makeLimiter(5, 60 * 60 * 1000)
@@ -30,7 +30,7 @@ export const signupEndpoint: Endpoint = {
 
     const parsed = validateSignup(body)
     if (!parsed.ok) return json({ message: 'Revisá los datos marcados.', errors: parsed.errors }, 400)
-    const { firstName, lastName, email, phone, password, restaurantName, codigo } = parsed.data
+    const { firstName, lastName, email, phone, password, restaurantName, codigo, marketing } = parsed.data
     const { payload } = req
 
     const exists = await payload.count({ collection: 'users', where: { email: { equals: email } }, overrideAccess: true })
@@ -79,7 +79,12 @@ export const signupEndpoint: Endpoint = {
           publishApproved: false,
           // the owner's number is the natural WhatsApp for orders; they can change it in the panel
           whatsapp: phone,
-          terms: { version: SIGNUP_TERMS_VERSION, acceptedAt: now, how: 'Registro web: casilla de aceptación marcada' },
+          // legal version and marketing opt-in reuse the existing terms group (no migration needed)
+          terms: {
+            version: `${SIGNUP_TERMS_VERSION} + legal ${LEGAL_VERSION}`,
+            acceptedAt: now,
+            how: `Registro web: casilla de aceptación marcada (términos del plan Gratis, Términos del servicio y Política de privacidad ${LEGAL_VERSION}). Novedades por WhatsApp o correo: ${marketing ? 'sí' : 'no'}.`,
+          },
         },
         overrideAccess: true,
       })

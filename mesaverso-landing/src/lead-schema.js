@@ -25,6 +25,10 @@ export const PLACES = ["Tengo un local abierto", "Vendo solo por delivery o rede
 export const INTERESTS = ["Plan Gratis", "Plan mensual", "Plan anual", "Todavía no sé"];
 export const HOWS = ["WhatsApp", "Papel y teléfono", "Apps de delivery", "Todavía no tengo local", "Otro"];
 
+// Version of the privacy policy the lead accepted. Keep in sync with site/legal-version.js (other package,
+// served at https://menu.mesaverso.app/legal/privacidad/); bump both when the policy changes.
+export const PRIVACY_VERSION = "2026-11-15";
+
 // Collapse whitespace, drop control characters. Output is later HTML-escaped where rendered.
 export const clean = (v, max) =>
   String(v ?? "")
@@ -33,7 +37,7 @@ export const clean = (v, max) =>
     .trim()
     .slice(0, max + 1);
 
-export function validateLead(input) {
+export function validateLead(input, now = new Date()) {
   const lead = {
     name: clean(input.name, 80).replace(/\s+/g, " "),
     business: clean(input.business, 100).replace(/\s+/g, " "),
@@ -63,9 +67,11 @@ export function validateLead(input) {
   for (const [k, list] of [["city", CITIES], ["place", PLACES], ["products", PRODUCT_RANGES], ["how", HOWS], ["interest", INTERESTS]])
     if (lead[k] && !list.includes(lead[k])) fields[k] = "Elegí una de las opciones.";
   if (lead.social.length > 100) fields.social = "Es demasiado largo.";
-  // consent to be contacted: required, and stored with the date and the notice version (no IP, no user agent)
-  lead.consent = input.consent === true;
-  if (!lead.consent) fields.consent = "Marcá la casilla para que podamos escribirte.";
+  // consent: the privacy notice is required; WhatsApp news is an optional, separate opt-in (unchecked by default).
+  // Stored with the notice version and the time (no IP, no user agent). `consent: true` is the older field name.
+  const privacy = input.privacy === true || input.consent === true;
+  if (!privacy) fields.privacy = "Marcá la casilla para confirmar que leíste la política de privacidad.";
+  lead.consent = { privacy: PRIVACY_VERSION, marketing: input.marketing === true, at: now.toISOString() };
   if (lead.message.length > 1000) fields.message = "El mensaje puede tener hasta 1000 caracteres.";
   return { lead, fields, ok: Object.keys(fields).length === 0 };
 }

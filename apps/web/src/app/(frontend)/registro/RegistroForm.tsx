@@ -13,7 +13,7 @@ const FIELDS = [
   { name: 'password', label: 'Contraseña', type: 'password', autoComplete: 'new-password', hint: 'Al menos 10 caracteres' },
 ] as const
 
-export function RegistroForm({ termsUrl, privacyUrl, claim }: { termsUrl: string; privacyUrl: string; claim?: { name: string; codigo: string } | null }) {
+export function RegistroForm({ termsUrl, legalTermsUrl, privacyUrl, claim }: { termsUrl: string; legalTermsUrl: string; privacyUrl: string; claim?: { name: string; codigo: string } | null }) {
   const [errors, setErrors] = useState<Errors>({})
   const [message, setMessage] = useState('')
   const [busy, setBusy] = useState(false)
@@ -24,6 +24,7 @@ export function RegistroForm({ termsUrl, privacyUrl, claim }: { termsUrl: string
     const form = new FormData(e.currentTarget)
     const body: Record<string, unknown> = Object.fromEntries(form.entries())
     body.terms = form.get('terms') === 'on'
+    body.marketing = form.get('marketing') === 'on'
     if (claim) body.codigo = claim.codigo
     setBusy(true)
     setMessage('')
@@ -71,15 +72,23 @@ export function RegistroForm({ termsUrl, privacyUrl, claim }: { termsUrl: string
           Leí y acepto los{' '}
           <a href={termsUrl} target="_blank" rel="noreferrer">
             términos del plan Gratis
+          </a>
+          , los{' '}
+          <a href={legalTermsUrl} target="_blank" rel="noreferrer">
+            Términos del servicio
           </a>{' '}
-          y el{' '}
+          y la{' '}
           <a href={privacyUrl} target="_blank" rel="noreferrer">
-            aviso de privacidad
+            Política de privacidad
           </a>
           .
         </span>
       </label>
       {errors.terms ? <small className="reg__err">{errors.terms}</small> : null}
+      <label className="reg__check">
+        <input name="marketing" type="checkbox" />
+        <span>Quiero recibir novedades de Mesaverso por WhatsApp o correo</span>
+      </label>
       <p className="reg__note">
         Usamos tu nombre, correo y celular para crear tu cuenta, avisarte sobre tu menú y darte soporte. Podés pedirnos que los borremos. Ojo: tu celular también queda cargado como WhatsApp de pedidos de tu local, y cuando publiques tu menú ese número se va a ver en el menú. Podés cambiarlo en el panel antes de publicar.
       </p>

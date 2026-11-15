@@ -1,3 +1,4 @@
+import { PRIVACY_URL, TERMS_URL } from '@/signup/validate'
 import config from '@payload-config'
 import type { Metadata } from 'next'
 import { getPayload } from 'payload'
@@ -47,7 +48,7 @@ export default async function RegistroPage({ searchParams }: { searchParams: Pro
           </p>
         </>
       )}
-      {!badCode && <RegistroForm claim={claim} termsUrl={`${landing}/terminos-gratis/`} privacyUrl={`${landing}/privacidad/`} />}
+      {!badCode && <RegistroForm claim={claim} termsUrl={`${landing}/terminos-gratis/`} legalTermsUrl={TERMS_URL} privacyUrl={PRIVACY_URL} />}
     </div>
   )
 }

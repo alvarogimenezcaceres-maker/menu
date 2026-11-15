@@ -365,3 +365,15 @@ export function shiftRows(all, since, until = Date.now()) {
 }
 // «;» and a BOM so Excel in Spanish opens it in columns with accents right
 export const toCsv = rows => "﻿" + rows.map(r => r.map(v => (typeof v === "number" ? String(v) : /[;"\n]/.test(String(v)) ? `"${String(v).replace(/"/g, '""')}"` : String(v))).join(";")).join("\r\n") + "\r\n";
+
+/* ---------- legal consents ---------- */
+// Screens where a consent is recorded: the encargado's activation (terms + data processing, on behalf of the
+// restaurant) and each staff member's privacy notice. Only who, role, version, time and screen are stored.
+export const CONSENT_SCREENS = ["activacion", "personal"];
+// A staff member must (re)accept the notice when they never accepted it or accepted an older version.
+export const needsConsent = (acceptedVersion, version) => !acceptedVersion || String(acceptedVersion) !== String(version);
+// Activation is only allowed with the explicit checkbox (strict true, not a truthy string).
+export function checkActivationConsent(accepted) {
+  if (accepted !== true) throw new CajaError("terms", "Para activar la caja tenés que aceptar los Términos del servicio.");
+  return true;
+}

@@ -120,6 +120,8 @@
   footer.foot img { width: 90px; opacity: .6; }
   footer.foot .privacy { font-size: 12px; }
   footer.foot .privacy a { color: var(--amber-soft); }
+  .legal-note { margin: 0 0 8px; font-size: 12.5px; color: var(--muted, inherit); text-align: center; }
+  .legal-note a { color: inherit; text-decoration: underline; }
   .remember { display: flex; align-items: center; gap: 10px; min-height: 44px; margin-top: 8px; font-size: 14.5px; cursor: pointer; }
   .remember input { width: 20px; height: 20px; accent-color: var(--amber); }
   .review-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 0 18px; border-radius: 14px; border: 1px solid rgba(255,185,67,.45); background: rgba(237,157,21,.08); color: var(--amber-soft); font: 700 14.5px/1 var(--display); letter-spacing: .03em; text-decoration: none; }
@@ -1223,6 +1225,7 @@ function renderSelPanel() {
       </li>`; }).join("")}</ul>
     ${withForm() ? checkoutHtml() : ""}
     <div class="totals" id="coTotals">${totalsHtml()}</div>
+    <p class="legal-note">Al enviar aceptás la <a href="/legal/privacidad/" target="_blank" rel="noopener">política de privacidad</a></p>
     <div class="order">${orderButtons()}</div>
     <p class="sel-hint">${{{FREE_D}}mesa ? `Estás en la mesa ${esc(mesa.table)}: tu pedido le llega al mozo para que lo acepte.` : table ? "Estás en el local: mostrale el pedido al mozo." : WHATSAPP ? "Mandá el pedido por WhatsApp al local, o mostráselo al mozo si estás ahí." : "Mostrale el pedido al mozo."} La lista queda guardada en este celular.</p>
     <button class="sel-clear" type="button" id="selClear">Vaciar la selección</button>{{FREE_E}}`

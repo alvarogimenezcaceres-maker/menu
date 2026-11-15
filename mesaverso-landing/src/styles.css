@@ -561,6 +561,14 @@ button { cursor: pointer; }
 .field input::placeholder { color: var(--text-3); }
 .field input:focus, .field select:focus, .field textarea:focus { outline: 2px solid var(--focus); outline-offset: 1px; }
 .field [aria-invalid="true"] { border-color: var(--error); }
+.check { display: grid; grid-template-columns: 24px 1fr; column-gap: 12px; row-gap: 4px; align-items: start; }
+.check input { width: 24px; height: 24px; margin: 0; accent-color: var(--focus); cursor: pointer; }
+.check input:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.check label { font-size: 15px; line-height: 1.45; padding-top: 1px; cursor: pointer; }
+.check label a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+.check .opt { color: var(--text-3); }
+.check .field__err { grid-column: 2; }
+.check [aria-invalid="true"] { outline: 2px solid var(--error); outline-offset: 2px; }
 .field__help { color: var(--text-3); font-size: 14px; }
 .field__err { color: var(--error); font-size: 14px; font-weight: 500; }
 .field__err:empty { display: none; }

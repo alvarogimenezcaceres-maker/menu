@@ -3,6 +3,12 @@ import { slugify } from '../fields/slug'
 /** Terms version stored with each self-signed restaurant (same family as the WhatsApp acceptance «G-1»). */
 export const SIGNUP_TERMS_VERSION = 'G-1'
 
+/** Version of the Terms of service and Privacy policy accepted at signup. Source of truth: site/legal-version.js (keep in sync). */
+export const LEGAL_VERSION = '2026-11-15'
+
+export const TERMS_URL = 'https://menu.mesaverso.app/legal/terminos/'
+export const PRIVACY_URL = 'https://menu.mesaverso.app/legal/privacidad/'
+
 /** Slugs the public site already uses for its own routes. */
 const RESERVED_SLUGS = new Set(['admin', 'api', 'qr', 'caja', 'e', 'registro', 'assets', 'mesa', 'privacidad'])
 
@@ -15,6 +21,8 @@ export interface SignupInput {
   restaurantName: string
   /** one-time activation code of an imported restaurant: the user joins it instead of creating a new one */
   codigo?: string
+  /** optional opt-in to Mesaverso news by WhatsApp or email (unchecked by default) */
+  marketing: boolean
 }
 
 export type SignupResult = { ok: true; data: SignupInput } | { ok: false; errors: Record<string, string> }
@@ -52,10 +60,10 @@ export function validateSignup(body: unknown): SignupResult {
   }
   if (password.length < 10) errors.password = 'La contraseña tiene que tener al menos 10 caracteres.'
   else if (password.length > 128) errors.password = 'La contraseña es demasiado larga.'
-  if (b.terms !== true) errors.terms = 'Tenés que aceptar los términos y el aviso de privacidad.'
+  if (b.terms !== true) errors.terms = 'Tenés que aceptar los términos y la política de privacidad.'
 
   if (Object.keys(errors).length || !phone) return { ok: false, errors }
-  return { ok: true, data: { firstName, lastName, email, phone, password, restaurantName, ...(codigo ? { codigo } : {}) } }
+  return { ok: true, data: { firstName, lastName, email, phone, password, restaurantName, marketing: b.marketing === true, ...(codigo ? { codigo } : {}) } }
 }
 
 /** First free slug for a restaurant name: «pizza-sol», then «pizza-sol-2», … */

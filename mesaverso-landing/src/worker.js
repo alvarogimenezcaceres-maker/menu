@@ -68,6 +68,7 @@ async function sendEmail(env, lead, id) {
     ["Plan que le interesa", lead.interest],
     ["Instagram o web", lead.social],
     ["Mensaje", lead.message || "(sin mensaje)"],
+    ["Novedades por WhatsApp", lead.consent?.marketing ? "Sí, acepta recibirlas" : "No"],
   ].filter(([, v]) => v);
   const text = `Nueva solicitud de demo de Mesaverso\n\n${rows.map(([k, v]) => `${k}: ${v}`).join("\n")}\n\nEscribirle: https://wa.me/${wa}\nID: ${id}`;
   const html = `<h2 style="font-family:sans-serif">Nueva solicitud de demo</h2><table style="font-family:sans-serif;font-size:15px;border-collapse:collapse">${rows
@@ -120,7 +121,8 @@ async function handleLead(request, env, url) {
   const t = Number(data.t);
   if (String(data.website || "").trim() || (t && Date.now() - t < MIN_FILL_MS)) return done({ ok: true });
 
-  const { lead, fields, ok } = validateLead(data);
+  const now = new Date();
+  const { lead, fields, ok } = validateLead(data, now);
   if (!ok) return json(422, { ok: false, error: "Revisá los datos marcados.", fields });
 
   const ip = request.headers.get("cf-connecting-ip") || "unknown";
@@ -131,9 +133,8 @@ async function handleLead(request, env, url) {
     await env.LEADS.put(rlKey, String(count + 1), { expirationTtl: 3600 });
   }
 
-  const now = new Date();
   const id = `${now.toISOString()}-${crypto.randomUUID().slice(0, 8)}`;
-  const record = { ...lead, at: now.toISOString(), country: request.cf?.country || null, consentAt: now.toISOString(), consentNotice: "LP-3" };
+  const record = { ...lead, at: now.toISOString(), country: request.cf?.country || null };
 
   let stored = false;
   if (env.LEADS) {

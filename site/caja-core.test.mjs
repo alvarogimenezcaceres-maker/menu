@@ -353,3 +353,14 @@ test("with no kitchen screen the waiter can deliver a round straight from «en c
   assert.equal(order.kitchen[0].status, "served");
   assert.equal(dinerView(order, "diner-aaaaaaaa").rounds[0], "served");
 });
+
+import { needsConsent, checkActivationConsent, CONSENT_SCREENS } from "./caja-core.js";
+test("legal consent rules", () => {
+  assert.equal(needsConsent(null, "2026-11-15"), true);
+  assert.equal(needsConsent("", "2026-11-15"), true);
+  assert.equal(needsConsent("2026-01-01", "2026-11-15"), true);
+  assert.equal(needsConsent("2026-11-15", "2026-11-15"), false);
+  assert.equal(checkActivationConsent(true), true);
+  for (const bad of [undefined, false, "true", 1, "on"]) assert.throws(() => checkActivationConsent(bad), CajaError);
+  assert.deepEqual(CONSENT_SCREENS, ["activacion", "personal"]);
+});
