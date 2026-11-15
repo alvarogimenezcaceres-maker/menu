@@ -51,9 +51,11 @@ async function readBody(request) {
   return { data: null };
 }
 
-async function sendEmail(env, lead, id) {
+async function sendEmail(env, lead, id, custom) {
   // Two transports: Cloudflare Email Service (binding EMAIL, no key to store) or Resend (RESEND_API_KEY). Neither configured: the lead is only stored.
   if (!env.LEAD_TO_EMAIL || !(env.EMAIL || env.RESEND_API_KEY)) return "not_configured";
+  // custom = { subject, text, replyTo } for internal alerts (/api/alert); same transport, no lead rows
+  if (custom) lead = { email: custom.replyTo || "", phone: "" };
   const wa = phoneToWa(lead.phone);
   const rows = [
     ["Nombre", lead.name],
@@ -70,11 +72,11 @@ async function sendEmail(env, lead, id) {
     ["Mensaje", lead.message || "(sin mensaje)"],
     ["Novedades por WhatsApp", lead.consent?.marketing ? "Sí, acepta recibirlas" : "No"],
   ].filter(([, v]) => v);
-  const text = `Nueva solicitud de demo de Mesaverso\n\n${rows.map(([k, v]) => `${k}: ${v}`).join("\n")}\n\nEscribirle: https://wa.me/${wa}\nID: ${id}`;
+  const text = custom ? custom.text : `Nueva solicitud de demo de Mesaverso\n\n${rows.map(([k, v]) => `${k}: ${v}`).join("\n")}\n\nEscribirle: https://wa.me/${wa}\nID: ${id}`;
   const html = `<h2 style="font-family:sans-serif">Nueva solicitud de demo</h2><table style="font-family:sans-serif;font-size:15px;border-collapse:collapse">${rows
     .map(([k, v]) => `<tr><td style="padding:6px 14px 6px 0;color:#666;vertical-align:top">${k}</td><td style="padding:6px 0;white-space:pre-wrap">${escapeHtml(v)}</td></tr>`)
     .join("")}</table><p style="font-family:sans-serif"><a href="https://wa.me/${wa}">Escribirle por WhatsApp</a></p><p style="font-family:sans-serif;color:#999;font-size:12px">ID ${id}</p>`;
-  const subject = `Demo Mesaverso: ${lead.business} (${lead.type})`;
+  const subject = custom ? custom.subject : `Demo Mesaverso: ${lead.business} (${lead.type})`;
   if (env.EMAIL) {
     // Cloudflare Email Routing (free): the binding can only mail addresses verified in the Cloudflare dashboard (Email Routing → Destination addresses)
     const from = env.LEAD_FROM_ADDRESS || "avisos@mesaverso.app";
@@ -105,6 +107,30 @@ async function sendEmail(env, lead, id) {
     return "failed";
   }
   return "sent";
+}
+
+// POST /api/alert: internal notifications from the panel (a restaurant signed up, or tried and failed), mailed to
+// LEAD_TO_EMAIL with the same transport as leads. Signed: x-mv-signature = hex HMAC-SHA256 of `${x-mv-ts}.${body}`
+// with ALERT_SECRET (same value as in Render). Unsigned, wrong or older than 5 minutes: 401.
+export async function handleAlert(request, env) {
+  if (request.method !== "POST") return json(405, { ok: false });
+  if (!env.ALERT_SECRET) return json(503, { ok: false, error: "not_configured" });
+  const ts = request.headers.get("x-mv-ts") || "";
+  const sig = request.headers.get("x-mv-signature") || "";
+  const body = await request.text();
+  if (!/^[0-9]+$/.test(ts) || Math.abs(Date.now() - Number(ts)) > 5 * 60 * 1000 || body.length > 8000) return json(401, { ok: false });
+  const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(env.ALERT_SECRET), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+  const raw = new Uint8Array(await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(ts + "." + body)));
+  const mac = Array.from(raw, (b) => b.toString(16).padStart(2, "0")).join("");
+  if (mac.length !== sig.length || mac !== sig) return json(401, { ok: false });
+  let a;
+  try { a = JSON.parse(body); } catch { return json(400, { ok: false }); }
+  const rows = Object.entries(a.fields || {})
+    .filter(([, v]) => v !== undefined && v !== null && v !== "")
+    .map(([k, v]) => String(k).slice(0, 60) + ": " + String(v).slice(0, 500));
+  const subject = String(a.title || "Aviso de Mesaverso").slice(0, 120);
+  const email = await sendEmail(env, null, crypto.randomUUID(), { subject, text: subject + "\n\n" + rows.join("\n"), replyTo: a.replyTo });
+  return json(200, { ok: true, email });
 }
 
 async function handleLead(request, env, url) {
@@ -183,6 +209,7 @@ export default {
     }
     if (url.pathname === "/api/e" && request.method === "POST") return handleEvent(request, env, url);
     if (url.pathname === "/api/lead") return handleLead(request, env, url);
+    if (url.pathname === "/api/alert") return handleAlert(request, env);
     if (url.pathname.startsWith("/api/")) return json(404, { ok: false, error: "No encontrado." });
     return env.ASSETS.fetch(request);
   },

@@ -1,5 +1,6 @@
 import type { Endpoint } from 'payload'
 
+import { signupAlert, typedFields } from './alert'
 import { LEGAL_VERSION, makeLimiter, pickSlug, SIGNUP_TERMS_VERSION, validateSignup } from './validate'
 
 // per address and overall, so a script cannot fill the database with empty locales
@@ -29,13 +30,18 @@ export const signupEndpoint: Endpoint = {
     if (!perIp(ip) || !overall('all')) return json({ message: 'Hubo muchos intentos. Probá de nuevo en un rato o escribinos por WhatsApp.' }, 429)
 
     const parsed = validateSignup(body)
-    if (!parsed.ok) return json({ message: 'Revisá los datos marcados.', errors: parsed.errors }, 400)
+    if (!parsed.ok) {
+      signupAlert('Intento de registro con errores', { ...typedFields(body), Errores: Object.values(parsed.errors || {}).join(' · ') })
+      return json({ message: 'Revisá los datos marcados.', errors: parsed.errors }, 400)
+    }
     const { firstName, lastName, email, phone, password, restaurantName, codigo, marketing } = parsed.data
     const { payload } = req
 
     const exists = await payload.count({ collection: 'users', where: { email: { equals: email } }, overrideAccess: true })
-    if (exists.totalDocs > 0)
+    if (exists.totalDocs > 0) {
+      signupAlert('Intento de registro: el correo ya tenía cuenta', typedFields(body), email)
       return json({ message: 'Ya hay una cuenta con ese correo. Entrá con tu contraseña.', errors: { email: 'Ya hay una cuenta con este correo.' } }, 409)
+    }
 
     // activation link of an imported restaurant (see import-seed): the user becomes its admin; the code works once
     if (codigo) {
@@ -51,8 +57,10 @@ export const signupEndpoint: Endpoint = {
       } catch (err) {
         await payload.update({ collection: 'restaurants', id: target.id, data: { claimCode: codigo }, overrideAccess: true }).catch(() => {})
         payload.logger.error({ err }, 'claim signup failed')
+        signupAlert('Falló la activación de un local importado', { ...typedFields(body), Error: String(err).slice(0, 200) }, email)
         return json({ message: 'No pudimos crear la cuenta. Probá de nuevo o escribinos por WhatsApp.' }, 500)
       }
+      signupAlert(`Activaron un local importado: ${target.name}`, { Local: target.name, Nombre: `${firstName} ${lastName}`, Correo: email, Celular: phone, Panel: `https://menu3d-panel.onrender.com/admin/collections/restaurants/${target.id}` }, email)
       return json({ ok: true, slug: target.slug, claimed: true }, 201)
     }
 
@@ -108,8 +116,18 @@ export const signupEndpoint: Endpoint = {
       // do not leave an orphan local behind when the account could not be created
       if (restaurantId != null) await payload.delete({ collection: 'restaurants', id: restaurantId, overrideAccess: true }).catch(() => {})
       payload.logger.error({ err }, 'signup failed')
+      signupAlert('Falló un registro (error del servidor)', { ...typedFields(body), Error: String(err).slice(0, 200) }, email)
       return json({ message: 'No pudimos crear la cuenta. Probá de nuevo o escribinos por WhatsApp.' }, 500)
     }
+    signupAlert(`Nuevo registro: ${restaurantName}`, {
+      Local: restaurantName,
+      Nombre: `${firstName} ${lastName}`,
+      Correo: email,
+      Celular: phone,
+      'Novedades': marketing ? 'Sí' : 'No',
+      Panel: `https://menu3d-panel.onrender.com/admin/collections/restaurants/${restaurantId}`,
+      WhatsApp: `https://wa.me/${String(phone).replace(/[^0-9]/g, '')}`,
+    }, email)
     return json({ ok: true, slug }, 201)
   },
 }
