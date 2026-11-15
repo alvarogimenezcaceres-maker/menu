@@ -63,7 +63,7 @@
     const elAnnualRow = $("[data-calc-annual-row]", calcCard);
     const elNote = $("[data-calc-note]", calcCard);
     const elCta = $("[data-calc-cta]", calcCard);
-    const PLAN = 180000;
+    const PLAN = Number(calcCard.dataset.plan) || 0; // from site.config.mjs via {{RAW:planMonthly}}
     let rate = 10;
 
     const fmtGs = (n) => "Gs. " + Math.round(n).toLocaleString("de-DE");

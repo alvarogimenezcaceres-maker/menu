@@ -301,7 +301,7 @@
       <p class="sec-lead">Ingresá tus ventas mensuales por delivery y ves cuánto se lleva la plataforma — y cuánto te sobra si pedís directo con Mesaverso.</p>
     </header>
 
-    <div class="calc-card" data-calc>
+    <div class="calc-card" data-calc data-plan="{{RAW:planMonthly}}">
       <div class="calc-inputs">
         <div class="calc-field">
           <label class="calc-label" for="calc-ventas">Tus ventas mensuales por delivery</label>
@@ -340,7 +340,7 @@
           <span class="calc-row__label">Ahorro anual estimado</span>
           <span class="calc-row__val" data-calc-ahorro-anual>—</span>
         </div>
-        <p class="calc-note" data-calc-note hidden>Esto asume que <strong>todos</strong> tus pedidos de delivery migran a Mesaverso. En la práctica el ahorro es proporcional a los pedidos directos que lográs.</p>
+        <p class="calc-note" data-calc-note hidden>Esto asume que <strong>todos</strong> tus pedidos de delivery migran a Mesaverso. En la práctica el ahorro es proporcional a los pedidos directos que lográs. Los porcentajes son ejemplos: usá la comisión que figura en tu contrato con la plataforma.</p>
       </div>
 
       <div class="calc-cta" data-calc-cta hidden>
@@ -465,137 +465,6 @@
 </section>
 
 <!-- ============ APERTURA GANADORA E2 ============ -->
-<section class="section aperturas" id="como-empezamos" aria-labelledby="ap-title">
-  <div class="wrap">
-    <header class="sec-head">
-      <p class="kicker">El primer mensaje</p>
-      <h2 id="ap-title">Así arranca la conversación.</h2>
-      <p class="sec-lead">Cuando encontramos un negocio que encaja con Mesaverso, les escribimos por Instagram o WhatsApp. El mensaje cambia según el tipo de local — acá van los tres que mejor funcionan.</p>
-    </header>
-
-    <div class="ap-tabs" role="tablist" aria-label="Variantes de apertura E2">
-      <button class="ap-tab ap-tab--active" role="tab" aria-selected="true" aria-controls="ap-panel-a" id="ap-tab-a" data-ap="a">
-        <span class="ap-tab__label">Pedidos ordenados</span>
-        <span class="ap-tab__sub">Para cualquier negocio</span>
-      </button>
-      <button class="ap-tab" role="tab" aria-selected="false" aria-controls="ap-panel-b" id="ap-tab-b" data-ap="b" tabindex="-1">
-        <span class="ap-tab__label">Sin comisión</span>
-        <span class="ap-tab__sub">Para los que ya están en PedidosYa / Monchis</span>
-      </button>
-      <button class="ap-tab" role="tab" aria-selected="false" aria-controls="ap-panel-c" id="ap-tab-c" data-ap="c" tabindex="-1">
-        <span class="ap-tab__label">Platos en 3D</span>
-        <span class="ap-tab__sub">Para pastelería, sushi, alta cocina</span>
-      </button>
-    </div>
-
-    <div class="ap-panels">
-
-      <!-- Panel A: Pedidos ordenados -->
-      <div class="ap-panel ap-panel--active" role="tabpanel" id="ap-panel-a" aria-labelledby="ap-tab-a">
-        <div class="ap-grid">
-          <div class="ap-copy">
-            <h3>El menú que ya tenés, funcionando solo.</h3>
-            <p>El arranque más directo: hacemos el menú a partir de lo que ya tienen publicado y les mostramos el resultado antes de que paguen nada.</p>
-            <ul class="ticks">
-              <li><svg aria-hidden="true"><use href="#i-check"/></svg>El cliente lo ve listo para publicar.</li>
-              <li><svg aria-hidden="true"><use href="#i-check"/></svg>No les pedimos nada hasta que digan que sí.</li>
-              <li><svg aria-hidden="true"><use href="#i-check"/></svg>Funciona para cualquier tipo de negocio gastronómico.</li>
-            </ul>
-          </div>
-          <div class="dm-window" aria-label="Ejemplo de mensaje de apertura variante A">
-            <div class="dm-window__bar">
-              <span class="dm-window__dot"></span><span class="dm-window__dot"></span><span class="dm-window__dot"></span>
-              <span class="dm-window__title">Instagram · Mensaje directo</span>
-            </div>
-            <div class="dm-body">
-              <p class="dm-stamp">Mesaverso escribió:</p>
-              <div class="dm-bubble dm-bubble--out">
-                <p>Hola, [nombre del local] 👋</p>
-                <p>Soy Álvaro de <strong>Mesaverso</strong>. Vi tu menú en Instagram y me pareció que podía quedar muy bien armado en digital — así tus clientes ven todo el catálogo, buscan por plato y te piden directo por WhatsApp, sin nadie en el medio.</p>
-                <p>Te preparé una versión de prueba con tu carta. ¿Querés que te la mande para que la veas funcionando?</p>
-              </div>
-              <p class="dm-time">Enviado · visto ✓✓</p>
-              <div class="dm-bubble dm-bubble--in">
-                <p>Sí, mandame 👀</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Panel B: Anti-comisión -->
-      <div class="ap-panel" role="tabpanel" id="ap-panel-b" aria-labelledby="ap-tab-b" hidden>
-        <div class="ap-grid">
-          <div class="ap-copy">
-            <h3>Tus pedidos de siempre, sin el intermediario.</h3>
-            <p>Para locales que ya usan plataformas de delivery: la idea es que sus clientes habituales puedan pedir directo, sin comisión, mientras siguen en PedidosYa para los clientes nuevos.</p>
-            <ul class="ticks">
-              <li><svg aria-hidden="true"><use href="#i-check"/></svg>Complementa lo que ya tienen, no lo reemplaza.</li>
-              <li><svg aria-hidden="true"><use href="#i-check"/></svg>Cada pedido directo ahorra la comisión completa.</li>
-              <li><svg aria-hidden="true"><use href="#i-check"/></svg>El cliente pide más rápido porque ya te conoce.</li>
-            </ul>
-          </div>
-          <div class="dm-window" aria-label="Ejemplo de mensaje de apertura variante B">
-            <div class="dm-window__bar">
-              <span class="dm-window__dot"></span><span class="dm-window__dot"></span><span class="dm-window__dot"></span>
-              <span class="dm-window__title">Instagram · Mensaje directo</span>
-            </div>
-            <div class="dm-body">
-              <p class="dm-stamp">Mesaverso escribió:</p>
-              <div class="dm-bubble dm-bubble--out">
-                <p>Hola, [nombre del local] 👋</p>
-                <p>Soy Álvaro de <strong>Mesaverso</strong>. Vi que están en PedidosYa — está bien para llegar a clientes nuevos, pero cada pedido les cuesta la comisión de la plataforma.</p>
-                <p>La idea es que sus clientes de siempre les pidan <em>directo</em>, sin comisión: les mandás el link por WhatsApp o Instagram y ellos arman el pedido solos. Para los que ya los conocen, es más cómodo que abrir la app de delivery.</p>
-                <p>¿Le damos una mirada juntos?</p>
-              </div>
-              <p class="dm-time">Enviado · visto ✓✓</p>
-              <div class="dm-bubble dm-bubble--in">
-                <p>Me interesa, ¿cómo funciona?</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Panel C: 3D -->
-      <div class="ap-panel" role="tabpanel" id="ap-panel-c" aria-labelledby="ap-tab-c" hidden>
-        <div class="ap-grid">
-          <div class="ap-copy">
-            <h3>Que el cliente vea el plato antes de encargar.</h3>
-            <p>Para pastelería, sushi, alta cocina o cualquier local donde la presentación es parte del valor: los clientes pueden girar el plato en 3D y, en celulares compatibles, verlo sobre la mesa con realidad aumentada.</p>
-            <ul class="ticks">
-              <li><svg aria-hidden="true"><use href="#i-check"/></svg>El 3D convierte la duda en decisión de compra.</li>
-              <li><svg aria-hidden="true"><use href="#i-check"/></svg>Diferencial real, difícil de copiar rápido.</li>
-              <li><svg aria-hidden="true"><use href="#i-check"/></svg>Muestra el producto como no lo puede mostrar una foto plana.</li>
-            </ul>
-          </div>
-          <div class="dm-window" aria-label="Ejemplo de mensaje de apertura variante C">
-            <div class="dm-window__bar">
-              <span class="dm-window__dot"></span><span class="dm-window__dot"></span><span class="dm-window__dot"></span>
-              <span class="dm-window__title">Instagram · Mensaje directo</span>
-            </div>
-            <div class="dm-body">
-              <p class="dm-stamp">Mesaverso escribió:</p>
-              <div class="dm-bubble dm-bubble--out">
-                <p>Hola, [nombre del local] 👋</p>
-                <p>Soy Álvaro de <strong>Mesaverso</strong>. Vi sus posteos — se ve que cuidan mucho la presentación de cada pieza.</p>
-                <p>Tenemos algo que creo que les puede interesar: un menú digital donde tus clientes pueden <em>ver un plato en 3D y girarlo</em> antes de encargar. En celulares compatibles también lo pueden ver sobre la mesa con realidad aumentada.</p>
-                <p>Para productos como los de ustedes, donde entrar por los ojos hace la diferencia, puede ser muy potente. ¿Les mando un ejemplo funcionando?</p>
-              </div>
-              <p class="dm-time">Enviado · visto ✓✓</p>
-              <div class="dm-bubble dm-bubble--in">
-                <p>Qué bueno, sí mandame el ejemplo!</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-    </div><!-- /ap-panels -->
-  </div>
-</section>
-
-<!-- ============ FORMULARIO ============ -->
 <section class="section lead" id="demo" aria-labelledby="lead-title">
   <div class="wrap lead__grid">
     <div class="lead__copy">
