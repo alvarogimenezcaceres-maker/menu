@@ -5,9 +5,6 @@
     "slug": "frakar"
   },
   "restaurant": {
-    "address": "Comandante Peralta 71, al costado de la Plaza Central y al lado del Colegio Sagrado Corazón de Jesús",
-    "city": "Luque",
-    "ordering": {"hours": [{"days": ["mon", "tue", "wed", "thu", "fri"], "open": "10:00", "close": "22:00"}, {"days": ["sat", "sun"], "open": "10:00", "close": "00:00"}]},
     "name": "Frakar Gourmet",
     "slug": "frakar",
     "description": "Hamburguesas premium, lomitos, papas fritas y pollo frito. Ingredientes frescos, sabor inigualable. Visitanos en Comandante Peralta N° 71 c/ Mcal. López.",
@@ -20,13 +17,15 @@
     "orderingMode": "whatsapp",
     "reservations": true,
     "headerCenter": true,
-    "whatsapp": "0981 288 730",
+    "whatsapp": "0982936566",
     "cuisine": [
       "Hamburguesas",
       "Lomitos",
       "Papas fritas",
       "Pollo frito"
     ],
+    "address": "Comandante Peralta 71, al costado de la Plaza Central y al lado del Colegio Sagrado Corazón de Jesús",
+    "city": "Luque",
     "theme": {
       "primary": "#F0B030",
       "primaryLight": "#FFD36B",
