@@ -13,6 +13,33 @@ export const BRAND = {
 };
 
 export const FAQS = {
+  qr: [
+    ["¿Qué necesito para tener mi menú digital con QR?", `<p>Solo tu carta actual (foto, PDF o lista con precios) y el número de WhatsApp de tu negocio. Mesaverso carga los productos, las categorías y los precios, y te entrega el link y el QR listos para imprimir.</p>`],
+    ["¿Mis clientes tienen que descargar una app?", `<p>No. El QR abre tu menú en el navegador del celular. No hay nada que instalar.</p>`],
+    ["¿Puedo cambiar precios o productos después?", `<p>Sí. Los cambios se publican en el mismo link, así que el QR impreso sigue sirviendo.</p>`],
+    ["¿Cuánto cuesta?", `<p>El plan mensual cuesta ${gs("planMonthly")} por mes (mínimo ${PRICES.minMonths} meses) más ${gs("implementation")} de implementación, en un solo pago. El plan anual cuesta ${gs("planAnnual")} por año, con la implementación incluida. Sin comisión por pedido.</p>`],
+    ["¿Sirve en todo Paraguay?", `<p>Sí. El menú funciona con internet en cualquier ciudad. La atención es por WhatsApp.</p>`],
+  ],
+  caja: [
+    ["¿Qué es Mesaverso Caja?", `<p>Es el sistema de caja de Mesaverso para locales con salón: recibe los pedidos del menú y de WhatsApp, los asigna a mesas, manda las comandas a la cocina, divide la cuenta y cierra la caja por turno. Funciona en el navegador de una tablet, celular o computadora.</p>`],
+    ["¿Necesito comprar equipos especiales?", `<p>No hace falta un equipo dedicado: funciona en el navegador. Para imprimir comandas se puede usar una impresora térmica de 80 o 58 mm conectada al dispositivo de la cocina.</p>`],
+    ["¿Se puede dividir la cuenta?", `<p>Sí. Cada comensal puede pedir desde su celular y la cuenta se puede cobrar total o dividida por persona.</p>`],
+    ["¿Cobra comisión por venta?", `<p>No. Mesaverso no cobra comisión por pedido ni por venta.</p>`],
+    ["¿Cuánto cuesta la caja?", `<p>Se arma según tu local (cantidad de mesas, cocina, dispositivos). Pedí una demo y te pasamos la propuesta. El menú digital parte de ${gs("planMonthly")} por mes.</p>`],
+  ],
+  delivery: [
+    ["¿Mesaverso reemplaza a las apps de delivery?", `<p>No necesariamente. Muchos negocios siguen en las apps para llegar a clientes nuevos y usan Mesaverso para los clientes que ya los conocen y les piden directo, por WhatsApp, sin comisión por pedido.</p>`],
+    ["¿Cuánto me ahorro?", `<p>Depende de la comisión de tu contrato con cada app y de cuántos pedidos pasen al canal directo. En la <a href="/#calculadora">calculadora de la página principal</a> podés poner tus números y comparar con el plan fijo de Mesaverso.</p>`],
+    ["¿Quién hace la entrega?", `<p>Vos, con tu delivery propio o el servicio que ya uses. Mesaverso se encarga del menú y de que el pedido te llegue armado por WhatsApp.</p>`],
+    ["¿Cómo cobro?", `<p>Como ya lo hacés: efectivo, transferencia o el medio que acuerdes con tu cliente al responder el mensaje.</p>`],
+    ["¿Cuánto cuesta?", `<p>Un plan fijo desde ${gs("planMonthly")} por mes, sin comisión por pedido. El plan anual cuesta ${gs("planAnnual")} con la implementación incluida.</p>`],
+  ],
+  cafe: [
+    ["¿Sirve para una cafetería o heladería chica?", `<p>Sí. Mesaverso funciona con un QR en el mostrador o en las mesas y con un link para Instagram y WhatsApp, aunque tengas pocos productos.</p>`],
+    ["¿Puedo mostrar sabores, tamaños y extras?", `<p>Sí. Los productos pueden tener opciones con precio (por ejemplo tamaño, sabores o adicionales), y el pedido llega con lo que eligió el cliente.</p>`],
+    ["¿Puedo marcar un producto como agotado?", `<p>Sí, se puede marcar como agotado para que el cliente no lo pida.</p>`],
+    ["¿Cuánto cuesta?", `<p>Desde ${gs("planMonthly")} por mes, sin comisión por pedido. Con el plan anual (${gs("planAnnual")}) la implementación está incluida.</p>`],
+  ],
   home: [
     ["¿Qué es un menú digital?", `<p>Es la carta de tu negocio en una página que tus clientes abren desde el celular, con un link o escaneando un QR. Con Mesaverso, además, pueden buscar productos, recorrer las categorías, armar su pedido y enviártelo por WhatsApp.</p>`],
     ["¿Cómo funciona el menú QR?", `<p>Ponés el QR en la mesa, en el mostrador o en tu material impreso. El cliente lo escanea con la cámara del celular y se abre tu menú, sin instalar ninguna aplicación. Ahí elige los productos, arma su pedido y se lo muestra al mozo o te lo envía por WhatsApp.</p>`],
@@ -55,5 +82,29 @@ export const PAGES = [
     ogTitle: "Pedidos por WhatsApp para restaurantes, sin comisión | Mesaverso",
     ogDescription: `${BRAND.secondary} Tu cliente arma el pedido en tu menú y te llega listo a tu WhatsApp, sin comisión por pedido.`,
     faq: "whatsapp",
+  },
+  {
+    path: "/menu-digital-qr-paraguay/", file: "pages/menu-digital-qr-paraguay.html", crumb: "Menú digital QR",
+    title: "Menú QR para tu restaurante en Paraguay: cómo funciona | Mesaverso",
+    description: "Tu carta en un QR y un link: tus clientes la abren desde el celular sin instalar nada, arman el pedido y te lo mandan por WhatsApp. Hecho en Paraguay.",
+    faq: "qr",
+  },
+  {
+    path: "/sistema-de-caja-para-restaurantes/", file: "pages/sistema-de-caja-para-restaurantes.html", crumb: "Sistema de caja",
+    title: "Sistema de caja para restaurantes en Paraguay | Mesaverso Caja",
+    description: "Mesas, comandas a cocina, cuenta dividida y cierre de caja por turno, en el navegador. Conectado a tu menú QR y a tus pedidos por WhatsApp, sin comisión.",
+    faq: "caja",
+  },
+  {
+    path: "/alternativa-a-apps-de-delivery/", file: "pages/alternativa-a-apps-de-delivery.html", crumb: "Alternativa a apps de delivery",
+    title: "Alternativa a las apps de delivery para tu restaurante | Mesaverso",
+    description: "Recibí pedidos directos por WhatsApp desde tu propio menú digital, con un plan fijo y sin comisión por pedido. Para restaurantes de Paraguay.",
+    faq: "delivery",
+  },
+  {
+    path: "/carta-digital-para-cafeterias-y-heladerias/", file: "pages/carta-digital-para-cafeterias-y-heladerias.html", crumb: "Cafeterías y heladerías",
+    title: "Carta digital para cafeterías y heladerías | Mesaverso",
+    description: "Carta digital con QR para cafeterías, heladerías y confiterías de Paraguay: sabores, tamaños y extras, pedidos por WhatsApp y sin comisión.",
+    faq: "cafe",
   },
 ];

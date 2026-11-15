@@ -185,9 +185,56 @@ await writeFile(path.join(DIST, "site.webmanifest"), JSON.stringify({
 }, null, 2) + "\n");
 
 // robots.txt: everything public is crawlable (CSS, JS, images included); only the form API is not.
+// Search and AI crawlers are named explicitly so the intent is unambiguous (each named group
+// replaces "*" for that bot, so every group repeats the same rules).
+const CRAWLERS = ["Googlebot", "Bingbot", "OAI-SearchBot", "ChatGPT-User", "GPTBot", "PerplexityBot", "ClaudeBot", "Claude-SearchBot", "Google-Extended", "Applebot"];
 await writeFile(path.join(DIST, "robots.txt"), PREVIEW
   ? "User-agent: *\nDisallow: /\n"
-  : `User-agent: *\nAllow: /\nDisallow: /api/\n\nSitemap: ${SITE_URL}/sitemap.xml\n`);
+  : [...CRAWLERS, "*"].map((ua) => `User-agent: ${ua}\nAllow: /\nDisallow: /api/\n`).join("\n") + `\nSitemap: ${SITE_URL}/sitemap.xml\n`);
+
+// llms.txt (short index) and llms-full.txt (factual detail) for AI assistants. Prices from site.config.mjs.
+const gsP = (k) => formatGs(PRICES[k]);
+const pageList = PAGES.map((p) => `- [${p.crumb || "Inicio"}](${abs(p.path)}): ${p.description}`).join("\n");
+const llmsIntro = `# Mesaverso
+
+> Mesaverso (${SITE_URL}) es un menú digital con QR y link para restaurantes, bares, cafeterías, heladerías, comedores, dark kitchens y otros negocios gastronómicos de Paraguay. Los clientes ven la carta en el celular sin instalar nada, arman su pedido y lo envían por WhatsApp al negocio (o se lo muestran al mozo). Mesaverso no cobra comisión por pedido: el negocio paga un plan fijo.
+
+- Para quién: dueños y encargados de negocios gastronómicos en Paraguay, con o sin local.
+- Precio: plan mensual ${gsP("planMonthly")} por mes (mínimo ${PRICES.minMonths} meses) + implementación ${gsP("implementation")} (pago único); plan anual ${gsP("planAnnual")} por año con la implementación incluida. Pack 3D opcional: ${gsP("pack3dDish")} por plato, pago único. Garantía de ${PRICES.guaranteeDays} días.
+- Cómo empezar: pedir una demo en ${SITE_URL}/#demo o escribir por WhatsApp a +${MESAVERSO_WHATSAPP}.
+`;
+await writeFile(path.join(DIST, "llms.txt"), `${llmsIntro}
+## Páginas
+
+${pageList}
+
+## Más detalle
+
+- [Descripción completa](${abs("/llms-full.txt")})
+`);
+const faqText = Object.values(FAQS).flat().map(([q, a]) => `### ${q}\n\n${stripHtml(a)}`).filter((v, i, arr) => arr.indexOf(v) === i).join("\n\n");
+await writeFile(path.join(DIST, "llms-full.txt"), `${llmsIntro}
+## Qué hace Mesaverso (funciones que existen hoy)
+
+- Menú digital con QR (para imprimir en mesas, mostrador o folletos) y link directo (para Instagram, Facebook y estados de WhatsApp). Se abre en el navegador, sin app.
+- Buscador, categorías, fotos, precios y opciones con precio (tamaños, sabores, adicionales). Productos marcables como agotados.
+- Pedidos por WhatsApp sin comisión: el cliente arma el pedido y Mesaverso prepara el mensaje con productos, cantidades y total; llega al WhatsApp o WhatsApp Business del negocio. El pago y la entrega los coordina el negocio como siempre.
+- Platos en 3D (opcional, Pack 3D): el cliente gira el plato en el celular antes de pedirlo.
+- Mesaverso Caja (para locales con salón): pedidos del menú y de WhatsApp en la caja, mesas, comandas a la pantalla de cocina o a impresora térmica (80/58 mm), cuenta total o dividida por persona con propina opcional, comanda/precuenta/ticket en PDF, roles con PIN y cierre de caja por turno. Precio según el local, a consultar.
+- Servicio llave en mano: Mesaverso carga la carta del negocio y entrega el link y el QR.
+
+## Lo que Mesaverso no es
+
+- No es un marketplace ni una app de delivery: no tiene repartidores ni trae clientes nuevos por sí mismo. Es el canal directo propio del negocio y puede convivir con las apps de delivery.
+
+## Páginas
+
+${pageList}
+
+## Preguntas frecuentes
+
+${faqText}
+`);
 const today = new Date().toISOString().slice(0, 10);
 await writeFile(path.join(DIST, "sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -215,6 +262,10 @@ await writeFile(path.join(DIST, "_headers"), `/*
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=(), xr-spatial-tracking=(self)
   X-Frame-Options: DENY${PREVIEW ? "\n  X-Robots-Tag: noindex, nofollow" : ""}
+/llms.txt
+  Content-Type: text/plain; charset=utf-8
+/llms-full.txt
+  Content-Type: text/plain; charset=utf-8
 /gracias
   X-Robots-Tag: noindex
 /styles.css

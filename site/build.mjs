@@ -2,13 +2,15 @@
 //   node site/build.mjs            → dist/
 // Each seed/<slug>/menu.json becomes dist/<slug>/ with its images, 3D models and QR sheet.
 // SITE_URL (env) is the public base URL, e.g. https://menu.example.com/ (used in QR codes and SEO).
-import { readFile, writeFile, mkdir, cp, rm, readdir, access } from "node:fs/promises";
+import { readFile, writeFile, mkdir, cp, rm, readdir, access, stat } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import vm from "node:vm";
 import sharp from "sharp";
 import QRCode from "qrcode";
 import { LEGAL_VERSION } from "./legal-version.js";
+import { spawnSync } from "node:child_process";
+import * as SEO from "./seo.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const DIST = process.env.DIST_DIR ? path.resolve(process.env.DIST_DIR) : path.join(ROOT, "dist"); // DIST_DIR / SEED_DIR: only for build.test.mjs
@@ -95,21 +97,19 @@ function publicMenu(m) {
   return { categories };
 }
 
-function jsonLd(m, url, img) {
-  const r = m.restaurant;
-  return jsonForScript({
-    "@context": "https://schema.org", "@type": "Restaurant", name: r.name, url, image: `${url}img/${img}.webp`,
-    servesCuisine: r.cuisine, currenciesAccepted: r.currency,
-    hasMenu: {
-      "@type": "Menu", hasMenuSection: publicMenu(m).categories.map(c => ({
-        "@type": "MenuSection", name: c.name,
-        hasMenuItem: c.dishes.map(d => ({
-          "@type": "MenuItem", name: d.name, description: d.description,
-          offers: { "@type": "Offer", price: d.price, priceCurrency: r.currency },
-        })),
-      })),
-    },
-  });
+function jsonLd(m, url, img, slug) {
+  return SEO.graph(
+    SEO.restaurantLd(m, { menuUrl: url, image: `${url}img/${img}.webp` }),
+    SEO.breadcrumbLd([["Restaurantes", `${SITE_URL}directorio/`], [m.restaurant.name, `${SITE_URL}directorio/${slug}/`], ["Menú", url]]),
+  );
+}
+
+// last change of a restaurant's data: git commit date of seed/<slug>, else the menu.json file date
+async function lastmod(slug) {
+  const g = spawnSync("git", ["log", "-1", "--format=%cs", "--", path.join(SEED, slug)], { cwd: ROOT, encoding: "utf8" });
+  const d = (g.stdout || "").trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(d)) return d;
+  try { return (await stat(path.join(SEED, slug, "menu.json"))).mtime.toISOString().slice(0, 10); } catch { return undefined; }
 }
 
 // Returns the names that were built. A missing image only warns (the menu still builds), except the ones in `critical`.
@@ -182,7 +182,7 @@ async function buildRestaurant(slug, templates) {
   const theme = { BG: t.background || "#181818", PRIMARY: t.primary || "#ED9D15", PRIMARY_LIGHT: t.primaryLight || "#FFB943", WINE: t.accentWine || "#8F1B51" };
   await writeFile(path.join(out, "index.html"), fill(templates.menu, {
     ...theme, NAME: attr(r.name), NAME_JSON: jsonForScript(r.name), DESCRIPTION: attr(r.description), TAGLINE: attr(r.tagline || ""),
-    URL: url, LOGO: logo, OG_IMAGE: hero || logo, JSONLD: jsonLd(m, url, hero || logo), DATA: jsonForScript(menu),
+    URL: url, LOGO: logo, OG_IMAGE: hero || logo, JSONLD: jsonLd(m, url, hero || logo, slug), DATA: jsonForScript(menu),
     HERO_IMG: hero ? `<img class="dish" src="img/${hero}-720.webp" alt="" fetchpriority="high">` : "",
     WHATSAPP: whatsappDigits(r.whatsapp),
     PRIVACY_LINK: r.legal && r.legal.legalName && r.legal.ruc && r.legal.privacyContact ? ' · <a href="privacidad/">Privacidad</a>' : "",
@@ -195,6 +195,14 @@ async function buildRestaurant(slug, templates) {
     ...Object.fromEntries(FREE_KEYS.map(k => [k, (free || (basic && !BRAND_KEYS.has(k))) ? freeParts(slug)[k] : ""])),
   }));
 
+  // crawlers and no-JS readers get the whole menu as HTML; hidden slugs (demo) are never indexed
+  {
+    const p = path.join(out, "index.html");
+    let html = await readFile(p, "utf8");
+    html = html.replace('<div id="menu" tabindex="-1"></div>', () => `<div id="menu" tabindex="-1"></div>\n<noscript><div class="seo-menu">${SEO.menuHtml(m)}</div></noscript>`);
+    if (SEO.isHidden(slug)) html = html.replace("<head>", '<head>\n<meta name="robots" content="noindex, nofollow">');
+    await writeFile(p, html);
+  }
   // the diner downloads their ticket PDF after paying: the PDF writer loads on demand, only for menus with the caja
   if (!basic) await writeFile(path.join(out, "ticket.js"), TICKET_CORE);
   // Mesaverso Caja: the catalog the Worker prices orders with (public data: the same as the menu) and the staff page
@@ -253,7 +261,7 @@ async function buildRestaurant(slug, templates) {
 
   const count = menu.categories.reduce((n, c) => n + c.dishes.length, 0);
   console.log(`✓ ${slug}: ${menu.categories.length} categorías, ${count} ítems, ${used.size} imágenes, ${models.length} modelos 3D`);
-  return { slug, name: r.name };
+  return { slug, name: r.name, menu: m, lastmod: await lastmod(slug) };
 }
 
 async function main() {
@@ -342,15 +350,13 @@ async function main() {
     const description = rest.description || rest.tagline || "";
     const canonical = `${SITE_URL}directorio/${r.slug}/`;
     const ogImage = logoSrc ? `${SITE_URL.replace(/\/$/, "")}${logoSrc}` : "";
-    const schema = JSON.stringify({
-      "@context": "https://schema.org",
-      "@type": "Restaurant",
-      "name": rest.name,
-      "description": description,
-      "url": canonical,
-      "servesCuisine": rest.cuisine || [],
-      "telephone": rest.whatsapp ? rest.whatsapp.replace(/\s/g, "") : undefined,
-    });
+    const menuUrl = `${SITE_URL}${r.slug}/`;
+    const schema = SEO.graph(
+      SEO.restaurantLd(menu, { menuUrl, pageUrl: canonical, image: ogImage || undefined }),
+      SEO.breadcrumbLd([["Restaurantes", `${SITE_URL}directorio/`], [rest.name, canonical]]),
+    );
+    const range = SEO.priceRange(menu);
+    const preview = `<section class="seo-preview" style="margin-top:28px;text-align:left"><h2 style="font-size:1.1rem">Menú de ${SEO.esc(rest.name)} con precios${range ? " (" + SEO.esc(range) + ")" : ""}</h2>${SEO.menuHtml(menu, { headingLevel: 3 })}</section>`;
     const cuisineArr = Array.isArray(rest.cuisine) ? rest.cuisine : rest.cuisine ? [rest.cuisine] : [];
     const cuisineTags = cuisineArr.map(c => `<span class="tag">${c}</span>`).join("");
     const heroLogo = logoSrc
@@ -365,13 +371,14 @@ async function main() {
       .replace(/{{DESCRIPTION}}/g, description)
       .replace("{{LOCAL_ACCENT}}", accent)
       .replace("{{LOCAL_BG}}", bg)
-      .replace("{{OG_IMAGE}}", ogImage)
-      .replace("{{CANONICAL}}", canonical)
-      .replace("{{SCHEMA}}", schema)
+      .replace(/{{OG_IMAGE}}/g, ogImage)
+      .replace(/{{CANONICAL}}/g, canonical)
+      .replace("{{SCHEMA}}", () => schema)
       .replace("{{HERO_LOGO}}", heroLogo)
       .replace("{{CUISINE_TAGS}}", cuisineTags)
       .replace("{{SLUG}}", r.slug)
-      .replace("{{INFO_ROWS}}", infoRows);
+      .replace("{{INFO_ROWS}}", () => infoRows + preview);
+    if (SEO.isHidden(r.slug)) page = page.replace("<head>", '<head>\n<meta name="robots" content="noindex, nofollow">');
     const landingDir = path.join(DIST, "directorio", r.slug);
     await mkdir(landingDir, { recursive: true });
     await writeFile(path.join(landingDir, "index.html"), page);
@@ -379,14 +386,8 @@ async function main() {
 
   // search engines: the menus are public pages; the caja, the QR sheet and the API are not
   const base = SITE_URL.replace(/\/$/, "");
-  await writeFile(path.join(DIST, "robots.txt"), ["User-agent: *", "Allow: /", "Disallow: /*/caja/", "Disallow: /*/qr/", "Disallow: /api/", "Disallow: /e", "", `Sitemap: ${base}/sitemap.xml`, ""].join("\n"));
-  const today = new Date().toISOString().slice(0, 10);
-  const urls = [
-    `  <url><loc>${base}/directorio/</loc><lastmod>${today}</lastmod></url>`,
-    ...built.map(b => `  <url><loc>${base}/${b.slug}/</loc><lastmod>${today}</lastmod></url>`),
-    ...built.map(b => `  <url><loc>${base}/directorio/${b.slug}/</loc><lastmod>${today}</lastmod></url>`),
-  ].join("\n");
-  await writeFile(path.join(DIST, "sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`);
+  await writeFile(path.join(DIST, "robots.txt"), SEO.robotsTxt(base));
+  await buildDiscovery(built.filter(b => !SEO.isHidden(b.slug)), indexRestaurants, base);
   await writeFile(path.join(DIST, ".nojekyll"), "");
   // Cloudflare response headers (GitHub Pages ignores this file). One `*` per rule: use :slug for the folder. File names aren't hashed,
   // so caches stay short: an edited photo shows up within the hour.
@@ -405,6 +406,11 @@ async function main() {
     "/:slug/caja/*",
     "  X-Robots-Tag: noindex",
     "  Cache-Control: no-cache",
+    "/llms*.txt",
+    "  Content-Type: text/plain; charset=utf-8",
+    // the workers.dev address serves the same pages: keep it out of search results (canonical host is SITE_URL)
+    "https://menu3d-demo.alvarogimenezcaceres.workers.dev/*",
+    "  X-Robots-Tag: noindex",
     "/assets/*",
     "  Cache-Control: public, max-age=86400",
     "",
@@ -414,3 +420,75 @@ async function main() {
 }
 
 main().catch(e => { console.error(e); process.exit(1); });
+
+// Directory (static, crawlable), intent pages per cuisine/zone, llms.txt / llms-full.txt and the sitemap.
+async function buildDiscovery(list, indexRestaurants, base) {
+  const inactive = new Set(indexRestaurants.filter(r => r.active === false).map(r => r.slug));
+  list = list.filter(b => !inactive.has(b.slug));
+  const dir = `${base}/directorio/`;
+  const desc = x => x.menu.restaurant.description || x.menu.restaurant.tagline || "";
+  const cuisines = x => [].concat(x.menu.restaurant.cuisine || []).join(", ");
+  const where = SEO.whereOf(list);
+  const { cuisine, zona } = SEO.intentGroups(list);
+
+  // /directorio/: the same app page plus a static list and an ItemList for crawlers
+  let d = await readFile(path.join(ROOT, "site", "directory.html"), "utf8");
+  const itemList = { "@type": "ItemList", name: "Restaurantes con menú digital", itemListElement: list.map((x, i) => ({ "@type": "ListItem", position: i + 1, url: `${dir}${x.slug}/`, name: x.name })) };
+  const site = { "@type": "WebSite", name: "Mesaverso", url: dir, inLanguage: "es-PY" };
+  d = d.replace("</head>", () => `<link rel="canonical" href="${dir}">\n<meta property="og:url" content="${dir}">\n<script type="application/ld+json">${SEO.graph(site, itemList)}</script>\n</head>`);
+  const staticList = list.map(x => `<li><a href="/directorio/${x.slug}/">${SEO.esc(x.name)}</a> — ${SEO.esc(desc(x))} <a href="/${x.slug}/">Ver menú con precios</a></li>`).join("");
+  const links = [...cuisine.map(c => `<a href="/directorio/cocina/${c.slug}/">${SEO.esc(c.label)}</a>`), ...zona.map(z => `<a href="/directorio/zona/${z.slug}/">${SEO.esc(z.label)}</a>`)].join(" · ");
+  d = d.replace('<div id="grid" role="list"></div>', () => `<div id="grid" role="list"></div>\n<noscript><ul>${staticList}</ul><p>${links}</p></noscript>`);
+  await mkdir(path.join(DIST, "directorio"), { recursive: true });
+  await writeFile(path.join(DIST, "directorio", "index.html"), d);
+  await writeFile(path.join(DIST, "directory.html"), d);
+
+  // intent pages: only groups with ≥1 real restaurant
+  const pages = [];
+  for (const [kind, groups] of [["cocina", cuisine], ["zona", zona]]) {
+    for (const g of groups) {
+      const url = `${dir}${kind}/${g.slug}/`;
+      const w = SEO.whereOf(g.items);
+      const h1 = kind === "cocina" ? `${g.label} en ${w}` : `Dónde comer en ${g.label}`;
+      const body = g.items.map(x => {
+        const dishes = kind === "cocina" ? SEO.matchingDishes(x.menu, g.label) : [];
+        const range = SEO.priceRange(x.menu);
+        return `<article><h2><a href="/directorio/${x.slug}/">${SEO.esc(x.name)}</a></h2><p>${SEO.esc(desc(x))}${range ? ` Precios: ${SEO.esc(range)}.` : ""}</p>${dishes.length ? `<ul>${dishes.map(dd => `<li>${SEO.esc(dd.name)} — ${SEO.gs(dd.price)}</li>`).join("")}</ul>` : ""}<a class="cta" href="/${x.slug}/">Ver el menú completo de ${SEO.esc(x.name)}</a></article>`;
+      }).join("\n");
+      const n = g.items.length;
+      const ld = SEO.graph(
+        { "@type": "CollectionPage", name: h1, url, inLanguage: "es-PY" },
+        { "@type": "ItemList", itemListElement: g.items.map((x, i) => ({ "@type": "ListItem", position: i + 1, url: `${dir}${x.slug}/`, name: x.name })) },
+        SEO.breadcrumbLd([["Restaurantes", dir], [h1, url]]),
+      );
+      const html = SEO.intentPage({
+        title: `${h1}: menús con precios | Mesaverso`, canonical: url, h1, ld, body,
+        description: kind === "cocina"
+          ? `${n} ${n === 1 ? "restaurante" : "restaurantes"} con ${g.label.toLowerCase()} en ${w}: menú completo con precios en guaraníes.`
+          : `${n} ${n === 1 ? "restaurante" : "restaurantes"} en ${g.label} con menú completo y precios en guaraníes.`,
+        intro: `${n === 1 ? "Este restaurante tiene" : "Estos restaurantes tienen"} su menú publicado en Mesaverso, con los precios que carga el propio local.`,
+      });
+      await mkdir(path.join(DIST, "directorio", kind, g.slug), { recursive: true });
+      await writeFile(path.join(DIST, "directorio", kind, g.slug, "index.html"), html);
+      pages.push([url, g.items.map(x => x.lastmod).filter(Boolean).sort().pop()]);
+    }
+  }
+
+  // llms.txt (summary with links) and llms-full.txt (every dish and price), plain language for AI assistants
+  const intro = [`# Mesaverso: restaurantes y menús con precios en ${where}`, "",
+    `> Directorio de restaurantes de ${where} con su menú digital completo: platos, descripciones y precios en guaraníes (PYG), cargados por cada local. Desde cada menú se puede armar el pedido y mandarlo por WhatsApp o mostrarlo en la mesa.`, "",
+    `Directorio: ${dir}`, "Cada restaurante tiene una ficha (/directorio/<slug>/) y su menú con precios (/<slug>/). Solo datos del propio restaurante: sin reseñas ni calificaciones.", ""];
+  const restLines = list.map(x => `- [${x.name}](${dir}${x.slug}/): ${desc(x)} Cocina: ${cuisines(x) || "-"}. Precios: ${SEO.priceRange(x.menu) || "-"}. Menú: ${base}/${x.slug}/`);
+  const groupLines = [...cuisine.map(c => `- [${c.label}](${dir}cocina/${c.slug}/): ${c.items.map(x => x.name).join(", ")}`),
+    ...zona.map(z => `- [${z.label}](${dir}zona/${z.slug}/): ${z.items.map(x => x.name).join(", ")}`)];
+  await writeFile(path.join(DIST, "llms.txt"), [...intro, "## Restaurantes", "", ...restLines, "", "## Por tipo de comida y zona", "", ...groupLines, "", "## Optional", "", `- [Menús completos en texto](${base}/llms-full.txt)`, ""].join("\n"));
+  await writeFile(path.join(DIST, "llms-full.txt"), [...intro, ...list.flatMap(x => [`## ${x.name}`, "", desc(x), "", `Cocina: ${cuisines(x) || "-"} · Ficha: ${dir}${x.slug}/ · Menú: ${base}/${x.slug}/`, "",
+    ...SEO.visibleCategories(x.menu).flatMap(c => [`### ${c.name}`, "", ...c.dishes.map(dd => `- ${dd.name}: ${SEO.gs(dd.price)}${dd.description ? " — " + dd.description : ""}`), ""])])].join("\n"));
+
+  const newest = list.map(x => x.lastmod).filter(Boolean).sort().pop();
+  await writeFile(path.join(DIST, "sitemap.xml"), SEO.sitemapXml([
+    [dir, newest],
+    ...list.flatMap(x => [[`${base}/${x.slug}/`, x.lastmod], [`${dir}${x.slug}/`, x.lastmod]]),
+    ...pages,
+  ]));
+}
