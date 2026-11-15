@@ -35,6 +35,16 @@ jobs:
             echo "$u -> $code"; [ "$code" = 200 ] || fail=1
           done
           exit $fail
+      - name: Analítica diaria en D1 al día (DEC-077)
+        run: |
+          origin=$(echo "$MENU_URL" | cut -d/ -f1-3)
+          body=$(curl -s --max-time 30 "$origin/api/_health/analytics" || echo '{}')
+          echo "$body"
+          last=$(echo "$body" | grep -o '"lastDay":"[0-9-]*"' | cut -d'"' -f4)
+          if [ -z "$last" ]; then echo "::error::D1 sin datos: los crons de analítica no están cargando (¿falta CF_ANALYTICS_TOKEN en el Worker?)"; exit 1; fi
+          age=$(( ( $(date -u +%s) - $(date -u -d "$last" +%s) ) / 86400 ))
+          echo "Último día agregado: $last ($age días)"
+          if [ "$age" -gt 2 ]; then echo "::error::La analítica en D1 tiene $age días de atraso"; exit 1; fi
       - name: Panel (Render gratis tarda ~1 min en despertar)
         if: env.PANEL_URL != ''
         run: |

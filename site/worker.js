@@ -17,6 +17,7 @@ export default {
   async fetch(request, env) {
     const path = new URL(request.url).pathname;
     if (path === "/e") return handleEvents(request, env);
+    if (path === "/api/_health/analytics") return handleAnalyticsHealth(env);
     if (path.endsWith("/popular") && path.startsWith("/api/")) return handlePopular(request, env);
     if (path.startsWith("/api/")) return handleCaja(request, env);
     if (path === "/directorio" || path === "/directorio/") {
@@ -35,3 +36,13 @@ export default {
     }
   },
 };
+
+// GET /api/_health/analytics — read by .github/workflows/health-backup.yml to alert when the daily
+// Analytics Engine → D1 aggregation stops (DEC-077). Returns only the last aggregated day and a row
+// count: no slugs, dishes or anything per restaurant.
+export async function handleAnalyticsHealth(env) {
+  const headers = { "Content-Type": "application/json", "Cache-Control": "no-store" };
+  if (!env.MV_D1) return new Response(JSON.stringify({ ok: false, error: "no-d1" }), { status: 200, headers });
+  const row = await env.MV_D1.prepare("SELECT MAX(day) AS lastDay, COUNT(*) AS rows FROM daily").first();
+  return new Response(JSON.stringify({ ok: true, lastDay: row?.lastDay ?? null, rows: row?.rows ?? 0 }), { status: 200, headers });
+}
