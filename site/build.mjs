@@ -387,6 +387,8 @@ async function main() {
   // search engines: the menus are public pages; the caja, the QR sheet and the API are not
   const base = SITE_URL.replace(/\/$/, "");
   await writeFile(path.join(DIST, "robots.txt"), SEO.robotsTxt(base));
+  // Google Search Console ownership file for https://menu.mesaverso.app/ (keep it: removing it unverifies the property)
+  await writeFile(path.join(DIST, "google33b12de65a1839f2.html"), "google-site-verification: google33b12de65a1839f2.html");
   await buildDiscovery(built.filter(b => !SEO.isHidden(b.slug)), indexRestaurants, base);
   await writeFile(path.join(DIST, ".nojekyll"), "");
   // Cloudflare response headers (GitHub Pages ignores this file). One `*` per rule: use :slug for the folder. File names aren't hashed,
