@@ -184,3 +184,31 @@ export const importSeedEndpoint: Endpoint = {
     }
   },
 }
+
+/**
+ * POST /api/restaurants/claim-link {slug}: platform admins only. Makes a NEW one-time activation link for a restaurant
+ * that already exists in the panel (the claim code can only be set on import, never edited from the panel). The owner
+ * opens it, registers with their own email and password and becomes the restaurant's admin. Replaces any previous
+ * unused code of that restaurant. Nobody ever has to send a password.
+ */
+export const claimLinkEndpoint: Endpoint = {
+  path: '/claim-link',
+  method: 'post',
+  handler: async (req) => {
+    if (!isPlatformAdmin(req.user)) return Response.json({ message: 'Solo el administrador de la plataforma puede generar un link de activación.' }, { status: 403 })
+    let body: { slug?: unknown }
+    try {
+      body = (await req.json?.()) as typeof body
+    } catch {
+      return Response.json({ message: 'No pudimos leer el pedido.' }, { status: 400 })
+    }
+    const slug = String(body?.slug ?? '').trim()
+    const { payload } = req
+    const found = await payload.find({ collection: 'restaurants', where: { slug: { equals: slug } }, limit: 1, depth: 0, overrideAccess: true })
+    const target = found.docs[0]
+    if (!target) return Response.json({ message: `No existe el local «${slug}» en el panel.` }, { status: 404 })
+    const code = randomBytes(18).toString('base64url')
+    await payload.update({ collection: 'restaurants', id: target.id, data: { claimCode: code }, overrideAccess: true })
+    return Response.json({ ok: true, slug, url: `${panelUrl()}/registro?codigo=${code}` })
+  },
+}

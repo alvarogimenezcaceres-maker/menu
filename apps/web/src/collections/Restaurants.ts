@@ -4,7 +4,7 @@ import { isPlatformAdmin, platformAdminOnly, userRestaurantIds } from '../access
 import { slugField } from '../fields/slug'
 import { PLAN_OPTIONS, userLimits } from '../plans'
 import { publishEndpoint } from '../publish/endpoint'
-import { importSeedEndpoint } from '../signup/import'
+import { claimLinkEndpoint, importSeedEndpoint } from '../signup/import'
 
 const validateTime = (value: unknown) =>
   typeof value === 'string' && /^([01]?\d|2[0-3]):[0-5]\d$/.test(value.trim()) ? true : 'Usá el formato 18:00.'
@@ -24,7 +24,7 @@ export const Restaurants: CollectionConfig = {
     read: ({ req }) => (isPlatformAdmin(req.user) ? true : { id: { in: userRestaurantIds(req.user) } }),
     update: ({ req }) => (isPlatformAdmin(req.user) ? true : { id: { in: userRestaurantIds(req.user) } }),
   },
-  endpoints: [publishEndpoint, importSeedEndpoint],
+  endpoints: [publishEndpoint, importSeedEndpoint, claimLinkEndpoint],
   fields: [
     {
       name: 'plan',

@@ -346,3 +346,7 @@ Todo local nuevo se arma para verse como el menú de Filigrana. La plantilla ya 
 - **Destacados:** 3 a 8 platos con foto y la etiqueta «destacado» (o con 3D). Arman la franja «Destacados» y el botón «Sorprendeme».
 - **Portada de sección** en 1 o 2 categorías (opcional) y **3D** en los platos estrella (opcional, pack aparte).
 - **Reseña en Google** (enlace de «Pedir opiniones»).
+
+### Link de activación para el dueño de un local que ya está en el panel
+
+Para que el dueño se autogestione sin pasarle contraseñas: un administrador llama una vez a `POST /api/restaurants/claim-link` con `{"slug":"<local>"}` (con la sesión del panel abierta) y recibe un link `…/registro?codigo=…`. El dueño lo abre, pone su correo y su contraseña, y queda como administrador de ese local. El link sirve una sola vez; si se pierde, se genera otro (el anterior queda sin efecto).
