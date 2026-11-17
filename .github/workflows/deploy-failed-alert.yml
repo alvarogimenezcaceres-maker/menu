@@ -1,0 +1,20 @@
+# RSK-085: between 2026-11-13 and 2026-11-15 every menu deploy failed and nobody noticed. This workflow runs
+# after each deploy workflow and fails loudly (GitHub e-mails the owner) when that run did not succeed.
+name: Aviso de deploy fallido
+
+on:
+  workflow_run:
+    workflows: ["Publicar menús en Cloudflare", "Imagen del panel (Render)", "Fotogrametría (fotos → 3D)"]
+    types: [completed]
+
+permissions: {}
+
+jobs:
+  alert:
+    if: github.event.workflow_run.conclusion != 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - run: |
+          echo "::error::Falló «${{ github.event.workflow_run.name }}» (${{ github.event.workflow_run.conclusion }}): ${{ github.event.workflow_run.html_url }}"
+          exit 1
