@@ -1,6 +1,27 @@
 {
   "restaurants": [
     {
+      "slug": "gringo-bar",
+      "name": "Gringo Bar",
+      "tagline": "Food, rock and beer. Hamburguesas, pizzas, lomitos y picadas.",
+      "cuisine": [
+        "Hamburguesas",
+        "Pizza",
+        "Lomitos",
+        "Picadas",
+        "Papas fritas"
+      ],
+      "logo": "logo",
+      "theme": {
+        "primary": "#F7B500",
+        "background": "#121212"
+      },
+      "whatsapp": "0976 145 539",
+      "active": true,
+      "featured": true,
+      "badge": "Nuevo"
+    },
+    {
       "slug": "filigrana",
       "name": "Filigrana Bar-Restaurante",
       "tagline": "Pizzas artesanales, parrilla, milanesas, cócteles y vinos.",
@@ -39,27 +60,6 @@
       "whatsapp": "0981 288 730",
       "active": true,
       "featured": true,
-      "badge": "Nuevo"
-    },
-    {
-      "slug": "gringo-bar",
-      "name": "Gringo Bar",
-      "tagline": "Food, rock and beer. Hamburguesas, pizzas, lomitos y picadas.",
-      "cuisine": [
-        "Hamburguesas",
-        "Pizza",
-        "Lomitos",
-        "Picadas",
-        "Papas fritas"
-      ],
-      "logo": "logo",
-      "theme": {
-        "primary": "#F7B500",
-        "background": "#121212"
-      },
-      "whatsapp": "0976 145 539",
-      "active": true,
-      "featured": false,
       "badge": "Nuevo"
     }
   ]
