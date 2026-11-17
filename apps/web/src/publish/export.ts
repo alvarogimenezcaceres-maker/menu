@@ -36,6 +36,7 @@ async function mediaBytes(doc: Media): Promise<Buffer> {
 export async function exportRestaurant(payload: Payload, restaurantId: number | string) {
   const r = (await payload.findByID({ collection: 'restaurants', id: restaurantId, depth: 1, overrideAccess: true })) as Restaurant
   const limits = limitsFor(r.plan)
+  const hours = r.hours?.length ? r.hours.map((h) => ({ days: h.days ?? [], open: h.open.trim(), close: h.close.trim() })) : undefined
   const where = { tenant: { equals: r.id } }
   const categories = (await payload.find({ collection: 'categories', where, sort: '_order', limit: 500, depth: 1, overrideAccess: true })).docs as Category[]
   const dishes = (await payload.find({ collection: 'dishes', where, sort: '_order', limit: 2000, depth: 1, overrideAccess: true })).docs as Dish[]
@@ -83,16 +84,15 @@ export async function exportRestaurant(payload: Payload, restaurantId: number | 
       legal: r.legal?.legalName?.trim() && r.legal?.ruc?.trim() && r.legal?.privacyContact?.trim()
         ? { legalName: r.legal.legalName.trim(), ruc: r.legal.ruc.trim(), address: r.legal.address?.trim() || '', privacyContact: r.legal.privacyContact.trim() }
         : undefined,
-      ordering: limits.basicOrdering || r.whatsappOnly ? undefined : {
+      // opening hours apply to every plan and mode (the menu closes WhatsApp orders outside them)
+      ordering: limits.basicOrdering || r.whatsappOnly ? (hours ? { hours } : undefined) : {
         orderTypes: r.orderTypes?.length ? r.orderTypes : undefined,
         paymentMethods: r.paymentMethods?.length ? r.paymentMethods : undefined,
         deliveryFee: r.deliveryFee ?? undefined,
         minOrder: r.minOrder || undefined,
         deliveryZones: r.deliveryZones?.length ? r.deliveryZones.map((z) => ({ name: z.name, fee: z.fee })) : undefined,
         transferInfo: r.transferInfo || undefined,
-        hours: r.hours?.length
-          ? r.hours.map((h) => ({ days: h.days ?? [], open: h.open.trim(), close: h.close.trim() }))
-          : undefined,
+        hours,
       },
       theme: {
         primary: r.theme?.primary,
