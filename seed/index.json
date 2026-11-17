@@ -4,9 +4,18 @@
       "slug": "filigrana",
       "name": "Filigrana Bar-Restaurante",
       "tagline": "Pizzas artesanales, parrilla, milanesas, cócteles y vinos.",
-      "cuisine": ["Pizza", "Parrilla", "Hamburguesas", "Pastas", "Cócteles"],
+      "cuisine": [
+        "Pizza",
+        "Parrilla",
+        "Hamburguesas",
+        "Pastas",
+        "Cócteles"
+      ],
       "logo": "logo-blanco",
-      "theme": { "primary": "#ED9D15", "background": "#181818" },
+      "theme": {
+        "primary": "#ED9D15",
+        "background": "#181818"
+      },
       "whatsapp": "0976 130 444",
       "active": true,
       "featured": true,
@@ -16,12 +25,41 @@
       "slug": "frakar",
       "name": "Frakar Gourmet",
       "tagline": "Hamburguesas premium, lomitos, papas fritas y pollo frito.",
-      "cuisine": ["Hamburguesas", "Lomitos", "Papas fritas", "Pollo frito"],
+      "cuisine": [
+        "Hamburguesas",
+        "Lomitos",
+        "Papas fritas",
+        "Pollo frito"
+      ],
       "logo": "logo",
-      "theme": { "primary": "#F0B030", "background": "#14100D" },
+      "theme": {
+        "primary": "#F0B030",
+        "background": "#14100D"
+      },
       "whatsapp": "0981 288 730",
       "active": true,
       "featured": true,
+      "badge": "Nuevo"
+    },
+    {
+      "slug": "gringo-bar",
+      "name": "Gringo Bar",
+      "tagline": "Food, rock and beer. Hamburguesas, pizzas, lomitos y picadas.",
+      "cuisine": [
+        "Hamburguesas",
+        "Pizza",
+        "Lomitos",
+        "Picadas",
+        "Papas fritas"
+      ],
+      "logo": "logo",
+      "theme": {
+        "primary": "#F7B500",
+        "background": "#121212"
+      },
+      "whatsapp": "0976 145 539",
+      "active": true,
+      "featured": false,
       "badge": "Nuevo"
     }
   ]

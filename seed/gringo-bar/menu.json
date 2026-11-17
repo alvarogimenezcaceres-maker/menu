@@ -1,0 +1,382 @@
+{
+  "$source": "Armado a mano desde los flyers que envió el local (2026-11-17); precios y platos del propio local",
+  "tenant": {
+    "name": "Gringo Bar",
+    "slug": "gringo-bar"
+  },
+  "restaurant": {
+    "name": "Gringo Bar",
+    "slug": "gringo-bar",
+    "tagline": "Food, rock and beer",
+    "description": "Food, rock and beer. Hamburguesas, pizzas, lomitos, picadas y papas fritas en la peatonal histórica de Luque. Sumando Gs. 10.000 armás tu combo con papas y gaseosa. Instagram @gringobarpy.",
+    "currency": "PYG",
+    "default_locale": "es",
+    "logo": "logo",
+    "tables": 0,
+    "plan": "menu",
+    "orderingMode": "whatsapp",
+    "headerCenter": true,
+    "whatsapp": "0976145539",
+    "cuisine": [
+      "Hamburguesas",
+      "Pizza",
+      "Lomitos",
+      "Picadas",
+      "Papas fritas"
+    ],
+    "address": "Peatonal histórica de Luque",
+    "city": "Luque",
+    "theme": {
+      "primary": "#F7B500",
+      "primaryLight": "#FFD34D",
+      "background": "#121212",
+      "accentWine": "#B3121F"
+    }
+  },
+  "categories": [
+    {
+      "slug": "hamburguesas",
+      "name": "Hamburguesas",
+      "dishes": [
+        {
+          "slug": "gringuita-kids",
+          "name": "Gringuita Kids",
+          "price": 20000,
+          "description": "Pan gourmet, medallón de carne, cheddar, mayo de la casa."
+        },
+        {
+          "slug": "cheese-bacon",
+          "name": "Cheese Bacon",
+          "price": 25000,
+          "description": "Pan gourmet, medallón de carne, cheddar, bacon, mayo de la casa."
+        },
+        {
+          "slug": "gringo",
+          "name": "Gringo",
+          "price": 30000,
+          "description": "Pan gourmet, medallón de carne, cheddar, bacon, cebolla morada, tomate, lechuga repollada, mayo de la casa."
+        },
+        {
+          "slug": "a-caballo",
+          "name": "A Caballo",
+          "price": 35000,
+          "description": "Pan gourmet, medallón de carne, cebolla caramelizada, huevo frito, queso, salsa de la casa."
+        },
+        {
+          "slug": "mega-chets",
+          "name": "Mega Chets",
+          "price": 35000,
+          "description": "Pan brioch, medallón brisket 120 gramos, mermelada de ají, queso muzzarella y roquefort, cebolla encurtida y rúcula."
+        },
+        {
+          "slug": "doble-cuarto",
+          "name": "Doble Cuarto",
+          "price": 40000,
+          "description": "Pan gourmet, doble medallón de carne, lechuga repollada, pepinillos, cheddar, cebolla picada, ketchup."
+        },
+        {
+          "slug": "doble-cheese-bacon",
+          "name": "Doble Cheese Bacon",
+          "price": 40000,
+          "description": "Pan gourmet, mayo tasty, 2 carnes de vacío vacuno, cheddar, bacon."
+        },
+        {
+          "slug": "don-gringo",
+          "name": "Don Gringo",
+          "price": 40000,
+          "description": "Pan gourmet, doble medallón de carne, doble bacon, doble cheddar, tomate, lechuga repollada, cebolla morada, mayo de la casa."
+        },
+        {
+          "slug": "la-preferida-del-diablo",
+          "name": "La Preferida del Diablo",
+          "price": 40000,
+          "description": "Pan gourmet, doble medallón de carne, doble bacon, doble cheddar, mayo de carolina reaper (extra picante), cebolla morada, tomate, lechuga repollada."
+        },
+        {
+          "slug": "doble-crispy-bacon",
+          "name": "Doble Crispy Bacon",
+          "price": 50000,
+          "description": "Pan brioch, doble medallones de carne, queso cheddar, aros de cebolla y papas crispy."
+        },
+        {
+          "slug": "triple-cheese-con-papas",
+          "name": "Triple Cheese (con papas)",
+          "price": 60000,
+          "description": "Pan gourmet, mayo tasty, 3 carnes de vacío vacuno, triple cheddar, triple bacon."
+        }
+      ]
+    },
+    {
+      "slug": "lomitos",
+      "name": "Lomitos y sandwich",
+      "dishes": [
+        {
+          "slug": "lomito-arabe-pollo",
+          "name": "Lomito árabe pollo",
+          "price": 35000,
+          "description": "Pan árabe, tomate, cebolla morada, pollo, repollo, salsa de ajo."
+        },
+        {
+          "slug": "lomito-arabe-mixto",
+          "name": "Lomito árabe mixto",
+          "price": 35000,
+          "description": "Pan árabe, tomate, cebolla morada, pollo, carne, repollo, salsa de ajo."
+        },
+        {
+          "slug": "lomito-arabe-carne",
+          "name": "Lomito árabe carne",
+          "price": 35000,
+          "description": "Pan árabe, tomate, cebolla morada, carne, repollo, salsa de ajo."
+        },
+        {
+          "slug": "sandwich-de-lomito",
+          "name": "Sandwich de lomito",
+          "price": 30000,
+          "description": "Lomo vacuno, mayo de ajo, huevo, muzzarella, lechuga, repollada, tomate."
+        }
+      ]
+    },
+    {
+      "slug": "pizzas",
+      "name": "Pizzas",
+      "dishes": [
+        {
+          "slug": "queso",
+          "name": "Queso",
+          "price": 40000,
+          "description": "Queso muzzarella, salsa de tomate y aceitunas."
+        },
+        {
+          "slug": "napolitana",
+          "name": "Napolitana",
+          "price": 50000,
+          "description": "Salsa de tomate, albahaca, rodajas de tomate, alioli y aceitunas."
+        },
+        {
+          "slug": "jamon-y-queso",
+          "name": "Jamón y queso",
+          "price": 50000,
+          "description": "Salsa de tomate, mozzarella, jamón, aceitunas y orégano."
+        },
+        {
+          "slug": "palmito",
+          "name": "Palmito",
+          "price": 50000,
+          "description": "Queso muzzarella con salsa de tomate, palmito en cubos y aceitunas."
+        },
+        {
+          "slug": "al-ajo",
+          "name": "Al ajo",
+          "price": 50000,
+          "description": "Salsa de tomate, muzzarella, ajo picado, aceite de oliva, aceitunas y orégano."
+        },
+        {
+          "slug": "margarita",
+          "name": "Margarita",
+          "price": 50000,
+          "description": "Queso muzzarella, mucha salsa de tomate, albahaca con alioli."
+        },
+        {
+          "slug": "napolitana-c-jamon",
+          "name": "Napolitana c/ jamón",
+          "price": 60000,
+          "description": "Salsa de tomate, queso muzzarella, rodajas de tomate, jamón y albahaca."
+        },
+        {
+          "slug": "pepperoni",
+          "name": "Pepperoni",
+          "price": 60000,
+          "description": "Queso muzzarella con salsa de tomate, pepperoni artesanal y aceitunas."
+        },
+        {
+          "slug": "pollo-c-katupiry",
+          "name": "Pollo c/ katupiry",
+          "price": 60000,
+          "description": "Queso muzzarella con salsa de tomate, pollo grillado con katupiry."
+        },
+        {
+          "slug": "choclo-c-katupiry",
+          "name": "Choclo c/ katupiry",
+          "price": 60000,
+          "description": "Salsa de tomate, muzzarella, choclo, katupiry, aceitunas y orégano."
+        },
+        {
+          "slug": "panceta-y-cebolla",
+          "name": "Panceta y cebolla",
+          "price": 60000,
+          "description": "Salsa de tomate, mozzarella, cebolla salteada, panceta y aceitunas."
+        },
+        {
+          "slug": "palmito-con-jamon",
+          "name": "Palmito con jamón",
+          "price": 60000,
+          "description": "Salsa de tomate, queso muzzarella, palmito en trozos, jamón, salsa golf y aceitunas."
+        },
+        {
+          "slug": "4-quesos",
+          "name": "4 quesos",
+          "price": 60000,
+          "description": "Salsa de tomate, muzzarella, cheddar, catupiry, roquefort y aceitunas."
+        },
+        {
+          "slug": "jamon-y-morrones",
+          "name": "Jamón y morrones",
+          "price": 60000,
+          "description": "Salsa de tomate, muzzarella, jamón picado, morrones y aceitunas."
+        },
+        {
+          "slug": "primavera",
+          "name": "Primavera",
+          "price": 60000,
+          "description": "Salsa de tomate, queso muzzarella, tomates en cubo, cebolla morada y choclo."
+        },
+        {
+          "slug": "cheddar-y-panceta",
+          "name": "Cheddar y panceta",
+          "price": 60000,
+          "description": "Salsa de tomate, queso muzzarella, queso cheddar y panceta crujiente."
+        },
+        {
+          "slug": "pepperoni-y-katupiry",
+          "name": "Pepperoni y katupiry",
+          "price": 60000,
+          "description": "Salsa de tomate, muzzarella, pepperoni, katupiry, aceitunas y orégano."
+        },
+        {
+          "slug": "pesto",
+          "name": "Pesto",
+          "price": 60000,
+          "description": "Salsa de tomate, queso muzzarella, queso catupiry, pesto de albahaca y alioli."
+        },
+        {
+          "slug": "roquefort-y-cebolla-morada",
+          "name": "Roquefort y cebolla morada",
+          "price": 60000,
+          "description": "Salsa de tomate, queso muzzarella, queso roquefort, cebolla morada encurtida, aceitunas."
+        },
+        {
+          "slug": "pizza-gringo",
+          "name": "Pizza Gringo",
+          "price": 70000,
+          "description": "Salsa de tomate, muzzarella, salchicha ahumada picante, jalapeños en rodajas y aceitunas."
+        },
+        {
+          "slug": "jamon-crudo-rucula-y-cherry",
+          "name": "Jamón crudo, rúcula y cherry",
+          "price": 70000,
+          "description": "Salsa de tomate, muzzarella, jamón crudo, rúcula, cherry, pesto rojo, alioli, aceitunas y orégano."
+        },
+        {
+          "slug": "especial-de-la-casa",
+          "name": "Especial de la casa",
+          "price": 80000,
+          "description": "Salsa de tomate, doble queso muzzarella, pesto de tomates secos, jamón crudo, albahaca y orégano."
+        }
+      ]
+    },
+    {
+      "slug": "picadas",
+      "name": "Picadas",
+      "dishes": [
+        {
+          "slug": "cervecera",
+          "name": "Cervecera",
+          "price": 60000,
+          "description": "Quesos de estación, salames, jamones y encurtidos."
+        },
+        {
+          "slug": "orden-de-empanadas-de-carne",
+          "name": "Orden de empanadas de carne",
+          "price": 50000,
+          "description": "8 unidades + papas fritas."
+        },
+        {
+          "slug": "orden-de-milanesitas",
+          "name": "Orden de milanesitas",
+          "price": 70000
+        },
+        {
+          "slug": "picada-gringo-mix-6-personas",
+          "name": "Picada Gringo Mix (6 personas)",
+          "price": 150000,
+          "description": "Milanesas, empanaditas + papas."
+        },
+        {
+          "slug": "parrillita-premium-3-personas",
+          "name": "Parrillita Premium (3 personas)",
+          "price": 100000,
+          "description": "Variedad de choris, sopa paraguaya, mandioca, cortes seleccionados."
+        },
+        {
+          "slug": "parrillita-premium-5-personas",
+          "name": "Parrillita Premium (5 personas)",
+          "price": 150000,
+          "description": "Variedad de choris, sopa paraguaya, mandioca, cortes seleccionados."
+        }
+      ]
+    },
+    {
+      "slug": "papas-fritas",
+      "name": "Papas fritas",
+      "dishes": [
+        {
+          "slug": "papas-fritas",
+          "name": "Papas fritas",
+          "price": 25000
+        },
+        {
+          "slug": "papas-bravas-picantonas",
+          "name": "Papas bravas (picantonas)",
+          "price": 30000
+        },
+        {
+          "slug": "papas-con-cheddar",
+          "name": "Papas con cheddar",
+          "price": 30000
+        },
+        {
+          "slug": "papas-con-cheddar-y-bacon",
+          "name": "Papas con cheddar y bacon",
+          "price": 35000
+        },
+        {
+          "slug": "papas-suprema",
+          "name": "Papas suprema",
+          "price": 35000,
+          "description": "Papas, queso catupiry y verdeo picado."
+        }
+      ]
+    },
+    {
+      "slug": "agregados",
+      "name": "Agregados",
+      "dishes": [
+        {
+          "slug": "pepinillos",
+          "name": "Pepinillos",
+          "price": 5000
+        },
+        {
+          "slug": "cheddar",
+          "name": "Cheddar",
+          "price": 5000
+        },
+        {
+          "slug": "panceta",
+          "name": "Panceta",
+          "price": 10000
+        },
+        {
+          "slug": "huevo",
+          "name": "Huevo",
+          "price": 5000
+        },
+        {
+          "slug": "aros-de-cebolla",
+          "name": "Aros de cebolla",
+          "price": 10000
+        }
+      ]
+    }
+  ]
+}
