@@ -333,3 +333,16 @@ Workflow `.github/workflows/health-backup.yml`. Si algo falla, GitHub te manda u
 - **Restaurar:** bajá el artefacto del run y corré
   `gpg -d neon-AAAAMMDD.sql.gz.gpg | gunzip | psql "<cadena de conexión destino>"`.
 - **La Caja** (Durable Object) no entra en este backup: Cloudflare guarda 30 días de recuperación a un punto en el tiempo.
+
+## Estándar «como Filigrana» (desde el 17/11/2026)
+
+Todo local nuevo se arma para verse como el menú de Filigrana. La plantilla ya es la misma; lo que cambia es el contenido. Checklist por local:
+
+- **Logo** subido (se muestra centrado: es el valor por defecto) y colores de su marca.
+- **Dirección, barrio y ciudad** (panel → restaurante → «Dirección del local»).
+- **Horarios** (muestra «Abierto/Cerrado · abre mañana a las…» y cierra los pedidos por WhatsApp fuera de horario).
+- **Reservar mesa** por WhatsApp: viene tildada por defecto (hace falta el WhatsApp cargado).
+- **Foto de cada plato**: es lo que más pesa. Sin foto el menú se ve como una lista de texto. En el celular: plato → «Sacar foto con la cámara».
+- **Destacados:** 3 a 8 platos con foto y la etiqueta «destacado» (o con 3D). Arman la franja «Destacados» y el botón «Sorprendeme».
+- **Portada de sección** en 1 o 2 categorías (opcional) y **3D** en los platos estrella (opcional, pack aparte).
+- **Reseña en Google** (enlace de «Pedir opiniones»).

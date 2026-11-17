@@ -39,7 +39,7 @@ export const Restaurants: CollectionConfig = {
       name: 'reservationsWhatsapp',
       type: 'checkbox',
       label: 'Reservas por WhatsApp',
-      defaultValue: false,
+      defaultValue: true,
       admin: {
         position: 'sidebar',
         description: 'Muestra el botón «Reservar mesa» en el menú: el cliente completa fecha, hora y personas y se abre WhatsApp con la reserva escrita. Necesita el WhatsApp del local cargado.',
@@ -49,7 +49,7 @@ export const Restaurants: CollectionConfig = {
       name: 'headerCenter',
       type: 'checkbox',
       label: 'Logo centrado en el encabezado',
-      defaultValue: false,
+      defaultValue: true,
       admin: {
         position: 'sidebar',
         description: 'Centra el logo y la frase corta arriba del menú (sin foto de portada queda más prolijo).',

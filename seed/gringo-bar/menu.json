@@ -31,7 +31,8 @@
       "primaryLight": "#FFD34D",
       "background": "#121212",
       "accentWine": "#B3121F"
-    }
+    },
+    "reservations": true
   },
   "categories": [
     {
