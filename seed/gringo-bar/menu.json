@@ -32,7 +32,23 @@
       "background": "#121212",
       "accentWine": "#B3121F"
     },
-    "reservations": true
+    "reservations": true,
+    "ordering": {
+      "hours": [
+        {
+          "days": [
+            "tue",
+            "wed",
+            "thu",
+            "fri",
+            "sat",
+            "sun"
+          ],
+          "open": "18:00",
+          "close": "00:00"
+        }
+      ]
+    }
   },
   "categories": [
     {
