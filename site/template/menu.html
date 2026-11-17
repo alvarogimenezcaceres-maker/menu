@@ -222,6 +222,10 @@
   .share-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-width: 44px; min-height: 44px; border-radius: 50%; border: 0; background: none; color: var(--muted); cursor: pointer; }
   .share-btn:hover, .share-btn:focus-visible { color: var(--text); }
   .hero .share-btn { position: absolute; top: 6px; right: 8px; z-index: 3; flex-direction: column; gap: 2px; min-height: 44px; padding: 4px 6px; border-radius: 10px; font: 600 10.5px/1 var(--display); letter-spacing: .04em; color: var(--text); background: rgba(14,13,12,.55); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+  .hero .mv-home { position: absolute; top: 6px; left: 8px; z-index: 3; display: flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 10px; background: rgba(14,13,12,.55); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+  .hero .mv-home svg { width: 24px; height: 24px; display: block; }
+  .hero .mv-home:hover, .hero .mv-home:focus-visible { background: rgba(14,13,12,.8); }
+  @media (prefers-reduced-motion: reduce) { .mv-home .mv-dot-animated { display: none; } }
   .share-btn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
   .share-btn.link { border-radius: 10px; padding: 0 12px; font: 500 14px/1 var(--body); text-decoration: underline; text-underline-offset: 3px; }
   .toast { position: fixed; z-index: 40; left: 50%; bottom: calc(var(--mbh, 0px) + 84px); transform: translateX(-50%); max-width: calc(100% - 32px); padding: 12px 18px; border-radius: 999px; background: var(--text); color: #15100a; font: 600 14px/1.2 var(--display); box-shadow: 0 10px 30px rgba(0,0,0,.5); }
@@ -509,6 +513,7 @@
     </div>
     {{HERO_IMG}}
     <button class="share-btn" type="button" data-share aria-label="Compartir el menú"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3M8 7l4-4 4 4M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg><span>Compartir</span></button>
+    <a class="mv-home" href="/directorio/" aria-label="Ver todos los locales en Mesaverso" title="Mesaverso: ver todos los locales"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M16 80V22L50 60L84 22V80" fill="none" stroke="#C3C8CE" stroke-width="11" stroke-linejoin="round"/><circle cx="16" cy="82" r="10" fill="#C3C8CE"/><circle class="mv-dot-animated" r="10" fill="#FFD6A5" cx="0" cy="0"><animateMotion dur="8s" repeatCount="indefinite" calcMode="spline" path="M16 82V22L50 60L84 22V82" keyPoints="1;1;0;0;1;1" keyTimes="0;0.62;0.64;0.7;0.925;1" keySplines="0 0 1 1;0 0 1 1;0 0 1 1;0.65 0 0.35 1;0 0 1 1"/><animate attributeName="opacity" dur="8s" repeatCount="indefinite" values="1;1;0;0;1;1" keyTimes="0;0.6;0.63;0.66;0.7;1"/></circle></svg></a>
   </header>
 
   <div class="toolbar" id="toolbar">
@@ -784,6 +789,7 @@ addEventListener("scroll", () => {
 }, { passive: true });
 setCurrent(DATA.categories[0].slug);
 
+document.addEventListener("click", e => { if (e.target.closest(".mv-home")) track("market_click"); });
 /* destacados: primero los platos con 3D, después los marcados como destacados */
 const all = Object.values(bySlug);
 const picks = [...all.filter(d => d.model && !d.soldOut), ...all.filter(d => !d.model && d.photo && !d.soldOut && (d.tags || []).includes("destacado"))].slice(0, 8);
